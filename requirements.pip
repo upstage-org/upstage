@@ -1,0 +1,16 @@
+flask
+flask-caching
+flask-cors
+flask-jwt-extended
+flask-restx
+flask-sqlalchemy
+flask-talisman
+gevent
+paho-mqtt
+pillow
+psycopg2
+pyotp
+qrcode
+requests
+sqlalchemy
+uwsgi
