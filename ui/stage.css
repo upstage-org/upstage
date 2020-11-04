@@ -1,1 +1,30 @@
 
+body {
+    background-color:#cecece;
+}
+
+nav {
+    background-color:#b7b7b7;
+    padding-left:2em;
+    line-height:150%;
+}
+
+.img-adapt {
+    width:100%;
+}
+
+.flexbox-container {
+    display: -ms-flex;
+	display: -webkit-flex;
+	display: flex;
+}
+
+.flexbox-container > nav {
+    width:20%;
+}
+
+main {
+    background-color:white;
+    width:80%;
+    text-align:center;
+}
