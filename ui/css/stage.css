@@ -1,0 +1,82 @@
+body {
+  background-color: #909090;
+  overflow: hidden;
+}
+
+nav {
+  position: absolute;
+  line-height: 150%;
+  z-index: 100;
+}
+
+nav img {
+  padding-left: 0;
+}
+
+nav p {
+  padding-left: 0.3em;
+}
+
+.img-adapt {
+  width: 100%;
+}
+
+.flexbox-container {
+  display: -ms-flex;
+  display: -webkit-flex;
+  display: flex;
+  flex-wrap: wrap;
+  /*justify-content: center;*/
+  /*align-items: center;*/
+}
+
+.flexbox-container > nav {
+  width: 100%;
+}
+
+main {
+  background-color: #000;
+  width: calc(100vw - 10px);
+  height: calc(100vh - 10px);
+  text-align: left;
+  border: 5px solid #006600;
+}
+
+#stage {
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  background-color: #000;
+  text-align: center;
+}
+
+#menu {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  margin: 5px;
+  width: calc(10vw - 10px);
+  height: calc(100vh - 22px);
+  color: #030303;
+  background-color: #b7b7b7;
+  text-align: left;
+  border: 1px solid #f0f0f0;
+}
+
+#chat {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  margin: 5px;
+  padding: 5px;
+  width: 20%;
+  height: calc(100vh - 32px);
+  color: #f0f0f0;
+  background-color: #363636;
+  text-align: left;
+  border: 1px solid #f0f0f0;
+}
+
+#chat p {
+  padding-left: 0.3em;
+}
