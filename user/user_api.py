@@ -112,18 +112,10 @@ def current_user_info():
 
     address = None
 
-    if user.role & ADMINS == SUPER_ADMIN:
-        groups = [g for g in DBSession.query(FunctionalGroup).all()]
-    elif user.role & ADMINS == ACCOUNT_ADMIN:
-        group_users = DBSession.query(GroupUser).filter(GroupUser.user_id == user.id).all()
-        groups = [g.group for g in group_users]
-
-    #app.logger.info("User {0}, Role: {1}, Buildings:{2}, Address: {3}".format(user.username,user.role,pprint.pformat(buildings),address))
-
     return make_response(jsonify({'user_id':user.id,'role':user.role,
         'phone':user.phone,
         'first_name':user.first_name, 'last_name': user.last_name, 
-        'email':user.email,'address':address,'apartment':user.apartment,
+        'email':user.email,
         'timezone':timezone if timezone != pytz.UTC else None,
         'groups':[],
         'username':user.username,

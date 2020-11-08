@@ -652,13 +652,9 @@ def call_login_logout(app_entry=True,num_value=None):
 
     print("title:{}".format(title))
 
-    key = encrypt(str(user_session_id))
-    #print("********** Login: user_id {}, refresh_token {} user_session_id {},  key\n{}".format(user.id,refresh_token,user_session_id,key))
-
     return make_response(jsonify({'user_id':user.id,'access_token':access_token,'refresh_token':refresh_token,
         'phone':user.phone,
         #'access_bitmask':user.access_bitmask,
-        #'key':key,
         'role':user.role, 'first_name':user.first_name,
         #'groups':[to_dict(g) for g in groups],
         'groups':groups,
@@ -674,42 +670,10 @@ def refresh():
 
     user = DBSession.query(User).filter(User.id==current_user_id
         ).filter(User.active==True).first()
+
     if not user:
         TNL.add(refresh_token)
         return make_response(jsonify({'error':"Your session expired. Please log in again."}), 401)
-
-    key = None
-    try:
-        key = decrypt(request.json.get('key',None))
-        #print("In refresh, user id {}, refresh token: {}, key\n{}".format(user.id,refresh_token,key))
-        user_session_id = int(key)
-    except:
-        return make_response(jsonify({'error':"Your session is incorrect. Please log in again."}), 401)
-
-    # Get latest session for this user. If no match, kick them out.
-    # This expires older logins from the same user. 
-    expiring_session = DBSession.query(UserSession).filter(
-        UserSession.user_id==user.id).order_by(
-        UserSession.recorded_time.desc()).first()
-
-    if not expiring_session or (expiring_session.refresh_token != refresh_token) or \
-        (user_session_id != expiring_session.id):
-
-        '''
-        if not expiring_session:
-            print("here 1")
-        else:
-            if (expiring_session.refresh_token != refresh_token):
-                print("here 2")
-            if (user_session_id != expiring_session.id):
-                print("session ids don't match: passed in: {}, found: {}".format(user_session_id,expiring_session.id))
-
-        print(f"Failed: Key:{key}, refresh_token:{refresh_token}, found: {pprint.pformat(expiring_session)}")
-        '''
-
-        TNL.add(refresh_token)
-        # Refresh token expired
-        return make_response(jsonify({'error':"Your session expired. Please log in again."}), 403)
 
     access_token = create_access_token(identity=current_user_id)
 
@@ -730,7 +694,7 @@ def refresh():
     local_db_session.commit()
     local_db_session.close()
     
-    return make_response(jsonify({'access_token':access_token,'key':encrypt(str(user_session_id))}), 200)
+    return make_response(jsonify({'access_token':access_token}),200)
 
 @app.route('/{0}prlookup/'.format(URL_PREFIX), methods=['POST'])
 def g_fb_a_lookup():

@@ -63,16 +63,7 @@ def current_user(user_id=None,admin_initial=False,internal_use=False):
         if not user_session and not internal_use:
             return 403, 'Bad user session (2)',None,None,None,None
 
-    error,buildings,buildings_from_groups,groups,timezone = buildings_and_groups_for_user(user)
-    if error:
-        return 403,error,None,None,None,None
-
-    if user.role in (ACCOUNT_ADMIN,SUPER_ADMIN) and not buildings:
-        print("Admin needs to pick a group first")
-        return 403, 'Admin needs to pick a group first',None,None,None,None
-       
-    #print("User: {}, id:{}, groups: {}".format(user.username,user.id,pprint.pformat([x.group_name for x in groups])))
-
+    timezone='UTC'
     return 200,None,user,[],[],timezone
 
 
