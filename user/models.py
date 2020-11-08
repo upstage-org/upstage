@@ -65,7 +65,6 @@ class User(Base,db.Model):
     email = Column(Text, nullable=False, unique=True, default='')
     bin_name = Column(Text,nullable=False,default='')
     role = Column(Integer, nullable=False, default=0)
-    access_bitmask = Column(BigInteger, nullable=False, default=0)
     first_name = Column(Text, default='')
     last_name = Column(Text, default='')
     display_name = Column(Text, default='')

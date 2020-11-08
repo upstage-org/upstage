@@ -49,7 +49,7 @@ def maintenance_resident_user_groups(user):
 def current_user(user_id=None,admin_initial=False,internal_use=False):
     current_user_id = get_jwt_identity() if not user_id else user_id
 
-    user = DBSession.query(User).options(FromCache("default")).filter(
+    user = DBSession.query(User).filter(
         User.id==current_user_id).filter(
         User.active==True).first()
     if not user:
@@ -71,15 +71,9 @@ def current_user(user_id=None,admin_initial=False,internal_use=False):
         print("Admin needs to pick a group first")
         return 403, 'Admin needs to pick a group first',None,None,None,None
        
-    if (user.role in (MAINTENANCE_RESIDENT,RESIDENT)) and not groups:
-        return 401,"Resident {0} has no associated building/group. Error!".format(current_user_id),None,None,None,None
-
-    if not buildings and not groups:
-        return 403, 'Bad user role, failed',None,None,None,None
-
     #print("User: {}, id:{}, groups: {}".format(user.username,user.id,pprint.pformat([x.group_name for x in groups])))
 
-    return 200,None,user,buildings,groups,timezone
+    return 200,None,user,[],[],timezone
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

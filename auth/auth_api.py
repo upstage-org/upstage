@@ -43,8 +43,10 @@ from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
     APPLE_TOKEN_VERIFY,APPLE_TEAM_ID,VERSION_STRING_IOS,VERSION_STRING_ANDROID,CHECK_VERSION_STRING)
 
 from config.signals import add_signals
+from utils.formatting import to_dict
 
-from user.models import (User,ROLES,ADMINS,ACCOUNT_ADMIN,SUPER_ADMIN)
+from user.models import (User,ROLES,ATTENDEE,PARTICIPANT,ACCOUNT_ADMIN,SUPER_ADMIN)
+
 
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,
@@ -205,6 +207,8 @@ The only differences between FB/Google login and ours are:
 def call_login_logout(app_entry=True,num_value=None):
     timeout_minutes = None
     user  = None
+    group = None
+    groups = [group]
     #pprint.pprint(request.headers)
     if request.method == 'DELETE': # logout
 
@@ -318,34 +322,8 @@ def call_login_logout(app_entry=True,num_value=None):
                 local_db_session.commit()
                 local_db_session.close()
 
-        elif user.role in (ATTENDEE) and not app_entry: 
-            if not num_value:
-                # This means the SMS was not yet sent, but their login worked. 
-                existing_code = new_security_code(user.id,PUBLIC_LOGIN)
-                if not send_acct_verification_code(user.phone,existing_code): # always sms
-                    msg = f"Tried to send a verification code but your phone number is invalid: phone {user.phone}"
-                    return make_response(jsonify({"error": msg}), 401)
-                return make_response(jsonify({"error": "logged in, need sms"}), 409)
-            else:
-                found_user = verify_security_code(num_value,activate=False)
-                if not found_user:
-                    return make_response(jsonify({"error": "Invalid code."}), 401)
-                if found_user.id != user.id:
-                    return make_response(jsonify({"error": "Invalid code"}), 401)
-
-                local_db_session = get_scoped_session()
-                local_db_session.query(User).filter(
-                    User.id==user.id).update(
-                    {User.validated_via_portal:True},synchronize_session=False)
-                local_db_session.commit()
-                local_db_session.close()
-        else:
-            local_db_session = get_scoped_session()
-            local_db_session.query(User).filter(
-                User.id==user.id).update(
-                {User.validated_via_portal:False},synchronize_session=False)
-            local_db_session.commit()
-            local_db_session.close()
+        elif user.role == ATTENDEE and not app_entry: 
+            pass # password checked-out, that's all we need.
 
     # We may also have a fb/g login, if this is the first time a user is logging
     # in via fb/g.
@@ -656,15 +634,21 @@ def call_login_logout(app_entry=True,num_value=None):
     title  = default_title
     if user.role == SUPER_ADMIN:
         title = title_prefix + 'Super Admin'
-        groups = [g for g in DBSession.query(FunctionalGroup).all()]
+        #groups = [g for g in DBSession.query(FunctionalGroup).all()]
+        group={'id':0,'name':"test"}
+        groups=[group]
 
-    elif user.role in (ACCOUNT_ADMIN):
+    elif user.role == ACCOUNT_ADMIN:
         title = title_prefix + 'Admin'
-        group_users = DBSession.query(GroupUser).filter(GroupUser.user_id == user.id).all()
-        groups = list(set([g.group for g in group_users]))
+        #group_users = DBSession.query(GroupUser).filter(GroupUser.user_id == user.id).all()
+        #groups = list(set([g.group for g in group_users]))
+        group={'id':0,'name':"test"}
+        groups=[group]
 
     elif user.role in (ATTENDEE,PARTICIPANT) and not (group):
-        raise ProfileError("Attendee {0} has no associated group. User must have a group record!".format(user_id))
+        group={'id':0,'name':"test"}
+        groups=[group]
+        #raise ProfileError("Attendee {0} has no associated group. User must have a group record!".format(user_id))
 
     print("title:{}".format(title))
 
@@ -673,10 +657,11 @@ def call_login_logout(app_entry=True,num_value=None):
 
     return make_response(jsonify({'user_id':user.id,'access_token':access_token,'refresh_token':refresh_token,
         'phone':user.phone,
-        'access_bitmask':user.access_bitmask,
-        'key':key,
+        #'access_bitmask':user.access_bitmask,
+        #'key':key,
         'role':user.role, 'first_name':user.first_name,
-        'groups':[to_dict(g) for g in groups],
+        #'groups':[to_dict(g) for g in groups],
+        'groups':groups,
         'username':user.username,
         'title':title}), 200)
 

@@ -112,16 +112,6 @@ def current_user_info():
 
     address = None
 
-    if user.role in (RESIDENT,MAINTENANCE_RESIDENT):
-        address = to_dict(buildings[0])
-
-        bgroup = DBSession.query(BuildingGroup).filter(BuildingGroup.building_id == buildings[0].id).first()
-        groups = [bgroup.group]
-    elif user.role == PROVIDER:
-        address = to_dict(Address.query.filter(Address.user_id==user.id).first())
-    else:
-       address = {'address':'Not a resident or service provider, no address'}
-
     if user.role & ADMINS == SUPER_ADMIN:
         groups = [g for g in DBSession.query(FunctionalGroup).all()]
     elif user.role & ADMINS == ACCOUNT_ADMIN:
@@ -130,26 +120,12 @@ def current_user_info():
 
     #app.logger.info("User {0}, Role: {1}, Buildings:{2}, Address: {3}".format(user.username,user.role,pprint.pformat(buildings),address))
 
-    b_g_mapping = DBSession.query(BuildingGroup).filter(
-        BuildingGroup.group_id.in_([x.id for x in groups])).filter(
-        BuildingGroup.building_id.in_([x.id for x in buildings])).all()
-    bgout = []
-    for bg in b_g_mapping:
-        bgout.append(to_dict(bg))
-        if 'building' in bgout[-1]:
-            del bgout[-1]['building']
-        if 'group' in bgout[-1]:
-            del bgout[-1]['group']
-    
     return make_response(jsonify({'user_id':user.id,'role':user.role,
         'phone':user.phone,
-        'access_bitmask':user.access_bitmask,
         'first_name':user.first_name, 'last_name': user.last_name, 
         'email':user.email,'address':address,'apartment':user.apartment,
         'timezone':timezone if timezone != pytz.UTC else None,
-        'groups':[to_dict(g) for g in groups],
-        'buildings':[to_dict(b) for b in buildings],
-        'building_group_mapping':bgout,
+        'groups':[],
         'username':user.username,
         }),200)
 
