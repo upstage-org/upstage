@@ -59,10 +59,20 @@ def get_license(**kwargs):
 
 
 def access(path):
+    logging.info(f"Attempt to access license: {path}")
     lic = get_license(access_path=path)
     if lic:
         if lic.expires_on > datetime.utcnow():
+            logging.info(f"License is valid: {lic.id}")
             return os.path.abspath(lic.asset.file_location)
+        else:
+            logging.info(f"License has expired:  {lic.id}")
+            try:
+                db.session.delete(lic)
+                db.session.commit()
+                logging.info(f"License has been removed: {lic.id}")
+            except Exception as e:
+                logging.warning(f"Failed to remove expired license {lic.id}: {e}")
     return None
 
 
