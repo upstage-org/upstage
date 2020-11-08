@@ -64,3 +64,21 @@ def access(path):
         if lic.expires_on > datetime.utcnow():
             return os.path.abspath(lic.asset.file_location)
     return None
+
+
+def revoke_license(**kwargs):
+    lic = get_license(**kwargs)
+    if lic:
+        logging.info(f"Revoking license: {lic}")
+        try:
+            db.session.delete(lic)
+            db.session.commit()
+            logging.info(f"{lic} revoked")
+            return True
+        except Exception as e:
+            logging.error(f"Error revoking {lic}: {e}")
+            return False
+    else:
+        logging.warn(f"Refusing to attempt to revoke non-existent license: {kwargs}")
+        return False
+

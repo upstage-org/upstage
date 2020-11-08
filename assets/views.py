@@ -2,7 +2,7 @@ import logging
 
 from flask import Flask, Blueprint, jsonify, request, url_for, send_file
 
-from .system import create_asset, get_asset, create_license, save_file, access
+from .system import create_asset, get_asset, create_license, save_file, access, revoke_license
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
 licenses = Blueprint("licenses", __name__, url_prefix="/assets/<int:asset_id>/licenses")
@@ -81,6 +81,14 @@ def licenses_create(asset_id):
             return jsonify(e), 400
     else:
         return "Request must be in JSON format", 400
+
+
+@licenses.route("/<int:id>", methods=["DELETE"])
+def licenses_revoke(asset_id, id):
+    if revoke_license(id=id):
+        return f"License revoked: {id}", 200
+    else:
+        return f"Failed to revoke: {id}", 500
 
 
 app = Flask(__name__)
