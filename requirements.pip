@@ -8,7 +8,7 @@ flask-talisman
 gevent
 paho-mqtt
 pillow
-psycopg2
+psycopg2-binary
 pyotp
 qrcode
 requests

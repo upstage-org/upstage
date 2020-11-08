@@ -1,0 +1,22 @@
+[Unit]
+Description=event_resource_handler uWSGI Dev
+After=syslog.target
+
+[Service]
+LimitNOFILE=100000
+User=upstage
+Group=upstage
+ExecStart=/bin/sh -c "exec /usr/local/bin/uwsgi --ini /home/upstage/mobilise/system/event_resource_handler.ini"
+# Requires systemd version 211 or newer
+RuntimeDirectory=uwsgi_socket
+Restart=always
+KillSignal=SIGQUIT
+Type=notify
+#StandardError=syslog
+NotifyAccess=all
+#StandardOutput=append:/var/log/uwsgi/event_resource_handler.log
+##StandardError=append:/var/log/uwsgi/event_resource_handler.error
+
+[Install]
+WantedBy=multi-user.target
+
