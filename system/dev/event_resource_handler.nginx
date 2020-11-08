@@ -4,7 +4,7 @@ limit_req_zone $binary_remote_addr zone=limittwo:10m rate=5r/s;
 server {
         server_name 159.89.19.111;
         listen 80;
-        rewrite ^ https://159.89.19.111$request_uri? permanent;
+#        rewrite ^ https://159.89.19.111$request_uri? permanent;
 #}
 #
 #server {
@@ -47,7 +47,7 @@ server {
 
         #try_files $uri $uri/ https://some_other_url.com;
 
-       location /portal {
+       location /dashboard {
             limit_req zone=limitone burst=20 nodelay;
             auth_basic           "Enter password.";
             auth_basic_user_file /etc/nginx/htpasswd;
@@ -56,7 +56,7 @@ server {
             expires off;
         }
 
-        location /mobilise {
+        location /V2.0 {
             limit_req zone=limitone burst=20 nodelay;
             uwsgi_pass unix:///home/upstage/uwsgi_sockets/event_resource_handler.socket;
             uwsgi_read_timeout 1800s;
