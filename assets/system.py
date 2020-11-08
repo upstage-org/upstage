@@ -91,4 +91,3 @@ def revoke_license(**kwargs):
     else:
         logging.warn(f"Refusing to attempt to revoke non-existent license: {kwargs}")
         return False
-
