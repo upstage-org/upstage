@@ -2,7 +2,7 @@ import os
 import logging
 
 from .views import app
-from .models import db
+from .data import db
 
 
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(

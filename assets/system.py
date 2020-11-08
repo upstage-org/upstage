@@ -7,7 +7,7 @@ from secrets import token_urlsafe
 from flask import current_app
 from werkzeug.utils import secure_filename
 
-from .models import db, Asset, AssetLicense
+from .data import db, Asset, AssetLicense
 
 
 def save_file(file):

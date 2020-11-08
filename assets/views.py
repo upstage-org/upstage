@@ -2,7 +2,6 @@ import logging
 
 from flask import Flask, Blueprint, jsonify, request, url_for, send_file
 
-from .models import Asset
 from .system import create_asset, get_asset, create_license, save_file, access
 
 assets = Blueprint("assets", __name__, url_prefix="/assets")
