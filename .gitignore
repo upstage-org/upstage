@@ -6,3 +6,4 @@ __pycache__/
 .virtualenv/
 *.log
 .idea/
+uploads/
