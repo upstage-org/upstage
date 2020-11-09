@@ -2,17 +2,15 @@ import logging
 
 from flask import Flask, Blueprint, jsonify, request, url_for
 
-from ..system import get_asset, create_license, revoke_license
+from ..system import one_asset, create_license, revoke_license
 
 
-blueprint = Blueprint(
-    "licenses", __name__, url_prefix="/<int:asset_id>/licenses"
-)
+blueprint = Blueprint("licenses", __name__, url_prefix="/<int:asset_id>/licenses")
 
 
 @blueprint.before_request
 def before_licenses():
-    asset = get_asset(id=request.view_args["asset_id"])
+    asset = one_asset(id=request.view_args["asset_id"])
     if not asset:
         return f"Asset with ID: {request.view_args['asset_id']} does not exist", 404
 
@@ -29,7 +27,7 @@ def licenses_create(asset_id):
                         "id": new_license.id,
                         "expires_on": new_license.expires_on,
                         "access_path": url_for(
-                            "assets.access_asset", path=new_license.access_path
+                            "assets.asset_access", path=new_license.access_path
                         ),
                     }
                 ),

@@ -35,8 +35,42 @@ def create_asset(**kwargs):
     return new_asset
 
 
-def get_asset(**kwargs):
-    return Asset.query.filter_by(**kwargs).first()
+def one_asset(**kwargs): return Asset.query.filter_by(**kwargs).first()
+
+
+def all_assets(): return Asset.query.all()
+
+
+def update_asset(id, **kwargs):
+    for k in kwargs.keys():
+        if k not in ["name", "description", "file_location"]:
+            del kwargs[k]
+    logging.info(f"Updating asset: {kwargs}")
+    try:
+        Asset.query.filter_by(id=id).update(kwargs)
+        db.session.commit()
+        logging.info(f"Asset updated: {id}")
+        return Asset.query.filter_by(id=id).first()
+    except Exception as e:
+        logging.error(f"Failed to update asset {id}: {e}")
+        raise e
+
+
+def remove_asset(**kwargs):
+    asset = one_asset(**kwargs)
+    if asset:
+        logging.info(f"Removing asset: {asset}")
+        try:
+            db.session.delete(asset)
+            db.session.commit()
+            logging.info(f"{asset} removed")
+            return True
+        except Exception as e:
+            logging.error(f"Error removing {asset}: {e}")
+            return False
+    else:
+        logging.warn(f"Refusing to attempt to remove non-existent asset: {kwargs}")
+        return False
 
 
 def create_license(**kwargs):
