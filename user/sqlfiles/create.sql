@@ -36,20 +36,6 @@ CREATE TABLE user_portal_config (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE nonuser_inquiry (
-        id SERIAL NOT NULL,
-        phone_number TEXT NOT NULL DEFAULT '',
-        access_code TEXT NOT NULL DEFAULT '',
-        verified BOOLEAN NOT NULL DEFAULT false,
-        created_on timestamp without time zone default (now() at time zone 'utc'),
-        first_name TEXT not null default '',
-        last_name TEXT not null default '',
-        email TEXT not null default '',
-        full_address TEXT not null default '',
-        found_match TEXT default null,
-        PRIMARY KEY (id)
-);
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CREATE TABLE admin_one_time_totp_qr_url (
         id SERIAL NOT NULL,
         user_id INTEGER unique not null default 0,

@@ -6,31 +6,6 @@ CREATE TABLE jwt_no_list (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-CREATE TABLE user_one_time_code (
-        id SERIAL NOT NULL,
-        user_id INTEGER unique NOT NULL DEFAULT 0,
-        code TEXT not null default '',
-        reason INTEGER NOT NULL DEFAULT 0,
-        pending_google_login_id INTEGER NOT NULL DEFAULT 0,
-        pending_facebook_login_id INTEGER NOT NULL DEFAULT 0,
-        pending_apple_login_id INTEGER NOT NULL DEFAULT 0,
-        FOREIGN KEY(user_id) REFERENCES upstage_user (id),
-        PRIMARY KEY (id)
-);
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE user_one_time_code_history (
-        id SERIAL NOT NULL,
-        user_id INTEGER NOT NULL DEFAULT 0,
-        code TEXT not null default '',
-        reason INTEGER NOT NULL DEFAULT 0,
-        pending_google_login_id INTEGER NOT NULL DEFAULT 0,
-        pending_facebook_login_id INTEGER NOT NULL DEFAULT 0,
-        pending_apple_login_id INTEGER NOT NULL DEFAULT 0,
-        response_time timestamp without time zone default (now() at time zone 'utc'),
-        PRIMARY KEY (id)
-);
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 CREATE TABLE user_session (
         id SERIAL NOT NULL,
         user_id INTEGER not null default 0,
