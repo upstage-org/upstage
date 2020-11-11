@@ -14,19 +14,19 @@ from config.project_globals import app,api
 from config.settings import ENV_TYPE,URL_PREFIX
 
 # Requires a symlink from templates/404.html to local templates/app/404.html
-APP_NAME='user'
-user = Blueprint(APP_NAME, __name__, url_prefix='/{0}{1}'.format(URL_PREFIX,APP_NAME),
+APP_NAME='group'
+group = Blueprint(APP_NAME, __name__, url_prefix='/{0}{1}'.format(URL_PREFIX,APP_NAME),
     template_folder='templates')
 
-@user.app_errorhandler(403)
+@group.app_errorhandler(403)
 def handle_403(err):
     return render_template('{0}/403.html'.format(APP_NAME)), 403
 
-@user.app_errorhandler(404)
+@group.app_errorhandler(404)
 def handle_404(err):
     return render_template('{0}/404.html'.format(APP_NAME)), 404
 
-@user.app_errorhandler(500)
+@group.app_errorhandler(500)
 def handle_500(err):
     return render_template('{0}/500.html'.format(APP_NAME)), 500
 
