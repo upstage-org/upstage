@@ -45,13 +45,24 @@ server {
         sendfile on;
         send_timeout 300s;
 
-        #try_files $uri $uri/ https://some_other_url.com;
+        location / {
+          try_files $uri $uri/ /index.html;
+        }
 
        location /V2.0/dashboard {
             limit_req zone=limitone burst=20 nodelay;
-            auth_basic           "Enter password.";
-            auth_basic_user_file /etc/nginx/htpasswd;
-            alias /home/upstage/mobilise/ui/dashboard/public;
+            #auth_basic           "Enter password.";
+            #auth_basic_user_file /etc/nginx/htpasswd;
+            alias /home/upstage/mobilise/ui/dashboard/dist/;
+            add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
+            expires off;
+        }
+
+       location /V2.0/static {
+            limit_req zone=limitone burst=20 nodelay;
+            #auth_basic           "Enter password.";
+            #auth_basic_user_file /etc/nginx/htpasswd;
+            alias /home/upstage/mobilise/ui/static;
             add_header 'Cache-Control' 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0';
             expires off;
         }
