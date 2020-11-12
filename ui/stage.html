@@ -8,6 +8,7 @@
   <title>Stage</title>
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/stage.css">
+  <link rel="stylesheet" href="css/fontawesome.all.css">
   <script type="text/javascript" src="lib/anime.min.js"></script>
 </head>
 
@@ -19,38 +20,54 @@
            
             <div class="tools">
               <h6>Tools</h6>
-              <p>Avatar</p>
-              <p>Props</p>
-              <p>Scene</p>
-              <p>Draw</p>
-              <p>Text</p>
+              <span>Avatar</span>
+              <span>Props</span>
+              <span>Scene</span>
+              <span>Draw</span>
+              <span>Text</span>
             </div>
 
             <div class="layer">
+              <h6>Layers</h6>
               <div class="optionlayer">
-                <h6>Layers</h6>
-                <p>Opacity</p>
-                <p>Mode</p>
+                <span class="opacity">
+                	<form action="">
+                    <label for="opacity">Opacity:</label>
+                    <input type="text" id="opacity" name="opacity">
+                  </form>
+                </span>
+                <span class="mode">Layer mode <i class="fa fa-caret-down"></i></span>
                 <div class="alignoption">
-                  <p>H</p>
-                  <p>Up</p>
-                  <p>Do</p>
-                  <p>Del</p>
+                  <i class="far fa-eye-slash" title="Hide/Show"></i>
+                  <i class="fas fa-chevron-circle-up" title="Up"></i>
+                  <i class="fas fa-chevron-circle-down" title="Down"></i>
+                  <i class="fas fa-unlink" title="Drop"></i>
                 </div>
                
-            
               </div>
            
             </div>
           </nav>
 
-      <div id="chat">
-        <img src="upstage.png" alt="" class="img-adapt">
-       
-        <p>statistics</p>
-        <p>statement</p>
-        <p>live</p>
-        <p>Chat</p>
+      <div id="chatlayer">
+      	
+        <div class="header">
+          <div class="info">
+            <p class="show">Name Show</p>
+            <p class="live">LIVE!</p>
+          </div>
+          <div class="logo">
+          	<img src="upstage.png" alt="" class="img-adapt">
+          	<p class="statistics">18 <i class="fa fa-desktop"></i> 5</p>
+          </div>
+        </div>
+        
+        <div class="chat">
+          <p>Chat</p>
+          <p>Chat Chat</p>
+          <p>Chat</p>
+        </div>
+        
       </div>
   </main>
   
