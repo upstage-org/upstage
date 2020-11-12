@@ -1,0 +1,174 @@
+body {
+  background-color: #909090;
+  overflow: hidden;
+}
+
+.img-adapt {
+  width: 100%;
+}
+
+main {
+  background-color: #000;
+  width: 100vw;
+  height: 100vh;
+  text-align: left;
+}
+
+#stage {
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  background-color: #000;
+}
+
+#menu {
+  position: absolute;
+  top: 5px;
+  left: 0;
+  margin: 5px;
+  width: calc(10vw - 10px);
+  height: calc(100vh - 20px);
+  min-width: 120px;
+  color: #030303;
+  background-color: #808080;
+  text-align: left;
+}
+
+nav p {
+  height: 2.74em;
+  padding-left: 0.3em;
+}
+
+nav h6 {
+  font-weight: bold;
+}
+
+.tools h6 {
+  padding: 0.1em;
+  margin: 0.2em;
+  background: #d4d4d4;
+}
+
+.tools span {
+  display: block;
+  margin: 1em 0.7em;
+  padding: 0.1em;
+  background: #fafafa;
+  border-radius: 3px;
+}
+
+.layer .alignoption {
+  display: flex;
+  bottom: 0;
+  /*align-item: center;
+  justify-content: center;*/
+  flex-wrap: nowrap;
+  color: #ff0;
+}
+
+.layer h6 {
+  margin: 0.2em;
+  padding: 0.1em;
+  background: #d4d4d4;
+}
+
+.alignoption i {
+  margin: 0.2em;
+  padding: 0.2em;
+}
+
+.optionlayer {
+  position: absolute;
+  bottom: 0;
+}
+
+.optionlayer span {
+  display: block;
+  margin: 0.2em;
+  background: #808080;
+}
+
+.opacity {
+  display: inline;
+}
+
+#opacity {
+  width: 40px;
+}
+
+#chatlayer {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 10px 5px;
+  padding: 0;
+  width: 20%;
+  height: calc(100vh - 22px);
+  min-width: 250px;
+  color: #f0f0f0;
+  background-color: #363636;
+  text-align: left;
+  border: 1px solid #808080;
+}
+
+.header {
+  position: relative;
+  top: 0;
+  padding: 0.2em;
+  height: 55px;
+  background: #808080;
+}
+
+.info {
+  float: left;
+  width: 40%;
+  font-size: 1em;
+  background: #808080;
+}
+
+.show {
+  margin: 0.2em;
+  padding: 0.1em;
+  color: #010101;
+  background: #fafafa;
+}
+
+.live {
+  margin: 0.4em 0.2em;
+  padding: 0.1em;
+  width: 50px;
+  background: #ef2929;
+}
+
+.logo {
+  float: right;
+  width: 60%;
+  margin-top: 0.1em;
+}
+
+.statistics {
+  position: absolute;
+  height: 20px;
+  top: 1.8em;
+  right: 60px;
+  color: #000;
+}
+
+.fa-desktop {
+  font-size: 0.7em;
+}
+
+.chat {
+  position: relative;
+  text-align: left;
+}
+
+.chat p {
+  margin: 0.4em;
+  padding: 0.4em;
+  width: -moz-fit-content;
+  width: fit-content;
+  color: #010101;
+  background: #e2e2e2;
+  border-radius: 15px;
+}

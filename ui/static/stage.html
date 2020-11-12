@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage</title>
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/stage.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+  <script type="text/javascript" src="lib/anime.min.js"></script>
+</head>
+
+<body>
+
+  <main>
+      <div id="stage"></div>
+      <nav id="menu">
+           
+            <div class="tools">
+              <h6>Tools</h6>
+              <span>Avatar</span>
+              <span>Props</span>
+              <span>Scene</span>
+              <span>Draw</span>
+              <span>Text</span>
+            </div>
+
+            <div class="layer">
+              <h6>Layers</h6>
+              <div class="optionlayer">
+                <span class="opacity">
+                  <form action="">
+                    <label for="opacity">Opacity:</label>
+                    <input type="text" id="opacity" name="opacity">
+                  </form>
+                </span>
+                <span class="mode">Layer mode <i class="fa fa-caret-down"></i></span>
+                <div class="alignoption">
+                  <i class="far fa-eye-slash" title="Hide/Show"></i>
+                  <i class="fas fa-chevron-circle-up" title="Up"></i>
+                  <i class="fas fa-chevron-circle-down" title="Down"></i>
+                  <i class="fas fa-unlink" title="Drop"></i>
+                </div>
+               
+              </div>
+           
+            </div>
+          </nav>
+
+      <div id="chatlayer">
+        
+        <div class="header">
+          <div class="info">
+            <p class="show">Name Show</p>
+            <p class="live">LIVE!</p>
+          </div>
+          <div class="logo">
+            <img src="upstage.png" alt="" class="img-adapt">
+            <p class="statistics">18 <i class="fa fa-desktop"></i> 5</p>
+          </div>
+        </div>
+        
+        <div class="chat">
+          <p>Chat</p>
+          <p>Chat Chat</p>
+          <p>Chat</p>
+        </div>
+        
+      </div>
+  </main>
+  
+  <footer>
+  </footer>
+
+</body>
+
+</html>
