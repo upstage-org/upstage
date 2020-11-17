@@ -7,6 +7,7 @@ import string
 import pprint
 import traceback
 from datetime import datetime
+
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir,'..'))
 if projdir not in sys.path:
@@ -15,7 +16,7 @@ if projdir not in sys.path:
 
 from config.project_globals import db,Base,metadata,app,api,DBSession,get_scoped_session
 
-from flask import  current_app, request, redirect, render_template
+from flask import  request, redirect, render_template
 
 from sqlalchemy import (BigInteger, Boolean, Column, Date, DateTime,
     Float, ForeignKey, Index, Integer, Numeric, SmallInteger,

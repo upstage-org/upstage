@@ -1,8 +1,14 @@
+# -*- coding: iso8859-15 -*-
 from datetime import datetime
 import os
 import sys
 
-from flask import current_app
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
 from sqlalchemy.orm import relationship

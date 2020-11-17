@@ -131,6 +131,7 @@ if __name__ == "__main__":
     client_id = str(uuid.uuid4())
     topic = "event"
 
+    import pdb;pdb.set_trace()
     if sys.argv[1] == 'publish':
         x=MQTTClient(client_id,topic)
         x.client_start()

@@ -4,11 +4,9 @@ import os
 import time
 from secrets import token_urlsafe
 
-from flask import current_app
 from werkzeug.utils import secure_filename
-
-from .data import db, Asset, AssetLicense
-
+from config.project_globals import ScopedSession
+from asset.models import Asset, AssetLicense
 
 def save_file(file):
     filename = secure_filename(f"{time.time()}_{file.filename}")
@@ -24,14 +22,14 @@ def save_file(file):
 def create_asset(**kwargs):
     logging.info(f"Attempting to create asset: {kwargs.items()}")
     new_asset = Asset(**kwargs)
-    try:
-        db.session.add(new_asset)
-        db.session.commit()
-        logging.info(f"Asset created: {new_asset.id}")
-    except Exception as e:
-        logging.error(f"Failed to create asset {e}")
-        db.session.rollback()
-        new_asset = None
+    with ScopedSession as local_db_session:
+        try:
+            local_db_session.add(new_asset)
+            logging.info(f"Asset created: {new_asset.id}")
+        except Exception as e:
+            logging.error(f"Failed to create asset {e}")
+            local_db_session.rollback()
+            new_asset = None
     return new_asset
 
 

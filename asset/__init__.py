@@ -1,15 +1,23 @@
+# -*- coding: iso8859-15 -*-
+from datetime import datetime
 import os
-import logging
+import sys
 
-from .views import app
-from .data import db
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
 
+from config.project_globals import initialize_miroservice
 
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv(
-    "DB_URI", "postgresql://admin:password@localhost:5432/upstage"
-)
+import os
+
+from asset.views import app
+
 app.config["UPLOAD_DIR"] = os.path.abspath(os.getenv("UPLOAD_DIR", "./uploads"))
 if not os.path.isdir(app.config["UPLOAD_DIR"]):
-    logging.info(f"{app.config['UPLOAD_DIR']} doesn't exist.  Creating...")
+    app.logger.info(f"{app.config['UPLOAD_DIR']} doesn't exist.  Creating...")
     os.makedirs(app.config["UPLOAD_DIR"])
-db.init_app(app)
+
+initialize_microservice(app)
