@@ -126,7 +126,6 @@ def initialize_microservice(app):
     
     # This is only in effect when you call jsonify()
     app.json_encoder = CustomJSONEncoder
-
     
     db = SQLAlchemy(app)
     db.init_app(app)

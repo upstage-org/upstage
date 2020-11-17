@@ -1,14 +1,21 @@
-import logging
+# -*- coding: iso8859-15 -*-
+import os
+import sys
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
 
 from flask import Flask, Blueprint, jsonify, request, url_for, send_file
 
-from ..system import create_asset, one_asset, all_assets, save_file, access, update_asset, remove_asset
-
+from views import app
+from asset.system import create_asset, one_asset, all_assets, save_file, access, update_asset, remove_asset
 
 blueprint = Blueprint("assets", __name__)
 
-
-def to_dict(asset):
+def marshall(asset):
     return {
         "id": asset.id,
         "name": asset.name,
@@ -45,7 +52,7 @@ def assets_create():
                 200,
             )
         except Exception as e:
-            logging.error(e)
+            app.logger.error(e)
             return "Internal error", 500
     else:
         return "Name or description not specified", 400
@@ -56,7 +63,7 @@ def assets_list():
     assets = all_assets()
     output = []
     for a in assets:
-        output.append(to_dict(a))
+        output.append(marshall(a))
     return jsonify(output)
 
 
@@ -64,7 +71,7 @@ def assets_list():
 def asset_get(id):
     asset = one_asset(id=id)
     if asset:
-        return jsonify(to_dict(asset)), 200
+        return jsonify(marshall(asset)), 200
     else:
         return f"No asset with ID: {id}", 404
 
@@ -73,7 +80,7 @@ def asset_get(id):
 def asset_update(id):
     asset = one_asset(id=id)
     if asset:
-        data = request.form.to_dict()
+        data = request.form.marshall()
         if "file" in request.files:
             req_file = request.files["file"]
             if req_file.filename == "":
@@ -84,9 +91,9 @@ def asset_update(id):
         if len(data.keys()):
             try:
                 asset = update_asset(id, **data)
-                return jsonify(to_dict(asset))
+                return jsonify(marshall(asset))
             except Exception as e:
-                logging.error(f"Failed to update asset {id} with {data}: {e}")
+                app.logger.error(f"Failed to update asset {id} with {data}: {e}")
                 return "Failed to update asset", 500
         else:
             return "No updatable attributes specified", 400
