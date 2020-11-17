@@ -1,3 +1,4 @@
+arrow
 flask
 flask-caching
 flask-cors
@@ -14,3 +15,4 @@ qrcode
 requests
 sqlalchemy
 uwsgi
+websockets
