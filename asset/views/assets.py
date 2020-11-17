@@ -3,14 +3,14 @@ import os
 import sys
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir,'..'))
+projdir = os.path.abspath(os.path.join(appdir,'../..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
 from flask import Flask, Blueprint, jsonify, request, url_for, send_file
 
-from views import app
+from asset.views import app
 from asset.system import create_asset, one_asset, all_assets, save_file, access, update_asset, remove_asset
 
 blueprint = Blueprint("assets", __name__)
