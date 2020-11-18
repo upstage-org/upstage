@@ -1,6 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import store from "@/store/store";
+// import store from "@/store/store";
 
 Vue.use(VueRouter);
 
@@ -37,14 +37,14 @@ const router = new VueRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const loggedIn = store.getters["auth/loggedIn"];
+// router.beforeEach((to, from, next) => {
+//   const loggedIn = store.getters["auth/loggedIn"];
 
-  if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
-    next("/login");
-  }
-  next();
-  document.title = to.name || "Stage";
-});
+//   if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
+//     next("/login");
+//   }
+//   next();
+//   document.title = to.name || "Stage";
+// });
 
 export default router;

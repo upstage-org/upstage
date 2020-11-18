@@ -9,7 +9,14 @@
           <v-list-item>live</v-list-item>
           <v-list-item>avatar</v-list-item>
           <v-list-item>scene</v-list-item>
-          <v-select :items="items" label="Solo field" dense solo></v-select>
+          <v-select
+            v-show="client.connected"
+            :items="items"
+            label="Solo field"
+            dense
+            solo
+            v-on:input="doSubscribe"
+          ></v-select>
         </v-list>
       </v-col>
       <v-col class="stage-board" cols="7"> </v-col>
@@ -22,9 +29,9 @@
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title v-html="chat.title"></v-list-item-title>
+                <v-list-item-title v-html="chat.user"></v-list-item-title>
                 <v-list-item-subtitle
-                  v-html="chat.subtitle"
+                  v-html="chat.message"
                 ></v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
@@ -35,13 +42,12 @@
           label="Enter Message"
           append-outer-icon="mdi-emoticon-outline"
         ></v-text-field>
-        <v-btn tile color="success" @click="addShape">
+        <v-btn tile color="success" @click="doPublish">
           <v-icon left>
             mdi-send
           </v-icon>
           Send
         </v-btn>
-        <v-btn @click="createConnection">Connect</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -49,6 +55,7 @@
 
 <script>
 import { shapeCommand } from "@/utils/constants";
+import { isJson } from "@/utils/common";
 import mqtt from "mqtt";
 export default {
   data: () => ({
@@ -58,24 +65,22 @@ export default {
     items: ["Stage Test"],
     chats: [],
     connection: {
-      host: "broker.emqx.io",
-      port: 8083,
+      host: "128.199.69.170",
+      port: 9001,
       endpoint: "/mqtt",
       clean: true, // Reserved session
       connectTimeout: 4000, // Time out
       reconnectPeriod: 4000, // Reconnection interval
       // Certification Information
-      clientId: "mqttjs_3be2c321",
-      username: "emqx_test",
-      password: "emqx_test",
+      clientId: "koha_testabc",
     },
     subscription: {
-      topic: "topic/mqttx",
-      qos: 0,
+      topic: "topic/commands",
+      qos: 1,
     },
     publish: {
-      topic: "topic/command",
-      qos: 2,
+      topic: "topic/commands",
+      qos: 1,
       payload: '{ "msg": "Hello, I am browser." }',
     },
     receiveNews: "",
@@ -91,6 +96,7 @@ export default {
   }),
   created() {
     this.$store.dispatch("user/fetchCurrent");
+    this.createConnection();
   },
   methods: {
     addShape() {
@@ -111,19 +117,17 @@ export default {
     },
     // Create connection
     createConnection() {
-      // Connect string, and specify the connection method used through protocol
-      // ws unencrypted WebSocket connection
-      // wss encrypted WebSocket connection
-      // mqtt unencrypted TCP connection
-      // mqtts encrypted TCP connection
-      // wxs WeChat mini app connection
-      // alis Alipay mini app connection
+      // 连接字符串, 通过协议指定使用的连接方式
+      // ws 未加密 WebSocket 连接
+      // wss 加密 WebSocket 连接
+      // mqtt 未加密 TCP 连接
+      // mqtts 加密 TCP 连接
+      // wxs 微信小程序连接
+      // alis 支付宝小程序连接
       const { host, port, endpoint, ...options } = this.connection;
-      const connectUrl = `mqtt://${host}:${port}${endpoint}`;
-
+      const connectUrl = `ws://${host}:${port}${endpoint}`;
       try {
         this.client = mqtt.connect(connectUrl, options);
-        console.log(connectUrl);
       } catch (error) {
         console.log("mqtt.connect error", error);
       }
@@ -134,10 +138,20 @@ export default {
         console.log("Connection failed", error);
       });
       this.client.on("message", (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message);
-        console.log(`Received message ${message} from topic ${topic}`);
+        const arr = new TextDecoder().decode(new Uint8Array(message));
+        const convertedMessage = (isJson(arr) && JSON.parse(arr)) || arr;
+        const modelMessage = {};
+        if (typeof convertedMessage === "object") {
+          modelMessage.user = convertedMessage.user;
+          modelMessage.message = convertedMessage.message;
+        } else {
+          modelMessage.user = "Anonymous";
+          modelMessage.message = convertedMessage;
+        }
+        this.chats.push(modelMessage);
       });
     },
+    // 订阅主题
     doSubscribe() {
       const { topic, qos } = this.subscription;
       this.client.subscribe(topic, { qos }, (error, res) => {
@@ -149,6 +163,59 @@ export default {
         console.log("Subscribe to topics res", res);
       });
     },
+    // 取消订阅
+    doUnSubscribe() {
+      const { topic } = this.subscription;
+      this.client.unsubscribe(topic, (error) => {
+        if (error) {
+          console.log("Unsubscribe error", error);
+        }
+      });
+    },
+    // 发送消息
+    doPublish() {
+      const { topic, qos } = this.publish;
+      const messageModel = {
+        user: "Khoa",
+        message: this.message,
+      };
+      const converted = JSON.stringify(messageModel);
+      this.client.publish(
+        topic,
+        converted,
+        {
+          qos,
+          retain: true,
+          properties: {
+            userProperties: "Anh Khoa",
+          },
+        },
+        (error) => {
+          console.log(topic, this.message);
+          if (error) {
+            console.log("Publish error", error);
+          }
+        }
+      );
+    },
+    // 断开连接
+    destroyConnection() {
+      if (this.client.connected) {
+        try {
+          this.client.end();
+          this.client = {
+            connected: false,
+          };
+          console.log("Successfully disconnected!");
+        } catch (error) {
+          console.log("Disconnect failed", error.toString());
+        }
+      }
+    },
+  },
+
+  beforeDestroy() {
+    this.destroyConnection();
   },
 };
 </script>
