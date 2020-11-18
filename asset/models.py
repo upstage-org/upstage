@@ -13,7 +13,10 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
 from sqlalchemy.orm import relationship
 
-from config.project_globals import db,Base,metadata,app,api,DBSession
+from config.project_globals import Base,metadata,DBSession
+from user.models import User
+
+from asset.views import app,db
 
 class AssetType(Base,db.Model):
     '''

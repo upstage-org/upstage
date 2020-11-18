@@ -38,6 +38,19 @@ def create_asset(**kwargs):
         new_asset = None
     return new_asset
 
+
+def create_asset_type(**kwargs):
+    app.logger.info(f"Attempting to create asset type: {kwargs.items()}")
+    try:
+        with ScopedSession as local_db_session:
+            new_asset_type = AssetType(**kwargs)
+            local_db_session.add(new_asset_type)
+            local_db_session.flush()
+            app.logger.info(f"Asset type created: {new_asset.id}")
+    except:
+        new_asset_type = None
+    return new_asset_type
+
 def one_asset(**kwargs): return Asset.query.filter_by(**kwargs).first()
 
 

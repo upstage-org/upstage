@@ -54,6 +54,9 @@ engine = create_engine(SQLALCHEMY_DATABASE_URI,
 
 DBSession = scoped_session(sessionmaker(autocommit=True,autoflush=True,bind=engine))
 
+Base = declarative_base()
+metadata = Base.metadata
+    
 class ScopedSession(object):
     '''
     Use this for local session scope.
@@ -116,9 +119,6 @@ def initialize_microservice(app):
     
     db = SQLAlchemy(app)
     db.init_app(app)
-    
-    Base = declarative_base()
-    metadata = Base.metadata
     
     load_regex_converter(app)
     
