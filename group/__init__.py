@@ -1,32 +1,19 @@
 # -*- coding: iso8859-15 -*-
-import pprint
-import copy
-import os,sys
+import os
+import sys
+
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir,'..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from flask import Blueprint,render_template,request
-from flask import request, current_app
-from config.project_globals import app,api
-from config.settings import ENV_TYPE,URL_PREFIX
+from config.project_globals import initialize_microservice
+from flask import Flask, Blueprint
 
-# Requires a symlink from templates/404.html to local templates/app/404.html
-APP_NAME='group'
-group = Blueprint(APP_NAME, __name__, url_prefix='/{0}{1}'.format(URL_PREFIX,APP_NAME),
-    template_folder='templates')
-
-@group.app_errorhandler(403)
-def handle_403(err):
-    return render_template('{0}/403.html'.format(APP_NAME)), 403
-
-@group.app_errorhandler(404)
-def handle_404(err):
-    return render_template('{0}/404.html'.format(APP_NAME)), 404
-
-@group.app_errorhandler(500)
-def handle_500(err):
-    return render_template('{0}/500.html'.format(APP_NAME)), 500
+# Create and init app. Now you can use app.logger and such. Woo!
+app = Flask(__name__)
+db = initialize_microservice(app)
+    
+blueprint = Blueprint("group", __name__)
 

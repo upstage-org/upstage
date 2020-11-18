@@ -11,9 +11,7 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import db,Base,metadata,app,api,DBSession
-
-from flask import  current_app, request, redirect, render_template
+from flask import request, redirect, render_template
 
 from sqlalchemy import (BigInteger, Boolean, Column, Date, DateTime,
     Float, ForeignKey, Index, Integer, Numeric, SmallInteger,
@@ -23,14 +21,15 @@ from sqlalchemy.sql.expression import func, or_, not_, and_
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+from config.project_globals import Base,DBSession
+from user import app,db
+
 PLAYER = 1
 MAKER = 2
 UNLIMITED_MAKER = 4
 ADMIN = 8
 CREATOR = 16
 SUPER_ADMIN = 32
-
-ADMINS = ACCOUNT_ADMIN | SUPER_ADMIN
 
 ROLES = {
     PLAYER:'Player access to on-stage tools',

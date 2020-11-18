@@ -1,9 +1,17 @@
-import logging
+# -*- coding: iso8859-15 -*-
+import os
+import sys
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'../..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
 
 from flask import Flask, Blueprint, jsonify, request, url_for
 
-from ..system import one_asset, create_license, revoke_license
-
+from asset.views import app
+from asset.system import one_asset, create_license, revoke_license
 
 blueprint = Blueprint("licenses", __name__, url_prefix="/<int:asset_id>/licenses")
 
@@ -34,7 +42,7 @@ def licenses_create(asset_id):
                 200,
             )
         except Exception as e:
-            logging.error(e)
+            app.logger.error(e)
             return jsonify(e), 400
     else:
         return "Request must be in JSON format", 400

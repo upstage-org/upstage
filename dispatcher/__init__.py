@@ -1,7 +1,10 @@
-from werkzeug.middleware.dispatcher import DispatcherMiddleware
-from ui import app as frontend
-from asset import app as asset 
+# -*- coding: iso8859-15 -*-
+import os
+import sys
 
-application = DispatcherMiddleware(frontend, {
-    "/asset": asset
-})
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
