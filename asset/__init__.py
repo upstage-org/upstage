@@ -9,7 +9,7 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import initialize_miroservice
+from config.project_globals import initialize_microservice
 
 import os
 
@@ -20,4 +20,4 @@ if not os.path.isdir(app.config["UPLOAD_DIR"]):
     app.logger.info(f"{app.config['UPLOAD_DIR']} doesn't exist.  Creating...")
     os.makedirs(app.config["UPLOAD_DIR"])
 
-initialize_microservice(app)
+db = initialize_microservice(app)

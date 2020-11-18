@@ -13,7 +13,7 @@ from config.project_globals import initialize_microservice
 
 # Create and init app. Now you can use app.logger and such. Woo!
 app = Flask(__name__)
-initialize_microservice(app)
+db = initialize_microservice(app)
 
 from .assets import blueprint as assets
 from .licenses import blueprint as licenses

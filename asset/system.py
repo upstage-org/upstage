@@ -28,17 +28,15 @@ def save_file(file):
 
 def create_asset(**kwargs):
     app.logger.info(f"Attempting to create asset: {kwargs.items()}")
-    new_asset = Asset(**kwargs)
-    with ScopedSession as local_db_session:
-        try:
+    try:
+        with ScopedSession as local_db_session:
+            new_asset = Asset(**kwargs)
             local_db_session.add(new_asset)
+            local_db_session.flush()
             app.logger.info(f"Asset created: {new_asset.id}")
-        except Exception as e:
-            app.logger.error(f"Failed to create asset {e}")
-            local_db_session.rollback()
-            new_asset = None
+    except:
+        new_asset = None
     return new_asset
-
 
 def one_asset(**kwargs): return Asset.query.filter_by(**kwargs).first()
 
@@ -52,9 +50,9 @@ def update_asset(id, **kwargs):
             del kwargs[k]
     app.logger.info(f"Updating asset: {kwargs}")
     try:
-        Asset.query.filter_by(id=id).update(kwargs)
-        db.session.commit()
-        app.logger.info(f"Asset updated: {id}")
+        with ScopedSession as local_db_session:
+            local_db_session.query(Asset).filter_by(id=id).update(kwargs)
+            app.logger.info(f"Asset updated: {id}")
         return Asset.query.filter_by(id=id).first()
     except Exception as e:
         app.logger.error(f"Failed to update asset {id}: {e}")
@@ -66,12 +64,11 @@ def remove_asset(**kwargs):
     if asset:
         app.logger.info(f"Removing asset: {asset}")
         try:
-            db.session.delete(asset)
-            db.session.commit()
-            app.logger.info(f"{asset} removed")
+            with ScopedSession as local_db_session:
+                local_db_session.query(Asset).filter_by(id=id).delete()
+                app.logger.info(f"{asset} removed")
             return True
-        except Exception as e:
-            app.logger.error(f"Error removing {asset}: {e}")
+        except:
             return False
     else:
         app.logger.warn(f"Refusing to attempt to remove non-existent asset: {kwargs}")
@@ -83,19 +80,18 @@ def create_license(**kwargs):
     kwargs["access_path"] = token_urlsafe(16)
     new_license = AssetLicense(**kwargs)
     try:
-        db.session.add(new_license)
-        db.session.commit()
-        app.logger.info(f"License created: {new_license.id}")
+        with ScopedSession as local_db_session:
+            local_db_session.add(new_license)
+            local_db_session.flush()
+            app.logger.info(f"License created: {new_license.id}")
     except Exception as e:
         app.logger.error(f"Failed to create license {e}")
-        db.session.rollback()
         new_license = None
     return new_license
 
 
 def get_license(**kwargs):
     return AssetLicense.query.filter_by(**kwargs).first()
-
 
 def access(path):
     app.logger.info(f"Attempt to access license: {path}")
@@ -107,9 +103,9 @@ def access(path):
         else:
             app.logger.info(f"License has expired:  {lic.id}")
             try:
-                db.session.delete(lic)
-                db.session.commit()
-                app.logger.info(f"License has been removed: {lic.id}")
+                with ScopedSession as local_db_session:
+                    local_db_session.query(Asset).filter_by(id=lic.id).delete()
+                    app.logger.info(f"License has been removed: {lic.id}")
             except Exception as e:
                 app.logger.warning(f"Failed to remove expired license {lic.id}: {e}")
     return None
@@ -120,8 +116,8 @@ def revoke_license(**kwargs):
     if lic:
         app.logger.info(f"Revoking license: {lic}")
         try:
-            db.session.delete(lic)
-            db.session.commit()
+            with ScopedSession as local_db_session:
+                local_db_session.query(AssetLicense).filter_by(id=lic.id).delete()
             app.logger.info(f"{lic} revoked")
             return True
         except Exception as e:

@@ -38,19 +38,6 @@ from config.settings import (SQLALCHEMY_DATABASE_URI,
     JWT_REFRESH_TOKEN_DAYS)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-@app.errorhandler(500)
-def do500(e):
-    return render_template("global_templates/500.html"), 500
-
-@app.errorhandler(404)
-def do404(e):
-    return render_template("global_templates/404.html"), 404
-
-@app.errorhandler(403)
-def do403(e):
-    return render_template("global_templates/403.html"), 403
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class CustomJSONEncoder(JSONEncoder):
     def default(self, o):
         if isinstance(o, datetime.datetime) or isinstance(o,datetime.date):
@@ -177,3 +164,16 @@ def initialize_microservice(app):
         app.after_request(add_cors_headers)
         log_handler(app)
 
+    @app.errorhandler(500)
+    def do500(e):
+        return render_template("global_templates/500.html"), 500
+
+    @app.errorhandler(404)
+    def do404(e):
+        return render_template("global_templates/404.html"), 404
+
+    @app.errorhandler(403)
+    def do403(e):
+        return render_template("global_templates/403.html"), 403
+
+    return db
