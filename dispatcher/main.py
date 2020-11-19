@@ -15,7 +15,7 @@ from user.user_api import app as user
 from ui import app as frontend
 
 application = DispatcherMiddleware(frontend, {
-    "auth": auth,
+    "/V2.0/auth": auth,
     "asset": asset,
     "user": user,
     "ui": frontend,

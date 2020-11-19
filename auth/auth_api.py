@@ -149,7 +149,8 @@ def site_map():
     #return make_response(jsonify(pprint.pformat(app.url_map._rules[0].__dict__)), 201)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-BASE_URL='/{0}access_token/'.format(URL_PREFIX)
+#BASE_URL='/{0}access_token/'.format(URL_PREFIX)
+BASE_URL='/access_token/'
 
 # This is our portal login/logout endpoint.
 # It gets an additional TOTP code from Google Authenticator.
