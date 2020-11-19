@@ -69,7 +69,7 @@ server {
 
         location /V2.0 {
             limit_req zone=limitone burst=20 nodelay;
-            uwsgi_pass unix:///home/upstage/uwsgi_sockets/event_resource_handler.socket;
+            uwsgi_pass unix:///home/upstage/uwsgi_sockets/upstage.socket;
             uwsgi_read_timeout 1800s;
             uwsgi_send_timeout 900s;
             uwsgi_ignore_client_abort on;
