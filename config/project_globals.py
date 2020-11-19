@@ -191,4 +191,4 @@ def initialize_microservice(app):
         return render_template("global_templates/403.html"), 403
 
     print("app initialized")
-    return db,jwt
+    return db,jwt,api

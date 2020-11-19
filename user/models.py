@@ -22,7 +22,8 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from config.project_globals import Base,DBSession
-from user import app,db
+
+from user import db
 
 PLAYER = 1
 MAKER = 2

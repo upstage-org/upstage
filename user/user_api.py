@@ -18,22 +18,22 @@ if projdir not in sys.path:
 
 from flask import jsonify
 from flask_restx import Resource, Api, fields, marshal_with, reqparse, abort
-from flask import current_app, request, redirect, render_template, make_response
+from flask import request, redirect, render_template, make_response
 from sqlalchemy import func
 from auth.auth_api import jwt_required,get_jwt_identity
 
-from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession
 from config.settings import ENV_TYPE, URL_PREFIX
 
 from config.signals import add_signals
 
 from auth.fernet_crypto import encrypt,decrypt
 
+from user import app,api,db
 from user.models import (User)
 from user.user_utils import current_user
 from auth.models import (UserSession,
-    new_security_code,verify_security_code,ROLES,SIGNUP_VALIDATION,
+    new_security_code,verify_security_code,SIGNUP_VALIDATION,
     RESET_PASSWORD,PROFILE_CHG,FacebookProfile,GoogleProfile,AppleProfile)
 
 from auth import fernet_crypto
@@ -66,10 +66,8 @@ def admin_pick_a_group():
             user_id = user.id,
             group_id = group_id,
             )
-        local_db_session = get_scoped_session()
-        local_db_session.add(alg)
-        local_db_session.commit()
-        local_db_session.close()
+        with ScopedSession() as local_db_session:
+            local_db_session.add(alg)
 
         group = DBSession.query(FunctionalGroup).filter(
             FunctionalGroup.id==group_id).first()
@@ -141,15 +139,12 @@ def reset_password():
     if not user:
         return make_response(jsonify({'error':'Bad code (7)'}),403)
 
-    local_db_session = get_scoped_session()
+    with ScopedSession() as local_db_session:
+        app.logger.info("Resetting password for user {}".format(user.__dict__))
+        local_db_session.query(User).filter(
+            User.id==user.id).update({
+            'password':fernet_crypto.encrypt(post_args['password'])})
 
-    app.logger.info("Resetting password for user {}".format(user.__dict__))
-    local_db_session.query(User).filter(
-        User.id==user.id).update({
-        'password':fernet_crypto.encrypt(post_args['password'])})
-
-    local_db_session.commit()
-    local_db_session.close()
     return make_response(jsonify({'error':None}),200)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -218,13 +213,11 @@ class NonuserInquiryPage1(Resource):
         except:
             return make_response(jsonify({'error':"Email to {} failed".format(ni.email)}),422)
 
-        local_db_session = get_scoped_session()
-        local_db_session.add(ni)
-        local_db_session.flush()
-        ni_access_code = ni.access_code
-        ni_id = ni.id
-        local_db_session.commit()
-        local_db_session.close()
+        with ScopedSession() as local_db_session:
+            local_db_session.add(ni)
+            local_db_session.flush()
+            ni_access_code = ni.access_code
+            ni_id = ni.id
 
         return make_response(jsonify({'id':ni_id,'access_code':ni_access_code}),201)
 
@@ -240,19 +233,15 @@ class NonuserInquiryCodeValidation(Resource):
         args = self.post_reqparse.parse_args()
         #pprint.pprint(args)
 
-        local_db_session = get_scoped_session()
-        ni = local_db_session.query(NonuserInquiry).filter(
-            NonuserInquiry.id==args['user_id']).filter(
-            NonuserInquiry.access_code==args['access_code'].strip()).first()
+        with ScopedSession() as local_db_session:
+            ni = local_db_session.query(NonuserInquiry).filter(
+                NonuserInquiry.id==args['user_id']).filter(
+                NonuserInquiry.access_code==args['access_code'].strip()).first()
 
-        if not ni:
-            local_db_session.commit()
-            local_db_session.close()
-            return make_response(jsonify({'error':"No matching inquiry 1"}),422)
+            if not ni:
+                return make_response(jsonify({'error':"No matching inquiry 1"}),422)
 
-        ni.verified = True
-        local_db_session.commit()
-        local_db_session.close()
+            ni.verified = True
 
         return make_response(jsonify({'error':None}),200)
 
@@ -268,23 +257,19 @@ class NonuserInquiryCodeResend(Resource):
         args = self.post_reqparse.parse_args()
         #pprint.pprint(args)
 
-        local_db_session = get_scoped_session()
-        ni = local_db_session.query(NonuserInquiry).filter(
-            NonuserInquiry.id==args['user_id']).filter(
-            NonuserInquiry.email==args['email'].strip()).first()
+        with ScopedSession() as local_db_session:
+            ni = local_db_session.query(NonuserInquiry).filter(
+                NonuserInquiry.id==args['user_id']).filter(
+                NonuserInquiry.email==args['email'].strip()).first()
 
-        if not ni:
-            local_db_session.commit()
-            local_db_session.close()
-            return make_response(jsonify({'error':"No matching inquiry 2"}),422)
+            if not ni:
+                return make_response(jsonify({'error':"No matching inquiry 2"}),422)
 
-        # Generate and email a new code.
-        ni.access_code = generate_numeric_security_access_code()
-        email_bldg_inqury_code(ni.email,ni.access_code)
+            # Generate and email a new code.
+            ni.access_code = generate_numeric_security_access_code()
+            email_bldg_inqury_code(ni.email,ni.access_code)
 
-        local_db_session.commit()
-        local_db_session.close()
-        return make_response(jsonify({'error':None}),200)
+            return make_response(jsonify({'error':None}),200)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class NonuserInquiryPage2(Resource):
@@ -298,33 +283,27 @@ class NonuserInquiryPage2(Resource):
         args = self.post_reqparse.parse_args()
         #pprint.pprint(args)
 
-        local_db_session = get_scoped_session()
-        ni = local_db_session.query(NonuserInquiry).filter(
-            NonuserInquiry.id==args['user_id']).first()
+        with ScopedSession() as local_db_session:
+            ni = local_db_session.query(NonuserInquiry).filter(
+                NonuserInquiry.id==args['user_id']).first()
 
-        if not ni:
-            local_db_session.commit()
-            local_db_session.close()
-            return make_response(jsonify({'error':"No matching inquiry 3"}),422)
+            if not ni:
+                return make_response(jsonify({'error':"No matching inquiry 3"}),422)
 
-        ni.full_address = args['full_address']
+            ni.full_address = args['full_address']
 
-        found,result = match_full_address_string(ni.full_address)
-        if found:
-            ni.found_match = result
-            local_db_session.flush()
-            d_ni = to_dict(ni)
-            local_db_session.commit()
-            local_db_session.close()
-            email_admins_inquiry_match(d_ni)
-            return make_response(jsonify({'address_found':True}),200)
-        else:
-            local_db_session.flush()
-            d_ni = to_dict(ni)
-            local_db_session.commit()
-            local_db_session.close()
-            email_admins_inquiry_match(d_ni)
-            return make_response(jsonify({'address_found':False}),200)
+            found,result = match_full_address_string(ni.full_address)
+            if found:
+                ni.found_match = result
+                local_db_session.flush()
+                d_ni = to_dict(ni)
+                email_admins_inquiry_match(d_ni)
+                return make_response(jsonify({'address_found':True}),200)
+            else:
+                local_db_session.flush()
+                d_ni = to_dict(ni)
+                email_admins_inquiry_match(d_ni)
+                return make_response(jsonify({'address_found':False}),200)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class ResidentProfile(Resource):
@@ -431,90 +410,82 @@ class ResidentProfile(Resource):
             return make_response(jsonify({'error':'Invalid phone number, please enter a valid number.'}),422)
 
         # Check for user, active or not.
-        local_db_session = get_scoped_session()
-
-        existing_user = local_db_session.query(User).filter(
-            User.email==new_user.email).first()
-
-        if not existing_user:
-            existing_user = local_db_session.query(User).filter(User.username==new_user.username).first()
-        if existing_user:
-            local_db_session.remove()
-            if existing_user.active:
-                return make_response(jsonify({'error':'User name or email already exists. Please try another.'}),422)
-            else:
-                # Another account matches, even though they tried to set up a new account.
-                return make_response(jsonify({'error':'User forbidden'}),422) 
-
-        new_user.active=False
-        new_user.role=RESIDENT
-
-        local_db_session.add(new_user)
-        local_db_session.flush()
-        new_user_id = new_user.id
-        new_user_ok_to_sms = new_user.ok_to_sms
-
-        group = access_code_obj.group
-
-        if not group:
-            local_db_session.remove()
-            return make_response(jsonify({'error':'No matching building or group'}),422)
-            
-        bu = BuildingUser(
-            user_id = new_user.id,
-            building_id = building.id,
-            )
-        local_db_session.add(bu)
-
-        gu = GroupUser(
-            user_id = new_user.id,
-            group_id = group.id,
-            access_code_id = access_code_obj.id,
-            )
-        local_db_session.add(gu)
-
-        # Always sms and email
-        # We check sms failures in another endpoint.
-        new_code = new_security_code(new_user.id,SIGNUP_VALIDATION,numeric=True)
-        send_acct_verification_code(new_user.phone,new_code)
-        email_account_verification_code(new_user.email,new_code)
-
-        if profile_id:
-            #print(f"Updating profile {profile_id} with user {new_user.id}")
-            profile = None
-            if from_other == 'google':
-                profile = local_db_session.query(GoogleProfile).filter(
-                    GoogleProfile.id==profile_id).first()
-            elif from_other == 'facebook':
-                profile = local_db_session.query(FacebookProfile).filter(
-                    FacebookProfile.id==profile_id).first()
-            elif from_other == 'apple':
-                profile = local_db_session.query(AppleProfile).filter(
-                    AppleProfile.id==profile_id).first()
-            else:
-                # invalid from_other value
-                local_db_session.commit()
-                local_db_session.close()
-                return make_response(jsonify({"error": "Invalid Source."}), 403)
-
-            if not profile:
-                # because of a bug, try to find it in the apple profile.
-                profile = local_db_session.query(AppleProfile).filter(
-                    AppleProfile.id==profile_id).first()
-                if profile and (not profile.user_id) and (profile.apple_email == new_user.email) and \
-                        (profile.apple_username == new_user.username):
-                    from_other = 'apple'
+        with ScopedSession() as local_db_session:
+            existing_user = local_db_session.query(User).filter(
+                User.email==new_user.email).first()
+    
+            if not existing_user:
+                existing_user = local_db_session.query(User).filter(User.username==new_user.username).first()
+            if existing_user:
+                local_db_session.remove()
+                if existing_user.active:
+                    return make_response(jsonify({'error':'User name or email already exists. Please try another.'}),422)
                 else:
-                    local_db_session.commit()
-                    local_db_session.close()
-                    app.logger.error(f"We could not find this profile id: {profile_id} for this profile: {from_other} this user: {new_user_id}, user can't log in.")
-                    return make_response(jsonify({"error": "Invalid Source. We were just made aware of this error, and we'll hunt it down."}), 403)
+                    # Another account matches, even though they tried to set up a new account.
+                    return make_response(jsonify({'error':'User forbidden'}),422) 
 
-            profile.user_id = new_user.id
+            new_user.active=False
+            new_user.role=RESIDENT
+
+            local_db_session.add(new_user)
             local_db_session.flush()
+            new_user_id = new_user.id
+            new_user_ok_to_sms = new_user.ok_to_sms
 
-        local_db_session.commit()
-        local_db_session.close()
+            group = access_code_obj.group
+    
+            if not group:
+                local_db_session.remove()
+                return make_response(jsonify({'error':'No matching building or group'}),422)
+            
+            bu = BuildingUser(
+                user_id = new_user.id,
+                building_id = building.id,
+                )
+            local_db_session.add(bu)
+
+            gu = GroupUser(
+                user_id = new_user.id,
+                group_id = group.id,
+                access_code_id = access_code_obj.id,
+                )
+            local_db_session.add(gu)
+
+            # Always sms and email
+            # We check sms failures in another endpoint.
+            new_code = new_security_code(new_user.id,SIGNUP_VALIDATION,numeric=True)
+            send_acct_verification_code(new_user.phone,new_code)
+            email_account_verification_code(new_user.email,new_code)
+
+            if profile_id:
+                #print(f"Updating profile {profile_id} with user {new_user.id}")
+                profile = None
+                if from_other == 'google':
+                    profile = local_db_session.query(GoogleProfile).filter(
+                        GoogleProfile.id==profile_id).first()
+                elif from_other == 'facebook':
+                    profile = local_db_session.query(FacebookProfile).filter(
+                        FacebookProfile.id==profile_id).first()
+                elif from_other == 'apple':
+                    profile = local_db_session.query(AppleProfile).filter(
+                        AppleProfile.id==profile_id).first()
+                else:
+                    # invalid from_other value
+                    return make_response(jsonify({"error": "Invalid Source."}), 403)
+
+                if not profile:
+                    # because of a bug, try to find it in the apple profile.
+                    profile = local_db_session.query(AppleProfile).filter(
+                        AppleProfile.id==profile_id).first()
+                    if profile and (not profile.user_id) and (profile.apple_email == new_user.email) and \
+                            (profile.apple_username == new_user.username):
+                        from_other = 'apple'
+                    else:
+                        app.logger.error(f"We could not find this profile id: {profile_id} for this profile: {from_other} this user: {new_user_id}, user can't log in.")
+                        return make_response(jsonify({"error": "Invalid Source. We were just made aware of this error, and we'll hunt it down."}), 403)
+
+                profile.user_id = new_user.id
+                local_db_session.flush()
 
         #pprint.pprint("Added building user entry:{}".format(bu.__dict__))
 
@@ -533,33 +504,29 @@ class ResidentProfile(Resource):
         if new_user.active:
             return make_response(jsonify({'error':'Not allowed'}),403)
 
-        local_db_session = get_scoped_session()
-
-        if phone:
-            local_db_session.query(User).filter(
-                User.id==new_user_id).update(
-                {User.phone:clean_phone(phone)},synchronize_session=False)
-        else:
-            phone = new_user.phone
-
-        if email:
-            email = email.strip().lower()
-
-            dup_user = DBSession.query(User).filter(
-                func.lower(User.email)==email).first()
-
-            if dup_user and dup_user.id != new_user.id:
-                app.logger.error(f"User can't see this: User {new_user.id}, {new_user.first_name} {new_user.last_name} is trying to create a new account, used an existing email address: {email}, it failed.")
-                return make_response(jsonify({'error':'Invalid email address'}),403)
-
-            local_db_session.query(User).filter(
-                User.id==new_user_id).update(
-                {User.email:email},synchronize_session=False)
-        else:
-            email = new_user.email
-
-        local_db_session.commit()
-        local_db_session.close()
+        with ScopedSession() as local_db_session:
+            if phone:
+                local_db_session.query(User).filter(
+                    User.id==new_user_id).update(
+                    {User.phone:clean_phone(phone)},synchronize_session=False)
+            else:
+                phone = new_user.phone
+    
+            if email:
+                email = email.strip().lower()
+    
+                dup_user = DBSession.query(User).filter(
+                    func.lower(User.email)==email).first()
+    
+                if dup_user and dup_user.id != new_user.id:
+                    app.logger.error(f"User can't see this: User {new_user.id}, {new_user.first_name} {new_user.last_name} is trying to create a new account, used an existing email address: {email}, it failed.")
+                    return make_response(jsonify({'error':'Invalid email address'}),403)
+    
+                local_db_session.query(User).filter(
+                    User.id==new_user_id).update(
+                    {User.email:email},synchronize_session=False)
+            else:
+                email = new_user.email
 
         new_code = new_security_code(new_user.id,SIGNUP_VALIDATION,numeric=True)
         email_account_verification_code(email,new_code)
@@ -640,37 +607,34 @@ class ProviderProfile(Resource):
                 setattr(new_address, k, v)
 
         # Check for user, active or not.
-        local_db_session = get_scoped_session()
-
-        existing_user = local_db_session.query(User).filter(User.email==new_user.email).first()
-        if not existing_user:
-            existing_user = local_db_session.query(User).filter(User.username==new_user.username).first()
-        if existing_user:
-            local_db_session.remove()
-            return make_response(jsonify({'error':'User name or email already exists. Use PUT request to update.'}),422)
-
-        if not args['address']:
-            local_db_session.remove()
-            return make_response(jsonify({'error':'Missing address'}),422)
-
-        new_user.active=False
-        new_user.role=PROVIDER
-
-        local_db_session.add(new_user)
-        local_db_session.flush()
-
-        new_address.user_id = new_user.id
-        local_db_session.add(new_address)
-        local_db_session.flush()
-            
-        new_code = new_security_code(new_user.id,SIGNUP_VALIDATION,numeric=True)
-        email_account_verification_code(new_user.email,new_code)
-        if not send_acct_verification_code(new_user.phone,new_code): # always sms
-            local_db_session.rollback()
-            return make_response(jsonify({'error':'SMS failed.'}),403)
-
-        local_db_session.commit()
-        local_db_session.close()
+        with ScopedSession() as local_db_session:
+            existing_user = local_db_session.query(User).filter(User.email==new_user.email).first()
+            if not existing_user:
+                existing_user = local_db_session.query(User).filter(User.username==new_user.username).first()
+            if existing_user:
+                local_db_session.remove()
+                return make_response(jsonify({'error':'User name or email already exists. Use PUT request to update.'}),422)
+    
+            if not args['address']:
+                local_db_session.remove()
+                return make_response(jsonify({'error':'Missing address'}),422)
+    
+            new_user.active=False
+            new_user.role=PROVIDER
+    
+            local_db_session.add(new_user)
+            local_db_session.flush()
+    
+            new_address.user_id = new_user.id
+            local_db_session.add(new_address)
+            local_db_session.flush()
+                
+            new_code = new_security_code(new_user.id,SIGNUP_VALIDATION,numeric=True)
+            email_account_verification_code(new_user.email,new_code)
+            if not send_acct_verification_code(new_user.phone,new_code): # always sms
+                local_db_session.rollback()
+                return make_response(jsonify({'error':'SMS failed.'}),403)
+    
         return make_response(jsonify({'id':new_user.id,'sms':new_user.ok_to_sms}),201)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -694,24 +658,22 @@ class PushnotTokenUpdate(Resource):
             return make_response(jsonify({'error':'Bad Token'}),422)
         token = args['token'].strip()
 
-        local_db_session = get_scoped_session()
-        local_db_session.query(User).filter(User.id==user.id).update({
-            'firebase_pushnot_id':token},synchronize_session=False)
+        with ScopedSession() as local_db_session:
+            local_db_session.query(User).filter(User.id==user.id).update({
+                'firebase_pushnot_id':token},synchronize_session=False)
       
-        # Opportinity to update mac addrs.
-        if 'macs' in args and args['macs']:
-            # We're excpecting [{'addr':aa.aa.aa.aa.aa,'type':'bluetooth'},{'addr':aa.aa.aa.aa.aa,'type':'wifi'}]
-            macs = json.loads(args['macs'])
-            for addr,mtype in macs:
-                uhm = UserHardwareMap(
-                    user_mac_addr = addr,
-                    connection_type = ROUTER_TYPES[mtype],
-                    user_id = user.id,
-                    )
-                local_db_session.add(uhm)
+            # Opportinity to update mac addrs.
+            if 'macs' in args and args['macs']:
+                # We're excpecting [{'addr':aa.aa.aa.aa.aa,'type':'bluetooth'},{'addr':aa.aa.aa.aa.aa,'type':'wifi'}]
+                macs = json.loads(args['macs'])
+                for addr,mtype in macs:
+                    uhm = UserHardwareMap(
+                        user_mac_addr = addr,
+                        connection_type = ROUTER_TYPES[mtype],
+                        user_id = user.id,
+                        )
+                    local_db_session.add(uhm)
 
-        local_db_session.commit()
-        local_db_session.close()
         return make_response(jsonify({'error':None}),200)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -735,13 +697,10 @@ class ValidateSignup(Resource):
             ok_to_sms = True
             if verified_via_email:
                 ok_to_sms = False
-            local_db_session = get_scoped_session()
-            local_db_session.query(User).filter(User.id==user_id).update({
-                'active':True,'ok_to_sms':ok_to_sms})
-            local_db_session.commit()
-            local_db_session.close()
+            with ScopedSession in local_db_session:
+                local_db_session.query(User).filter(User.id==user_id).update({
+                    'active':True,'ok_to_sms':ok_to_sms})
             welcome_email(ruser.email)
-
             return make_response(jsonify({'error':None}),200)
 
         # Consider account lock based on IP or user, if this happens more than N times.
@@ -788,10 +747,8 @@ class ModifyProfileParams(Resource):
             if data['new_username']:
                 profile_update['username'] = data['new_username']
 
-            local_db_session = get_scoped_session()
-            local_db_session.query(User).filter(User.id==user_id).update(profile_update)
-            local_db_session.commit()
-            local_db_session.close()
+            with ScopedSession in local_db_session:
+                local_db_session.query(User).filter(User.id==user_id).update(profile_update)
             return make_response(jsonify({'error':None}),200)
 
         else:

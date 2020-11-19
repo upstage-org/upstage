@@ -42,8 +42,7 @@ from utils.formatting import to_dict
 
 from user.models import (User,ROLES,PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR,SUPER_ADMIN)
 
-
-from auth import app,jwt
+from auth import app,jwt,api,db
 from jwt import ExpiredSignatureError
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,

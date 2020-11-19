@@ -13,7 +13,7 @@ from flask import Flask, Blueprint
 
 # Create and init app. Now you can use app.logger and such. Woo!
 app = Flask(__name__)
-db = initialize_microservice(app)
+db,jwt,api = initialize_microservice(app)
     
 blueprint = Blueprint("group", __name__)
-
+app.register_blueprint(blueprint)
