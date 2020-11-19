@@ -21,11 +21,15 @@ from flask.json import JSONEncoder
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
+from flask_jwt_extended import JWTManager
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Boolean, Integer, Column, text
+from sqlalchemy.exc import IntegrityError
+
+from psycopg2.errors import UniqueViolation
 
 from config.settings import (ENV_TYPE,
     HOSTNAME,SQLALCHEMY_POOL_SIZE,
@@ -83,6 +87,12 @@ class ScopedSession(object):
     def __exit__(self):
         try:
             self.session.commit()
+
+        except IntegrityError as e:
+            if isinstance(e.orig, UniqueViolation):
+                self.session.remove()
+                logging.error(f"Duplicate unique key, rejecting: {e}")
+
         except Exception as e:
             if self.rollback_upon_failure:
                 self.session.rollback()
@@ -100,6 +110,10 @@ def initialize_microservice(app):
 
     # RestX init
     api = Api(app,ui=False)
+
+    # Error handling, to circumvent a bug between Flask-RestPlus and Flask-JWT
+    jwt = JWTManager(app)
+    jwt._set_error_handler_callbacks(api)
 
     app.secret_key = SECRET_KEY
 
@@ -176,4 +190,5 @@ def initialize_microservice(app):
     def do403(e):
         return render_template("global_templates/403.html"), 403
 
-    return db
+    print("app initialized")
+    return db,jwt

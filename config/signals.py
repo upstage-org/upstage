@@ -16,33 +16,31 @@ from flask import Response, jsonify, make_response
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from config.project_globals import get_scoped_session
 from flask_jwt_extended import get_jwt_identity
-
-from auth import api, app
 
 from config.settings import (DEBUG,
     ENV_TYPE,HOSTNAME)
 
-def add_details(sender, exception):
+def add_signals(app):
 
-    exc = traceback.format_exc()
-    cid = get_jwt_identity()
+    def add_details(sender, exception):
 
-    msg = """
+        exc = traceback.format_exc()
+        cid = get_jwt_identity()
+
+        msg = """
 {0}:{1}: 
 Exception: {2}
 User {3}
 
 Request: {4}
-    """.format(ENV_TYPE,HOSTNAME,exc,cid,pprint.pformat(request.__dict__))
+        """.format(ENV_TYPE,HOSTNAME,exc,cid,pprint.pformat(request.__dict__))
 
-    sys.stderr.write(msg)
-    if 'abort(3' in exc or 'abort(4' in exc:
-        app.logger.warning(msg)
-    else:
-        app.logger.exception(msg)
+        sys.stderr.write(msg)
+        if 'abort(3' in exc or 'abort(4' in exc:
+            app.logger.warning(msg)
+        else:
+            app.logger.exception(msg)
 
-def add_signals(app):
     got_request_exception.connect(add_details, app)
 

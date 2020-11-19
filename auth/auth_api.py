@@ -4,7 +4,6 @@ from email.utils import parseaddr
 from functools import wraps
 import copy
 import json
-import jwt
 import os,sys
 import pdb
 import pprint
@@ -20,23 +19,19 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import func, or_
-from psycopg2.errors import UniqueViolation
 
-from jwt import ExpiredSignatureError
 from flask_jwt_extended.exceptions import RevokedTokenError,NoAuthorizationError
 
 from flask import jsonify,url_for
 from flask_restx import Resource, abort
-from flask import current_app, request, redirect, render_template, make_response
-from flask_jwt_extended import (jwt_required,get_jwt_identity,JWTManager,
+from flask import  request, redirect, render_template, make_response
+from flask_jwt_extended import (jwt_required,get_jwt_identity,
     jwt_refresh_token_required,create_access_token,create_refresh_token,
     verify_jwt_in_request)
 from flask_jwt_extended import utils as jwt_utils
 
-from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession)
 from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
     GOOGLE_WEB_CLIENT_ID,GOOGLE_TOKEN_VERIFY,FACEBOOK_ACCESS_TOKEN_CREATE,
     FACEBOOK_TOKEN_VERIFY,APPLE_APP_ID,APPLE_APP_SECRET,APPLE_ACCESS_TOKEN_CREATE,
@@ -45,9 +40,11 @@ from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
 from config.signals import add_signals
 from utils.formatting import to_dict
 
-from user.models import (User,ROLES,ATTENDEE,PARTICIPANT,ACCOUNT_ADMIN,SUPER_ADMIN)
+from user.models import (User,ROLES,PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR,SUPER_ADMIN)
 
 
+from auth import app,jwt
+from jwt import ExpiredSignatureError
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,
     JWTNoList,get_security_code,new_security_code,SIGNUP_VALIDATION,
@@ -55,17 +52,11 @@ from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,
 
 from user.totp import verify_user_totp
 
-jwt = JWTManager(app)
-
 class LostCodeError(Exception):
     pass
 class ProfileError(Exception):
     pass
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Error handling, to circumvent a bug between Flask-RestPlus and Flask-JWT
 
-jwt._set_error_handler_callbacks(api)
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class TokenNoList(object):
 
     def check(self,token):
@@ -113,30 +104,19 @@ class TokenNoList(object):
         else:
             remove_after = datetime.utcnow()+app.config['JWT_REFRESH_TOKEN_EXPIRES']
 
-        local_db_session = get_scoped_session()
-        TokenNo = JWTNoList(
-            token=token,
-            token_type=token_type,
-            remove_after=remove_after,
-            )
-        local_db_session.add(TokenNo)
-        try:
-            local_db_session.commit()
-            local_db_session.close()
-        except IntegrityError as e:
-            if isinstance(e.orig, UniqueViolation):
-                # Token already added by another process. This race condition happens very rarely.
-                local_db_session.remove()
-            else:
-                raise
+        with ScopedSession() as local_db_session:
+            TokenNo = JWTNoList(
+                token=token,
+                token_type=token_type,
+                remove_after=remove_after,
+                )
+            local_db_session.add(TokenNo)
 
     # Run this in cron
     def remove(self):
-        local_db_session = get_scoped_session()
-        local_db_session.query(JWTNoList).filter(
-            JWTNoList.remove_after < datetime.utcnow()).delete()
-        local_db_session.commit()
-        local_db_session.close()
+        with ScopedSession() as local_db_session:
+            local_db_session.query(JWTNoList).filter(
+                JWTNoList.remove_after < datetime.utcnow()).delete()
 
 TNL=TokenNoList()
 jwt.token_in_blacklist_loader(TNL.check)
@@ -310,19 +290,16 @@ def call_login_logout(app_entry=True,num_value=None):
         # Service providers will have an SMS code they have entered.
 
         # Kludge: uncomment the below line. remove the line after.
-        #if user.role in (ACCOUNT_ADMIN,SUPER_ADMIN):
-        if user.role in (ACCOUNT_ADMIN,SUPER_ADMIN):
+        if user.role in (SUPER_ADMIN,):
             if not verify_user_totp(user,num_value):
                 return make_response(jsonify({"error": "Invalid code."}), 401)
             else:
-                local_db_session = get_scoped_session()
-                local_db_session.query(User).filter(
-                    User.id==user.id).update(
-                    {User.validated_via_portal:True},synchronize_session=False)
-                local_db_session.commit()
-                local_db_session.close()
+                with ScopedSession() as local_db_session:
+                    local_db_session.query(User).filter(
+                        User.id==user.id).update(
+                        {User.validated_via_portal:True},synchronize_session=False)
 
-        elif user.role == ATTENDEE and not app_entry: 
+        elif user.role in (PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR) and not app_entry: 
             pass # password checked-out, that's all we need.
 
     # We may also have a fb/g login, if this is the first time a user is logging
@@ -331,260 +308,228 @@ def call_login_logout(app_entry=True,num_value=None):
     # to our user.
     if profile_id:
 
-        local_db_session = get_scoped_session()
+        with ScopedSession() as local_db_session:
 
-        if from_other == 'apple':
-            #pprint.pprint(request)
-            headers = {
-                'Content-Type': 'application/x-www-form-urlencoded; UTF-8',
-            }
-
-            other_profile = local_db_session.query(AppleProfile).filter(
-                AppleProfile.id==profile_id).one()
-
-            # Autheticate the token, match the data, and then map the accounts if they are not mapped.
-            # To successfully map them, the user must have logged into ours as well, just the first time
-            # they log in via FB/Google/Apple.
-            # We first have to create our own access token. Then we verify the inbound token.
-            refresh_token = None if not other_profile.other_profile_json else json.loads(other_profile.other_profile_json)['refresh_token']
-            did_refresh = False
-            if refresh_token:
-                # Refresh tokens expire in 24 hours.
-                payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
-                    'code':signin_token,
-                    'refresh_token':refresh_token,'grant_type':'refresh_token'}
-                did_refresh = True
-            else:
-                payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
-                    'code':signin_token,'grant_type':'authorization_code'}
-
-            result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=payload)
-
-            if not result.ok:
-                # If we tried a refresh and it failed:
-                if did_refresh:
-                    payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
-                        'code':signin_token,grant_type:'authorization_code'}
-                    result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=payload)
-                    if not result.ok:
-                        # get rid of old refresh token.
-                        other_profile.other_profile_json = None
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"error": "Invalid Source Sign-in (2)."}), 401)
-
-                    did_refresh = False
-                else:
-                    local_db_session.commit()
-                    local_db_session.close()
-                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
-
-            #pprint.pprint(json.loads(result.text))
-            response = json.loads(result.text)
-            #pprint.pprint(response)
-            access_token=response['access_token']
-
-            if not did_refresh:
-                refresh_token=response['refresh_token']
-                other_profile.other_profile_json = json.dumps({'refresh_token':refresh_token})
-
-            if 'data' in response and 'expires_at' in response['data'] and response['data']['expires_at']:
-                timeout_minutes = int( ( int(response['data']['expires_at']) - datetime.timestamp(datetime.utcnow()) ) / 60)
-                if timeout_minutes <= 0:
-                    timeout_minutes = 60
-            elif 'data' in response and 'expires_in' in response['data'] and response['data']['expires_in']:
-                # Apple used expires_in
-                timeout_minutes = int( ( int(response['data']['expires_in']) - datetime.timestamp(datetime.utcnow()) ) / 60)
-                if timeout_minutes <= 0:
-                    timeout_minutes = 60
-            else:
-                timeout_minutes = 60
-
-            if user and (not other_profile.user_id):
-                other_profile.user_id=user.id
-            else:
-                user = DBSession.query(User).filter(
-                    User.id==other_profile.user_id).first()
-                if (not user) or (not user.active):
-                    if not user:
-                        user = DBSession.query(User).filter(
-                            or_(User.username==email,User.email==email,User.username==username)
-                            ).first()
-                    if user:
-                        # Re-send their signup code. They are inactive for some reason.
-                        existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
-                        if not existing_code:
-                            existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
-                                pending_a_id=profile_id,numeric=True)
-                            '''
-                            raise LostCodeError(
-                                "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
-                                )
-                            '''
-
-                        if not send_acct_verification_code(user.phone,existing_code): # always sms
-                            app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-            
-                        email_verification_code(user.email,existing_code)
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"user_id":user.id,
-                            "message": "User needs to verify account"}), 409)
-                    else:
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
-
-                if other_profile.user_id != user.id:
-                    local_db_session.commit()
-                    local_db_session.close()
-                    return make_response(jsonify({"error": "Invalid Source Match"}), 401)
-
-        elif from_other == 'facebook':
-            other_profile = local_db_session.query(FacebookProfile).filter(
-                FacebookProfile.id==profile_id).one()
-
-            # Autheticate the token, match the data, and then map the accounts if they are not mapped.
-            # To successfully map them, the user must have logged into Upstage as well, just the first time
-            # they log in via FB/Google/Apple.
-            # We first have to create our own access token. Then we verify the inbound token.
-            result = requests.get(FACEBOOK_ACCESS_TOKEN_CREATE)
-            if not result.ok:
-                local_db_session.commit()
-                local_db_session.close()
-                return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
-            response = json.loads(result.text)
-            #pprint.pprint(response)
-            access_token=response['access_token']
-            result = requests.get(FACEBOOK_TOKEN_VERIFY.format(signin_token,access_token))
-            #pprint.pprint(FACEBOOK_TOKEN_VERIFY.format(signin_token,access_token))
-            #pprint.pprint(result.text)
-            if not result.ok:
-                local_db_session.commit()
-                local_db_session.close()
-                return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
-            response = json.loads(result.text)
-            #pprint.pprint(response)
-            if 'data' in response and 'expires_at' in response['data'] and response['data']['expires_at']:
-                timeout_minutes = int( ( int(response['data']['expires_at']) - datetime.timestamp(datetime.utcnow()) ) / 60)
-                if timeout_minutes <= 0:
-                    timeout_minutes = 60
-            else:
-                timeout_minutes = 60
-
-            if user and (not other_profile.user_id):
-                other_profile.user_id=user.id
-            else:
-                user = DBSession.query(User).filter(
-                    User.id==other_profile.user_id).first()
-                if (not user) or (not user.active):
-                    if not user:
-                        user = DBSession.query(User).filter(
-                            or_(User.username==email,User.email==email,User.username==username)
-                            ).first()
-                    if user:
-                        # Re-send their signup code. They are inactive for some reason.
-                        existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
-                        if not existing_code:
-                            existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
-                                pending_f_id=profile_id,numeric=True)
-                            '''
-                            raise LostCodeError(
-                                "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
-                                )
-                            '''
-
-                        if not send_acct_verification_code(user.phone,existing_code): # always sms
-                            app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-            
-                        email_verification_code(user.email,existing_code)
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"user_id":user.id,
-                            "message": "User needs to verify account"}), 409)
-                    else:
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
-
-                if other_profile.user_id != user.id:
-                    local_db_session.commit()
-                    local_db_session.close()
-                    return make_response(jsonify({"error": "Invalid Source Match"}), 401)
-
-        elif from_other == 'google':
-            other_profile = local_db_session.query(GoogleProfile).filter(
-                GoogleProfile.id==profile_id).one()
-
-            # Autheticate the token, match the data, and then map the accounts if they are not mapped.
-            # To successfully map them, the user must have logged into Upstage as well, just the first time
-            # they log in via FB/Google.
-            result = requests.get(GOOGLE_TOKEN_VERIFY.format(signin_token))
-            if not result.ok:
-                local_db_session.commit()
-                local_db_session.close()
-                return make_response(jsonify({"error": "Invalid Source Sign-in"}), 401)
-            response = json.loads(result.text)
-            #pprint.pprint(response)
-            if 'expires_in' in response and response['expires_in']:
-                timeout_minutes = int(int(response['expires_in'])/60)
-                if timeout_minutes <= 0:
-                    timeout_minutes = 60
-            else:
-                timeout_minutes = 60
-
-            if user and (not other_profile.user_id):
-                other_profile.user_id=user.id
-            else:
-                user = DBSession.query(User).filter(
-                    User.id==other_profile.user_id).first()
-                if (not user) or (not user.active):
-                    if not user:
-                        user = DBSession.query(User).filter(
-                            or_(User.username==email,User.email==email,User.username==username)
-                            ).first()
-                    if user:
-                        # Re-send their signup code. They are inactive for some reason.
-                        existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
-                        if not existing_code:
-                            existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
-                                pending_g_id=profile_id,numeric=True)
-                            '''
-                            raise LostCodeError(
-                                "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
-                                )
-                            '''
+            if from_other == 'apple':
+                #pprint.pprint(request)
+                headers = {
+                    'Content-Type': 'application/x-www-form-urlencoded; UTF-8',
+                }
     
-                        if not send_acct_verification_code(user.phone,existing_code): # always sms
-                            app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-            
-                        email_verification_code(user.email,existing_code)
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"user_id":user.id,
-                            "message": "User needs to verify account"}), 409)
+                other_profile = local_db_session.query(AppleProfile).filter(
+                    AppleProfile.id==profile_id).one()
+    
+                # Autheticate the token, match the data, and then map the accounts if they are not mapped.
+                # To successfully map them, the user must have logged into ours as well, just the first time
+                # they log in via FB/Google/Apple.
+                # We first have to create our own access token. Then we verify the inbound token.
+                refresh_token = None if not other_profile.other_profile_json else json.loads(other_profile.other_profile_json)['refresh_token']
+                did_refresh = False
+                if refresh_token:
+                    # Refresh tokens expire in 24 hours.
+                    payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
+                        'code':signin_token,
+                        'refresh_token':refresh_token,'grant_type':'refresh_token'}
+                    did_refresh = True
+                else:
+                    payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
+                        'code':signin_token,'grant_type':'authorization_code'}
+    
+                result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=payload)
+    
+                if not result.ok:
+                    # If we tried a refresh and it failed:
+                    if did_refresh:
+                        payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
+                            'code':signin_token,grant_type:'authorization_code'}
+                        result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=payload)
+                        if not result.ok:
+                            # get rid of old refresh token.
+                            other_profile.other_profile_json = None
+                            return make_response(jsonify({"error": "Invalid Source Sign-in (2)."}), 401)
+    
+                        did_refresh = False
                     else:
-                        local_db_session.commit()
-                        local_db_session.close()
-                        return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+                        return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+    
+                #pprint.pprint(json.loads(result.text))
+                response = json.loads(result.text)
+                #pprint.pprint(response)
+                access_token=response['access_token']
+    
+                if not did_refresh:
+                    refresh_token=response['refresh_token']
+                    other_profile.other_profile_json = json.dumps({'refresh_token':refresh_token})
+    
+                if 'data' in response and 'expires_at' in response['data'] and response['data']['expires_at']:
+                    timeout_minutes = int( ( int(response['data']['expires_at']) - datetime.timestamp(datetime.utcnow()) ) / 60)
+                    if timeout_minutes <= 0:
+                        timeout_minutes = 60
+                elif 'data' in response and 'expires_in' in response['data'] and response['data']['expires_in']:
+                    # Apple used expires_in
+                    timeout_minutes = int( ( int(response['data']['expires_in']) - datetime.timestamp(datetime.utcnow()) ) / 60)
+                    if timeout_minutes <= 0:
+                        timeout_minutes = 60
+                else:
+                    timeout_minutes = 60
+    
+                if user and (not other_profile.user_id):
+                    other_profile.user_id=user.id
+                else:
+                    user = DBSession.query(User).filter(
+                        User.id==other_profile.user_id).first()
+                    if (not user) or (not user.active):
+                        if not user:
+                            user = DBSession.query(User).filter(
+                                or_(User.username==email,User.email==email,User.username==username)
+                                ).first()
+                        if user:
+                            # Re-send their signup code. They are inactive for some reason.
+                            existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
+                            if not existing_code:
+                                existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
+                                    pending_a_id=profile_id,numeric=True)
+                                '''
+                                raise LostCodeError(
+                                    "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
+                                    )
+                                '''
+    
+                            if not send_acct_verification_code(user.phone,existing_code): # always sms
+                                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
+                
+                            email_verification_code(user.email,existing_code)
+                            return make_response(jsonify({"user_id":user.id,
+                                "message": "User needs to verify account"}), 409)
+                        else:
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+    
+                    if other_profile.user_id != user.id:
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+    
+            elif from_other == 'facebook':
+                other_profile = local_db_session.query(FacebookProfile).filter(
+                    FacebookProfile.id==profile_id).one()
+    
+                # Autheticate the token, match the data, and then map the accounts if they are not mapped.
+                # To successfully map them, the user must have logged into Upstage as well, just the first time
+                # they log in via FB/Google/Apple.
+                # We first have to create our own access token. Then we verify the inbound token.
+                result = requests.get(FACEBOOK_ACCESS_TOKEN_CREATE)
+                if not result.ok:
+                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+                response = json.loads(result.text)
+                #pprint.pprint(response)
+                access_token=response['access_token']
+                result = requests.get(FACEBOOK_TOKEN_VERIFY.format(signin_token,access_token))
+                #pprint.pprint(FACEBOOK_TOKEN_VERIFY.format(signin_token,access_token))
+                #pprint.pprint(result.text)
+                if not result.ok:
+                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+                response = json.loads(result.text)
+                #pprint.pprint(response)
+                if 'data' in response and 'expires_at' in response['data'] and response['data']['expires_at']:
+                    timeout_minutes = int( ( int(response['data']['expires_at']) - datetime.timestamp(datetime.utcnow()) ) / 60)
+                    if timeout_minutes <= 0:
+                        timeout_minutes = 60
+                else:
+                    timeout_minutes = 60
+    
+                if user and (not other_profile.user_id):
+                    other_profile.user_id=user.id
+                else:
+                    user = DBSession.query(User).filter(
+                        User.id==other_profile.user_id).first()
+                    if (not user) or (not user.active):
+                        if not user:
+                            user = DBSession.query(User).filter(
+                                or_(User.username==email,User.email==email,User.username==username)
+                                ).first()
+                        if user:
+                            # Re-send their signup code. They are inactive for some reason.
+                            existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
+                            if not existing_code:
+                                existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
+                                    pending_f_id=profile_id,numeric=True)
+                                '''
+                                raise LostCodeError(
+                                    "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
+                                    )
+                                '''
+    
+                            if not send_acct_verification_code(user.phone,existing_code): # always sms
+                                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
+                
+                            email_verification_code(user.email,existing_code)
+                            return make_response(jsonify({"user_id":user.id,
+                                "message": "User needs to verify account"}), 409)
+                        else:
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+    
+                    if other_profile.user_id != user.id:
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+    
+            elif from_other == 'google':
+                other_profile = local_db_session.query(GoogleProfile).filter(
+                    GoogleProfile.id==profile_id).one()
+    
+                # Autheticate the token, match the data, and then map the accounts if they are not mapped.
+                # To successfully map them, the user must have logged into Upstage as well, just the first time
+                # they log in via FB/Google.
+                result = requests.get(GOOGLE_TOKEN_VERIFY.format(signin_token))
+                if not result.ok:
+                    return make_response(jsonify({"error": "Invalid Source Sign-in"}), 401)
+                response = json.loads(result.text)
+                #pprint.pprint(response)
+                if 'expires_in' in response and response['expires_in']:
+                    timeout_minutes = int(int(response['expires_in'])/60)
+                    if timeout_minutes <= 0:
+                        timeout_minutes = 60
+                else:
+                    timeout_minutes = 60
+    
+                if user and (not other_profile.user_id):
+                    other_profile.user_id=user.id
+                else:
+                    user = DBSession.query(User).filter(
+                        User.id==other_profile.user_id).first()
+                    if (not user) or (not user.active):
+                        if not user:
+                            user = DBSession.query(User).filter(
+                                or_(User.username==email,User.email==email,User.username==username)
+                                ).first()
+                        if user:
+                            # Re-send their signup code. They are inactive for some reason.
+                            existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
+                            if not existing_code:
+                                existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE,
+                                    pending_g_id=profile_id,numeric=True)
+                                '''
+                                raise LostCodeError(
+                                    "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
+                                    )
+                                '''
+        
+                            if not send_acct_verification_code(user.phone,existing_code): # always sms
+                                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
+                
+                            email_verification_code(user.email,existing_code)
+                            return make_response(jsonify({"user_id":user.id,
+                                "message": "User needs to verify account"}), 409)
+                        else:
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+    
+                    if other_profile.user_id != user.id:
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+            else:
+                return make_response(jsonify({"error": "Invalid Source."}), 401)
 
-                if other_profile.user_id != user.id:
-                    local_db_session.commit()
-                    local_db_session.close()
-                    return make_response(jsonify({"error": "Invalid Source Match"}), 401)
-        else:
-            local_db_session.commit()
-            local_db_session.close()
-            return make_response(jsonify({"error": "Invalid Source."}), 401)
-
-        local_db_session.commit()
-        local_db_session.close()
 
     # Generate session tokens
     access_token = create_access_token(identity=user.id)
 
     # Shorter token expiry for admins
-    if user.role in (ACCOUNT_ADMIN,SUPER_ADMIN):
+    if user.role in (SUPER_ADMIN,):
         app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=1)
         print(f"User id {user.id} token timeout set to 1 day")
     else:
@@ -621,12 +566,10 @@ def call_login_logout(app_entry=True,num_value=None):
         app_os_version = request.headers.get("X-Upstage-Os-Version"),
         app_device = request.headers.get("X-Upstage-Device-Model")
     )
-    local_db_session = get_scoped_session()
-    local_db_session.add(user_session)
-    local_db_session.flush()
-    user_session_id = user_session.id
-    local_db_session.commit()
-    local_db_session.close()
+    with ScopedSession() as local_db_session:
+        local_db_session.add(user_session)
+        local_db_session.flush()
+        user_session_id = user_session.id
     
     # Determine what to show based on account type.
     title_prefix = '' if ENV_TYPE == 'Production' else 'DEV '
@@ -638,14 +581,7 @@ def call_login_logout(app_entry=True,num_value=None):
         group={'id':0,'name':"test"}
         groups=[group]
 
-    elif user.role == ACCOUNT_ADMIN:
-        title = title_prefix + 'Admin'
-        #group_users = DBSession.query(GroupUser).filter(GroupUser.user_id == user.id).all()
-        #groups = list(set([g.group for g in group_users]))
-        group={'id':0,'name':"test"}
-        groups=[group]
-
-    elif user.role in (ATTENDEE,PARTICIPANT) and not (group):
+    elif user.role in (PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR) and not (group):
         group={'id':0,'name':"test"}
         groups=[group]
         #raise ProfileError("Attendee {0} has no associated group. User must have a group record!".format(user_id))
@@ -687,12 +623,10 @@ def refresh():
         app_device=request.headers.get("X-Upstage-Device-Model")
     )
 
-    local_db_session = get_scoped_session()
-    local_db_session.add(user_session)
-    local_db_session.flush()
-    user_session_id = user_session.id
-    local_db_session.commit()
-    local_db_session.close()
+    with ScopedSession() as local_db_session:
+        local_db_session.add(user_session)
+        local_db_session.flush()
+        user_session_id = user_session.id
     
     return make_response(jsonify({'access_token':access_token}),200)
 
@@ -740,12 +674,10 @@ def g_fb_a_lookup():
                 google_last_name=last_name,
                 google_username=username,
                 )
-            local_db_session = get_scoped_session()
-            local_db_session.add(profile)
-            local_db_session.flush()
-            profile_id = profile.id
-            local_db_session.commit()
-            local_db_session.close()
+            with ScopedSession() as local_db_session:
+                local_db_session.add(profile)
+                local_db_session.flush()
+                profile_id = profile.id
 
     if facebook_id:
         facebook_id = str(facebook_id)
@@ -764,12 +696,10 @@ def g_fb_a_lookup():
                 facebook_last_name=last_name,
                 facebook_username=username,
                 )
-            local_db_session = get_scoped_session()
-            local_db_session.add(profile)
-            local_db_session.flush()
-            profile_id = profile.id
-            local_db_session.commit()
-            local_db_session.close()
+            with ScopedSession() as local_db_session:
+                local_db_session.add(profile)
+                local_db_session.flush()
+                profile_id = profile.id
 
     if apple_id:
         apple_id = str(apple_id)
@@ -788,12 +718,10 @@ def g_fb_a_lookup():
                 apple_last_name=last_name,
                 apple_username=username,
                 )
-            local_db_session = get_scoped_session()
-            local_db_session.add(profile)
-            local_db_session.flush()
-            profile_id = profile.id
-            local_db_session.commit()
-            local_db_session.close()
+            with ScopedSession() as local_db_session:
+                local_db_session.add(profile)
+                local_db_session.flush()
+                profile_id = profile.id
 
     #if profile_id:
     #    pprint.pprint(f"{profile_id}: {profile.__dict__}")
@@ -906,11 +834,11 @@ if __name__ == "__main__":
     refresh_token='8e5b1db2e3b5f939ac634d1372ac6c5d0a35aa991678e18c2e77a7fc135dbd6f'
     with app.app_context():
         import pdb;pdb.set_trace()
-        local_db_session = get_scoped_session()
-        atoken = jwt_utils.decode_token(access_token)
-        rtoken = jwt_utils.decode_token(refresh_token)
-        TNL.add(atoken)
-        TNL.add(rtoken)
+        with ScopedSession() as local_db_session:
+            atoken = jwt_utils.decode_token(access_token)
+            rtoken = jwt_utils.decode_token(refresh_token)
+            TNL.add(atoken)
+            TNL.add(rtoken)
     
     apple_get_client_secret()
     '''
