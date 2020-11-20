@@ -27,6 +27,9 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from auth import db,app
+db.init_app(app)
+
+from user.models import User
 
 SIGNUP_VALIDATION = 1
 RESET_PASSWORD = 2
@@ -53,7 +56,7 @@ class JWTNoList(Base,db.Model):
 class UserSession(Base,db.Model):                                                                                                                                       
     __tablename__ = 'user_session'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer,ForeignKey('User.id', deferrable=True, initially=u'DEFERRED'), nullable=False, index=True)
+    user_id = Column(Integer,ForeignKey(User.id, deferrable=True, initially=u'DEFERRED'), nullable=False, index=True)
     access_token = Column(Text, default=None)
     refresh_token = Column(Text, default=None)
     recorded_time = Column(DateTime, nullable=False, index=True, default=datetime.utcnow)
@@ -61,7 +64,7 @@ class UserSession(Base,db.Model):
     app_os_type = Column(Text, default=None)
     app_os_version = Column(Text, default=None)
     app_device = Column(Text, default=None)
-    user = relationship('User', foreign_keys=[user_id])
+    user = relationship(User, foreign_keys=[user_id])
 
 class OneTimeCode(Base, db.Model):
     __tablename__ = 'user_one_time_code'
@@ -69,13 +72,13 @@ class OneTimeCode(Base, db.Model):
     # Unconfirmed codes are just replaced with new unconfirmed codes. 
     # Confirmed codes go into history.
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer,ForeignKey('User.id'), unique=True, nullable=False, default=0)
+    user_id = Column(Integer,ForeignKey(User.id), unique=True, nullable=False, default=0)
     code = Column(Text,nullable=False,default='')
     reason = Column(Integer,nullable=False, default=0)
     pending_google_login_id = Column(Integer,nullable=False, default=0)
     pending_facebook_login_id = Column(Integer,nullable=False, default=0)
     pending_apple_login_id = Column(Integer,nullable=False, default=0)
-    user = relationship('User', foreign_keys=[user_id])
+    user = relationship(User.id, foreign_keys=[user_id])
 
 class OneTimeCodeHistory(Base, db.Model):
     __tablename__ = 'user_one_time_code_history'
@@ -92,7 +95,7 @@ class OneTimeCodeHistory(Base, db.Model):
 class GoogleProfile(Base, db.Model):
     __tablename__ = 'google_profile'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer,ForeignKey('User.id'), nullable=True, default=None)
+    user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     google_id = Column(Text,nullable=True,default=None)
     google_phone = Column(Text,nullable=True,default=None)
     google_email = Column(Text,nullable=True,default=None)
@@ -105,7 +108,7 @@ class GoogleProfile(Base, db.Model):
 class FacebookProfile(Base, db.Model):
     __tablename__ = 'facebook_profile'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer,ForeignKey('User.id'), nullable=True, default=None)
+    user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     facebook_id = Column(Text,nullable=True,default=None)
     facebook_phone = Column(Text,nullable=True,default=None)
     facebook_email = Column(Text,nullable=True,default=None)
@@ -118,7 +121,7 @@ class FacebookProfile(Base, db.Model):
 class AppleProfile(Base, db.Model):
     __tablename__ = 'apple_profile'
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer,ForeignKey('User.id'), nullable=True, default=None)
+    user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     apple_id = Column(Text,nullable=True,default=None)
     apple_phone = Column(Text,nullable=True,default=None)
     apple_email = Column(Text,nullable=True,default=None)

@@ -41,6 +41,14 @@ from config.settings import (SQLALCHEMY_DATABASE_URI,
     SQLALCHEMY_TRACK_MODIFICATIONS,JWT_ACCESS_TOKEN_MINUTES,
     JWT_REFRESH_TOKEN_DAYS)
 
+global app
+global db
+global jwt
+global api
+app = None
+db = None
+jwt = None
+api = None
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class CustomJSONEncoder(JSONEncoder):
     def default(self, o):
@@ -103,7 +111,17 @@ class ScopedSession(object):
             self.session.close()
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def initialize_microservice(app):
+def initialize_microservice(local_app):
+    global app
+    global db
+    global jwt
+    global api
+
+    if app:
+        return db,jwt,api
+
+    app = local_app
+
     # BYO app
     #app = Flask(__name__,static_url_path=None, 
     #    static_folder='/tmp')
@@ -131,8 +149,10 @@ def initialize_microservice(app):
     # This is only in effect when you call jsonify()
     app.json_encoder = CustomJSONEncoder
     
-    db = SQLAlchemy(app)
-    db.init_app(app)
+    # Call init_app later.
+    # db = SQLAlchemy(app)
+    # db.init_app(app)
+    db = SQLAlchemy()
     
     load_regex_converter(app)
     
@@ -191,4 +211,5 @@ def initialize_microservice(app):
         return render_template("global_templates/403.html"), 403
 
     print("app initialized")
+
     return db,jwt,api

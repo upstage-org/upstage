@@ -8,19 +8,11 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import initialize_microservice
+from config.project_globals import initialize_microservice,app,api,jwt,db
 from flask import Flask, Blueprint
 
-# Create and init app. Now you can use app.logger and such. Woo!
-global app
-global db
-global jwt
-global api
-app = None
+app = Flask(__name__,instance_relative_config=True)
+initialize_microservice(app)
 
-if not app:
-    app = Flask(__name__)
-    db,jwt,api = initialize_microservice(app)
-
-    blueprint = Blueprint("auth", __name__)
-    app.register_blueprint(blueprint)
+blueprint = Blueprint("auth", __name__)
+app.register_blueprint(blueprint)

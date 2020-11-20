@@ -14,9 +14,11 @@ from auth.auth_api import app as auth
 from user.user_api import app as user
 from ui import app as frontend
 
+from flask import Flask, Blueprint
+
 application = DispatcherMiddleware(frontend, {
     "/V2.0/auth": auth,
+    "/V2.0/user": user,
     "asset": asset,
-    "user": user,
     "ui": frontend,
 })

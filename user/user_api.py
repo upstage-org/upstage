@@ -20,6 +20,8 @@ from flask import jsonify
 from flask_restx import Resource, Api, fields, marshal_with, reqparse, abort
 from flask import request, redirect, render_template, make_response
 from sqlalchemy import func
+
+from user import app,api,jwt,db
 from auth.auth_api import jwt_required,get_jwt_identity
 
 from config.project_globals import DBSession,Base,metadata,engine,ScopedSession
@@ -29,8 +31,7 @@ from config.signals import add_signals
 
 from auth.fernet_crypto import encrypt,decrypt
 
-from user import app,api,db
-from user.models import (User)
+from user.models import User
 from user.user_utils import current_user
 from auth.models import (UserSession,
     new_security_code,verify_security_code,SIGNUP_VALIDATION,

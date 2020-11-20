@@ -31,7 +31,9 @@ from flask_jwt_extended import (jwt_required,get_jwt_identity,
     verify_jwt_in_request)
 from flask_jwt_extended import utils as jwt_utils
 
-from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession)
+from auth import app,db,jwt,api
+
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession
 from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
     GOOGLE_WEB_CLIENT_ID,GOOGLE_TOKEN_VERIFY,FACEBOOK_ACCESS_TOKEN_CREATE,
     FACEBOOK_TOKEN_VERIFY,APPLE_APP_ID,APPLE_APP_SECRET,APPLE_ACCESS_TOKEN_CREATE,
