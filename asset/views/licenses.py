@@ -10,16 +10,19 @@ if projdir not in sys.path:
 
 from flask import jsonify, request, url_for
 
+from config.settings import URL_PREFIX
 from config.project_globals import app
 from asset.system import one_asset, create_license, revoke_license
 
-BASE_URL='/{0}license'.format(URL_PREFIX)
+BASE_URL='/{0}license/'.format(URL_PREFIX)
 
+'''
 @app.before_request
 def before_licenses():
     asset = one_asset(id=request.view_args["asset_id"])
     if not asset:
         return f"Asset with ID: {request.view_args['asset_id']} does not exist", 404
+'''
 
 
 @app.route(f"{BASE_URL}/", methods=["POST"])

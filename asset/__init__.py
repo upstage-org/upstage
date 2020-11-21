@@ -11,12 +11,8 @@ if projdir not in sys.path:
 
 from flask import Blueprint,render_template,request
 from config.project_globals import app,api,app,db
-
-from config.settings import ENV_TYPE,URL_PREFIX
-
 APP_NAME='asset'
-asset = Blueprint(APP_NAME, __name__, url_prefix='/{0}{1}'.format(URL_PREFIX,APP_NAME),
-    template_folder='templates')
+asset = Blueprint(APP_NAME, __name__, template_folder='templates')
 
 app.config["UPLOAD_DIR"] = os.path.abspath(os.getenv("UPLOAD_DIR", "./uploads"))
 if not os.path.isdir(app.config["UPLOAD_DIR"]):

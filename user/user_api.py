@@ -22,7 +22,7 @@ from flask import request, redirect, render_template, make_response
 from sqlalchemy import func
 
 from auth.auth_api import jwt_required
-from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db,api
 from config.settings import ENV_TYPE, URL_PREFIX
 
 from config.signals import add_signals

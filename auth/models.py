@@ -50,7 +50,7 @@ class JWTNoList(Base,db.Model):
     remove_after = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
-class UserSession(Base,db.Model):                                                                                                                                       
+class UserSession(Base,db.Model):
     __tablename__ = 'user_session'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id, deferrable=True, initially=u'DEFERRED'), nullable=False, index=True)
@@ -75,7 +75,7 @@ class OneTimeCode(Base, db.Model):
     pending_google_login_id = Column(Integer,nullable=False, default=0)
     pending_facebook_login_id = Column(Integer,nullable=False, default=0)
     pending_apple_login_id = Column(Integer,nullable=False, default=0)
-    user = relationship(User.id, foreign_keys=[user_id])
+    user = relationship(User, foreign_keys=[user_id])
 
 class OneTimeCodeHistory(Base, db.Model):
     __tablename__ = 'user_one_time_code_history'

@@ -10,12 +10,10 @@ if projdir not in sys.path:
 
 from flask import Blueprint,render_template,request
 from config.project_globals import app,api
-from config.settings import ENV_TYPE,URL_PREFIX
 
 # Requires a symlink from templates/404.html to local templates/app/404.html
 APP_NAME='user'
-user = Blueprint(APP_NAME, __name__, url_prefix='/{0}{1}'.format(URL_PREFIX,APP_NAME),
-    template_folder='templates')
+user = Blueprint(APP_NAME, __name__, template_folder='templates')
 
 @user.app_errorhandler(403)
 def handle_403(err):

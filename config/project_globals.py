@@ -82,7 +82,7 @@ class ScopedSession(object):
         self.session.begin()
         return self.session
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.session.commit()
 

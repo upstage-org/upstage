@@ -11,8 +11,7 @@ import time
 from secrets import token_urlsafe
 from werkzeug.utils import secure_filename
 
-from asset.views import app
-from config.project_globals import ScopedSession
+from config.project_globals import ScopedSession,app
 from asset.models import Asset, AssetLicense
 
 def save_file(file):

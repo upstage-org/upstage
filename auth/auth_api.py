@@ -4,6 +4,7 @@ from email.utils import parseaddr
 from functools import wraps
 import copy
 import json
+import jwt
 import os,sys
 import pdb
 import pprint
@@ -21,6 +22,7 @@ if projdir not in sys.path:
 
 from sqlalchemy.sql.expression import func, or_
 
+from jwt import ExpiredSignatureError
 from flask_jwt_extended.exceptions import RevokedTokenError,NoAuthorizationError
 
 from flask import jsonify,url_for
@@ -28,10 +30,10 @@ from flask_restx import Resource, abort
 from flask import  request, redirect, render_template, make_response
 from flask_jwt_extended import (jwt_required,get_jwt_identity,
     jwt_refresh_token_required,create_access_token,create_refresh_token,
-    verify_jwt_in_request)
+    verify_jwt_in_request,JWTManager)
 from flask_jwt_extended import utils as jwt_utils
 
-from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db,api
 from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
     GOOGLE_WEB_CLIENT_ID,GOOGLE_TOKEN_VERIFY,FACEBOOK_ACCESS_TOKEN_CREATE,
     FACEBOOK_TOKEN_VERIFY,APPLE_APP_ID,APPLE_APP_SECRET,APPLE_ACCESS_TOKEN_CREATE,
@@ -42,13 +44,14 @@ from utils.formatting import to_dict
 
 from user.models import (User,ROLES,PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR,SUPER_ADMIN)
 
-from jwt import ExpiredSignatureError
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,
     JWTNoList,get_security_code,new_security_code,SIGNUP_VALIDATION,
     SIGNUP_VALIDATION_MISSING_1ST_CODE,PUBLIC_LOGIN)
 
 from user.totp import verify_user_totp
+
+jwt = JWTManager(app)
 
 class LostCodeError(Exception):
     pass
@@ -148,8 +151,7 @@ def site_map():
     #return make_response(jsonify(pprint.pformat(app.url_map._rules[0].__dict__)), 201)
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#BASE_URL='/{0}access_token/'.format(URL_PREFIX)
-BASE_URL='/access_token/'
+BASE_URL='/{0}access_token/'.format(URL_PREFIX)
 
 # This is our portal login/logout endpoint.
 # It gets an additional TOTP code from Google Authenticator.
@@ -168,7 +170,7 @@ def portal_login():
 
 
 # This is our app login/logout endpoint.
-@app.route('{0}/'.format(BASE_URL), methods=['POST','DELETE'])
+@app.route('{0}'.format(BASE_URL), methods=['POST','DELETE'])
 def login_logout():
     #print(f'HEADERS {request.headers}')
     return call_login_logout(app_entry=True)
@@ -246,6 +248,8 @@ def call_login_logout(app_entry=True,num_value=None):
             user = DBSession.query(User).filter(User.email==email
                 ).filter(User.active==True).first()
         else:
+            print(DBSession)
+            print(User)
             user = DBSession.query(User).filter(User.username==username
                 ).filter(User.active==True).first()
 
