@@ -23,10 +23,23 @@
       <v-col class="stage-chat" cols="3">
         <div class="stage-chat-board">
           <v-row no-gutters>
-            <v-col cols="6">Live</v-col>
+            <v-col cols="6">
+              <v-chip :class="[subscribeSuccess ? 'v-chip-live' : '']"
+                >Live</v-chip
+              >
+            </v-col>
             <v-col cols="6"><v-img src="@/assets/upstage.png"></v-img></v-col>
           </v-row>
-          <v-list>
+          <v-row v-for="chat in chats" :key="chat.title">
+            <v-chip class="ma-2" label light>
+              <v-icon left>
+                mdi-account-circle-outline
+              </v-icon>
+
+              <span :style="{ color: chatColor }">{{ chat.message }}</span>
+            </v-chip></v-row
+          >
+          <!-- <v-list>
             <v-list-item v-for="chat in chats" :key="chat.title">
               <v-list-item-avatar>
                 <v-img src="@/assets/defaultava.png"></v-img>
@@ -42,7 +55,7 @@
                 ></v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-          </v-list>
+          </v-list> -->
         </div>
         <v-text-field
           v-model="message"
@@ -347,5 +360,15 @@ export default {
 .v-icon {
   cursor: pointer;
   padding: 0 4px;
+}
+.v-chip {
+  background-color: white;
+}
+.v-chip p {
+  margin-bottom: 0;
+}
+.v-chip-live {
+  background-color: red !important;
+  color: white !important;
 }
 </style>
