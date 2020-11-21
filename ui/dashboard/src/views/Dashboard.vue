@@ -12,7 +12,7 @@
           <v-select
             v-show="client.connected"
             :items="items"
-            label="Solo field"
+            label="Select Channel to connect"
             dense
             solo
             v-on:input="doSubscribe"
