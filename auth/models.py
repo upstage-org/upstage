@@ -14,7 +14,7 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import db,Base,metadata,app,api,DBSession,get_scoped_session
+from config.project_globals import Base,metadata,DBSession,ScopedSession,db,app
 
 from flask import  request, redirect, render_template
 
@@ -26,8 +26,7 @@ from sqlalchemy.sql.expression import func, or_, not_, and_
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from user.models import (ATTENDEE,PARTICIPANT,ACCOUNT_ADMIN,
-    SUPER_ADMIN,ROLES,User)
+from user.models import User
 
 SIGNUP_VALIDATION = 1
 RESET_PASSWORD = 2
@@ -51,7 +50,7 @@ class JWTNoList(Base,db.Model):
     remove_after = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
-class UserSession(Base,db.Model):                                                                                                                                       
+class UserSession(Base,db.Model):
     __tablename__ = 'user_session'
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id, deferrable=True, initially=u'DEFERRED'), nullable=False, index=True)
@@ -62,9 +61,7 @@ class UserSession(Base,db.Model):
     app_os_type = Column(Text, default=None)
     app_os_version = Column(Text, default=None)
     app_device = Column(Text, default=None)
-
-
-    user = relationship(u'User')
+    user = relationship(User, foreign_keys=[user_id])
 
 class OneTimeCode(Base, db.Model):
     __tablename__ = 'user_one_time_code'

@@ -10,11 +10,8 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,app)
 from config.settings import ENV_TYPE, URL_PREFIX
-
-from config.signals import add_signals
 
 from user.models import User,OneTimeTOTPQRURL
 

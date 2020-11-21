@@ -1,3 +1,4 @@
+# -*- coding: iso8859-15 -*-
 #!/usr/bin/python3
 import sys,os
 #import pdb;pdb.set_trace()                                                      

@@ -8,22 +8,24 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from flask import Flask, Blueprint, jsonify, request, url_for
+from flask import jsonify, request, url_for
 
-from asset.views import app
+from config.settings import URL_PREFIX
+from config.project_globals import app
 from asset.system import one_asset, create_license, revoke_license
 
-blueprint = Blueprint("licenses", __name__, url_prefix="/<int:asset_id>/licenses")
+BASE_URL='/{0}license/'.format(URL_PREFIX)
 
-
-@blueprint.before_request
+'''
+@app.before_request
 def before_licenses():
     asset = one_asset(id=request.view_args["asset_id"])
     if not asset:
         return f"Asset with ID: {request.view_args['asset_id']} does not exist", 404
+'''
 
 
-@blueprint.route("/", methods=["POST"])
+@app.route(f"{BASE_URL}/", methods=["POST"])
 def licenses_create(asset_id):
     if request.is_json:
         request.json["asset_id"] = asset_id
@@ -48,7 +50,7 @@ def licenses_create(asset_id):
         return "Request must be in JSON format", 400
 
 
-@blueprint.route("/<int:id>", methods=["DELETE"])
+@app.route(f"{BASE_URL}/<int:id>/", methods=["DELETE"])
 def licenses_revoke(asset_id, id):
     if revoke_license(id=id):
         return f"License revoked: {id}", 200

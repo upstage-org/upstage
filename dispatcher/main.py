@@ -10,13 +10,15 @@ if projdir not in sys.path:
 
 from werkzeug.middleware.dispatcher import DispatcherMiddleware
 from asset.views import app as asset 
-from auth import app as auth_app
-from user import app as user_app
+from auth.auth_api import app as auth
+from user.user_api import app as user
 from ui import app as frontend
 
+from flask import Flask, Blueprint
+
 application = DispatcherMiddleware(frontend, {
-    "/asset": asset,
-    "/auth": auth_app,
-    "/user": user_app,
-    "/ui": frontend,
+    "/V2.0/auth": auth,
+    "/V2.0/user": user,
+    "asset": asset,
+    "ui": frontend,
 })

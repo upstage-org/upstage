@@ -21,8 +21,7 @@ from sqlalchemy.sql.expression import func, or_, not_, and_
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
-from config.project_globals import Base,DBSession
-from user import app,db
+from config.project_globals import Base,DBSession,db,app
 
 PLAYER = 1
 MAKER = 2

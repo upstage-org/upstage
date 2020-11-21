@@ -1,3 +1,4 @@
+# -*- coding: iso8859-15 -*-
 ####
 #### Run this asynchronously!
 ####

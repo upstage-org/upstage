@@ -9,11 +9,10 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import initialize_microservice
-
-import os
-
-from asset.views import app,db
+from flask import Blueprint,render_template,request
+from config.project_globals import app,api,app,db
+APP_NAME='asset'
+asset = Blueprint(APP_NAME, __name__, template_folder='templates')
 
 app.config["UPLOAD_DIR"] = os.path.abspath(os.getenv("UPLOAD_DIR", "./uploads"))
 if not os.path.isdir(app.config["UPLOAD_DIR"]):

@@ -18,18 +18,17 @@ if projdir not in sys.path:
 
 from flask import jsonify
 from flask_restx import Resource, Api, fields, marshal_with, reqparse, abort
-from flask import current_app, request, redirect, render_template, make_response
+from flask import request, redirect, render_template, make_response
 from auth.auth_api import jwt_required,get_jwt_identity
 
-from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+from config.project_globals import DBSession,Base,metadata,engine,app,db
 from config.settings import ENV_TYPE, URL_PREFIX
 
 from config.signals import add_signals
 
 from user.models import (User)
 from auth.models import (UserSession,
-    ROLES,SIGNUP_VALIDATION,RESET_PASSWORD)
+    SIGNUP_VALIDATION,RESET_PASSWORD)
 
 from auth import fernet_crypto
 from auth.auth_api import TNL
