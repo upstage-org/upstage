@@ -21,15 +21,11 @@ from flask.json import JSONEncoder
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
-from flask_jwt_extended import JWTManager
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Boolean, Integer, Column, text
-from sqlalchemy.exc import IntegrityError
-
-from psycopg2.errors import UniqueViolation
 
 from config.settings import (ENV_TYPE,
     HOSTNAME,SQLALCHEMY_POOL_SIZE,
@@ -41,38 +37,32 @@ from config.settings import (SQLALCHEMY_DATABASE_URI,
     SQLALCHEMY_TRACK_MODIFICATIONS,JWT_ACCESS_TOKEN_MINUTES,
     JWT_REFRESH_TOKEN_DAYS)
 
-global app
-global db
-global jwt
-global api
-app = None
-db = None
-jwt = None
-api = None
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class CustomJSONEncoder(JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime.datetime) or isinstance(o,datetime.date):
-            return o.isoformat()
-        if isinstance(o, ObjectId) or isinstance(o,Decimal):
-            return str(o)
-        return JSONEncoder.default(self, o)
+# Static assets are not accessed by flask.
+app = Flask(__name__,static_url_path=None, 
+    static_folder='/tmp')
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# DB session setup
+app.secret_key = SECRET_KEY
+
+app.config.from_object('config.settings')
+app.url_map.strict_slashes=True
+
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=JWT_ACCESS_TOKEN_MINUTES)
+app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=JWT_REFRESH_TOKEN_DAYS)
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_HEADER_NAME'] = 'X-Access-Token'
+app.config['JWT_HEADER_TYPE'] = ''
+
+app.config['SECRET_KEY'] = SECRET_KEY
+
 # Both global and local sessions are used. Local sessions are read-write.
 engine = create_engine(SQLALCHEMY_DATABASE_URI,
     pool_size=SQLALCHEMY_POOL_SIZE, isolation_level="AUTOCOMMIT")
-
 DBSession = scoped_session(sessionmaker(autocommit=True,autoflush=True,bind=engine))
 
-Base = declarative_base()
-metadata = Base.metadata
-    
 class ScopedSession(object):
     '''
     Use this for local session scope.
-    Usage: 
+    Usage:
         with ScopedSession as local_db_session:
            ...
            local_db_session.add(some db obj)
@@ -110,106 +100,85 @@ class ScopedSession(object):
         finally:
             self.session.close()
 
+def get_scoped_session():
+    session = scoped_session(sessionmaker(autocommit=True,autoflush=True,bind=engine))
+    session.begin()
+    return session
+
+api = Api(app,ui=False)
+
+db = SQLAlchemy(app)
+db.init_app(app)
+
+Base = declarative_base()
+metadata = Base.metadata
+
+load_regex_converter(app)
+
+# Be sure to properly set your ENV_TYPE in config/settings/*.py
+print("Your environment type is: {0}".format(ENV_TYPE))
+
+@app.errorhandler(500)
+def do500(e):
+    return render_template("global_templates/500.html"), 500
+
+@app.errorhandler(404)
+def do404(e):
+    return render_template("global_templates/404.html"), 404
+
+@app.errorhandler(403)
+def do403(e):
+    return render_template("global_templates/403.html"), 403
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def initialize_microservice(local_app):
-    global app
-    global db
-    global jwt
-    global api
+class CustomJSONEncoder(JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime.datetime) or isinstance(o,datetime.date):
+            return o.isoformat()
+        if isinstance(o, ObjectId) or isinstance(o,Decimal):
+            return str(o)
+        return JSONEncoder.default(self, o)
 
-    if app:
-        return db,jwt,api
+# This is only in effect when you call jsonify()
+app.json_encoder = CustomJSONEncoder
 
-    app = local_app
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    # BYO app
-    #app = Flask(__name__,static_url_path=None, 
-    #    static_folder='/tmp')
+print("ENV_TYPE:{},DEBUG={}".format(ENV_TYPE,DEBUG))
 
-    # RestX init
-    api = Api(app,ui=False)
+if ENV_TYPE == "Production":
+    app.debug = False
+    crash_mailer(app,ENV_TYPE,HOSTNAME)
+    log_handler(app)
+    talisman = Talisman(app)
+    print("Registering Crash Mailer")
 
-    # Error handling, to circumvent a bug between Flask-RestPlus and Flask-JWT
-    jwt = JWTManager(app)
-    jwt._set_error_handler_callbacks(api)
-
-    app.secret_key = SECRET_KEY
-
-    app.config.from_object('config.settings')
-    app.url_map.strict_slashes=True
-
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=JWT_ACCESS_TOKEN_MINUTES)
-    app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=JWT_REFRESH_TOKEN_DAYS)
-    app.config['JWT_BLACKLIST_ENABLED'] = True
-    app.config['JWT_HEADER_NAME'] = 'X-Access-Token'
-    app.config['JWT_HEADER_TYPE'] = ''
-    
-    app.config['SECRET_KEY'] = SECRET_KEY
-    
-    # This is only in effect when you call jsonify()
-    app.json_encoder = CustomJSONEncoder
-    
-    # Call init_app later.
-    # db = SQLAlchemy(app)
-    # db.init_app(app)
-    db = SQLAlchemy()
-    
-    load_regex_converter(app)
-    
-    # Be sure to properly set your ENV_TYPE in config/settings/*.py
-    print("Your environment type is: {0}".format(ENV_TYPE))
-
-    '''
-    Register crash handler and strict CORS rukes for production env.
-    Only register crash handler for dev environments which run daemonized, like production.
-    CORS is "off" for all other envirnments.
-    '''
-
-    if ENV_TYPE == "Production":
-        app.debug = False
-        crash_mailer(app,ENV_TYPE,HOSTNAME)
-        log_handler(app)
-        talisman = Talisman(app)
+elif 'DEV' in ENV_TYPE:
+    # Running crash reporting in dev when DEBUG is off, but not on individual machines.
+    if DEBUG == False:
         print("Registering Crash Mailer")
+        crash_mailer(app,ENV_TYPE,HOSTNAME)
+    log_handler(app)
+    CORS(app, resources={r"*": {"origins": "*"}})
 
-    elif 'DEV' in ENV_TYPE:
-        # Running crash reporting in dev when DEBUG is off, but not on individual machines.
-        if DEBUG == False:
-            print("Registering Crash Mailer")
-            crash_mailer(app,ENV_TYPE,HOSTNAME)
-        log_handler(app)
-        CORS(app, resources={r"*": {"origins": "*"}})
+else:
+    if DEBUG == False:
+        app.debug = False
     else:
-        if DEBUG == False:
-            app.debug = False
-        else:
-            app.debug = True
-        CORS(app, resources={r"*": {"origins": "*"}})
+        app.debug = True
+    CORS(app, resources={r"*": {"origins": "*"}})
 
-        def add_cors_headers(response):
-            response.headers['Access-Control-Allow-Origin'] = '*'
-            if request.method == 'OPTIONS':
-                response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT'
-                headers = request.headers.get('Access-Control-Request-Headers')
-                if headers:
-                    response.headers['Access-Control-Allow-Headers'] = headers
-            return response
+    def add_cors_headers(response):
+        response.headers['Access-Control-Allow-Origin'] = '*'
+        if request.method == 'OPTIONS':
+            response.headers['Access-Control-Allow-Methods'] = 'DELETE, GET, POST, PUT'
+            headers = request.headers.get('Access-Control-Request-Headers')
+            if headers:
+                response.headers['Access-Control-Allow-Headers'] = headers
+        return response
 
-        app.after_request(add_cors_headers)
-        log_handler(app)
 
-    @app.errorhandler(500)
-    def do500(e):
-        return render_template("global_templates/500.html"), 500
+    app.after_request(add_cors_headers)
 
-    @app.errorhandler(404)
-    def do404(e):
-        return render_template("global_templates/404.html"), 404
+    log_handler(app)
 
-    @app.errorhandler(403)
-    def do403(e):
-        return render_template("global_templates/403.html"), 403
-
-    print("app initialized")
-
-    return db,jwt,api

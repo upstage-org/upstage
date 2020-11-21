@@ -8,7 +8,7 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import initialize_microservice,app,api,jwt,db
+from config.project_globals import initialize_microservice,app
 from flask import Flask, Blueprint
 
 app = Flask(__name__,instance_relative_config=True)

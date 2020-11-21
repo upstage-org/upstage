@@ -14,7 +14,7 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import Base,metadata,DBSession,ScopedSession
+from config.project_globals import Base,metadata,DBSession,ScopedSession,db,app
 
 from flask import  request, redirect, render_template
 
@@ -25,9 +25,6 @@ from sqlalchemy.dialects.postgresql.base import INET, TSVECTOR
 from sqlalchemy.sql.expression import func, or_, not_, and_
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
-
-from auth import db,app
-db.init_app(app)
 
 from user.models import User
 

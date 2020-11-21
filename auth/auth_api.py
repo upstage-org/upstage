@@ -31,9 +31,7 @@ from flask_jwt_extended import (jwt_required,get_jwt_identity,
     verify_jwt_in_request)
 from flask_jwt_extended import utils as jwt_utils
 
-from auth import app,db,jwt,api
-
-from config.project_globals import DBSession,Base,metadata,engine,ScopedSession
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db
 from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
     GOOGLE_WEB_CLIENT_ID,GOOGLE_TOKEN_VERIFY,FACEBOOK_ACCESS_TOKEN_CREATE,
     FACEBOOK_TOKEN_VERIFY,APPLE_APP_ID,APPLE_APP_SECRET,APPLE_ACCESS_TOKEN_CREATE,
@@ -44,7 +42,6 @@ from utils.formatting import to_dict
 
 from user.models import (User,ROLES,PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR,SUPER_ADMIN)
 
-from auth import app,jwt,api,db
 from jwt import ExpiredSignatureError
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,

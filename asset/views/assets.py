@@ -8,12 +8,13 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from flask import Flask, Blueprint, jsonify, request, url_for, send_file
+from config.project_globals import app
+from config.settings import URL_PREFIX
 
-from asset.views import app
+from flask import jsonify, request, url_for, send_file
 from asset.system import create_asset, one_asset, all_assets, save_file, access, update_asset, remove_asset
 
-blueprint = Blueprint("assets", __name__)
+BASE_URL='/{0}asset'.format(URL_PREFIX)
 
 def marshall(asset):
     return {
@@ -24,7 +25,7 @@ def marshall(asset):
     }
 
 
-@blueprint.route("/", methods=["POST"])
+@app.route(f"{BASE_URL}/", methods=["POST"])
 def assets_create():
     if all([x in request.form for x in ["name", "description"]]):
         if "file" not in request.files:
@@ -58,7 +59,7 @@ def assets_create():
         return "Name or description not specified", 400
 
 
-@blueprint.route("/", methods=["GET"])
+@app.route(f"{BASE_URL}/", methods=["GET"])
 def assets_list():
     assets = all_assets()
     output = []
@@ -67,7 +68,7 @@ def assets_list():
     return jsonify(output)
 
 
-@blueprint.route("/<int:id>", methods=["GET"])
+@app.route(f"{BASE_URL}/<int:id>/", methods=["GET"])
 def asset_get(id):
     asset = one_asset(id=id)
     if asset:
@@ -76,7 +77,7 @@ def asset_get(id):
         return f"No asset with ID: {id}", 404
 
 
-@blueprint.route("/<int:id>", methods=["PATCH"])
+@app.route(f"{BASE_URL}/<int:id>", methods=["PATCH"])
 def asset_update(id):
     asset = one_asset(id=id)
     if asset:
@@ -101,7 +102,7 @@ def asset_update(id):
         return f"No asset with ID: {id}", 404
 
 
-@blueprint.route("/<int:id>", methods=["DELETE"])
+@app.route(f"{BASE_URL}/<int:id>", methods=["DELETE"])
 def asset_remove(id):
     if remove_asset(id=id):
         return f"Asset removed: {id}", 200
@@ -109,7 +110,7 @@ def asset_remove(id):
         return f"Failed to remove asset: {id}", 500
 
 
-@blueprint.route("/<string:path>", methods=["GET"])
+@app.route(f"{BASE_URL}/<string:path>", methods=["GET"])
 def asset_access(path):
     file_location = access(path)
     if file_location:

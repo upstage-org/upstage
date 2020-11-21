@@ -36,6 +36,5 @@ def replace_pass(the_id,new_password):
     db_session.close()
 
 if __name__ == "__main__":
-    import pdb;pdb.set_trace()
     replace_pass(363,'nnnnnnnnnnnnnnnn')
    

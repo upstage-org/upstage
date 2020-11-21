@@ -21,10 +21,8 @@ from flask_restx import Resource, Api, fields, marshal_with, reqparse, abort
 from flask import request, redirect, render_template, make_response
 from sqlalchemy import func
 
-from user import app,api,jwt,db
-from auth.auth_api import jwt_required,get_jwt_identity
-
-from config.project_globals import DBSession,Base,metadata,engine,ScopedSession
+from auth.auth_api import jwt_required
+from config.project_globals import DBSession,Base,metadata,engine,ScopedSession,app,db
 from config.settings import ENV_TYPE, URL_PREFIX
 
 from config.signals import add_signals
@@ -40,7 +38,7 @@ from auth.models import (UserSession,
 from auth import fernet_crypto
 from auth.auth_api import TNL
 
-#BASE_URL='/{0}user'.format(URL_PREFIX)
+BASE_URL='/{0}user'.format(URL_PREFIX)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 @app.route('/{0}crash/'.format(URL_PREFIX),methods=['GET'])
