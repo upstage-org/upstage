@@ -2,46 +2,92 @@
   <v-container fluid class=" mb-6 dashboard-container">
     <v-row no-gutters class="stage-row">
       <v-col class="stage-menu" cols="2">
-        <v-img src="@/assets/upstage.png"></v-img>
-        <v-list>
+        <h2>Tools</h2>
+        <v-list class="stage-menu-list">
           <v-list-item>statistics</v-list-item>
           <v-list-item>statement</v-list-item>
           <v-list-item>live</v-list-item>
           <v-list-item>avatar</v-list-item>
           <v-list-item>scene</v-list-item>
-          <v-select :items="items" label="Solo field" dense solo></v-select>
+          <v-select
+            v-show="client.connected"
+            :items="items"
+            label="Select Channel to connect"
+            dense
+            solo
+            v-on:input="doSubscribe"
+          ></v-select>
         </v-list>
       </v-col>
       <v-col class="stage-board" cols="7"> </v-col>
       <v-col class="stage-chat" cols="3">
         <div class="stage-chat-board">
-          <v-list>
+          <v-row no-gutters>
+            <v-col cols="6">
+              <v-chip :class="[subscribeSuccess ? 'v-chip-live' : '']"
+                >Live</v-chip
+              >
+            </v-col>
+            <v-col cols="6"><v-img src="@/assets/upstage.png"></v-img></v-col>
+          </v-row>
+          <v-row v-for="chat in chats" :key="chat.title">
+            <v-chip class="ma-2" label light>
+              <v-icon left>
+                mdi-account-circle-outline
+              </v-icon>
+
+              <span :style="{ color: chatColor }">{{ chat.message }}</span>
+            </v-chip></v-row
+          >
+          <!-- <v-list>
             <v-list-item v-for="chat in chats" :key="chat.title">
               <v-list-item-avatar>
                 <v-img src="@/assets/defaultava.png"></v-img>
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title v-html="chat.title"></v-list-item-title>
+                <v-list-item-title
+                  :style="{ color: chatColor }"
+                  v-html="chat.user"
+                ></v-list-item-title>
                 <v-list-item-subtitle
-                  v-html="chat.subtitle"
+                  v-html="chat.message"
                 ></v-list-item-subtitle>
               </v-list-item-content>
             </v-list-item>
-          </v-list>
+          </v-list> -->
         </div>
         <v-text-field
           v-model="message"
           label="Enter Message"
-          append-outer-icon="mdi-emoticon-outline"
+          append-icon="mdi-emoticon-outline"
+          @keyup.enter="doPublish"
+          @click:append="show"
         ></v-text-field>
-        <v-btn tile color="success" @click="addShape">
+        <v-menu
+          v-model="showMenu"
+          :position-x="x"
+          :position-y="y"
+          absolute
+          offset-y
+        >
+          <v-card>
+            <v-row>
+              <v-col
+                v-for="shape in listShapes"
+                :key="shape"
+                @click="doPublishShape(shape)"
+                ><v-icon>mdi-{{ shape }}</v-icon></v-col
+              >
+            </v-row>
+          </v-card>
+        </v-menu>
+        <v-btn tile color="success" @click="doPublish">
           <v-icon left>
             mdi-send
           </v-icon>
           Send
         </v-btn>
-        <v-btn @click="createConnection">Connect</v-btn>
       </v-col>
     </v-row>
   </v-container>
@@ -49,33 +95,39 @@
 
 <script>
 import { shapeCommand } from "@/utils/constants";
+import { isJson, getRandomColor } from "@/utils/common";
+import { v4 as uuidv4 } from "uuid";
 import mqtt from "mqtt";
 export default {
   data: () => ({
+    showMenu: false,
+    x: 0,
+    y: 0,
     model: 0,
     colors: ["primary", "secondary", "yellow darken-2", "red", "orange"],
     message: "",
     items: ["Stage Test"],
     chats: [],
+    chatColor: "",
+    shape: [],
+    listShapes: ["square", "circle", "triangle"],
     connection: {
-      host: "broker.emqx.io",
-      port: 8083,
+      host: "128.199.69.170",
+      port: 9001,
       endpoint: "/mqtt",
       clean: true, // Reserved session
       connectTimeout: 4000, // Time out
       reconnectPeriod: 4000, // Reconnection interval
       // Certification Information
-      clientId: "mqttjs_3be2c321",
-      username: "emqx_test",
-      password: "emqx_test",
+      retain: true,
     },
     subscription: {
-      topic: "topic/mqttx",
-      qos: 0,
+      topic: "topic/commands",
+      qos: 1,
     },
     publish: {
-      topic: "topic/command",
-      qos: 2,
+      topic: "topic/commands",
+      qos: 1,
       payload: '{ "msg": "Hello, I am browser." }',
     },
     receiveNews: "",
@@ -91,39 +143,46 @@ export default {
   }),
   created() {
     this.$store.dispatch("user/fetchCurrent");
+    this.createConnection();
+    this.chatColor = getRandomColor();
   },
   methods: {
-    addShape() {
-      if (shapeCommand[this.message]) {
+    show(e) {
+      e.preventDefault();
+      this.showMenu = false;
+      this.x = e.clientX;
+      this.y = e.clientY - 100;
+      this.$nextTick(() => {
+        this.showMenu = true;
+      });
+    },
+    addShape(e) {
+      if (shapeCommand[e]) {
         const target = document.getElementsByClassName("stage-board");
         const temp = document.createElement("span");
-        const classname = shapeCommand[this.message];
+        const classname = shapeCommand[e];
         temp.className = classname;
         target[0].appendChild(temp);
-      } else {
-        const newMessage = {
-          title: "unititled",
-          subtitle: this.message,
-        };
-        this.chats.push(newMessage);
       }
-      this.message = "";
     },
     // Create connection
     createConnection() {
-      // Connect string, and specify the connection method used through protocol
-      // ws unencrypted WebSocket connection
-      // wss encrypted WebSocket connection
-      // mqtt unencrypted TCP connection
-      // mqtts encrypted TCP connection
-      // wxs WeChat mini app connection
-      // alis Alipay mini app connection
+      // 连接字符串, 通过协议指定使用的连接方式
+      // ws 未加密 WebSocket 连接
+      // wss 加密 WebSocket 连接
+      // mqtt 未加密 TCP 连接
+      // mqtts 加密 TCP 连接
+      // wxs 微信小程序连接
+      // alis 支付宝小程序连接
       const { host, port, endpoint, ...options } = this.connection;
-      const connectUrl = `mqtt://${host}:${port}${endpoint}`;
-
+      const connectUrl = `ws://${host}:${port}${endpoint}`;
       try {
-        this.client = mqtt.connect(connectUrl, options);
-        console.log(connectUrl);
+        const clientId = uuidv4();
+        console.log(clientId);
+        this.client = mqtt.connect(connectUrl, {
+          ...options,
+          clientId,
+        });
       } catch (error) {
         console.log("mqtt.connect error", error);
       }
@@ -134,21 +193,101 @@ export default {
         console.log("Connection failed", error);
       });
       this.client.on("message", (topic, message) => {
-        this.receiveNews = this.receiveNews.concat(message);
-        console.log(`Received message ${message} from topic ${topic}`);
+        const arr = new TextDecoder().decode(new Uint8Array(message));
+
+        if (topic === "topic/commands") {
+          const convertedMessage = (isJson(arr) && JSON.parse(arr)) || arr;
+          const modelMessage = {};
+          if (typeof convertedMessage === "object") {
+            modelMessage.user = convertedMessage.user;
+            modelMessage.message = convertedMessage.message;
+          } else {
+            modelMessage.user = "Anonymous";
+            modelMessage.message = convertedMessage;
+          }
+          this.chats.push(modelMessage);
+        } else if (topic === "topic/board") {
+          this.addShape(arr);
+        }
       });
     },
+    // 订阅主题
     doSubscribe() {
       const { topic, qos } = this.subscription;
-      this.client.subscribe(topic, { qos }, (error, res) => {
-        if (error) {
-          console.log("Subscribe to topics error", error);
-          return;
+      this.client.subscribe(
+        { [topic]: { qos: 2 }, "topic/board": { qos: 2 } },
+        { qos },
+        (error, res) => {
+          if (error) {
+            console.log("Subscribe to topics error", error);
+            return;
+          }
+          this.subscribeSuccess = true;
+          console.log("Subscribe to topics res", res);
         }
-        this.subscribeSuccess = true;
-        console.log("Subscribe to topics res", res);
+      );
+    },
+    doPublishShape(e) {
+      const topic = "topic/board";
+      const shapeMessage = e;
+      this.client.publish(topic, shapeMessage, { qos: 2 });
+    },
+    // 取消订阅
+    doUnSubscribe() {
+      const { topic } = this.subscription;
+      this.client.unsubscribe(topic, (error) => {
+        if (error) {
+          console.log("Unsubscribe error", error);
+        }
       });
     },
+    // 发送消息
+    doPublish() {
+      const { topic, qos } = this.publish;
+      const currentUser = this.$store.getters["user/getCurrentUser"];
+      if (!this.message) return;
+      const messageModel = {
+        user: currentUser,
+        message: this.message,
+      };
+      const converted = JSON.stringify(messageModel);
+      this.client.publish(
+        topic,
+        converted,
+        {
+          qos,
+          retain: true,
+          properties: {
+            userProperties: "Anh Khoa",
+          },
+        },
+        (error) => {
+          this.message = "";
+          console.log(topic, this.message);
+          if (error) {
+            console.log("Publish error", error);
+          }
+        }
+      );
+    },
+    // 断开连接
+    destroyConnection() {
+      if (this.client.connected) {
+        try {
+          this.client.end();
+          this.client = {
+            connected: false,
+          };
+          console.log("Successfully disconnected!");
+        } catch (error) {
+          console.log("Disconnect failed", error.toString());
+        }
+      }
+    },
+  },
+
+  beforeDestroy() {
+    this.destroyConnection();
   },
 };
 </script>
@@ -157,7 +296,21 @@ export default {
 .dashboard-container {
   height: 100%;
   padding: 0;
-  border: 5px solid #006600 !important;
+}
+.stage-menu {
+  background-color: #808080;
+}
+.stage-menu-list {
+  background: transparent !important;
+}
+.v-list {
+  margin-bottom: 0;
+  padding: 0;
+}
+.v-list-item {
+  background-color: #fafafa;
+  margin: 8px 16px;
+  border-radius: 3px;
 }
 .stage-row {
   height: 100%;
@@ -167,9 +320,9 @@ export default {
 }
 .stage-chat {
   padding: 8px !important;
+  background-color: #363636;
 }
 .stage-chat-board {
-  border: 5px solid green !important;
   height: 80%;
 }
 .stage-shape {
@@ -203,5 +356,19 @@ export default {
   border-left: 18px solid transparent;
   border-right: 18px solid transparent;
   border-bottom: 40px solid red;
+}
+.v-icon {
+  cursor: pointer;
+  padding: 0 4px;
+}
+.v-chip {
+  background-color: white;
+}
+.v-chip p {
+  margin-bottom: 0;
+}
+.v-chip-live {
+  background-color: red !important;
+  color: white !important;
 }
 </style>

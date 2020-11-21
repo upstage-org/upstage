@@ -46,7 +46,10 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const token = store.getters["auth/getToken"] || "";
 
-    if (error?.response?.status === 401 && token && token.length > 0) {
+    if (
+      error?.response?.status === 401 ||
+      (error?.response?.status && token && token.length > 0)
+    ) {
       const originalRequest = error.config;
       if (originalRequest.url.indexOf("access_token/refresh") > 0) {
         router.push("/login");
