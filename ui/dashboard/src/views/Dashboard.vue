@@ -2,8 +2,8 @@
   <v-container fluid class=" mb-6 dashboard-container">
     <v-row no-gutters class="stage-row">
       <v-col class="stage-menu" cols="2">
-        <v-img src="@/assets/upstage.png"></v-img>
-        <v-list>
+        <h2>Tools</h2>
+        <v-list class="stage-menu-list">
           <v-list-item>statistics</v-list-item>
           <v-list-item>statement</v-list-item>
           <v-list-item>live</v-list-item>
@@ -22,6 +22,10 @@
       <v-col class="stage-board" cols="7"> </v-col>
       <v-col class="stage-chat" cols="3">
         <div class="stage-chat-board">
+          <v-row no-gutters>
+            <v-col cols="6">Live</v-col>
+            <v-col cols="6"><v-img src="@/assets/upstage.png"></v-img></v-col>
+          </v-row>
           <v-list>
             <v-list-item v-for="chat in chats" :key="chat.title">
               <v-list-item-avatar>
@@ -29,7 +33,10 @@
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title v-html="chat.user"></v-list-item-title>
+                <v-list-item-title
+                  :style="{ color: chatColor }"
+                  v-html="chat.user"
+                ></v-list-item-title>
                 <v-list-item-subtitle
                   v-html="chat.message"
                 ></v-list-item-subtitle>
@@ -40,8 +47,28 @@
         <v-text-field
           v-model="message"
           label="Enter Message"
-          append-outer-icon="mdi-emoticon-outline"
+          append-icon="mdi-emoticon-outline"
+          @keyup.enter="doPublish"
+          @click:append="show"
         ></v-text-field>
+        <v-menu
+          v-model="showMenu"
+          :position-x="x"
+          :position-y="y"
+          absolute
+          offset-y
+        >
+          <v-card>
+            <v-row>
+              <v-col
+                v-for="shape in listShapes"
+                :key="shape"
+                @click="doPublishShape(shape)"
+                ><v-icon>mdi-{{ shape }}</v-icon></v-col
+              >
+            </v-row>
+          </v-card>
+        </v-menu>
         <v-btn tile color="success" @click="doPublish">
           <v-icon left>
             mdi-send
@@ -55,15 +82,22 @@
 
 <script>
 import { shapeCommand } from "@/utils/constants";
-import { isJson } from "@/utils/common";
+import { isJson, getRandomColor } from "@/utils/common";
+import { v4 as uuidv4 } from "uuid";
 import mqtt from "mqtt";
 export default {
   data: () => ({
+    showMenu: false,
+    x: 0,
+    y: 0,
     model: 0,
     colors: ["primary", "secondary", "yellow darken-2", "red", "orange"],
     message: "",
     items: ["Stage Test"],
     chats: [],
+    chatColor: "",
+    shape: [],
+    listShapes: ["square", "circle", "triangle"],
     connection: {
       host: "128.199.69.170",
       port: 9001,
@@ -72,7 +106,7 @@ export default {
       connectTimeout: 4000, // Time out
       reconnectPeriod: 4000, // Reconnection interval
       // Certification Information
-      clientId: "koha_testabc",
+      retain: true,
     },
     subscription: {
       topic: "topic/commands",
@@ -97,23 +131,26 @@ export default {
   created() {
     this.$store.dispatch("user/fetchCurrent");
     this.createConnection();
+    this.chatColor = getRandomColor();
   },
   methods: {
-    addShape() {
-      if (shapeCommand[this.message]) {
+    show(e) {
+      e.preventDefault();
+      this.showMenu = false;
+      this.x = e.clientX;
+      this.y = e.clientY - 100;
+      this.$nextTick(() => {
+        this.showMenu = true;
+      });
+    },
+    addShape(e) {
+      if (shapeCommand[e]) {
         const target = document.getElementsByClassName("stage-board");
         const temp = document.createElement("span");
-        const classname = shapeCommand[this.message];
+        const classname = shapeCommand[e];
         temp.className = classname;
         target[0].appendChild(temp);
-      } else {
-        const newMessage = {
-          title: "unititled",
-          subtitle: this.message,
-        };
-        this.chats.push(newMessage);
       }
-      this.message = "";
     },
     // Create connection
     createConnection() {
@@ -127,7 +164,12 @@ export default {
       const { host, port, endpoint, ...options } = this.connection;
       const connectUrl = `ws://${host}:${port}${endpoint}`;
       try {
-        this.client = mqtt.connect(connectUrl, options);
+        const clientId = uuidv4();
+        console.log(clientId);
+        this.client = mqtt.connect(connectUrl, {
+          ...options,
+          clientId,
+        });
       } catch (error) {
         console.log("mqtt.connect error", error);
       }
@@ -139,29 +181,43 @@ export default {
       });
       this.client.on("message", (topic, message) => {
         const arr = new TextDecoder().decode(new Uint8Array(message));
-        const convertedMessage = (isJson(arr) && JSON.parse(arr)) || arr;
-        const modelMessage = {};
-        if (typeof convertedMessage === "object") {
-          modelMessage.user = convertedMessage.user;
-          modelMessage.message = convertedMessage.message;
-        } else {
-          modelMessage.user = "Anonymous";
-          modelMessage.message = convertedMessage;
+
+        if (topic === "topic/commands") {
+          const convertedMessage = (isJson(arr) && JSON.parse(arr)) || arr;
+          const modelMessage = {};
+          if (typeof convertedMessage === "object") {
+            modelMessage.user = convertedMessage.user;
+            modelMessage.message = convertedMessage.message;
+          } else {
+            modelMessage.user = "Anonymous";
+            modelMessage.message = convertedMessage;
+          }
+          this.chats.push(modelMessage);
+        } else if (topic === "topic/board") {
+          this.addShape(arr);
         }
-        this.chats.push(modelMessage);
       });
     },
     // 订阅主题
     doSubscribe() {
       const { topic, qos } = this.subscription;
-      this.client.subscribe(topic, { qos }, (error, res) => {
-        if (error) {
-          console.log("Subscribe to topics error", error);
-          return;
+      this.client.subscribe(
+        { [topic]: { qos: 2 }, "topic/board": { qos: 2 } },
+        { qos },
+        (error, res) => {
+          if (error) {
+            console.log("Subscribe to topics error", error);
+            return;
+          }
+          this.subscribeSuccess = true;
+          console.log("Subscribe to topics res", res);
         }
-        this.subscribeSuccess = true;
-        console.log("Subscribe to topics res", res);
-      });
+      );
+    },
+    doPublishShape(e) {
+      const topic = "topic/board";
+      const shapeMessage = e;
+      this.client.publish(topic, shapeMessage, { qos: 2 });
     },
     // 取消订阅
     doUnSubscribe() {
@@ -175,8 +231,10 @@ export default {
     // 发送消息
     doPublish() {
       const { topic, qos } = this.publish;
+      const currentUser = this.$store.getters["user/getCurrentUser"];
+      if (!this.message) return;
       const messageModel = {
-        user: "Khoa",
+        user: currentUser,
         message: this.message,
       };
       const converted = JSON.stringify(messageModel);
@@ -191,6 +249,7 @@ export default {
           },
         },
         (error) => {
+          this.message = "";
           console.log(topic, this.message);
           if (error) {
             console.log("Publish error", error);
@@ -224,7 +283,21 @@ export default {
 .dashboard-container {
   height: 100%;
   padding: 0;
-  border: 5px solid #006600 !important;
+}
+.stage-menu {
+  background-color: #808080;
+}
+.stage-menu-list {
+  background: transparent !important;
+}
+.v-list {
+  margin-bottom: 0;
+  padding: 0;
+}
+.v-list-item {
+  background-color: #fafafa;
+  margin: 8px 16px;
+  border-radius: 3px;
 }
 .stage-row {
   height: 100%;
@@ -234,9 +307,9 @@ export default {
 }
 .stage-chat {
   padding: 8px !important;
+  background-color: #363636;
 }
 .stage-chat-board {
-  border: 5px solid green !important;
   height: 80%;
 }
 .stage-shape {
@@ -270,5 +343,9 @@ export default {
   border-left: 18px solid transparent;
   border-right: 18px solid transparent;
   border-bottom: 40px solid red;
+}
+.v-icon {
+  cursor: pointer;
+  padding: 0 4px;
 }
 </style>
