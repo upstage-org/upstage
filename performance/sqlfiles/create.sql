@@ -1,9 +1,20 @@
 DROP TABLE IF EXISTS "parent_stage";
 CREATE TABLE "public"."parent_stage" (
     "id" BIGSERIAL NOT NULL,
-    "owner_id" integer NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    "expires_on" timestamp DEFAULT null,
+    "stage_id" integer NOT NULL,
+    "child_asset_id" integer NOT NULL,
+    FOREIGN KEY (stage_id) REFERENCES stage(id),
+    FOREIGN KEY (child_asset_id) REFERENCES asset(id),
+    PRIMARY KEY ("id")
+);
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DROP TABLE IF EXISTS "parent_asset";
+CREATE TABLE "public"."parent_stage" (
+    "id" BIGSERIAL NOT NULL,
+    "asset_id" integer NOT NULL,
+    "child_asset_id" integer NOT NULL,
+    FOREIGN KEY (asset_id) REFERENCES asset(id),
+    FOREIGN KEY (child_asset_id) REFERENCES asset(id),
     PRIMARY KEY ("id")
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -18,64 +29,20 @@ CREATE TABLE "public"."performance" (
     PRIMARY KEY ("id")
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "asset";
-CREATE TABLE "public"."asset" (
+DROP TABLE IF EXISTS "scene";
+CREATE TABLE "public"."scene" (
     "id" BIGSERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "asset_type_id" integer NOT NULL,
-    "owner_id" integer NOT NULL,
-    "description" text NOT NULL,
-    "file_location" character varying NOT NULL,
+    "name" TEXT not null,
+    "scene_order" integer not null default 0,
+    "owner_id" integer not null default 0,
+    "description" TEXT not null,
     "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    PRIMARY KEY ("id"),
-    FOREIGN KEY (asset_type_id) REFERENCES asset_type(id),
-    FOREIGN KEY (owner_id) REFERENCES upstage_user(id)
+    "expires_on" timestamp DEFAULT null,
+    "parent_stage_id" integer NOT NULL,
+    "performance_id" integer NOT NULL,
+    FOREIGN KEY (parent_stage_id) REFERENCES parent_stage(id),
+    FOREIGN KEY (performnce_id) REFERENCES performance(id),
+    FOREIGN KEY (owner_id) REFERENCES owner(id),
+    PRIMARY KEY ("id")
 );
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "stage";
-CREATE TABLE "public"."stage" (
-    "id" BIGSERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" text NOT NULL,
-    "owner_id" integer NOT NULL,
-    "file_location" character varying NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    PRIMARY KEY ("id"),
-    FOREIGN KEY (owner_id) REFERENCES upstage_user(id)
-);
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "asset_license";
-CREATE TABLE "public"."asset_license" (
-    "id" BIGSERIAL NOT NULL,
-    "asset_id" integer NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    "expires_on" timestamp DEFAULT timezone('utc')) NOT NULL,
-    "access_path" character varying unique NOT NULL,
-    PRIMARY KEY ("id"),
-    FOREIGN KEY (asset_id) REFERENCES asset(id)
-);
-
-CREATE INDEX "asset_license_created_on" ON "public"."asset_license" USING btree ("created_on");
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "asset_attribute";
-CREATE TABLE "public"."asset_attribute" (
-    "id" BIGSERIAL NOT NULL,
-    "asset_id" integer NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" text NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    PRIMARY KEY ("id"),
-    FOREIGN KEY (asset_id) REFERENCES asset(id)
-);
-CREATE INDEX "asset_license_expires_on" ON "public"."asset_license" USING btree ("expires_on");
--- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "stage_attribute";
-CREATE TABLE "public"."stage_attribute" (
-    "id" BIGSERIAL NOT NULL,
-    "stage_id" integer NOT NULL,
-    "name" TEXT NOT NULL,
-    "description" text NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
-    PRIMARY KEY ("id"),
-    FOREIGN KEY (stage_id) REFERENCES stage(id)
-);
+CREATE INDEX "scene_scene_order_idx" ON "public"."scene" USING btree ("scene_order");

@@ -44,7 +44,7 @@ SECURITY_CODE_REASONS = {
 
 class JWTNoList(Base,db.Model):
     __tablename__ = 'jwt_no_list'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     token = Column(Text, nullable=False, unique=True, default='')
     token_type = Column(Text, nullable=False, default='')
     remove_after = Column(DateTime, nullable=False, default=datetime.utcnow)
@@ -52,7 +52,7 @@ class JWTNoList(Base,db.Model):
 
 class UserSession(Base,db.Model):
     __tablename__ = 'user_session'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id, deferrable=True, initially=u'DEFERRED'), nullable=False, index=True)
     access_token = Column(Text, default=None)
     refresh_token = Column(Text, default=None)
@@ -68,7 +68,7 @@ class OneTimeCode(Base, db.Model):
 
     # Unconfirmed codes are just replaced with new unconfirmed codes. 
     # Confirmed codes go into history.
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), unique=True, nullable=False, default=0)
     code = Column(Text,nullable=False,default='')
     reason = Column(Integer,nullable=False, default=0)
@@ -80,7 +80,7 @@ class OneTimeCode(Base, db.Model):
 class OneTimeCodeHistory(Base, db.Model):
     __tablename__ = 'user_one_time_code_history'
 
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer, nullable=False, index=True) # No foreign key in history records.
     code = Column(Text,nullable=False,default='')
     reason = Column(Integer,nullable=False, default=0)
@@ -91,7 +91,7 @@ class OneTimeCodeHistory(Base, db.Model):
 
 class GoogleProfile(Base, db.Model):
     __tablename__ = 'google_profile'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     google_id = Column(Text,nullable=True,default=None)
     google_phone = Column(Text,nullable=True,default=None)
@@ -104,7 +104,7 @@ class GoogleProfile(Base, db.Model):
 
 class FacebookProfile(Base, db.Model):
     __tablename__ = 'facebook_profile'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     facebook_id = Column(Text,nullable=True,default=None)
     facebook_phone = Column(Text,nullable=True,default=None)
@@ -117,7 +117,7 @@ class FacebookProfile(Base, db.Model):
 
 class AppleProfile(Base, db.Model):
     __tablename__ = 'apple_profile'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), nullable=True, default=None)
     apple_id = Column(Text,nullable=True,default=None)
     apple_phone = Column(Text,nullable=True,default=None)

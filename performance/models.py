@@ -18,8 +18,8 @@ from user.models import User
 from asset.models import Asset,Stage
 
 '''
-A performance is comprised of one or more Scenes. Scenes have an ordering,
-and direct us on which assets are needed when, in a performance. 
+A performance is comprised of one or more Scenes. Scenes belong to a specific "parent stage",
+and have an ordering. Scenes direct the back end on which assets are needed when, in a performance. 
 Assets follow a hierarchy when rendering for a performance.
 '''
 class ParentStage(Base,db.Model):
@@ -48,19 +48,6 @@ class ParentAsset(Base,db.Model):
     asset = relationship(Asset, foreign_keys=[asset_id])
     child_asset = relationship(Asset, foreign_keys=[child_asset_id])
 
-class Scene(Base,db.Model):
-    __tablename__ = "scene"
-    id = Column(BigInteger, primary_key=True)
-    name = Column(String, nullable=False)
-    scene_ordering = Column(Integer, nullable=False, default=0)
-    owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
-    description = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
-    expires_on = Column(DateTime, nullable=False, default=None)
-    parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
-    owner = relationship(User, foreign_keys=[owner_id])
-    parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
-
 class Performance(Base,db.Model):
     __tablename__ = "performance"
     id = Column(BigInteger, primary_key=True)
@@ -70,9 +57,19 @@ class Performance(Base,db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     expires_on = Column(DateTime, nullable=False, default=None)
 
-class ScenePerformance(Base,db.Model):
-    __tablename__ = "scene_performance"
+class Scene(Base,db.Model):
+    __tablename__ = "scene"
     id = Column(BigInteger, primary_key=True)
-    scene_id = Column(Integer, ForeignKey(Scene.id), nullable=False, default=0)
-    performance_id = Column(Integer, ForeignKey(Performance.id), nullable=False, default=0)
+    name = Column(String, nullable=False)
+    scene_order = Column(Integer, index=True, nullable=False, default=0)
+    owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=False)
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    expires_on = Column(DateTime, nullable=False, default=None)
+    parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
+    # A scene can ony belong to one performance. They shouldn't be reused, although
+    # maybe we should let them be copied?
+    performance_id = Column(Integer, ForeignKey(Performance_id.id), nullable=False, default=0)
+    owner = relationship(User, foreign_keys=[owner_id])
+    parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
+    performance = relationship(Performance, foreign_keys=[performance_id])
