@@ -55,7 +55,7 @@ class Stage(Base,db.Model):
     owner = relationship(User, foreign_keys=[owner_id])
 
 class AssetLicense(Base,db.Model):
-    __tablename__ = "asset_licenses"
+    __tablename__ = "asset_license"
     id = Column(BigInteger, primary_key=True)
     asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())

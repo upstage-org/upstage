@@ -1,13 +1,13 @@
-CREATE TABLE jwt_no_list (
-        id SERIAL NOT NULL,
-        token TEXT unique not null default '',
-        token_type TEXT not null default '',
+CREATE TABLE public.jwt_no_list (
+        id BIGSERIAL NOT NULL,
+        token TEXT unique not null
+        token_type TEXT not null,
         remove_after timestamp without time zone default (now() at time zone 'utc'),
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE user_session (
-        id SERIAL NOT NULL,
+CREATE TABLE public.user_session (
+        id BIGSERIAL NOT NULL,
         user_id INTEGER not null default 0,
         access_token TEXT NOT NULL default '',
         refresh_token TEXT NOT NULL default '',
@@ -20,8 +20,8 @@ CREATE TABLE user_session (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE google_profile (
-        id SERIAL NOT NULL,
+CREATE TABLE public.google_profile (
+        id BIGSERIAL NOT NULL,
         user_id INTEGER default null,
         google_id TEXT NOT NULL default '',
         google_phone TEXT default null,
@@ -35,8 +35,8 @@ CREATE TABLE google_profile (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE facebook_profile (
-        id SERIAL NOT NULL,
+CREATE TABLE public.facebook_profile (
+        id BIGSERIAL NOT NULL,
         user_id INTEGER default null,
         facebook_id TEXT NOT NULL default '',
         facebook_phone TEXT default null,
@@ -50,8 +50,8 @@ CREATE TABLE facebook_profile (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE apple_profile (
-        id SERIAL NOT NULL,
+CREATE TABLE public.apple_profile (
+        id BIGSERIAL NOT NULL,
         user_id INTEGER default null,
         apple_id TEXT NOT NULL default '',
         apple_phone TEXT default null,

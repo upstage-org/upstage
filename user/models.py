@@ -50,7 +50,7 @@ def role_conv(roles_bitmask):
 
 class User(Base,db.Model):
     __tablename__ = 'upstage_user'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     username = Column(Text, nullable=False, unique=True, default='')
     password = Column(Text, nullable=False, default='')
     email = Column(Text, nullable=False, unique=True, default='')
@@ -72,14 +72,14 @@ class User(Base,db.Model):
 
 class UserPushnot(Base,db.Model):
     __tablename__ = 'user_pushnot'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
     push_notification = Column(Text, nullable=False, default='')
     user = relationship(User, foreign_keys=[user_id])
 
 class UserPortalConfig(Base,db.Model):
     __tablename__ = 'user_portal_config'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), unique=True,nullable=False, default=0)
     json_config = Column(Text, nullable=False, default='{"viewing_timezone":"US/Eastern"}')
     user = relationship(User, foreign_keys=[user_id])
@@ -89,7 +89,7 @@ class OneTimeTOTPQRURL(Base, db.Model):
 
     # This is a one-time link to get the QR code for the TOTP secret, for Google Authenticator, etc.
     # Only admins use this, in the portal.
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer,ForeignKey(User.id), unique=True, nullable=False, default=0)
     url = Column(Text,nullable=False,default='')
     code = Column(Text,nullable=False,default='')

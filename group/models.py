@@ -32,13 +32,13 @@ A user belonging to a group can see all assets/stages belonging to that group.
 '''
 class Group(Base,db.Model):
     __tablename__ = 'upstage_group'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     description = Column(Text)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
 
 class AssetGroup(Base,db.Model):
     __tablename__ = 'asset_group'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     description = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     asset_id = Column(Integer,ForeignKey(Asset.id), nullable=False, default=0)
@@ -48,7 +48,7 @@ class AssetGroup(Base,db.Model):
 
 class StageGroup(Base,db.Model):
     __tablename__ = 'stage_group'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     description = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     stage_id = Column(Integer,ForeignKey(Stage.id), nullable=False, default=0)
@@ -58,7 +58,7 @@ class StageGroup(Base,db.Model):
 
 class UserGroup(Base,db.Model):
     __tablename__ = 'user_group'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     notes = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
@@ -68,7 +68,7 @@ class UserGroup(Base,db.Model):
 
 class UserAsset(Base,db.Model):
     __tablename__ = 'user_asset'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     notes = Column(Text)
     asset_id = Column(Integer,ForeignKey(Asset.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
@@ -78,7 +78,7 @@ class UserAsset(Base,db.Model):
 
 class UserStage(Base,db.Model):
     __tablename__ = 'user_stage'
-    id = Column(Integer, primary_key=True)
+    id = Column(BigInteger, primary_key=True)
     notes = Column(Text)
     stage_id = Column(Integer,ForeignKey(Stage.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)

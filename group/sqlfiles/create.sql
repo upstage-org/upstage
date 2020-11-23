@@ -1,13 +1,13 @@
-CREATE TABLE upstage_group (
+CREATE TABLE public.upstage_group (
         id BIGSERIAL NOT NULL,
-        description TEXT not null default '',
+        description TEXT default null,
         created_on timestamp without time zone default (now() at time zone 'utc'),
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE asset_group (
+CREATE TABLE public.asset_group (
         id BIGSERIAL NOT NULL,
-        description TEXT not null default '',
+        description TEXT default null,
         group_id INTEGER NOT NULL DEFAULT 0,
         asset_id INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY(group_id) REFERENCES upstage_group (id),
@@ -16,9 +16,9 @@ CREATE TABLE asset_group (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE stage_group (
+CREATE TABLE public.stage_group (
         id BIGSERIAL NOT NULL,
-        description TEXT not null default '',
+        description TEXT default null,
         group_id INTEGER NOT NULL DEFAULT 0,
         stage_id INTEGER NOT NULL DEFAULT 0,
         FOREIGN KEY(group_id) REFERENCES upstage_group (id),
@@ -27,7 +27,7 @@ CREATE TABLE stage_group (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE user_group (
+CREATE TABLE public.user_group (
         id BIGSERIAL NOT NULL,
         notes TEXT default null,
         group_id INTEGER NOT NULL DEFAULT 0,
@@ -38,7 +38,7 @@ CREATE TABLE user_group (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE user_asset (
+CREATE TABLE public.user_asset (
         id BIGSERIAL NOT NULL,
         notes TEXT default null,
         asset_id INTEGER NOT NULL DEFAULT 0,
@@ -49,7 +49,7 @@ CREATE TABLE user_asset (
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-CREATE TABLE user_stage (
+CREATE TABLE public.user_stage (
         id BIGSERIAL NOT NULL,
         notes TEXT default null,
         stage_id INTEGER NOT NULL DEFAULT 0,
