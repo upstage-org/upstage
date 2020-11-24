@@ -36,7 +36,7 @@
                 mdi-account-circle-outline
               </v-icon>
 
-              <span :style="{ color: chatColor }">{{ chat.message }}</span>
+              <span :style="{ color: chat.color }">{{ chat.message }}</span>
             </v-chip></v-row
           >
           <!-- <v-list>
@@ -162,6 +162,7 @@ export default {
         const temp = document.createElement("span");
         const classname = shapeCommand[e];
         temp.className = classname;
+        temp.setAttribute("style", `background-color: ${this.chatColor}`);
         target[0].appendChild(temp);
       }
     },
@@ -201,9 +202,11 @@ export default {
           if (typeof convertedMessage === "object") {
             modelMessage.user = convertedMessage.user;
             modelMessage.message = convertedMessage.message;
+            modelMessage.color = convertedMessage.color;
           } else {
             modelMessage.user = "Anonymous";
             modelMessage.message = convertedMessage;
+            modelMessage.color = "#000000";
           }
           this.chats.push(modelMessage);
         } else if (topic === "topic/board") {
@@ -249,6 +252,7 @@ export default {
       const messageModel = {
         user: currentUser,
         message: this.message,
+        color: this.chatColor,
       };
       const converted = JSON.stringify(messageModel);
       this.client.publish(
