@@ -1,5 +1,5 @@
 export const shapeCommand = {
-  circle: "stage-shape circle bgc-red",
+  circle: "stage-shape circle ",
   triangle: "stage-shape triangle",
-  square: "stage-shape square bgc-red",
+  square: "stage-shape square ",
 };
