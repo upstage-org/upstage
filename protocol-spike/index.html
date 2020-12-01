@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol Spike</title>
+</head>
+<body>
+    <div id="controls">
+        <p>Connection: <span id="connectionStatus" class="bad">Offline</span></p>
+        <fieldset>
+            <legend>Movement</legend>
+            <label for="movementSpeed">Duration (ms)</label>
+            <input type="number" id="movementDuration" value="3000">
+            <label for="easingSelector">Easing</label>
+            <select id="easingSelector"></select>
+        </fieldset>
+        <fieldset id="avatarSelector">
+            <legend>Avatars</legend>
+            <img class="avatar" src="200px-Snoopy_Peanuts.png" draggable="true">
+        </fieldset>
+    </div>
+    <div id="stage"></div>
+    <script src="anime.min.js"></script>
+    <script src="mqttws31.min.js"></script>
+    <script src="utils.js"></script>
+    <script src="protocol.js"></script>
+    <script src="actions.js"></script>
+    <script src="events.js"></script>
+    <script src="init.js"></script>
+    <link rel="stylesheet" href="style.css">
+</body>
+</html>
