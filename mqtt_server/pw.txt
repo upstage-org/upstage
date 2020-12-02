@@ -1,0 +1,2 @@
+performance:change_me
+admin:change_me_too
