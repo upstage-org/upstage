@@ -9,12 +9,12 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
+from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text, Boolean
 from sqlalchemy.orm import relationship
 
 from config.project_globals import db,Base,metadata,app,api,DBSession
 from user.models import User
-from asset.models import Asset,Stage,
+from asset.models import Asset,Stage
 
 
 class StageLicense(Base,db.Model):

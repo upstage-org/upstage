@@ -12,7 +12,7 @@ from config.project_globals import app
 from config.settings import URL_PREFIX
 
 from flask import jsonify, request, url_for, send_file
-from asset.system import create_asset, one_asset, all_assets, save_file, access, update_asset, remove_asset
+from asset.system import create_asset, one_asset, all_assets, save_file, update_asset, remove_asset
 
 BASE_URL='/{0}asset'.format(URL_PREFIX)
 
