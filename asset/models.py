@@ -54,15 +54,6 @@ class Stage(Base,db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     owner = relationship(User, foreign_keys=[owner_id])
 
-class AssetLicense(Base,db.Model):
-    __tablename__ = "asset_license"
-    id = Column(BigInteger, primary_key=True)
-    asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
-    expires_on = Column(DateTime, nullable=True)
-    access_path = Column(String, nullable=False, unique=True)
-    asset = relationship(Asset, foreign_keys=[asset_id])
-
 class AssetAttribute(Base,db.Model):
     '''
     Attributes are the abilities of the asset: What the asset can do or be. 

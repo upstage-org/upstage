@@ -12,7 +12,8 @@ from secrets import token_urlsafe
 from werkzeug.utils import secure_filename
 
 from config.project_globals import ScopedSession,app
-from asset.models import Asset, AssetLicense
+from asset.models import Asset
+from license.models import AssetLicense
 
 def save_file(file):
     filename = secure_filename(f"{time.time()}_{file.filename}")

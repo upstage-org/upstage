@@ -22,7 +22,8 @@ from config.signals import add_signals
 from auth import auth,auth_api
 from user import user,user_api
 from asset import asset
-from asset.views import assets,licenses
+from asset.views import assets
+from license.views import licenses
 
 # Below, duplicate names are actually app names.
 # See __init__.py in each directory to verify app name.
