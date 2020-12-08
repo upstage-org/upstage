@@ -21,6 +21,9 @@ from flask.json import JSONEncoder
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
+from flask_graphql import GraphQLView
+
+from schema import schema
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -115,6 +118,21 @@ metadata = Base.metadata
 
 load_regex_converter(app)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Graphql init
+app.add_url_rule('/graphql', view_func=GraphQLView.as_view(
+    'graphql',
+    schema=schema,
+    graphiql=True,
+))
+
+# Optional, for adding batch query support (used in Apollo-Client)
+app.add_url_rule('/graphql/batch', view_func=GraphQLView.as_view(
+    'graphql',
+    schema=schema,
+    batch=True
+))
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Be sure to properly set your ENV_TYPE in config/settings/*.py
 print("Your environment type is: {0}".format(ENV_TYPE))
 

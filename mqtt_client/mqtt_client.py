@@ -18,7 +18,7 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 logging.basicConfig(filename='mqtt_client.log', level=logging.DEBUG)
-global_topic = "message/{}"
+global_topic = "performance/{}"
 global_domainname = "128.199.69.170"
 global_port = 1883
 
@@ -86,6 +86,7 @@ class MQTTClient(object):
 
     def client_start(self,on_message=None):
         self.client = mqtt.Client(client_id=self.client_id, protocol=mqtt.MQTTv5)
+        self.client.username_pw_set(username="performance",password="z48FCTsJVEUkYmtUw5S9")
         self.client.on_connect = self.on_connect
         self.client.on_disconnect = self.on_disconnect
         self.client.on_message = self.on_message if not on_message else on_message
@@ -129,7 +130,7 @@ if __name__ == "__main__":
     # Each client id has to be unique, so the origin can be identified.
     #client_id = configdata['gid'][8:].upper() + '_' + str(int(arrow.utcnow().timestamp))
     client_id = str(uuid.uuid4())
-    topic = "event"
+    topic = "performance_topic_name"
 
     if sys.argv[1] == 'publish':
         x=MQTTClient(client_id,topic)
