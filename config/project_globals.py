@@ -115,6 +115,7 @@ metadata = Base.metadata
 
 load_regex_converter(app)
 
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Be sure to properly set your ENV_TYPE in config/settings/*.py
 print("Your environment type is: {0}".format(ENV_TYPE))
 

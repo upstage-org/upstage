@@ -21,6 +21,8 @@ from asset.models import Asset,Stage
 A performance is comprised of one or more Scenes. Scenes belong to a specific "parent stage",
 and have an ordering. Scenes direct the back end on which assets are needed when, in a performance. 
 Assets follow a hierarchy when rendering for a performance.
+
+In cases where a performance has only one scene, stage and scene will be synonymous. 
 '''
 class ParentStage(Base,db.Model):
     '''
@@ -54,22 +56,52 @@ class Performance(Base,db.Model):
     name = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=False)
+    # This can contain embedded HTML/CSS.
+    splash_screen_text = Column(Text, nullable=True, default=None)
+    # comma-separated list of animation URLs
+    splash_screen_animation_urls = Column(Text, nullable=True, default=None)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     expires_on = Column(DateTime, nullable=False, default=None)
+
+    def get_animation_urls(self):
+        return self.splash_screen_animation_urls.split(',')
 
 class Scene(Base,db.Model):
     __tablename__ = "scene"
     id = Column(BigInteger, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(Text, nullable=False)
     scene_order = Column(Integer, index=True, nullable=False, default=0)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     expires_on = Column(DateTime, nullable=False, default=None)
     parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
-    # A scene can ony belong to one performance. They shouldn't be reused, although
+    # A scene can only belong to one performance. They shouldn't be reused, although
     # maybe we should let them be copied?
     performance_id = Column(Integer, ForeignKey(Performance_id.id), nullable=False, default=0)
     owner = relationship(User, foreign_keys=[owner_id])
     parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
+    performance = relationship(Performance, foreign_keys=[performance_id])
+
+class LivePerformanceCommunication(Base,db.Model):
+    # This holds the MQTT server configuration for one performance, to make connecting easier.
+    __tablename__ = "live_performance_communication"
+    id = Column(BigInteger, primary_key=True)
+    owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
+    ip_address = Column(Text, nullable=False)
+    websocket_port = Column(Integer, nullable=False, default=0)
+    webclient_port = Column(Integer, nullable=False, default=0)
+    '''
+    Performance connectionss will be namespaced by a unique string, so a user can be
+    connected to more than one stage at once.
+    The topic_name should be modified when this expires, so it can be reused
+    in the future. MQTT will send /performance/topic_name as the leading topic.
+    '''
+    topic_name = Column(Text, unique=True, nullable=False)
+    username = Column(Text, nullable=False)
+    password = Column(Text, nullable=False)
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    expires_on = Column(DateTime, nullable=False, default=None)
+    performance_id = Column(Integer, ForeignKey(Performance_id.id), nullable=False, default=0)
+    owner = relationship(User, foreign_keys=[owner_id])
     performance = relationship(Performance, foreign_keys=[performance_id])

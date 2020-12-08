@@ -23,6 +23,8 @@ CREATE TABLE "public"."performance" (
     "id" BIGSERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "splash_screen_text" TEXT default null,
+    "splash_screen_animation_urls" TEXT default null,
     "owner_id" integer NOT NULL,
     "created_on" timestamp DEFAULT (now() at time zone 'utc')),
     "expires_on" timestamp DEFAULT null,
@@ -46,3 +48,22 @@ CREATE TABLE "public"."scene" (
     PRIMARY KEY ("id")
 );
 CREATE INDEX "scene_scene_order_idx" ON "public"."scene" USING btree ("scene_order");
+-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+DROP TABLE IF EXISTS "live_performance_communication";
+CREATE TABLE "public"."live_performance_communication" (
+    "id" BIGSERIAL NOT NULL,
+    "name" TEXT not null,
+    "owner_id" integer not null default 0,
+    "ip_address" TEXT not null,
+    "websocket_port" integer not null default 0,
+    "webclient_port" integer not null default 0,
+    "topic_name" TEXT unique not null,
+    "username" TEXT not null,
+    "password" TEXT not null,
+    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
+    "expires_on" timestamp DEFAULT null,
+    "performance_id" integer NOT NULL,
+    FOREIGN KEY (performnce_id) REFERENCES performance(id),
+    FOREIGN KEY (owner_id) REFERENCES owner(id),
+    PRIMARY KEY ("id")
+);
