@@ -83,16 +83,16 @@ class Scene(Base,db.Model):
     parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
     performance = relationship(Performance, foreign_keys=[performance_id])
 
-class LivePerformanceService(Base,db.Model):
-    # This holds the MQTT server configuration, to make connecting easier.
-    __tablename__ = "live_performance_service"
+class LivePerformanceCommunication(Base,db.Model):
+    # This holds the MQTT server configuration for one performance, to make connecting easier.
+    __tablename__ = "live_performance_communication"
     id = Column(BigInteger, primary_key=True)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     ip_address = Column(Text, nullable=False)
     websocket_port = Column(Integer, nullable=False, default=0)
     webclient_port = Column(Integer, nullable=False, default=0)
     '''
-    Performances will be namespaced by a unique string, so a user can be
+    Performance connectionss will be namespaced by a unique string, so a user can be
     connected to more than one stage at once.
     The topic_name should be modified when this expires, so it can be reused
     in the future. MQTT will send /performance/topic_name as the leading topic.
