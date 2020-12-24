@@ -18,7 +18,7 @@
                   required
                 />
                 <span class="icon is-small is-left">
-                  <i class="fas fa-envelope"></i>
+                  <i class="fas fa-user"></i>
                 </span>
                 <span class="icon is-small is-right">
                   <i class="fas fa-check"></i>
@@ -43,7 +43,13 @@
           </div>
         </div>
         <footer class="card-footer">
-          <a class="card-footer-item" @click="submit">Login</a>
+          <a class="card-footer-item" @click="submit"
+            >Login
+
+            <span class="icon is-medium">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
         </footer>
       </div>
     </div>

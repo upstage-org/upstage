@@ -290,7 +290,7 @@ export default {
     },
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.destroyConnection();
   },
 };
