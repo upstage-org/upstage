@@ -1,5 +1,5 @@
 <template>
-  <div class="columns is-mobile is-centered is-vcentered is-fullheight">
+  <div class="login-page columns is-mobile is-centered is-vcentered">
     <div
       class="column is-three-quarters-mobile is-two-thirds-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd"
     >
@@ -80,7 +80,7 @@ export default {
 </script>
 
 <style>
-.is-fullheight {
-  height: 90vh;
+.login-page {
+  height: 80vh;
 }
 </style>
