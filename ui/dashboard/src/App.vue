@@ -15,8 +15,10 @@ export default {
 </script>
 
 <style lang="scss">
+html {
+  overflow-y: auto !important;
+}
 #main-content {
   min-height: calc(100vh - 120px);
-  padding: 10px;
 }
 </style>

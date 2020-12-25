@@ -1,7 +1,56 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-  </div>
+  <section class="hero is-medium is-primary is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">WHAT’S ON</h1>
+        <h2 class="subtitle">
+          <ul>
+            <li>List of live & soon-live public performances</li>
+            <li>Title, thumbnail image, brief description, more info link</li>
+            <li>Live link at show-time</li>
+          </ul>
+        </h2>
+      </div>
+    </div>
+  </section>
+  <section class="hero is-medium is-dark is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">BOX OFFICE</h1>
+        <h2 class="subtitle">
+          <ul>
+            <li>Buy tickets – link to 3rd party platform eg Eventbrite etc.</li>
+          </ul>
+        </h2>
+      </div>
+    </div>
+  </section>
+  <section class="hero is-medium is-info is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">DASHBOARD</h1>
+        <h2 class="subtitle">
+          <ul>
+            <li>player/admin login</li>
+          </ul>
+        </h2>
+      </div>
+    </div>
+  </section>
+  <section class="hero is-medium is-danger is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">LINKS</h1>
+        <h2 class="subtitle">
+          <ul>
+            <li>UpStage website</li>
+            <li>Developers</li>
+            <li>Other?</li>
+          </ul>
+        </h2>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>

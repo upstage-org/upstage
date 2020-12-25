@@ -21,7 +21,8 @@
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         <router-link class="navbar-item" to="/">Home</router-link>
-        <router-link class="navbar-item" to="/about">About</router-link>
+        <router-link class="navbar-item" to="/stage">Stages</router-link>
+        <router-link class="navbar-item" to="/dashboard">Dashboard</router-link>
 
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"> More </a>
@@ -79,8 +80,9 @@ nav {
     }
   }
   @media screen and (max-width: 1023px) {
-    .navbar-item.has-dropdown > .navbar-link {
-      display: none !important;
+    .navbar-menu {
+      position: absolute;
+      width: 100%;
     }
     .navbar-end a {
       margin-left: auto;
