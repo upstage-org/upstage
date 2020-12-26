@@ -10,7 +10,7 @@
         <div class="card-content">
           <div class="content">
             <div class="field">
-              <p class="control has-icons-left has-icons-right">
+              <p class="control has-icons-left">
                 <input
                   class="input"
                   v-model="username"
@@ -20,24 +20,27 @@
                 <span class="icon is-small is-left">
                   <i class="fas fa-user"></i>
                 </span>
-                <span class="icon is-small is-right">
-                  <i class="fas fa-check"></i>
-                </span>
               </p>
             </div>
             <div class="field">
-              <p class="control has-icons-left">
+              <p class="control has-icons-left has-icons-right">
                 <input
                   class="input"
-                  type="password"
+                  :type="showPassword ? 'text' : 'password'"
                   placeholder="Password"
                   v-model="password"
-                  password-reveal
                   required
                 />
                 <span class="icon is-small is-left">
                   <i class="fas fa-lock"></i>
                 </span>
+                <a
+                  class="icon is-small is-right"
+                  style="pointer-events: all"
+                  @click="toggleShowPassword"
+                >
+                  <i class="fas fa-eye"></i>
+                </a>
               </p>
             </div>
           </div>
@@ -66,6 +69,9 @@ export default {
     };
   },
   methods: {
+    toggleShowPassword() {
+      this.showPassword = !this.showPassword;
+    },
     submit() {
       const user = {
         username: this.username,

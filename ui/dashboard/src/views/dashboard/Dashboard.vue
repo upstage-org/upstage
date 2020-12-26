@@ -1,4 +1,16 @@
 <template>
+  <section class="hero is-medium is-primary is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">UPSTAGE DASHBOARD</h1>
+        <h2 class="subtitle">
+          <ul>
+            <li>Home page for a logged in player owner</li>
+          </ul>
+        </h2>
+      </div>
+    </div>
+  </section>
   <section class="hero is-medium is-light is-bold">
     <div class="hero-body">
       <div class="container">
@@ -25,7 +37,7 @@
       </div>
     </div>
   </section>
-  <section class="hero is-medium is-primary is-bold">
+  <section class="hero is-medium is-info is-bold">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">STAGES</h1>

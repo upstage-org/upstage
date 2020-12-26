@@ -1,10 +1,7 @@
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <router-link class="navbar-item" to="/">
-        <img src="@/assets/upstage.png" width="80" />
-      </router-link>
-
+      <Logo />
       <a
         role="button"
         class="navbar-burger"
@@ -22,7 +19,6 @@
       <div class="navbar-start">
         <router-link class="navbar-item" to="/">Home</router-link>
         <router-link class="navbar-item" to="/stage">Stages</router-link>
-        <router-link class="navbar-item" to="/dashboard">Dashboard</router-link>
 
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"> More </a>
@@ -47,7 +43,15 @@
 
       <div class="navbar-end">
         <div class="navbar-item">
-          <div class="buttons">
+          <div class="buttons" v-if="loggedIn">
+            <router-link to="/dashboard" class="button is-primary">
+              <strong>Dashboard</strong>
+            </router-link>
+            <router-link to="/logout" class="button">
+              <strong>Logout</strong>
+            </router-link>
+          </div>
+          <div class="buttons" v-else>
             <router-link to="/login" class="button is-primary">
               <strong>Login</strong>
             </router-link>
@@ -60,33 +64,27 @@
 
 <script>
 import { ref } from "vue";
+import { loggedIn } from "@/utils/auth";
+import Logo from "./Logo";
+
 export default {
+  components: { Logo },
   setup() {
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
-    return { expanded, toggleExpanded };
+    return { expanded, toggleExpanded, loggedIn };
   },
 };
 </script>
 
 <style lang="scss">
-nav {
-  a {
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      font-weight: bold;
-      color: #42b983;
-    }
+@media screen and (max-width: 1023px) {
+  .navbar-menu {
+    position: absolute;
+    width: 100%;
   }
-  @media screen and (max-width: 1023px) {
-    .navbar-menu {
-      position: absolute;
-      width: 100%;
-    }
-    .navbar-end a {
-      margin-left: auto;
-    }
+  .navbar-end a {
+    margin-left: auto;
   }
 }
 </style>
