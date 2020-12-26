@@ -1,4 +1,4 @@
-# stage-dashboard
+# dashboard
 
 ## Project setup
 ```

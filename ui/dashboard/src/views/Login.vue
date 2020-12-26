@@ -1,33 +1,59 @@
 <template>
-  <v-main>
-    <v-card width="500" class="mx-auto mt-5">
-      <v-card-title>Login</v-card-title>
-      <v-card-text>
-        <v-form @submit.prevent="login">
-          <v-text-field
-            name="username"
-            label="Username"
-            prepend-icon="mdi-account-circle"
-            v-model="username"
-          />
-          <v-text-field
-            :name="password"
-            v-model="password"
-            label="Password"
-            :type="showPassword ? 'text' : 'password'"
-            prepend-icon="mdi-lock"
-            :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-            @click:append="showPassword = !showPassword"
-          />
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <!-- <v-btn color="warning">Register</v-btn> -->
-        <v-spacer></v-spacer>
-        <v-btn color="primary" @click="submit">Login</v-btn>
-      </v-card-actions>
-    </v-card>
-  </v-main>
+  <div class="login-page columns is-mobile is-centered is-vcentered">
+    <div
+      class="column is-three-quarters-mobile is-two-thirds-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd"
+    >
+      <div class="card">
+        <header class="card-header">
+          <p class="card-header-title">Login</p>
+        </header>
+        <div class="card-content">
+          <div class="content">
+            <div class="field">
+              <p class="control has-icons-left has-icons-right">
+                <input
+                  class="input"
+                  v-model="username"
+                  placeholder="Username"
+                  required
+                />
+                <span class="icon is-small is-left">
+                  <i class="fas fa-user"></i>
+                </span>
+                <span class="icon is-small is-right">
+                  <i class="fas fa-check"></i>
+                </span>
+              </p>
+            </div>
+            <div class="field">
+              <p class="control has-icons-left">
+                <input
+                  class="input"
+                  type="password"
+                  placeholder="Password"
+                  v-model="password"
+                  password-reveal
+                  required
+                />
+                <span class="icon is-small is-left">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+        <footer class="card-footer">
+          <a class="card-footer-item" @click="submit"
+            >Login
+
+            <span class="icon is-medium">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </a>
+        </footer>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -53,4 +79,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.login-page {
+  height: 80vh;
+}
+</style>
