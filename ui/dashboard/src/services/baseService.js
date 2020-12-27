@@ -1,6 +1,7 @@
 import axios from "axios";
 import store from "@/store/index";
 import router from "@/router";
+import { notification } from "@/utils/notification";
 // import router from "@/router";
 
 const AXIOS_TIMEOUT = 10000;
@@ -44,6 +45,10 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   (response) => ({ ...response, error: null }),
   (error) => {
+    const message = error?.response?.data?.error;
+    if (message) {
+      notification.error(message)
+    }
     const token = store.getters["auth/getToken"] || "";
 
     if (

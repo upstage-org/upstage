@@ -1,24 +1,25 @@
 <template>
-  <NavBar />
-  <div id="main-content">
-    <router-view />
-  </div>
-  <Footer />
+  <router-view />
 </template>
 
 <script>
-import NavBar from "@/components/NavBar";
-import Footer from "@/components/Footer";
-export default {
-  components: { NavBar, Footer },
-};
 </script>
 
 <style lang="scss">
 html {
   overflow-y: auto !important;
 }
-#main-content {
-  min-height: calc(100vh - 120px);
+nav {
+  a {
+    color: #2c3e50;
+
+    &.router-link-exact-active {
+      font-weight: bold;
+      color: #42b983;
+    }
+  }
+}
+.is-fullwidth {
+  width: 100%;
 }
 </style>

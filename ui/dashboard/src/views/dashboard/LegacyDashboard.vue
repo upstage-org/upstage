@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class=" mb-6 dashboard-container">
+  <v-container fluid class="mb-6 dashboard-container">
     <v-row no-gutters class="stage-row">
       <v-col class="stage-menu" cols="2">
         <h2>Tools</h2>
@@ -32,9 +32,7 @@
           </v-row>
           <v-row v-for="chat in chats" :key="chat.title">
             <v-chip class="ma-2" label light>
-              <v-icon left>
-                mdi-account-circle-outline
-              </v-icon>
+              <v-icon left> mdi-account-circle-outline </v-icon>
 
               <span :style="{ color: chat.color }">{{ chat.message }}</span>
             </v-chip></v-row
@@ -83,9 +81,7 @@
           </v-card>
         </v-menu>
         <v-btn tile color="success" @click="doPublish">
-          <v-icon left>
-            mdi-send
-          </v-icon>
+          <v-icon left> mdi-send </v-icon>
           Send
         </v-btn>
       </v-col>
@@ -296,83 +292,5 @@ export default {
 };
 </script>
 
-<style scope>
-.dashboard-container {
-  height: 100%;
-  padding: 0;
-}
-.stage-menu {
-  background-color: #808080;
-}
-.stage-menu-list {
-  background: transparent !important;
-}
-.v-list {
-  margin-bottom: 0;
-  padding: 0;
-}
-.v-list-item {
-  background-color: #fafafa;
-  margin: 8px 16px;
-  border-radius: 3px;
-}
-.stage-row {
-  height: 100%;
-}
-.stage-board {
-  background-color: black;
-}
-.stage-chat {
-  padding: 8px !important;
-  background-color: #363636;
-}
-.stage-chat-board {
-  height: 80%;
-}
-.stage-shape {
-  display: inline-block;
-  margin: 0 4px;
-}
-.bgc-red {
-  background-color: red;
-}
-.bgc-blue {
-  background-color: blue;
-}
-.bgc-yellow {
-  background-color: yellow;
-}
-.bgc-white {
-  background-color: white;
-}
-.square {
-  width: 40px;
-  height: 40px;
-}
-.circle {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-}
-.triangle {
-  width: 0;
-  height: 0;
-  border-left: 18px solid transparent;
-  border-right: 18px solid transparent;
-  border-bottom: 40px solid red;
-}
-.v-icon {
-  cursor: pointer;
-  padding: 0 4px;
-}
-.v-chip {
-  background-color: white;
-}
-.v-chip p {
-  margin-bottom: 0;
-}
-.v-chip-live {
-  background-color: red !important;
-  color: white !important;
-}
+<style>
 </style>
