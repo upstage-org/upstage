@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from "@/store/index";
 import router from "@/router";
-import { toast } from "bulma-toast";
+import { notification } from "@/utils/notification";
 // import router from "@/router";
 
 const AXIOS_TIMEOUT = 10000;
@@ -47,14 +47,7 @@ axiosInstance.interceptors.response.use(
   (error) => {
     const message = error?.response?.data?.error;
     if (message) {
-      toast({
-        message,
-        type: 'is-danger',
-        dismissible: true,
-        closeOnClick: false,
-        offsetTop: '40px',
-        duration: 10000,
-      })
+      notification.error(message)
     }
     const token = store.getters["auth/getToken"] || "";
 
