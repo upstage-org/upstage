@@ -1,20 +1,60 @@
 <template>
-  <section class="hero is-medium is-dark is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">MY STAGES</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>My stages will be listed here</li>
-          </ul>
-        </h2>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+        My Stages
+        <button class="button mx-2 is-dark">
+          <span>New</span>
+          <span class="icon">
+            <i class="fa fa-plus"></i>
+          </span>
+        </button>
+        <button class="button mx-2 is-dark">
+          <span>Search</span>
+          <span class="icon">
+            <i class="fa fa-search"></i>
+          </span>
+        </button>
+      </h1>
+      <div class="columns">
+        <div class="column">
+          <Stage name="Making Absence Present" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Waiting for Brexit" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Pandemic Party" access="Audiance" />
+        </div>
+        <div class="column"></div>
       </div>
     </div>
   </section>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">Other Stages</h1>
+      <div class="columns">
+        <div class="column">
+          <Stage name="Making Absence Present" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Waiting for Brexit" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Pandemic Party" access="Audiance" />
+        </div>
+        <div class="column"></div>
+      </div>
+    </div>
+  </section>
+  I
 </template>
 
 <script>
-export default {};
+import Stage from "@/components/stage/Stage";
+export default {
+  components: { Stage },
+};
 </script>
 
 <style>

@@ -19,4 +19,7 @@ nav {
     }
   }
 }
+.is-fullwidth {
+  width: 100%;
+}
 </style>

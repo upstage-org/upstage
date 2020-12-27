@@ -1,66 +1,58 @@
 <template>
-  <section class="hero is-medium is-primary is-bold">
+  <section class="hero is-small is-primary is-bold">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">DASHBOARD</h1>
         <h2 class="subtitle">
           <ul>
-            <li>Home page for a logged in player owner</li>
+            <li>Presentation of the goal of the page...</li>
           </ul>
         </h2>
       </div>
     </div>
   </section>
-  <section class="hero is-medium is-light is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">PLAYER PROFILE</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>Edit/manage profile</li>
-            <li>Admin can add / edit / delete other players</li>
-          </ul>
-        </h2>
-      </div>
-    </div>
-  </section>
-  <section class="hero is-medium is-dark is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">UPSTAGE ADMIN</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>Customisable settings for this UpStage instance</li>
-            <li>Statistics – various reports</li>
-          </ul>
-        </h2>
-      </div>
-    </div>
-  </section>
-  <section class="hero is-medium is-info is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">STAGES</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>
-              Sortable list of all stages; default order “my stages” then others
-            </li>
-            <li>Click stage name to enter stage</li>
-            <li>
-              Buttons for each stage to enter, access logs/records, clone or
-              delete
-            </li>
-            <li>Button to add new stage</li>
-          </ul>
-        </h2>
+  <section class="section">
+    <div class="container">
+      <h1 class="title">
+        Stages
+        <button class="button mx-2">
+          <span>New</span>
+          <span class="icon">
+            <i class="fa fa-plus"></i>
+          </span>
+        </button>
+        <button class="button mx-2">
+          <span>Search</span>
+          <span class="icon">
+            <i class="fa fa-search"></i>
+          </span>
+        </button>
+      </h1>
+      <h2 class="subtitle">
+        Pres <strong>New</strong> button to create a new future stage. Click
+        <strong>Search</strong> button for search form to find Stage
+      </h2>
+      <div class="columns">
+        <div class="column">
+          <Stage name="Making Absence Present" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Waiting for Brexit" access="Audiance" />
+        </div>
+        <div class="column">
+          <Stage name="Pandemic Party" access="Audiance" />
+        </div>
+        <div class="column"></div>
       </div>
     </div>
   </section>
 </template>
 
 <script>
-export default {};
+import Stage from "@/components/stage/Stage";
+export default {
+  components: { Stage },
+};
 </script>
 
 <style>
