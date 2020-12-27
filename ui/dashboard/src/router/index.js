@@ -49,6 +49,11 @@ const routes = [
         path: '/dashboard/workshop',
         name: 'Workshop',
         component: () => import('../views/dashboard/Workshop.vue'),
+      },
+      {
+        path: '/dashboard/profile',
+        name: 'Player Profile',
+        component: () => import('../views/dashboard/Profile.vue'),
       }
     ]
   },

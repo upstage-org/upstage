@@ -2,7 +2,7 @@
   <section class="hero is-medium is-primary is-bold">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">UPSTAGE DASHBOARD</h1>
+        <h1 class="title">DASHBOARD</h1>
         <h2 class="subtitle">
           <ul>
             <li>Home page for a logged in player owner</li>

@@ -12,8 +12,8 @@
         <router-link class="navbar-item" to="/dashboard/my-stages">
           My Stages
         </router-link>
-        <router-link class="navbar-item" to="/dashboard/workshop">
-          Workshop
+        <router-link class="navbar-item" to="/dashboard/profile">
+          Profile
         </router-link>
       </div>
 
