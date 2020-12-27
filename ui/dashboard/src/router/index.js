@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import store from "@/store";
+import config from '../../vue.config';
 
 const routes = [
   {
@@ -54,7 +55,7 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(config.publicPath),
   routes
 })
 
