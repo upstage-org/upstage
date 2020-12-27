@@ -46,9 +46,12 @@
           </div>
         </div>
         <footer class="card-footer">
-          <a class="card-footer-item" @click="submit"
-            >Login
-
+          <a
+            class="card-footer-item button is-white has-text-primary"
+            :class="{ 'is-loading': loading }"
+            @click="submit"
+          >
+            Login&nbsp;
             <span class="icon is-medium">
               <i class="fas fa-chevron-right"></i>
             </span>
@@ -66,6 +69,7 @@ export default {
       showPassword: false,
       username: "",
       password: "",
+      loading: false,
     };
   },
   methods: {
@@ -77,9 +81,15 @@ export default {
         username: this.username,
         password: this.password,
       };
-      this.$store.dispatch("auth/login", user).then(() => {
-        this.$router.push({ name: "Dashboard" });
-      });
+      this.loading = true;
+      this.$store
+        .dispatch("auth/login", user)
+        .then(() => {
+          this.$router.push({ name: "Dashboard" });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
     },
   },
 };

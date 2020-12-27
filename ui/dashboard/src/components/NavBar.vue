@@ -47,9 +47,9 @@
             <router-link to="/dashboard" class="button is-primary">
               <strong>Dashboard</strong>
             </router-link>
-            <router-link to="/logout" class="button">
+            <button @click="logout" class="button">
               <strong>Logout</strong>
-            </router-link>
+            </button>
           </div>
           <div class="buttons" v-else>
             <router-link to="/login" class="button is-primary">
@@ -64,7 +64,7 @@
 
 <script>
 import { ref } from "vue";
-import { loggedIn } from "@/utils/auth";
+import { loggedIn, logout } from "@/utils/auth";
 import Logo from "./Logo";
 
 export default {
@@ -72,7 +72,7 @@ export default {
   setup() {
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
-    return { expanded, toggleExpanded, loggedIn };
+    return { expanded, toggleExpanded, loggedIn, logout };
   },
 };
 </script>

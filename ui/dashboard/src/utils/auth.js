@@ -16,3 +16,4 @@ export const getRefreshToken = () => Cookies.get(REFRESH_TOKEN);
 export const removeRefreshToken = () => Cookies.remove(REFRESH_TOKEN);
 
 export const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+export const logout = () => store.dispatch("auth/logout");

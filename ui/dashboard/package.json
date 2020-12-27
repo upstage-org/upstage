@@ -11,6 +11,7 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "axios": "^0.21.1",
     "bulma": "^0.9.1",
+    "bulma-toast": "^2.2.0",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",
     "mqtt": "^4.2.6",
