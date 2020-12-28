@@ -57,6 +57,19 @@ const routes = [
       }
     ]
   },
+
+  {
+    path: '/live',
+    component: () => import('../views/live/Layout.vue'),
+    meta: { requireAuth: true },
+    children: [
+      {
+        path: '/live',
+        name: 'Live',
+        component: () => import('../views/live/Live.vue'),
+      },
+    ]
+  },
 ]
 
 const router = createRouter({
