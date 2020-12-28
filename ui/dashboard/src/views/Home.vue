@@ -25,32 +25,6 @@
       </div>
     </div>
   </section>
-  <section class="hero is-medium is-info is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">DASHBOARD</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>player/admin login</li>
-          </ul>
-        </h2>
-      </div>
-    </div>
-  </section>
-  <section class="hero is-medium is-danger is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">LINKS</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>UpStage website</li>
-            <li>Developers</li>
-            <li>Other?</li>
-          </ul>
-        </h2>
-      </div>
-    </div>
-  </section>
 </template>
 
 <script>
