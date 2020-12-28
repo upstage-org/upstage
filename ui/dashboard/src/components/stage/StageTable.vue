@@ -26,7 +26,7 @@
         <td class="has-text-centered">
           <Modal>
             <template #trigger>
-              <i class="fas fa-cog" />
+              <i class="fas fa-lg fa-cog" />
             </template>
             <template #header>Stage Detail</template>
             <template #content><Detail :name="stage.name" /></template>
@@ -34,10 +34,10 @@
           </Modal>
         </td>
         <td class="has-text-centered">
-          <i class="fas fa-comments" />
+          <i class="fas fa-lg fa-comments" />
         </td>
         <td class="has-text-centered">
-          <i class="fas fa-video" />
+          <i class="fas fa-lg fa-video" />
         </td>
       </tr>
     </tbody>
