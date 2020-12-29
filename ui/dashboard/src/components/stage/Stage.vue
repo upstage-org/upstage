@@ -14,17 +14,17 @@
     </template>
     <template #header>Stage Detail</template>
     <template #content><Detail :name="name" /></template>
-    <template #footer><DuplicateButton /></template>
+    <template #footer><ActionButtons /></template>
   </Modal>
 </template>
 
 <script>
 import Modal from "../Modal";
 import Detail from "./Detail";
-import DuplicateButton from "./DuplicateButton";
+import ActionButtons from "./ActionButtons";
 
 export default {
-  components: { Modal, Detail, DuplicateButton },
+  components: { Modal, Detail, ActionButtons },
   props: ["name", "author", "access"],
   setup: () => {},
 };

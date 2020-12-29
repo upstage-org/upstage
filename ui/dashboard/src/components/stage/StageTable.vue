@@ -30,7 +30,7 @@
             </template>
             <template #header>Stage Detail</template>
             <template #content><Detail :name="stage.name" /></template>
-            <template #footer><DuplicateButton /></template>
+            <template #footer><ActionButtons /></template>
           </Modal>
         </td>
         <td class="has-text-centered">
@@ -46,11 +46,11 @@
 
 <script>
 import Modal from "../Modal";
-import DuplicateButton from "./DuplicateButton";
+import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 
 export default {
-  components: { Modal, DuplicateButton, Detail },
+  components: { Modal, ActionButtons, Detail },
   setup: () => {
     const stages = [
       {

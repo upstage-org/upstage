@@ -15,12 +15,12 @@
     <div class="container">
       <h1 class="title">
         Stages
-        <button class="button mx-2">
+        <router-link to="/dashboard/stage-management" class="button mx-2">
           <span>New</span>
           <span class="icon">
             <i class="fa fa-plus"></i>
           </span>
-        </button>
+        </router-link>
         <button class="button mx-2">
           <span>Search</span>
           <span class="icon">
