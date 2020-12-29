@@ -54,7 +54,41 @@ const routes = [
         path: '/dashboard/profile',
         name: 'Player Profile',
         component: () => import('../views/dashboard/Profile.vue'),
+      },
+      {
+        path: '/dashboard/stage-management',
+        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        children: [
+          {
+            name: 'Stage Management',
+            path: '/dashboard/stage-management',
+            component: () => import('../views/dashboard/StageManagement/General.vue'),
+          },
+          {
+            name: 'Stage Layout',
+            path: '/dashboard/stage-management/layout',
+            component: () => import('../views/dashboard/StageManagement/Layout.vue'),
+          },
+          {
+            name: 'Scenes',
+            path: '/dashboard/stage-management/scenes',
+            component: () => import('../views/dashboard/StageManagement/Scenes.vue'),
+          }
+        ]
       }
+    ]
+  },
+
+  {
+    path: '/live',
+    component: () => import('../views/live/Layout.vue'),
+    meta: { requireAuth: true },
+    children: [
+      {
+        path: '/live',
+        name: 'Live',
+        component: () => import('../views/live/Live.vue'),
+      },
     ]
   },
 ]

@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <Logo />
+      <Logo link="https://www.upstage.org.nz" />
       <a
         role="button"
         class="navbar-burger"
@@ -18,7 +18,6 @@
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         <router-link class="navbar-item" to="/">Home</router-link>
-        <router-link class="navbar-item" to="/stage">Stages</router-link>
 
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link"> More </a>
