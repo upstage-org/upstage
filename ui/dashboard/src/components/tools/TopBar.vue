@@ -20,7 +20,7 @@ export default {
 <style lang="scss" scoped>
 #topbar {
   position: fixed;
-  max-width: 90vw;
+  max-width: 80vw;
   height: 100px;
   top: -12px;
   left: 50%;
