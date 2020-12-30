@@ -82,9 +82,11 @@ export default {
 #chatbox {
   position: fixed;
   width: 20%;
+  min-width: 200px;
   height: calc(100vh - 75px);
   bottom: 16px;
   right: 16px;
+  opacity: 0.9;
 
   .card-content {
     height: calc(100vh - 140px);

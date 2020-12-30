@@ -1,13 +1,15 @@
 <template>
-  <section class="hero bg-cover has-background-primary-light is-fullheight">
+  <section class="hero bg-cover is-primary is-fullheight">
+    <Toolbox />
     <Chat />
   </section>
 </template>
 
 <script>
-import Chat from "@/components/Chat";
+import Chat from "@/components/stage/Chat";
+import Toolbox from "@/components/tools/Toolbox";
 export default {
-  components: { Chat },
+  components: { Chat, Toolbox },
 };
 </script>
 
