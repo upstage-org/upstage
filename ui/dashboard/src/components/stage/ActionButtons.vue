@@ -8,7 +8,7 @@
       @keydown.esc="() => (editing = false)"
     />
     <span
-      class="icon is-right duplicate-button button is-primary is-rounded"
+      class="icon is-right clickable button is-primary is-rounded"
       @click="duplicateStage"
     >
       <i class="fas fa-check"></i>
@@ -59,7 +59,4 @@ export default {
 </script>
 
 <style>
-.duplicate-button {
-  pointer-events: all !important;
-}
 </style>

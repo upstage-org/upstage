@@ -1,10 +1,15 @@
 <template>
-  <UnderConstruction :fullscreen="true" />
+  <section class="hero bg-cover has-background-primary-light is-fullheight">
+    <Chat />
+  </section>
 </template>
 
 <script>
-import UnderConstruction from "@/components/UnderConstruction";
+import Chat from "@/components/Chat";
 export default {
-  components: { UnderConstruction },
+  components: { Chat },
 };
 </script>
+
+<style>
+</style>

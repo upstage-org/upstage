@@ -22,4 +22,10 @@ nav {
 .is-fullwidth {
   width: 100%;
 }
+.is-fullheight {
+  height: 100%;
+}
+.clickable {
+  pointer-events: all !important;
+}
 </style>

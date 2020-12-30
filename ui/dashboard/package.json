@@ -15,6 +15,7 @@
     "bulma-toast": "^2.2.0",
     "core-js": "^3.6.5",
     "js-cookie": "^2.2.1",
+    "moment": "^2.29.1",
     "mqtt": "^4.2.6",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
