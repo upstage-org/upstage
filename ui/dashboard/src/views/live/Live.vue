@@ -4,21 +4,26 @@
     class="hero bg-cover has-background-primary-light is-fullheight"
     :style="'background-image: url(' + background + ')'"
   >
+    <ConnectionStatus />
     <Toolbox />
     <Chat />
   </section>
 </template>
 
 <script>
+import ConnectionStatus from "@/components/stage/ConnectionStatus.vue";
 import Chat from "@/components/stage/Chat";
 import Toolbox from "@/components/tools/Toolbox";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 
 export default {
-  components: { Chat, Toolbox },
+  components: { Chat, Toolbox, ConnectionStatus },
   setup: () => {
     const store = useStore();
+    onMounted(() => {
+      store.dispatch("stage/connect");
+    });
 
     return {
       background: computed(() => store.state.stage.background),
