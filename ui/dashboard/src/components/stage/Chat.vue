@@ -38,8 +38,8 @@
           <button
             @click="sendMessage"
             class="icon is-right clickable button is-primary is-rounded"
-            :class="{ 'is-loading': !currentUser }"
-            :disabled="!currentUser"
+            :class="{ 'is-loading': loadingUser }"
+            :disabled="loadingUser"
           >
             <i class="fas fa-paper-plane"></i>
           </button>
@@ -60,7 +60,7 @@ export default {
     const store = useStore();
 
     const messages = computed(() => store.state.stage.chat.messages);
-    const currentUser = computed(() => store.getters["user/currentUser"]);
+    const loadingUser = computed(() => store.state.user.loadingUser);
     const message = ref("");
     const scrollToEnd = () => {
       anime({
@@ -70,7 +70,7 @@ export default {
       });
     };
     const sendMessage = () => {
-      if (message.value.trim() && !!currentUser.value) {
+      if (message.value.trim() && !loadingUser.value) {
         store.dispatch("stage/sendMessage", message.value);
         message.value = "";
         scrollToEnd();
@@ -83,7 +83,7 @@ export default {
       message,
       sendMessage,
       theContent,
-      currentUser,
+      loadingUser,
     };
   },
 };
