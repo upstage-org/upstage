@@ -10,10 +10,19 @@
       <div v-else>
         <p v-for="item in messages" :key="item">
           <small>
-            <strong>{{ item.name }}</strong> <time>{{ item.at }}</time>
+            <time v-if="false">({{ item.at }}) </time>
+            <b>{{ item.user }}: </b>
           </small>
-          <br />
-          {{ item.content }}
+          <span
+            class="tag message"
+            :style="
+              'background-color: ' +
+              item.backgroundColor +
+              '; color: ' +
+              item.color
+            "
+            >{{ item.message }}</span
+          >
         </p>
       </div>
     </div>
@@ -26,12 +35,14 @@
             v-model="message"
             @keydown.enter="sendMessage"
           />
-          <span
-            class="icon is-right clickable button is-primary is-rounded"
+          <button
             @click="sendMessage"
+            class="icon is-right clickable button is-primary is-rounded"
+            :class="{ 'is-loading': !currentUser }"
+            :disabled="!currentUser"
           >
             <i class="fas fa-paper-plane"></i>
-          </span>
+          </button>
         </div>
       </div>
     </footer>
@@ -39,15 +50,17 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
-import moment from "moment";
+import { computed, ref, watch } from "vue";
 import anime from "animejs";
+import { useStore } from "vuex";
 
 export default {
   setup: () => {
     const theContent = ref();
+    const store = useStore();
 
-    const messages = reactive([]);
+    const messages = computed(() => store.state.stage.chat.messages);
+    const currentUser = computed(() => store.getters["user/currentUser"]);
     const message = ref("");
     const scrollToEnd = () => {
       anime({
@@ -57,22 +70,20 @@ export default {
       });
     };
     const sendMessage = () => {
-      if (message.value.trim()) {
-        messages.push({
-          name: "Me",
-          at: moment().format("hh:mm"),
-          content: message.value,
-        });
+      if (message.value.trim() && !!currentUser.value) {
+        store.dispatch("stage/sendMessage", message.value);
         message.value = "";
         scrollToEnd();
       }
     };
+    watch(messages.value, scrollToEnd);
 
     return {
       messages,
       message,
       sendMessage,
       theContent,
+      currentUser,
     };
   },
 };
@@ -92,9 +103,10 @@ export default {
     height: calc(100vh - 200px);
     overflow-y: auto;
   }
-
-  time {
-    float: right;
+  .message {
+    white-space: break-spaces;
+    height: unset;
+    color: white;
   }
 }
 </style>

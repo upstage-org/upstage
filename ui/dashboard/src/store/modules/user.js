@@ -24,8 +24,7 @@ export default {
     },
   },
   getters: {
-    getCurrentUser(state) {
-      console.log(state);
+    currentUser(state) {
       return state.user ? state.user.username : "";
     },
   },

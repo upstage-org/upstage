@@ -23,6 +23,7 @@ export default {
     const store = useStore();
     onMounted(() => {
       store.dispatch("stage/connect");
+      store.dispatch("user/fetchCurrent");
     });
 
     return {

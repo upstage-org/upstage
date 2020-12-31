@@ -7,8 +7,11 @@
       'is-warning': status === 'CONNECTING',
     }"
   >
-    <span class="icon">
+    <span class="icon" v-show="status !== 'OFFLINE'">
       <i ref="dot" class="fas fa-circle"></i>
+    </span>
+    <span class="icon" v-show="status === 'OFFLINE'">
+      <i class="far fa-circle"></i>
     </span>
     <span>{{ status }}</span>
   </span>
@@ -17,30 +20,20 @@
 <script>
 import { useStore } from "vuex";
 import anime from "animejs";
-import { ref, computed, watchEffect, onMounted } from "vue";
+import { ref, computed, onMounted } from "vue";
 export default {
   setup: () => {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
-    const animation = ref();
 
     onMounted(() => {
-      animation.value = anime({
+      anime({
         targets: dot.value,
         opacity: [1, 0, 1],
         duration: 2000,
         loop: true,
-        autoplay: false,
       });
-    });
-
-    watchEffect(() => {
-      if (status.value === "OFFLINE") {
-        animation.value?.pause();
-      } else {
-        animation.value?.play();
-      }
     });
 
     return {
