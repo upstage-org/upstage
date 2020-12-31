@@ -4,29 +4,38 @@ export default {
   namespaced: true,
   state: {
     user: null,
+    loadingUser: false,
   },
   mutations: {
     SET_USER_DATA(state, data) {
       state.user = data;
     },
+    SET_LOADING_USER(state, loading) {
+      state.loadingUser = loading;
+    },
   },
   actions: {
     fetchCurrent({ commit }) {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
+        commit("SET_LOADING_USER", true);
         userService
           .getCurrent()
-          .then((resp) => {
-            commit("SET_USER_DATA", resp);
+          .then((data) => {
+            commit("SET_USER_DATA", data);
             resolve();
           })
-          .catch((err) => reject(err));
+          .catch((err) => {
+            console.log(err)
+          })
+          .finally(() => {
+            commit("SET_LOADING_USER", false);
+          });
       });
     },
   },
   getters: {
-    getCurrentUser(state) {
-      console.log(state);
-      return state.user ? state.user.username : "";
+    currentUser(state) {
+      return state.user ? state.user.username : "Annonymous";
     },
   },
 };
