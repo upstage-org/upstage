@@ -4,6 +4,7 @@
     class="hero bg-cover has-background-primary-light is-fullheight"
     :style="'background-image: url(' + background + ')'"
   >
+    <Board />
     <ConnectionStatus />
     <Toolbox />
     <Chat />
@@ -11,14 +12,15 @@
 </template>
 
 <script>
-import ConnectionStatus from "@/components/stage/ConnectionStatus.vue";
 import Chat from "@/components/stage/Chat";
-import Toolbox from "@/components/tools/Toolbox";
+import Toolbox from "@/components/stage/Toolbox";
+import ConnectionStatus from "@/components/stage/ConnectionStatus";
+import Board from "@/components/stage/Board";
 import { useStore } from "vuex";
 import { computed, onMounted, onUnmounted } from "vue";
 
 export default {
-  components: { Chat, Toolbox, ConnectionStatus },
+  components: { Chat, Toolbox, ConnectionStatus, Board },
   setup: () => {
     const store = useStore();
     onMounted(() => {

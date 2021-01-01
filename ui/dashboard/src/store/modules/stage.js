@@ -1,6 +1,7 @@
 import moment from 'moment'
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor } from '@/utils/common'
+import { generateDemoData } from '../demoData'
 
 export default {
     namespaced: true,
@@ -11,9 +12,16 @@ export default {
         chat: {
             messages: [],
             color: randomMessageColor(),
-        }
+        },
+        board: {
+            avatars: []
+        },
+        tools: generateDemoData(),
     },
     getters: {
+        avatars(state) {
+            return state.board.avatars;
+        }
     },
     mutations: {
         SET_BACKGROUND(state, background) {
@@ -27,6 +35,9 @@ export default {
         },
         PUSH_MESSAGE(state, message) {
             state.chat.messages.push(message)
+        },
+        PUSH_AVATARS(state, avtar) {
+            state.board.avatars.push(avtar)
         }
     },
     actions: {
@@ -90,6 +101,9 @@ export default {
             };
             const converted = JSON.stringify(messageModel);
             mqtt.publish(converted).catch(error => console.log(error));
+        },
+        summonAvatar({ commit }, avatar) {
+            commit('PUSH_AVATARS', avatar)
         }
     },
 };

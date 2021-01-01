@@ -7,9 +7,9 @@
 </template>
 
 <script>
-import Avatars from "./Avatars";
-import Backdrops from "./Backdrops";
-import Props from "./Props";
+import Avatars from "./tools/Avatars";
+import Backdrops from "./tools/Backdrops";
+import Props from "./tools/Props";
 
 export default {
   props: ["tool"],
