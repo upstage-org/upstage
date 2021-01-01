@@ -23,11 +23,10 @@ export default {
     CLEAR_USER_DATA(state) {
       state.token = "";
       state.refresh_token = "";
-      location.reload();
     },
   },
   actions: {
-    login({ commit }, user) {
+    login({ commit, dispatch }, user) {
       return new Promise((resolve, reject) => {
         authService
           .login(user)
@@ -39,6 +38,7 @@ export default {
               setRefreshToken(refresh_token);
               commit("SET_TOKEN", access_token);
               commit("SET_REFRESH_TOKEN", refresh_token);
+              dispatch("user/fetchCurrent", null, { root: true });
               resolve();
             }
           })

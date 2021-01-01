@@ -56,6 +56,9 @@ export default {
                 console.log("Subscribed to topics: ", res);
             })
         },
+        disconnect() {
+            mqtt.disconnect();
+        },
         handleMessage({ commit }, { topic, message }) {
             const arr = new TextDecoder().decode(new Uint8Array(message));
 

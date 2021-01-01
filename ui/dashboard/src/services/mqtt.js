@@ -15,6 +15,11 @@ const mqttService = {
     });
     return this.client;
   },
+  disconnect() {
+    return new Promise((resolve) => {
+      this.client.end(false, {}, resolve)
+    });
+  },
   subscribe(topic = defaultTopics) {
     return new Promise((resolve, reject) => {
       this.client.subscribe(

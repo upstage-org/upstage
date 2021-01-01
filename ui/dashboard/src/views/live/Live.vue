@@ -15,7 +15,7 @@ import ConnectionStatus from "@/components/stage/ConnectionStatus.vue";
 import Chat from "@/components/stage/Chat";
 import Toolbox from "@/components/tools/Toolbox";
 import { useStore } from "vuex";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 
 export default {
   components: { Chat, Toolbox, ConnectionStatus },
@@ -23,7 +23,10 @@ export default {
     const store = useStore();
     onMounted(() => {
       store.dispatch("stage/connect");
-      store.dispatch("user/fetchCurrent");
+    });
+
+    onUnmounted(() => {
+      store.dispatch("stage/disconnect");
     });
 
     return {

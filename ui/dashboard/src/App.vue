@@ -3,6 +3,16 @@
 </template>
 
 <script>
+import { onMounted } from "vue";
+import { useStore } from "vuex";
+export default {
+  setup: () => {
+    onMounted(() => {
+      const store = useStore();
+      store.dispatch("user/fetchCurrent");
+    });
+  },
+};
 </script>
 
 <style lang="scss">
