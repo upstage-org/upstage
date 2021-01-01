@@ -22,6 +22,8 @@ export default {
           ...avatar,
           x: e.clientX - 50,
           y: e.clientY - 50,
+          w: 100,
+          h: 100,
         });
       }
     };

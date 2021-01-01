@@ -33,10 +33,10 @@
             class="input is-rounded"
             placeholder="Type message"
             v-model="message"
-            @keydown.enter="sendMessage"
+            @keydown.enter="sendChat"
           />
           <button
-            @click="sendMessage"
+            @click="sendChat"
             class="icon is-right clickable button is-primary is-rounded"
             :class="{ 'is-loading': loadingUser }"
             :disabled="loadingUser"
@@ -69,9 +69,9 @@ export default {
         easing: "easeInOutQuad",
       });
     };
-    const sendMessage = () => {
+    const sendChat = () => {
       if (message.value.trim() && !loadingUser.value) {
-        store.dispatch("stage/sendMessage", message.value);
+        store.dispatch("stage/sendChat", message.value);
         message.value = "";
         scrollToEnd();
       }
@@ -81,7 +81,7 @@ export default {
     return {
       messages,
       message,
-      sendMessage,
+      sendChat,
       theContent,
       loadingUser,
     };
