@@ -55,5 +55,9 @@ export const generateDemoData = () => {
         src: `${config.publicPath}demo/props/${file}`,
     }));
 
-    return { avatars, props, backdrops }
+    const stageConfig = {
+        animateDuration: 1000,
+    }
+
+    return { avatars, props, backdrops, config: stageConfig }
 }

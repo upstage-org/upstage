@@ -23,6 +23,9 @@ export default {
     getters: {
         avatars(state) {
             return state.board.avatars;
+        },
+        config(state) {
+            return state.tools.config;
         }
     },
     mutations: {
