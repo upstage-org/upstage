@@ -8,6 +8,7 @@ import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 export default {
     namespaced: true,
     state: {
+        preloading: true,
         background: null,
         status: 'OFFLINE',
         subscribeSuccess: false,
@@ -26,6 +27,13 @@ export default {
         },
         config(state) {
             return state.tools.config;
+        },
+        preloadableAssets(state) {
+            const assets = []
+                .concat(state.tools.avatars.map(a => a.src))
+                .concat(state.tools.props.map(p => p.src))
+                .concat(state.tools.backdrops.map(b => b.src))
+            return assets;
         }
     },
     mutations: {
@@ -52,6 +60,9 @@ export default {
                 return;
             }
             state.board.avatars.push(object)
+        },
+        SET_PRELOADING_STATUS(state, status) {
+            state.preloading = status;
         }
     },
     actions: {
