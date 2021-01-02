@@ -37,16 +37,12 @@ export default {
     watch(background, () => {
       anime({
         targets: "#live-stage",
-        backgroundImage: [
-          `url(${background.value})`,
-          `url(${background.value})`,
-        ],
         opacity: [0, 1],
         duration: 5000,
       });
     });
 
-    return {};
+    return { background };
   },
 };
 </script>

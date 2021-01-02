@@ -1,31 +1,31 @@
-client = new Paho.MQTT.Client(location.hostname, Number(1883), randomElementId());
+client = new Paho.MQTT.Client('128.199.69.170', Number(9001), randomElementId());
 
 client.onConnectionLost = onConnectionLost;
 client.onMessageArrived = onMessageArrived;
 
-client.connect({onSuccess:onConnect});
+client.connect({ onSuccess: onConnect, userName: "performance", password: "z48FCTsJVEUkYmtUw5S9" });
 
 
 function onConnect() {
-    setConnectionStatus({status: "good"});
+    setConnectionStatus({ status: "good" });
     console.log("onConnect");
     client.subscribe("stage");
 }
 
 function onConnectionLost(responseObject) {
-  if (responseObject.errorCode !== 0) {
-    console.log("onConnectionLost:"+responseObject.errorMessage);
-    setConnectionStatus({status: "bad"});
-  }
+    if (responseObject.errorCode !== 0) {
+        console.log("onConnectionLost:" + responseObject.errorMessage);
+        setConnectionStatus({ status: "bad" });
+    }
 }
 
 function onMessageArrived(message) {
-  console.log("onMessageArrived:"+message.payloadString);
-  try {
-    onMessageRecieved(JSON.parse(message.payloadString));
-  } catch (ex) {
-      console.error(`Caught: ${ex}`);
-  }
+    console.log("onMessageArrived:" + message.payloadString);
+    try {
+        onMessageRecieved(JSON.parse(message.payloadString));
+    } catch (ex) {
+        console.error(`Caught: ${ex}`);
+    }
 }
 
 function sendMessage(msg) {
