@@ -56,7 +56,7 @@ export const generateDemoData = () => {
     }));
 
     const stageConfig = {
-        animateDuration: 1000,
+        animateDuration: 500,
     }
 
     return { avatars, props, backdrops, config: stageConfig }

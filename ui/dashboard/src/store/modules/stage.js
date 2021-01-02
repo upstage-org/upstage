@@ -55,9 +55,6 @@ export default {
         }
     },
     actions: {
-        setBackground({ commit }, background) {
-            commit('SET_BACKGROUND', background);
-        },
         connect({ commit, dispatch }) {
             commit('SET_STATUS', 'CONNECTING')
 
@@ -81,6 +78,7 @@ export default {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
+                [TOPICS.BACKGROUND]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -97,6 +95,9 @@ export default {
                     break;
                 case TOPICS.BOARD:
                     dispatch('handleBoardMessage', { message });
+                    break;
+                case TOPICS.BACKGROUND:
+                    dispatch('handleBackgroundMessage', { message });
                     break;
                 default:
                     break;
@@ -154,6 +155,12 @@ export default {
                 default:
                     break;
             }
+        },
+        setBackground(action, background) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, background)
+        },
+        handleBackgroundMessage({ commit }, { message }) {
+            commit('SET_BACKGROUND', message);
         },
     },
 };

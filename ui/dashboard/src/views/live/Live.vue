@@ -17,12 +17,15 @@ import Toolbox from "@/components/stage/Toolbox";
 import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";
 import { useStore } from "vuex";
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
+import anime from "animejs";
 
 export default {
   components: { Chat, Toolbox, ConnectionStatus, Board },
   setup: () => {
     const store = useStore();
+    const background = computed(() => store.state.stage.background);
+
     onMounted(() => {
       store.dispatch("stage/connect");
     });
@@ -31,16 +34,34 @@ export default {
       store.dispatch("stage/disconnect");
     });
 
-    return {
-      background: computed(() => store.state.stage.background),
-    };
+    watch(background, () => {
+      anime({
+        targets: "#live-stage",
+        backgroundImage: [
+          `url(${background.value})`,
+          `url(${background.value})`,
+        ],
+        opacity: [0, 1],
+        duration: 5000,
+      });
+    });
+
+    return {};
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 #live-stage {
   background-size: contain;
   background-position: center;
+  * {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  }
 }
 </style>

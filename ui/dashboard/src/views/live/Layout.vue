@@ -19,5 +19,6 @@ export default {
 #live-logo {
   position: fixed;
   right: 10px;
+  z-index: 100;
 }
 </style>

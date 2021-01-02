@@ -50,7 +50,6 @@ export default {
     watch(
       props.object,
       () => {
-        console.log(props.object, "haha");
         anime({
           targets: position,
           ...props.object,
@@ -60,8 +59,7 @@ export default {
       { immediate: true }
     );
 
-    const dragStart = (e) => {
-      console.log(e);
+    const dragStart = () => {
       isDragging.value = true;
       beforeDragPosition.value = {
         x: position.x,
