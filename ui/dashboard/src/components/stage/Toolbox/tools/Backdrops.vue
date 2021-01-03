@@ -5,8 +5,10 @@
     :class="{
       'has-background-primary': background.src === currentBackground,
     }"
+    @click="setBackground(background)"
   >
-    <Image :src="background.src" @click="setBackground(background)" />
+    <Image v-if="background.src" :src="background.src" />
+    <Image v-else :src="dragghost" />
   </div>
 </template>
 
@@ -14,22 +16,29 @@
 import Image from "@/components/Image";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import dragghost from "@/assets/dragghost.png";
 
 export default {
   components: { Image },
   setup: () => {
     const store = useStore();
+    const currentBackground = computed(() => store.state.stage.background);
 
-    const backgrounds = store.state.stage.tools.backdrops;
+    const backgrounds = computed(() => {
+      return [{ src: null }].concat(store.state.stage.tools.backdrops);
+    });
 
     const setBackground = (background) => {
       store.dispatch("stage/setBackground", background.src);
     };
 
+    console.log(currentBackground.value);
+
     return {
       backgrounds,
       setBackground,
-      currentBackground: computed(() => store.state.stage.background),
+      currentBackground,
+      dragghost,
     };
   },
 };
