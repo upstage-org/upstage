@@ -1,7 +1,6 @@
 import config from '@/config'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from "mqtt";
-import { topics as defaultTopics } from '@/utils/constants'
 
 const mqttService = {
   client: null,
@@ -15,10 +14,15 @@ const mqttService = {
     });
     return this.client;
   },
-  subscribe(topic = defaultTopics) {
+  disconnect() {
+    return new Promise((resolve) => {
+      this.client.end(false, {}, resolve)
+    });
+  },
+  subscribe(topics) {
     return new Promise((resolve, reject) => {
       this.client.subscribe(
-        topic,
+        topics,
         (error, res) => {
           if (error) {
             reject(error)
@@ -29,12 +33,12 @@ const mqttService = {
       );
     })
   },
-  publish(message, topic) {
+  sendMessage(topic, payload) {
+    let message = payload;
+    if (typeof payload === "object") {
+      message = JSON.stringify(payload);
+    }
     return new Promise((resolve, reject) => {
-      if (!topic) {
-        const topicNames = Object.keys(defaultTopics);
-        topic = topicNames[0]
-      }
       this.client.publish(
         topic,
         message,

@@ -1,6 +1,5 @@
 import axios from "axios";
 import store from "@/store/index";
-import router from "@/router";
 import { notification } from "@/utils/notification";
 import config from '../config';
 
@@ -39,8 +38,10 @@ const requestInterceptor = axios.interceptors.request.use(
 const responseInterceptor = axios.interceptors.response.use(
   (response) => ({ ...response, error: null }),
   (error) => {
+    const originalRequest = error.config;
+
     const message = error?.response?.data?.error;
-    if (message) {
+    if (message && !originalRequest.hideNotification) {
       notification.error(message)
     }
     const token = store.getters["auth/getToken"] || "";
@@ -49,19 +50,13 @@ const responseInterceptor = axios.interceptors.response.use(
       error?.response?.status === 401 ||
       (error?.response?.status && token && token.length > 0)
     ) {
-      const originalRequest = error.config;
-      if (originalRequest.url.indexOf("access_token/refresh") > 0) {
-        router.push("/login");
-        return Promise.reject(error);
-      }
       if (!originalRequest._retry) {
         return store
           .dispatch("auth/fetchRefreshToken")
           .then((resp) => {
             originalRequest._retry = true;
-            return axios.create({
-              url: originalRequest.url,
-              method: originalRequest.method,
+            return axios.request({
+              ...originalRequest,
               headers: {
                 Accept: originalRequest.headers.Accept,
                 "X-Access-Token": resp,
@@ -69,7 +64,7 @@ const responseInterceptor = axios.interceptors.response.use(
             });
           })
           .catch(() => {
-            router.push("/login");
+            store.dispatch("auth/logout")
           });
       }
     }
@@ -78,13 +73,10 @@ const responseInterceptor = axios.interceptors.response.use(
   }
 );
 
-const extend = (customize) => {
-  const instance = axios.create();
+const extend = (config) => {
+  const instance = axios.create(config);
   instance.interceptors.request.handlers = axios.interceptors.request.handlers;
   instance.interceptors.response.handlers = axios.interceptors.response.handlers;
-  if (customize) {
-    customize(instance);
-  }
   return instance;
 }
 

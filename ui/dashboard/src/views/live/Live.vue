@@ -4,6 +4,7 @@
     class="hero bg-cover has-background-primary-light is-fullheight"
     :style="'background-image: url(' + background + ')'"
   >
+    <Board />
     <ConnectionStatus />
     <Toolbox />
     <Chat />
@@ -11,31 +12,52 @@
 </template>
 
 <script>
-import ConnectionStatus from "@/components/stage/ConnectionStatus.vue";
 import Chat from "@/components/stage/Chat";
-import Toolbox from "@/components/tools/Toolbox";
+import Toolbox from "@/components/stage/Toolbox";
+import ConnectionStatus from "@/components/stage/ConnectionStatus";
+import Board from "@/components/stage/Board";
 import { useStore } from "vuex";
-import { computed, onMounted } from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
+import anime from "animejs";
 
 export default {
-  components: { Chat, Toolbox, ConnectionStatus },
+  components: { Chat, Toolbox, ConnectionStatus, Board },
   setup: () => {
     const store = useStore();
+    const background = computed(() => store.state.stage.background);
+
     onMounted(() => {
       store.dispatch("stage/connect");
-      store.dispatch("user/fetchCurrent");
     });
 
-    return {
-      background: computed(() => store.state.stage.background),
-    };
+    onUnmounted(() => {
+      store.dispatch("stage/disconnect");
+    });
+
+    watch(background, () => {
+      anime({
+        targets: "#live-stage",
+        opacity: [0, 1],
+        duration: 5000,
+      });
+    });
+
+    return { background };
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss">
 #live-stage {
   background-size: contain;
   background-position: center;
+  * {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Old versions of Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+  }
 }
 </style>

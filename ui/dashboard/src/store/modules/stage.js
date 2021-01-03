@@ -1,19 +1,40 @@
 import moment from 'moment'
+import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor } from '@/utils/common'
+import { generateDemoData } from '../demoData'
+import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 
 export default {
     namespaced: true,
     state: {
+        preloading: true,
         background: null,
         status: 'OFFLINE',
         subscribeSuccess: false,
         chat: {
             messages: [],
             color: randomMessageColor(),
-        }
+        },
+        board: {
+            avatars: []
+        },
+        tools: generateDemoData(),
     },
     getters: {
+        avatars(state) {
+            return state.board.avatars;
+        },
+        config(state) {
+            return state.tools.config;
+        },
+        preloadableAssets(state) {
+            const assets = []
+                .concat(state.tools.avatars.map(a => a.src))
+                .concat(state.tools.props.map(p => p.src))
+                .concat(state.tools.backdrops.map(b => b.src))
+            return assets;
+        }
     },
     mutations: {
         SET_BACKGROUND(state, background) {
@@ -25,14 +46,26 @@ export default {
         SET_SUBSCRIBE_STATUS(state, status) {
             state.subscribeSuccess = status
         },
-        PUSH_MESSAGE(state, message) {
+        PUSH_CHAT_MESSAGE(state, message) {
             state.chat.messages.push(message)
+        },
+        PUSH_AVATARS(state, avatar) {
+            state.board.avatars.push(avatar)
+        },
+        UPDATE_OBJECT(state, object) {
+            const { id } = object;
+            const avatar = state.board.avatars.find(avatar => avatar.id === id);
+            if (avatar) { // Object an is avatar
+                Object.assign(avatar, object);
+                return;
+            }
+            state.board.avatars.push(object)
+        },
+        SET_PRELOADING_STATUS(state, status) {
+            state.preloading = status;
         }
     },
     actions: {
-        setBackground({ commit }, background) {
-            commit('SET_BACKGROUND', background);
-        },
         connect({ commit, dispatch }) {
             commit('SET_STATUS', 'CONNECTING')
 
@@ -46,47 +79,99 @@ export default {
                 console.log(error);
                 commit('SET_STATUS', 'OFFLINE')
             });
-            client.on("message", (topic, message) => {
+            client.on("message", (topic, rawMessage) => {
+                const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
+                const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
                 dispatch('handleMessage', { topic, message });
             });
         },
         subscribe({ commit }) {
-            mqtt.subscribe().then(res => {
+            const topics = {
+                [TOPICS.CHAT]: { qos: 2 },
+                [TOPICS.BOARD]: { qos: 2 },
+                [TOPICS.BACKGROUND]: { qos: 2 },
+            }
+            mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
                 console.log("Subscribed to topics: ", res);
             })
         },
-        handleMessage({ commit }, { topic, message }) {
-            const arr = new TextDecoder().decode(new Uint8Array(message));
-
-            if (topic === "topic/commands") {
-                const convertedMessage = (isJson(arr) && JSON.parse(arr)) || arr;
-                const modelMessage = {
-                    user: 'Anonymous',
-                    color: "#000000"
-                };
-                if (typeof convertedMessage === "object") {
-                    Object.assign(modelMessage, convertedMessage)
-                } else {
-                    modelMessage.message = convertedMessage;
-                }
-                commit('PUSH_MESSAGE', modelMessage)
-            } else if (topic === "topic/board") {
-                this.addShape(arr);
+        disconnect() {
+            mqtt.disconnect();
+        },
+        handleMessage({ dispatch }, { topic, message }) {
+            switch (topic) {
+                case TOPICS.CHAT:
+                    dispatch('handleChatMessage', { message });
+                    break;
+                case TOPICS.BOARD:
+                    dispatch('handleBoardMessage', { message });
+                    break;
+                case TOPICS.BACKGROUND:
+                    dispatch('handleBackgroundMessage', { message });
+                    break;
+                default:
+                    break;
             }
         },
-        sendMessage({ rootGetters, state }, message) {
+        sendChat({ rootGetters, state }, message) {
             if (!message) return;
             const currentUser = rootGetters["user/currentUser"];
-            const messageModel = {
+            const payload = {
                 user: currentUser,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
                 at: moment().format('HH:mm')
             };
-            const converted = JSON.stringify(messageModel);
-            mqtt.publish(converted).catch(error => console.log(error));
-        }
+            mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
+        },
+        handleChatMessage({ commit }, { message }) {
+            const model = {
+                user: 'Anonymous',
+                color: "#000000"
+            };
+            if (typeof message === "object") {
+                Object.assign(model, message)
+            } else {
+                model.message = message;
+            }
+            commit('PUSH_CHAT_MESSAGE', model)
+        },
+        summonAvatar(action, avatar) {
+            const payload = {
+                type: BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE,
+                avatar: {
+                    id: uuidv4(),
+                    ...avatar,
+                }
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
+        shapeObject(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.MOVE_TO,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
+        handleBoardMessage({ commit }, { message }) {
+            switch (message.type) {
+                case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
+                    commit('PUSH_AVATARS', message.avatar)
+                    break;
+                case BOARD_ACTIONS.MOVE_TO:
+                    commit('UPDATE_OBJECT', message.object)
+                    break;
+                default:
+                    break;
+            }
+        },
+        setBackground(action, background) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, background)
+        },
+        handleBackgroundMessage({ commit }, { message }) {
+            commit('SET_BACKGROUND', message);
+        },
     },
 };

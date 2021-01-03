@@ -1,10 +1,10 @@
-export const shapeCommand = {
-  circle: "stage-shape circle ",
-  triangle: "stage-shape triangle",
-  square: "stage-shape square ",
-};
+export const TOPICS = {
+  CHAT: "topic/chat",
+  BOARD: "topic/board",
+  BACKGROUND: "topic/background"
+}
 
-export const topics = {
-  "topic/commands": { qos: 2 },
-  "topic/board": { qos: 2 }
+export const BOARD_ACTIONS = {
+  PLACE_AVATAR_ON_STAGE: 'placeAvatarOnStage',
+  MOVE_TO: 'moveTo',
 }

@@ -10,6 +10,17 @@
             <li>Live link at show-time</li>
           </ul>
         </h2>
+        <h2 class="subtitle">
+          <router-link
+            to="/live"
+            class="button is-large is-rounded is-outlined is-white"
+          >
+            <span class="icon is-medium">
+              <i class="fas fa-play"></i>
+            </span>
+            <span>Demo Stage</span>
+          </router-link>
+        </h2>
       </div>
     </div>
   </section>
