@@ -46,6 +46,14 @@ export const generateDemoData = () => {
             name: "4",
             src: config.publicPath + "demo/backdrops/4.jpg",
         },
+        {
+            name: "5",
+            src: config.publicPath + "demo/backdrops/5.jpg",
+        },
+        {
+            name: "6",
+            src: config.publicPath + "demo/backdrops/6.jpg",
+        },
     ];
 
 

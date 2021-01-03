@@ -1,9 +1,7 @@
 <template>
-  <div class="columns" :style="'width: ' + avatars.length * 100 + 'px'">
-    <div v-for="avatar in avatars" :key="avatar" class="column">
+    <div v-for="avatar in avatars" :key="avatar">
       <Skeleton :data="avatar" />
     </div>
-  </div>
 </template>
 
 <script>
@@ -21,14 +19,4 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.column {
-  width: 160px;
-  height: 90px;
-
-  &:hover {
-    background-color: hsl(0, 0%, 71%);
-    cursor: pointer;
-    border-radius: 5px;
-  }
-}
 </style>

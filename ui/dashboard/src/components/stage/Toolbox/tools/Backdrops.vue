@@ -1,15 +1,12 @@
 <template>
-  <div class="columns">
-    <div
-      v-for="background in backgrounds"
-      :key="background"
-      class="column"
-      :class="{
-        'has-background-primary': background.src === currentBackground,
-      }"
-    >
-      <Image :src="background.src" @click="setBackground(background)" />
-    </div>
+  <div
+    v-for="background in backgrounds"
+    :key="background"
+    :class="{
+      'has-background-primary': background.src === currentBackground,
+    }"
+  >
+    <Image :src="background.src" @click="setBackground(background)" />
   </div>
 </template>
 
@@ -39,9 +36,4 @@ export default {
 </script>
 
 <style scoped>
-.column {
-  width: 160px;
-  height: 90px;
-  cursor: pointer;
-}
 </style>
