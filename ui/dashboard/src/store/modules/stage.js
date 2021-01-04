@@ -17,7 +17,7 @@ export default {
             color: randomMessageColor(),
         },
         board: {
-            avatars: []
+            avatars: [],
         },
         tools: generateDemoData(),
     },
@@ -34,6 +34,9 @@ export default {
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
             return assets;
+        },
+        audios(state) {
+            return state.tools.audios;
         }
     },
     mutations: {
@@ -63,6 +66,12 @@ export default {
         },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
+        },
+        PLAY_AUDIO(state, audio) {
+            const model = state.tools.audios.find(a => a.src === audio.src);
+            if (model) {
+                model.isPlaying = true;
+            }
         }
     },
     actions: {
@@ -173,5 +182,8 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             commit('SET_BACKGROUND', message);
         },
+        playAudio({ commit }, audio) {
+            commit('PLAY_AUDIO', audio)
+        }
     },
 };

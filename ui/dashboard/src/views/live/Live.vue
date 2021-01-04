@@ -8,6 +8,7 @@
     <ConnectionStatus />
     <Toolbox />
     <Chat />
+    <audio-player />
   </section>
 </template>
 
@@ -16,12 +17,13 @@ import Chat from "@/components/stage/Chat";
 import Toolbox from "@/components/stage/Toolbox";
 import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";
+import AudioPlayer from "@/components/stage/AudioPlayer";
 import { useStore } from "vuex";
 import { computed, onMounted, onUnmounted, watch } from "vue";
 import anime from "animejs";
 
 export default {
-  components: { Chat, Toolbox, ConnectionStatus, Board },
+  components: { Chat, Toolbox, ConnectionStatus, Board, AudioPlayer },
   setup: () => {
     const store = useStore();
     const background = computed(() => store.state.stage.background);

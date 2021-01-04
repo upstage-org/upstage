@@ -8534,10 +8534,10 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
-vue3-draggable-resizable@^1.5.4:
-  version "1.5.4"
-  resolved "https://registry.yarnpkg.com/vue3-draggable-resizable/-/vue3-draggable-resizable-1.5.4.tgz#d57b1fa2c072fe4e46f9e52c1b32b6d863f26c81"
-  integrity sha512-TvYX67uM55eHq7oXt2uoWc+0/EhIIYYevNTOnhnbxEmiZBSp/6cRafXhI/B2vAsAnx5JJ8uU0FmLPAAhHIbKmQ==
+vue3-draggable-resizable@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/vue3-draggable-resizable/-/vue3-draggable-resizable-1.6.0.tgz#e96c5a58ca6299e1a481b8c65d4eb2786ffd5e17"
+  integrity sha512-CenbnvT4HYvE6raPPCNXenWx4qDTNBa+yB+T/S3hNF5kdz6n8mhdM9FjOTfvyVcIKc499lw6r0Gin1KwDaEYwA==
 
 vue@^3.0.0:
   version "3.0.4"
