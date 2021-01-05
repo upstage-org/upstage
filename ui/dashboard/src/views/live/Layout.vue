@@ -2,17 +2,21 @@
   <Logo id="live-logo" />
   <div id="main-content">
     <PageLoader v-if="loading" />
-    <router-view v-else />
+    <template v-else>
+      <router-view />
+      <LoginPrompt />
+    </template>
   </div>
 </template>
 
 <script>
 import Logo from "@/components/Logo";
 import PageLoader from "./PageLoader.vue";
+import LoginPrompt from "./LoginPrompt";
 import { useStore } from "vuex";
-import { computed } from 'vue';
+import { computed } from "vue";
 export default {
-  components: { Logo, PageLoader },
+  components: { Logo, PageLoader, LoginPrompt },
   setup: () => {
     const store = useStore();
     const loading = computed(() => store.state.stage.preloading);
