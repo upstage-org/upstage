@@ -17,7 +17,7 @@ export default {
             color: randomMessageColor(),
         },
         board: {
-            avatars: []
+            avatars: [],
         },
         tools: generateDemoData(),
     },
@@ -34,6 +34,9 @@ export default {
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
             return assets;
+        },
+        audios(state) {
+            return state.tools.audios;
         }
     },
     mutations: {
@@ -63,6 +66,12 @@ export default {
         },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
+        },
+        UPDATE_AUDIO(state, audio) {
+            const model = state.tools.audios.find(a => a.src === audio.src);
+            if (model) {
+                Object.assign(model, audio);
+            }
         }
     },
     actions: {
@@ -90,6 +99,7 @@ export default {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
+                [TOPICS.AUDIO]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -109,6 +119,9 @@ export default {
                     break;
                 case TOPICS.BACKGROUND:
                     dispatch('handleBackgroundMessage', { message });
+                    break;
+                case TOPICS.AUDIO:
+                    dispatch('handleAudioMessage', { message });
                     break;
                 default:
                     break;
@@ -172,6 +185,17 @@ export default {
         },
         handleBackgroundMessage({ commit }, { message }) {
             commit('SET_BACKGROUND', message);
+        },
+        playAudio(_, audio) {
+            audio.isPlaying = true;
+            mqtt.sendMessage(TOPICS.AUDIO, audio)
+        },
+        pauseAudio(_, audio) {
+            audio.isPlaying = false;
+            mqtt.sendMessage(TOPICS.AUDIO, audio)
+        },
+        handleAudioMessage({ commit }, { message }) {
+            commit('UPDATE_AUDIO', message)
         },
     },
 };

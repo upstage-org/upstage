@@ -103,13 +103,19 @@ export default {
   components: { TopBar },
   setup: () => {
     const tool = ref();
-    const changeTool = (newTool) => (tool.value = newTool);
+    const changeTool = (newTool) => {
+      if (tool.value === newTool) {
+        tool.value = undefined;
+      } else {
+        tool.value = newTool;
+      }
+    };
     return { tool, changeTool };
   },
 };
 </script>
 
-<style>
+<style lang="scss">
 #toolbox {
   position: fixed;
   width: 15%;
@@ -119,5 +125,9 @@ export default {
   transform: translateY(-50%);
   background-color: white;
   opacity: 0.9;
+  .panel-block.is-active {
+    border-left-width: 2px;
+    border-left-style: solid;
+  }
 }
 </style>

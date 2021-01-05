@@ -11,10 +11,11 @@ import { ref } from "vue";
 import Avatars from "./tools/Avatars";
 import Backdrops from "./tools/Backdrops";
 import Props from "./tools/Props";
+import Audio from "./tools/Audio";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrops, Props },
+  components: { Avatars, Backdrops, Props, Audio },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {

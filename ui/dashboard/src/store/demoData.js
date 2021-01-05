@@ -63,9 +63,16 @@ export const generateDemoData = () => {
         src: `${config.publicPath}demo/props/${file}`,
     }));
 
+    const audioFiles = ['applause.mp3', 'op11.mp3', 'typing.mp3', 'LDBoogie.mp3', 'sea_waves.mp3']
+    const audios = audioFiles.map(file => {
+        const name = file.split('.')[0].replace('_', ' ');
+        const src = `${config.publicPath}demo/audios/${file}`;
+        return { name, src, file };
+    })
+
     const stageConfig = {
         animateDuration: 500,
     }
 
-    return { avatars, props, backdrops, config: stageConfig }
+    return { avatars, props, backdrops, audios, config: stageConfig }
 }

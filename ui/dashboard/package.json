@@ -19,7 +19,7 @@
     "mqtt": "^4.2.6",
     "vue": "^3.0.0",
     "vue-router": "^4.0.0-0",
-    "vue3-draggable-resizable": "^1.5.4",
+    "vue3-draggable-resizable": "^1.6.0",
     "vuex": "^4.0.0-0",
     "vuex-persistedstate": "^4.0.0-beta.1"
   },
