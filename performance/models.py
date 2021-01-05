@@ -83,9 +83,9 @@ class Scene(Base,db.Model):
     parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
     performance = relationship(Performance, foreign_keys=[performance_id])
 
-class LivePerformanceConfig(Base,db.Model):
+class LivePerformanceMQTTConfig(Base,db.Model):
     # This holds the MQTT server configuration for one performance, to make connecting easier.
-    __tablename__ = "live_performance_config"
+    __tablename__ = "live_performance_mqtt_config"
     id = Column(BigInteger, primary_key=True)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     ip_address = Column(Text, nullable=False)

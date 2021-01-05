@@ -49,8 +49,8 @@ CREATE TABLE "public"."scene" (
 );
 CREATE INDEX "scene_scene_order_idx" ON "public"."scene" USING btree ("scene_order");
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-DROP TABLE IF EXISTS "live_performance_config";
-CREATE TABLE "public"."live_performance_config" (
+DROP TABLE IF EXISTS "live_performance_mqtt_config";
+CREATE TABLE "public"."live_performance_mqtt_config" (
     "id" BIGSERIAL NOT NULL,
     "name" TEXT not null,
     "owner_id" integer not null default 0,
