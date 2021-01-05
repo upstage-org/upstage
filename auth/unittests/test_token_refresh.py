@@ -5,7 +5,7 @@ import json
 import time
     
 def test_token_refresh():
-    VERSION='V2.0'
+    VERSION='V4.0'
     DEBUG=True
     headers = {'Content-type': 'application/json',
         'Accept': 'application/json, text/javascript, */*; q=0.01',

@@ -15,7 +15,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from performance.models import (ParentStage as ParentStageModel, ParentAsset as ParentAssetModel,
     Performance as PerformanceModel, Scene as SceneModel,
-    LivePerformanceCommunication as LivePerformanceCommunicationModel)
+    LivePerformanceMQTTConfig as LivePerformanceMQTTConfigModel)
 
 class ParentStage(SQLAlchemyObjectType):
     class Meta:
@@ -37,9 +37,9 @@ class Scene(SQLAlchemyObjectType):
         model = SceneModel
         interfaces = (relay.Node, )
 
-class LivePerformanceCommunication(SQLAlchemyObjectType):
+class LivePerformanceMQTTConfig(SQLAlchemyObjectType):
     class Meta:
-        model = LivePerformanceCommunicationModel
+        model = LivePerformanceMQTTConfigModel
         interfaces = (relay.Node, )
 
 class Query(graphene.ObjectType):
@@ -49,7 +49,7 @@ class Query(graphene.ObjectType):
     parent_asset = SQLAlchemyConnectionField(ParentStage.connection)
     performance = SQLAlchemyConnectionField(Performance.connection)
     scene = SQLAlchemyConnectionField(Scene.connection)
-    live_performance_communication = SQLAlchemyConnectionField(LivePerformanceCommunication.connection)
+    live_performance_communication = SQLAlchemyConnectionField(LivePerformanceMQTTConfig.connection)
 
 performance_schema = graphene.Schema(query=Query)
 schema.execute(context_value={'session': session})
