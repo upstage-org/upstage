@@ -33,7 +33,6 @@ export default {
       audios.forEach((audio, i) => {
         if (audio.isPlaying) {
           refs[i].play();
-          refs[i].currentTime = 0;
         } else {
           refs[i].pause();
         }

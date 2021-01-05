@@ -1,6 +1,6 @@
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production'
-        ? '/V2.0/ui/'
+        ? '/V4.0/ui/'
         : '/',
     chainWebpack: config => {
         config
