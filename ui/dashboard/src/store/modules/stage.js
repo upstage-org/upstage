@@ -67,10 +67,10 @@ export default {
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
         },
-        PLAY_AUDIO(state, audio) {
+        UPDATE_AUDIO(state, audio) {
             const model = state.tools.audios.find(a => a.src === audio.src);
             if (model) {
-                model.isPlaying = true;
+                Object.assign(model, audio);
             }
         }
     },
@@ -99,6 +99,7 @@ export default {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
+                [TOPICS.AUDIO]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -118,6 +119,9 @@ export default {
                     break;
                 case TOPICS.BACKGROUND:
                     dispatch('handleBackgroundMessage', { message });
+                    break;
+                case TOPICS.AUDIO:
+                    dispatch('handleAudioMessage', { message });
                     break;
                 default:
                     break;
@@ -182,8 +186,16 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             commit('SET_BACKGROUND', message);
         },
-        playAudio({ commit }, audio) {
-            commit('PLAY_AUDIO', audio)
-        }
+        playAudio(_, audio) {
+            audio.isPlaying = true;
+            mqtt.sendMessage(TOPICS.AUDIO, audio)
+        },
+        pauseAudio(_, audio) {
+            audio.isPlaying = false;
+            mqtt.sendMessage(TOPICS.AUDIO, audio)
+        },
+        handleAudioMessage({ commit }, { message }) {
+            commit('UPDATE_AUDIO', message)
+        },
     },
 };

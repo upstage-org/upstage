@@ -3,9 +3,12 @@
     v-for="audio in audios"
     :key="audio"
     class="has-text-centered"
-    @click="playAudio(audio)"
+    @click="toggleAudio(audio)"
   >
-    <div class="icon is-large">
+    <div class="icon is-large" v-if="audio.isPlaying">
+      <i class="fas fa-pause fa-2x"></i>
+    </div>
+    <div class="icon is-large" v-else>
       <i class="fas fa-play fa-2x"></i>
     </div>
     <div class="audio-name" :title="audio.file">{{ audio.name }}</div>
@@ -16,14 +19,25 @@
 import { useStore } from "vuex";
 
 export default {
-  components: {},
   setup: () => {
     const store = useStore();
     const audios = store.getters["stage/audios"];
     const playAudio = (audio) => {
-      store.dispatch("stage/playAudio", audio);
+      if (!audio.isPlaying) {
+        store.dispatch("stage/playAudio", audio);
+      }
     };
-    return { audios, playAudio };
+    const pauseAudio = (audio) => {
+      store.dispatch("stage/pauseAudio", audio);
+    };
+    const toggleAudio = (audio) => {
+      if (audio.isPlaying) {
+        pauseAudio(audio);
+      } else {
+        playAudio(audio);
+      }
+    };
+    return { audios, toggleAudio };
   },
 };
 </script>
