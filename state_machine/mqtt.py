@@ -19,7 +19,9 @@ def on_message(client, userdata, msg):
     try:
         client = db_client()
         db = client[conf.MONGO_DB]
-        db[conf.EVENT_COLLECTION].insert_one({"topic": msg.topic, "payload": msg.payload, "timestamp": msg.timestamp})
+        db[conf.EVENT_COLLECTION].insert_one(
+            {"topic": msg.topic, "payload": msg.payload, "timestamp": msg.timestamp}
+        )
         client.close()
     except Exception as e:
         logging.error(e)
