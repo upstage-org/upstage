@@ -16,3 +16,4 @@ requests
 sqlalchemy
 uwsgi
 websockets
+pymongo
