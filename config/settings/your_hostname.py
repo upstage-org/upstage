@@ -57,7 +57,7 @@ MAX_SESSION_SECONDS = (60 * 30)
 
 DEBUG = True
 
-VERSION='V0.9'
+VERSION='V4.0'
 
 # log file
 LOG_FILENAME = f'/var/log/uwsgi/upstage_{VERSION}.log'
