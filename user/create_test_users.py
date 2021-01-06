@@ -26,16 +26,17 @@ from config.settings import FLASK_HOST,FLASK_PORT, ENV_TYPE
 from config.signals import add_signals
 
 from auth.fernet_crypto import encrypt
-from user.models import User,PERFORMER
+from user.models import User,PLAYER
 
 # System user(s)
 def create_some_users():
     db_session = get_scoped_session()
     user = User(
-        username='testuser',
+        username='testplayer',
         password=encrypt('12345678'),
+        email='none@none.none',
         active=True,
-        role=PERFORMER,
+        role=PLAYER,
     )
     db_session.add(user)
     db_session.commit()
