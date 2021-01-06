@@ -8,7 +8,7 @@ import sys
 import paho.mqtt.client as paho
 
 import config as conf
-from system import event_queue
+from db import build_client as db_client
 
 
 def on_connect(client, userdata, flags, rc):
@@ -17,9 +17,12 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
-        event_queue.put({"topic": msg.topic, "payload": msg.payload, "timestamp": msg.timestamp})
-    except:
-        pass
+        client = db_client()
+        db = client[conf.MONGO_DB]
+        db[conf.EVENT_COLLECTION].insert_one({"topic": msg.topic, "payload": msg.payload, "timestamp": msg.timestamp})
+        client.close()
+    except Exception as e:
+        logging.error(e)
 
 
 def get_client_id():

@@ -7,5 +7,5 @@ MQTT_PORT = 1883
 MQTT_TRANSPORT = "tcp"
 PERFORMANCE_TOPIC_RULE = "performance/#"
 
-PERFORMANCE_LOG_DB = "upstage_performance_log"
+EVENT_COLLECTION = "events"
 PERFORMANCE_STATE_COLLECTION = "performance_state"

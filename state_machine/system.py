@@ -1,11 +1,11 @@
 import logging
 import re
 import json
-from multiprocessing import Queue, Process, cpu_count
+from multiprocessing import Process, cpu_count
 import os
 
-
-event_queue = Queue()
+from db import build_client
+import config as conf
 
 
 _payload_map = {}
@@ -63,23 +63,29 @@ def functions_for(payload):
     return output
 
 
-def worker(queue):
-    print(f"Worker started (PID: {os.getpid()})")
+def worker():
+    logging.info(f"Worker started (PID: {os.getpid()})")
+    client = build_client()
+    db = client[conf.MONGO_DB]
+    queue = db[conf.EVENT_COLLECTION]
     while True:
-        if not queue.empty():
-            event = queue.get()
-            print(f"{os.getpid()} Processing: {event}")
-            _, perf_id = event['topic'].split('/')
-            payload = json.loads(event['payload'])
-            timestamp = event['timestamp']
-            funcs = functions_for(payload)
-            for f in funcs:
-                f(perf_id, payload, timestamp)
-    print("Worker exited")
+        try:
+            event = queue.find_one_and_delete({})
+            if event:
+                logging.info(f"{os.getpid()} Processing: {event}")
+                _, perf_id = event['topic'].split('/')
+                payload = json.loads(event['payload'])
+                timestamp = event['timestamp']
+                funcs = functions_for(payload)
+                for f in funcs:
+                    f(perf_id, payload, timestamp)
+        except Exception as e:
+            logging.error(e)
+    logging.info("Worker exited")
 
 
 def run():
     global event_queue
-    processes = [ Process(target=worker, args=(event_queue,)) for _ in range(cpu_count()) ]
-    print(f"Spawning {len(processes)} processes...")
+    processes = [ Process(target=worker, args=()) for _ in range(cpu_count()) ]
+    logging.info(f"Spawning {len(processes)} processes...")
     for p in processes: p.start()

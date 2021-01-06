@@ -26,14 +26,6 @@ def save_state(state):
     client.close()
 
 
-@reacts_to_anything
-def log_event(performance_id, payload, timestamp):
-    client = build_client()
-    db = client[conf.MONGO_DB]
-    db[f"{performance_id}"].insert_one({"payload": payload, "timestamp": timestamp })
-    client.close()
-
-
 @reacts_to_payload("type=placeAvatarOnStage")
 def place_avatar_on_stage(performance_id, payload, timestamp):
     state = get_state(performance_id)
@@ -53,3 +45,9 @@ def move_avatar_to(performance_id, payload, timestamp):
     except:
         pass
 
+
+@reacts_to_anything
+def record_event(performance_id, payload, timestamp):
+    client = build_client()
+    db = client[conf.MONGO_DB]
+    db[f"{performance_id}_archive"].insert_one({"payload": payload, "timestamp": timestamp})
