@@ -20,6 +20,9 @@ export default {
             avatars: [],
         },
         tools: generateDemoData(),
+        settingPopup: {
+            isActive: false,
+        }
     },
     getters: {
         avatars(state) {
@@ -72,6 +75,9 @@ export default {
             if (model) {
                 Object.assign(model, audio);
             }
+        },
+        SET_SETTING_POPUP(state, setting) {
+            state.settingPopup = setting;
         }
     },
     actions: {
@@ -129,9 +135,9 @@ export default {
         },
         sendChat({ rootGetters, state }, message) {
             if (!message) return;
-            const currentUser = rootGetters["user/currentUser"];
+            const nickname = rootGetters["user/nickname"];
             const payload = {
-                user: currentUser,
+                user: nickname,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
@@ -196,6 +202,13 @@ export default {
         },
         handleAudioMessage({ commit }, { message }) {
             commit('UPDATE_AUDIO', message)
+        },
+        closeSettingPopup({ commit }) {
+            commit('SET_SETTING_POPUP', { isActive: false })
+        },
+        openSettingPopup({ commit }, setting) {
+            setting.isActive = true;
+            commit('SET_SETTING_POPUP', setting)
         },
     },
 };

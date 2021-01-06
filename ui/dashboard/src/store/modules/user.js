@@ -5,6 +5,7 @@ export default {
   state: {
     user: null,
     loadingUser: false,
+    nickname: null,
   },
   mutations: {
     SET_USER_DATA(state, data) {
@@ -12,6 +13,9 @@ export default {
     },
     SET_LOADING_USER(state, loading) {
       state.loadingUser = loading;
+    },
+    SET_NICK_NAME(state, nickname) {
+      state.nickname = nickname;
     },
   },
   actions: {
@@ -32,10 +36,14 @@ export default {
           });
       });
     },
+    saveNickname({ commit }, { nickname }) {
+      commit('SET_NICK_NAME', nickname);
+      return nickname;
+    }
   },
   getters: {
-    currentUser(state) {
-      return state.user ? state.user.username : "Annonymous";
+    nickname(state) {
+      return state.nickname ?? (state.user ? (state.user.firstname ?? state.user.username) : "Guest");
     },
   },
 };

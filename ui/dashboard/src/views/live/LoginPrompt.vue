@@ -53,4 +53,7 @@ export default {
 .modal-close {
   position: relative;
 }
+.modal-content {
+  max-width: 500px;
+}
 </style>
