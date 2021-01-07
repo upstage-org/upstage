@@ -2,7 +2,7 @@
   <div id="chatbox" class="card is-light" :class="{ collapsed }">
     <div class="actions">
       <button
-        class="chat-setting button is-rounded is-primary is-outlined"
+        class="chat-setting button is-rounded is-light"
         @click="collapsed = !collapsed"
       >
         <span class="icon">
@@ -16,7 +16,7 @@
         </span>
       </button>
       <button
-        class="chat-setting button is-rounded is-primary is-outlined"
+        class="chat-setting button is-rounded is-light"
         @click="openChatSetting"
       >
         <span class="icon">
@@ -53,20 +53,20 @@
     <footer class="card-footer">
       <div class="card-footer-item">
         <div class="control has-icons-right is-fullwidth">
-          <input
-            class="input is-rounded"
-            placeholder="Type message"
-            v-model="message"
-            @keydown.enter="sendChat"
-          />
-          <button
-            @click="sendChat"
-            class="icon is-right clickable button is-primary is-rounded"
-            :class="{ 'is-loading': loadingUser }"
-            :disabled="loadingUser"
-          >
-            <i class="fas fa-paper-plane"></i>
-          </button>
+          <form autocomplete="off" @submit.prevent="sendChat">
+            <input
+              class="input is-rounded"
+              placeholder="Type message"
+              v-model="message"
+            />
+            <button
+              class="icon is-right clickable button is-primary is-rounded"
+              :class="{ 'is-loading': loadingUser }"
+              :disabled="loadingUser"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
         </div>
       </div>
     </footer>
@@ -156,7 +156,7 @@ export default {
   }
   .actions {
     position: absolute;
-    right: 10px;
+    right: 24px;
     top: 10px;
     button {
       width: 26px;

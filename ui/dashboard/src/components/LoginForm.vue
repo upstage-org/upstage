@@ -58,6 +58,7 @@
 
 <script>
 export default {
+  emits: ["success"],
   data() {
     return {
       showPassword: false,
@@ -79,7 +80,7 @@ export default {
       this.$store
         .dispatch("auth/login", user)
         .then(() => {
-          this.$router.push({ name: "Dashboard" });
+          this.$emit("success");
         })
         .finally(() => {
           this.loading = false;
