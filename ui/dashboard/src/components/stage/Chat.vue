@@ -165,5 +165,8 @@ export default {
       margin-left: 6px;
     }
   }
+  .control.has-icons-right .input {
+    padding-right: 50px !important;
+  }
 }
 </style>
