@@ -1,56 +1,58 @@
 <template>
-  <OpacitySlider
-    :position="position"
-    v-model:active="active"
-    :object="object"
-  />
-  <ContextMenu>
-    <template #trigger>
-      <DragResize
-        class="object"
-        :initW="100"
-        :initH="100"
-        v-model:x="position.x"
-        v-model:y="position.y"
-        v-model:w="position.w"
-        v-model:h="position.h"
-        v-model:active="active"
-        :draggable="true"
-        :resizable="true"
-        @drag-start="dragStart"
-        @drag-end="dragEnd"
-        @resize-end="resizeEnd"
-      >
+  <div tabindex="0" @keyup.delete="deleteObject">
+    <OpacitySlider
+      :position="position"
+      v-model:active="active"
+      :object="object"
+    />
+    <ContextMenu>
+      <template #trigger>
+        <DragResize
+          class="object"
+          :initW="100"
+          :initH="100"
+          v-model:x="position.x"
+          v-model:y="position.y"
+          v-model:w="position.w"
+          v-model:h="position.h"
+          v-model:active="active"
+          :draggable="true"
+          :resizable="true"
+          @drag-start="dragStart"
+          @drag-end="dragEnd"
+          @resize-end="resizeEnd"
+        >
+          <Image
+            ref="el"
+            :src="object.src"
+            :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+          />
+        </DragResize>
         <Image
-          ref="el"
           :src="object.src"
-          :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+          v-if="isDragging"
+          :style="{
+            width: position.w + 'px',
+            height: position.h + 'px',
+            position: 'fixed',
+            left: beforeDragPosition.x + 'px',
+            top: beforeDragPosition.y + 'px',
+          }"
+          :opacity="object.opacity"
         />
-      </DragResize>
-      <Image
-        :src="object.src"
-        v-if="isDragging"
-        :style="{
-          width: position.w + 'px',
-          height: position.h + 'px',
-          position: 'fixed',
-          left: beforeDragPosition.x + 'px',
-          top: beforeDragPosition.y + 'px',
-        }"
-        :opacity="object.opacity"
-      />
-    </template>
-    <template #context>
-      <div class="card-content">
-        <div class="columns">
-          <div class="column">First column</div>
-          <div class="column">Second column</div>
-          <div class="column">Third column</div>
-          <div class="column">Fourth column</div>
+      </template>
+      <template #context>
+        <div class="card-content">
+          <div class="columns">
+            <div class="column">First column</div>
+            <div class="column">Second column</div>
+            <div class="column">Third column</div>
+            <div class="column">Fourth column</div>
+          </div>
         </div>
-      </div>
-    </template>
-  </ContextMenu>
+      </template>
+    </ContextMenu>
+  </div>
 </template>
 
 <script>
@@ -111,6 +113,10 @@ export default {
       });
     };
 
+    const deleteObject = () => {
+      store.dispatch("stage/deleteObject", props.object);
+    };
+
     return {
       el,
       print,
@@ -121,6 +127,7 @@ export default {
       position,
       beforeDragPosition,
       isDragging,
+      deleteObject,
     };
   },
 };

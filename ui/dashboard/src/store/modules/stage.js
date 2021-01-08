@@ -70,6 +70,10 @@ export default {
             }
             state.board.avatars.push(object)
         },
+        DELETE_OBJECT(state, object) {
+            const { id } = object;
+            state.board.avatars = state.board.avatars.filter(avatar => avatar.id !== id);
+        },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
         },
@@ -176,6 +180,9 @@ export default {
                 object,
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
+        deleteObject({ commit }, object) {
+            commit('DELETE_OBJECT', object)
         },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
