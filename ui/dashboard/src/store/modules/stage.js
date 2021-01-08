@@ -17,7 +17,10 @@ export default {
             color: randomMessageColor(),
         },
         board: {
-            avatars: [],
+            avatars: [{
+                ...generateDemoData().avatars[0],
+                x: 300, y: 200
+            }],
         },
         tools: generateDemoData(),
         settingPopup: {

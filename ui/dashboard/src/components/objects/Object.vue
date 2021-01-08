@@ -1,4 +1,9 @@
 <template>
+  <OpacitySlider
+    :position="position"
+    v-model:active="active"
+    :object="object"
+  />
   <ContextMenu>
     <template #trigger>
       <DragResize
@@ -16,7 +21,11 @@
         @drag-end="dragEnd"
         @resize-end="resizeEnd"
       >
-        <Image ref="el" :src="object.src" :opacity="isDragging ? 0.5 : 1" />
+        <Image
+          ref="el"
+          :src="object.src"
+          :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+        />
       </DragResize>
       <Image
         :src="object.src"
@@ -28,6 +37,7 @@
           left: beforeDragPosition.x + 'px',
           top: beforeDragPosition.y + 'px',
         }"
+        :opacity="object.opacity"
       />
     </template>
     <template #context>
@@ -47,15 +57,17 @@
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
+import OpacitySlider from "./OpacitySlider";
 import { useStore } from "vuex";
 import { reactive, ref, watch } from "vue";
 import anime from "animejs";
 
 export default {
   props: ["object"],
-  components: { DragResize, Image, ContextMenu },
+  components: { DragResize, Image, ContextMenu, OpacitySlider },
   setup(props) {
     const store = useStore();
+    const active = ref(false);
     const position = reactive({ ...props.object, y: 0 });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
@@ -105,7 +117,7 @@ export default {
       dragStart,
       dragEnd,
       resizeEnd,
-      active: false,
+      active,
       position,
       beforeDragPosition,
       isDragging,
