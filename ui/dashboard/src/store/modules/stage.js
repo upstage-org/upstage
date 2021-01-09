@@ -167,6 +167,9 @@ export default {
                 avatar: {
                     id: uuidv4(),
                     ...avatar,
+                    w: 100,
+                    h: 100,
+                    opacity: 1,
                 }
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
