@@ -28,7 +28,7 @@
       <div v-if="!messages.length" class="columns is-vcentered is-fullheight">
         <div class="column has-text-centered has-text-light">
           <i class="fas fa-comments fa-4x"></i>
-          <p class="title has-text-light">No messages yet!</p>
+          <p class="subtitle has-text-light">No messages yet!</p>
         </div>
       </div>
       <div v-else>

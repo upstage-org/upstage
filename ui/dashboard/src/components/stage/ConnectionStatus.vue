@@ -13,7 +13,7 @@
     <span class="icon" v-show="status === 'OFFLINE'">
       <i class="far fa-circle"></i>
     </span>
-    <span>{{ status }}</span>
+    <span class="status-text">{{ status }}</span>
   </span>
 </template>
 
@@ -44,10 +44,15 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 #connection-status {
   position: fixed;
   right: 120px;
   top: 5px;
+
+  @media screen and (max-width: 767px) {
+    right: unset;
+    left: 16px;
+  }
 }
 </style>

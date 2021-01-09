@@ -14,8 +14,8 @@ export const generateDemoData = () => {
         "09.png",
         "10.png",
         "11.png",
-        "blob_avatar_1.jpg",
-        "blob_avatar_2.jpg",
+        "blob_avatar_1.png",
+        "blob_avatar_2.png",
         "logo-upstage-official-print_500px.png",
         "mobilise-demoblise-logo-version-black.gif",
         "mobilise-demoblise-logo-version-white.png",
@@ -53,6 +53,18 @@ export const generateDemoData = () => {
         {
             name: "6",
             src: config.publicPath + "demo/backdrops/6.jpg",
+        },
+        {
+            name: "7",
+            src: config.publicPath + "demo/backdrops/map.png",
+        },
+        {
+            name: "8",
+            src: config.publicPath + "demo/backdrops/monarch_butterfly_backdrop.jpg",
+        },
+        {
+            name: "9",
+            src: config.publicPath + "demo/backdrops/tunnel_beach_02.jpg",
         },
     ];
 
