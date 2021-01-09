@@ -127,13 +127,13 @@ export default {
   position: fixed;
   width: 20%;
   min-width: 200px;
-  height: calc(100vh - 135px);
+  height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
   opacity: 0.9;
 
   .card-content {
-    height: calc(100vh - 200px);
+    height: calc(100% - 64px);
     overflow-y: auto;
     padding-top: 36px;
   }

@@ -1,7 +1,7 @@
 <template>
   <TopBar :tool="tool" />
   <nav id="toolbox" class="panel">
-    <div class="panel-heading p-0 tabs is-toggle is-fullwidth">
+    <div class="panel-heading p-0 m-0 tabs is-toggle is-fullwidth">
       <ul>
         <li class="is-active">
           <a>
@@ -124,7 +124,7 @@ export default {
   min-width: 200px;
   left: 16px;
   top: 120px;
-  max-height: calc(100vh - 140px);
+  max-height: calc(100% - 130px);
   background-color: white;
   opacity: 0.9;
   .panel-block.is-active {
@@ -132,8 +132,17 @@ export default {
     border-left-style: solid;
   }
   .panel-body {
-    max-height: calc(100vh - 260px);
+    max-height: calc(100vh - 230px);
     overflow-y: auto;
+  }
+
+  @media screen and (max-height: 500px) {
+    height: calc(100% - 130px);
+
+    .panel-body {
+      max-height: calc(100% - 96px);
+      overflow-y: auto;
+    }
   }
 }
 </style>
