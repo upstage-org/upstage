@@ -4,7 +4,7 @@
     step="1"
     min="0"
     max="100"
-    value="50"
+    :value="value"
     type="range"
     :style="{
       top: position.y - 26 + 'px',
@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
   props: ["position", "active", "object"],
@@ -31,6 +32,7 @@ export default {
       emit("update:active", true);
     };
     const calcOpacity = (e) => Number(e.target.value) / 100;
+    const value = computed(() => (props.object.opacity ?? 1) * 100);
 
     const changeOpacity = (e) => {
       keepActive();
@@ -49,7 +51,7 @@ export default {
         opacity,
       });
     };
-    return { keepActive, changeOpacity, sendChangeOpacity };
+    return { keepActive, changeOpacity, sendChangeOpacity, value };
   },
 };
 </script>

@@ -17,10 +17,7 @@ export default {
             color: randomMessageColor(),
         },
         board: {
-            avatars: [{
-                ...generateDemoData().avatars[0],
-                x: 300, y: 200
-            }],
+            avatars: [],
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -181,8 +178,12 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
-        deleteObject({ commit }, object) {
-            commit('DELETE_OBJECT', object)
+        deleteObject(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.DESTROY,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
@@ -191,6 +192,9 @@ export default {
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
                     commit('UPDATE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.DESTROY:
+                    commit('DELETE_OBJECT', message.object)
                     break;
                 default:
                     break;
