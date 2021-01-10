@@ -34,6 +34,7 @@ export default {
         preloadableAssets(state) {
             const assets = []
                 .concat(state.tools.avatars.map(a => a.src))
+                .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
             return assets;
@@ -188,6 +189,13 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        switchFrame(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SWITCH_FRAME,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
                 case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
@@ -198,6 +206,9 @@ export default {
                     break;
                 case BOARD_ACTIONS.DESTROY:
                     commit('DELETE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.SWITCH_FRAME:
+                    commit('UPDATE_OBJECT', message.object)
                     break;
                 default:
                     break;

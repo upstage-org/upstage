@@ -1,5 +1,5 @@
 <template>
-  <div tabindex="0" @keyup.delete="deleteObject">
+  <div ref="el" tabindex="0" @keyup.delete="deleteObject">
     <OpacitySlider
       :position="position"
       v-model:active="active"
@@ -23,7 +23,7 @@
           @resize-end="resizeEnd"
         >
           <Image
-            ref="el"
+            class="the-object"
             :src="object.src"
             :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
           />
@@ -43,11 +43,15 @@
       </template>
       <template #context>
         <div class="card-content">
-          <div class="columns">
-            <div class="column">First column</div>
-            <div class="column">Second column</div>
-            <div class="column">Third column</div>
-            <div class="column">Fourth column</div>
+          <div v-if="object.multi" class="columns frame-selector is-multiline">
+            <div
+              v-for="frame in object.frames"
+              :key="frame"
+              class="column is-3"
+              @click="switchFrame(frame)"
+            >
+              <Image :src="frame" />
+            </div>
           </div>
         </div>
       </template>
@@ -68,22 +72,41 @@ export default {
   props: ["object"],
   components: { DragResize, Image, ContextMenu, OpacitySlider },
   setup(props) {
+    // Dom refs
+    const el = ref();
+
+    // Vuex store
     const store = useStore();
+    const config = store.getters["stage/config"];
+
+    // Local state
     const active = ref(false);
     const position = reactive({ ...props.object, y: 0 });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
-    const el = ref();
-    const config = store.getters["stage/config"];
 
     watch(
       props.object,
       () => {
-        anime({
-          targets: position,
-          ...props.object,
-          duration: config.animateDuration,
-        });
+        if (position.src !== props.object.src) {
+          anime({
+            targets: el.value.getElementsByClassName("the-object"),
+            rotate: ["-3deg", "3deg", "0deg"],
+            duration: config.animateDuration,
+            easing: "easeInOutQuad",
+            complete: () => (position.src = props.object.src),
+          });
+        } else {
+          const { x, y, h, w } = props.object;
+          anime({
+            targets: position,
+            x,
+            y,
+            h,
+            w,
+            duration: config.animateDuration,
+          });
+        }
       },
       { immediate: true }
     );
@@ -117,6 +140,13 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
+    const switchFrame = (frame) => {
+      store.dispatch("stage/switchFrame", {
+        ...props.object,
+        src: frame,
+      });
+    };
+
     return {
       el,
       print,
@@ -128,13 +158,32 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
+      switchFrame,
     };
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .object {
   z-index: 10;
+}
+.frame-selector {
+  width: 440px;
+
+  @media screen and (max-width: 767px) {
+    width: 100px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .column {
+    height: 100px;
+
+    &:hover {
+      background-color: hsl(0, 0%, 71%);
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  }
 }
 </style>

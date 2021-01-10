@@ -12,6 +12,13 @@
       width: '100px',
     }"
   />
+  <span
+    v-if="data.multi"
+    class="tag is-primary is-multi"
+    title="This is a multiframe avatar"
+  >
+    <i class="fas fa-clone"></i>
+  </span>
 </template>
 
 <script>
@@ -61,4 +68,7 @@ export default {
 </script>
 
 <style>
+.is-multi {
+  margin-left: -20px;
+}
 </style>

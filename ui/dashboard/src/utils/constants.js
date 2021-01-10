@@ -9,4 +9,5 @@ export const BOARD_ACTIONS = {
   PLACE_AVATAR_ON_STAGE: 'placeAvatarOnStage',
   MOVE_TO: 'moveTo',
   DESTROY: 'destroy',
+  SWITCH_FRAME: 'switchFrame',
 }

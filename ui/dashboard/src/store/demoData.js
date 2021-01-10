@@ -1,19 +1,29 @@
 import config from "@/../vue.config";
+import { titleCase } from '@/utils/common'
 
 export const generateDemoData = () => {
 
+    const avatars = [
+        {
+            name: "Helen",
+            src: `${config.publicPath}demo/avatars/01.png`,
+            multi: true,
+            frames: [
+                "01.png",
+                "02.png",
+                "03.png",
+                "04.png",
+                "05.png",
+                "06.png",
+                "07.png",
+                "08.png",
+                "09.png",
+                "10.png",
+                "11.png",
+            ].map(file => `${config.publicPath}demo/avatars/${file}`)
+        }
+    ]
     const avatarFiles = [
-        "01.png",
-        "02.png",
-        "03.png",
-        "04.png",
-        "05.png",
-        "06.png",
-        "07.png",
-        "08.png",
-        "09.png",
-        "10.png",
-        "11.png",
         "blob_avatar_1.png",
         "blob_avatar_2.png",
         "logo-upstage-official-print_500px.png",
@@ -25,10 +35,13 @@ export const generateDemoData = () => {
         "virus_2.png",
         "virus_3.png",
     ];
-    const avatars = avatarFiles.map((file) => ({
-        name: file,
-        src: `${config.publicPath}demo/avatars/${file}`,
-    }));
+    avatarFiles.forEach(file => {
+        const name = titleCase(file.split('.')[0].replace('_', ' '));
+        const src = `${config.publicPath}demo/avatars/${file}`;
+        avatars.push({ name, src, file })
+    })
+    console.log(avatars)
+
     const backdrops = [
         {
             name: "1",
