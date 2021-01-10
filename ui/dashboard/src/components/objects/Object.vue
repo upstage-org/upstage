@@ -5,6 +5,7 @@
       v-model:active="active"
       :object="object"
     />
+    <Topping :position="position" :object="object" />
     <ContextMenu>
       <template #trigger>
         <DragResize
@@ -41,36 +42,34 @@
           :opacity="object.opacity"
         />
       </template>
-      <template #context>
-        <div class="card-content">
-          <div v-if="object.multi" class="columns frame-selector is-multiline">
-            <div
-              v-for="frame in object.frames"
-              :key="frame"
-              class="column is-3"
-              @click="switchFrame(frame)"
-            >
-              <Image :src="frame" />
-            </div>
-          </div>
-        </div>
+      <template #context="slotProps">
+        <MenuContent :object="object" :closeMenu="slotProps.closeMenu" />
       </template>
     </ContextMenu>
   </div>
 </template>
 
 <script>
-import DragResize from "vue3-draggable-resizable";
-import Image from "@/components/Image";
-import ContextMenu from "@/components/ContextMenu";
-import OpacitySlider from "./OpacitySlider";
 import { useStore } from "vuex";
 import { reactive, ref, watch } from "vue";
 import anime from "animejs";
+import DragResize from "vue3-draggable-resizable";
+import Image from "@/components/Image";
+import ContextMenu from "@/components/ContextMenu";
+import MenuContent from "./ContextMenu";
+import OpacitySlider from "./OpacitySlider";
+import Topping from "./Topping.vue";
 
 export default {
   props: ["object"],
-  components: { DragResize, Image, ContextMenu, OpacitySlider },
+  components: {
+    DragResize,
+    Image,
+    ContextMenu,
+    MenuContent,
+    OpacitySlider,
+    Topping,
+  },
   setup(props) {
     // Dom refs
     const el = ref();
@@ -140,13 +139,6 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
-    const switchFrame = (frame) => {
-      store.dispatch("stage/switchFrame", {
-        ...props.object,
-        src: frame,
-      });
-    };
-
     return {
       el,
       print,
@@ -158,7 +150,6 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
-      switchFrame,
     };
   },
 };
@@ -167,23 +158,5 @@ export default {
 <style scoped lang="scss">
 .object {
   z-index: 10;
-}
-.frame-selector {
-  width: 440px;
-
-  @media screen and (max-width: 767px) {
-    width: 100px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-  .column {
-    height: 100px;
-
-    &:hover {
-      background-color: hsl(0, 0%, 71%);
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  }
 }
 </style>

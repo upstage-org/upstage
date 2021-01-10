@@ -13,7 +13,7 @@
       'z-index': 100,
     }"
   >
-    <slot name="context" />
+    <slot name="context" :closeMenu="closeMenu" />
   </div>
 </template>
 

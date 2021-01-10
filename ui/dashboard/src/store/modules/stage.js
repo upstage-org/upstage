@@ -41,6 +41,10 @@ export default {
         },
         audios(state) {
             return state.tools.audios;
+        },
+        currentAvatar(state, getters, rootState) {
+            const id = rootState.user.avatarId;
+            return state.board.avatars.find(avatar => avatar.id === id);
         }
     },
     mutations: {
@@ -71,6 +75,18 @@ export default {
         DELETE_OBJECT(state, object) {
             const { id } = object;
             state.board.avatars = state.board.avatars.filter(avatar => avatar.id !== id);
+        },
+        SET_OBJECT_SPEAK(state, { avatar, speak }) {
+            const { id } = avatar;
+            let model = state.board.avatars.find(avatar => avatar.id === id);
+            if (!model) {
+                const length = state.board.avatars.push(avatar)
+                model = state.board.avatars[length - 1];
+            }
+            model.speak = speak;
+            setTimeout(() => {
+                if (model.speak.message === speak.message) { model.speak = null }
+            }, 1000 + speak.message.split(' ').length * 1000);
         },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
@@ -138,7 +154,7 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, state }, message) {
+        sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
             const nickname = rootGetters["user/nickname"];
             const payload = {
@@ -149,6 +165,14 @@ export default {
                 at: moment().format('HH:mm')
             };
             mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
+            const avatar = getters['currentAvatar']
+            if (avatar) {
+                mqtt.sendMessage(TOPICS.BOARD, {
+                    type: BOARD_ACTIONS.SPEAK,
+                    avatar,
+                    speak: payload,
+                })
+            }
         },
         handleChatMessage({ commit }, { message }) {
             const model = {
@@ -209,6 +233,9 @@ export default {
                     break;
                 case BOARD_ACTIONS.SWITCH_FRAME:
                     commit('UPDATE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.SPEAK:
+                    commit('SET_OBJECT_SPEAK', message);
                     break;
                 default:
                     break;

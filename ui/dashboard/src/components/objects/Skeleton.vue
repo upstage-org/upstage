@@ -11,6 +11,7 @@
       left: position.x - topbarPosition.left + 'px',
       width: '100px',
     }"
+    :title="data.name"
   />
   <span
     v-if="data.multi"
@@ -48,9 +49,10 @@ export default {
       position.isDragging = true;
       position.x = e.changedTouches[0]?.clientX - 50;
       position.y = e.changedTouches[0]?.clientY - 50;
-      topbarPosition.value = document
-        .getElementById("topbar")
-        .getBoundingClientRect();
+      const topbar = document.getElementById("topbar");
+      if (topbar) {
+        topbarPosition.value = topbar.getBoundingClientRect();
+      }
     };
 
     const touchend = () => {
