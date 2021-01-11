@@ -1,5 +1,10 @@
 <template>
-  <div ref="el" tabindex="0" @keyup.delete="deleteObject">
+  <div
+    ref="el"
+    tabindex="0"
+    @keyup.delete="deleteObject"
+    @dblclick="setAsPrimaryAvatar"
+  >
     <OpacitySlider
       :position="position"
       v-model:active="active"
@@ -139,6 +144,11 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
+    const setAsPrimaryAvatar = () => {
+      const { name, id } = props.object;
+      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+    };
+
     return {
       el,
       print,
@@ -150,6 +160,7 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
+      setAsPrimaryAvatar,
     };
   },
 };
