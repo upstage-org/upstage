@@ -103,6 +103,9 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
     next("/login");
   }
+  if (to.name === 'Login' && loggedIn) {
+    next("/dashboard");
+  }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;
 });

@@ -1,10 +1,34 @@
 <template>
-  <div id="chatbox" class="card is-light">
+  <div id="chatbox" class="card is-light" :class="{ collapsed }">
+    <div class="actions">
+      <button
+        class="chat-setting button is-rounded is-light"
+        @click="collapsed = !collapsed"
+      >
+        <span class="icon">
+          <i
+            class="fas"
+            :class="{
+              'fa-window-minimize': !collapsed,
+              'fa-window-maximize': collapsed,
+            }"
+          ></i>
+        </span>
+      </button>
+      <button
+        class="chat-setting button is-rounded is-light"
+        @click="openChatSetting"
+      >
+        <span class="icon">
+          <i class="fas fa-cog"></i>
+        </span>
+      </button>
+    </div>
     <div class="card-content" ref="theContent">
       <div v-if="!messages.length" class="columns is-vcentered is-fullheight">
         <div class="column has-text-centered has-text-light">
           <i class="fas fa-comments fa-4x"></i>
-          <p class="title has-text-light">No messages yet!</p>
+          <p class="subtitle has-text-light">No messages yet!</p>
         </div>
       </div>
       <div v-else>
@@ -29,20 +53,20 @@
     <footer class="card-footer">
       <div class="card-footer-item">
         <div class="control has-icons-right is-fullwidth">
-          <input
-            class="input is-rounded"
-            placeholder="Type message"
-            v-model="message"
-            @keydown.enter="sendChat"
-          />
-          <button
-            @click="sendChat"
-            class="icon is-right clickable button is-primary is-rounded"
-            :class="{ 'is-loading': loadingUser }"
-            :disabled="loadingUser"
-          >
-            <i class="fas fa-paper-plane"></i>
-          </button>
+          <form autocomplete="off" @submit.prevent="sendChat">
+            <input
+              class="input is-rounded"
+              placeholder="Type message"
+              v-model="message"
+            />
+            <button
+              class="icon is-right clickable button is-primary is-rounded"
+              :class="{ 'is-loading': loadingUser }"
+              :disabled="loadingUser"
+            >
+              <i class="fas fa-paper-plane"></i>
+            </button>
+          </form>
         </div>
       </div>
     </footer>
@@ -62,6 +86,7 @@ export default {
     const messages = computed(() => store.state.stage.chat.messages);
     const loadingUser = computed(() => store.state.user.loadingUser);
     const message = ref("");
+    const collapsed = ref(false);
     const scrollToEnd = () => {
       anime({
         targets: theContent.value,
@@ -78,12 +103,20 @@ export default {
     };
     watch(messages.value, scrollToEnd);
 
+    const openChatSetting = () =>
+      store.dispatch("stage/openSettingPopup", {
+        type: "Chat",
+        title: "Change your nick name",
+      });
+
     return {
       messages,
       message,
       sendChat,
       theContent,
       loadingUser,
+      openChatSetting,
+      collapsed,
     };
   },
 };
@@ -94,19 +127,46 @@ export default {
   position: fixed;
   width: 20%;
   min-width: 200px;
-  height: calc(100vh - 135px);
+  height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
   opacity: 0.9;
 
   .card-content {
-    height: calc(100vh - 200px);
+    height: calc(100% - 64px);
     overflow-y: auto;
+    padding-top: 36px;
   }
+
+  &.collapsed {
+    height: 108px;
+    .card-content {
+      padding-top: 20px;
+      height: 0;
+      > div {
+        display: none;
+      }
+    }
+  }
+
   .message {
     white-space: break-spaces;
     height: unset;
     color: white;
+  }
+  .actions {
+    position: absolute;
+    right: 24px;
+    top: 10px;
+    button {
+      width: 26px;
+      height: 26px;
+      padding: 0;
+      margin-left: 6px;
+    }
+  }
+  .control.has-icons-right .input {
+    padding-right: 50px !important;
   }
 }
 </style>

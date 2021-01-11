@@ -20,6 +20,9 @@ export default {
             avatars: [],
         },
         tools: generateDemoData(),
+        settingPopup: {
+            isActive: false,
+        }
     },
     getters: {
         avatars(state) {
@@ -31,12 +34,17 @@ export default {
         preloadableAssets(state) {
             const assets = []
                 .concat(state.tools.avatars.map(a => a.src))
+                .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
             return assets;
         },
         audios(state) {
             return state.tools.audios;
+        },
+        currentAvatar(state, getters, rootState) {
+            const id = rootState.user.avatarId;
+            return state.board.avatars.find(avatar => avatar.id === id);
         }
     },
     mutations: {
@@ -64,6 +72,22 @@ export default {
             }
             state.board.avatars.push(object)
         },
+        DELETE_OBJECT(state, object) {
+            const { id } = object;
+            state.board.avatars = state.board.avatars.filter(avatar => avatar.id !== id);
+        },
+        SET_OBJECT_SPEAK(state, { avatar, speak }) {
+            const { id } = avatar;
+            let model = state.board.avatars.find(avatar => avatar.id === id);
+            if (!model) {
+                const length = state.board.avatars.push(avatar)
+                model = state.board.avatars[length - 1];
+            }
+            model.speak = speak;
+            setTimeout(() => {
+                if (model.speak.message === speak.message) { model.speak = null }
+            }, 1000 + speak.message.split(' ').length * 1000);
+        },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;
         },
@@ -72,6 +96,9 @@ export default {
             if (model) {
                 Object.assign(model, audio);
             }
+        },
+        SET_SETTING_POPUP(state, setting) {
+            state.settingPopup = setting;
         }
     },
     actions: {
@@ -127,17 +154,25 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, state }, message) {
+        sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
-            const currentUser = rootGetters["user/currentUser"];
+            const nickname = rootGetters["user/nickname"];
             const payload = {
-                user: currentUser,
+                user: nickname,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
                 at: moment().format('HH:mm')
             };
             mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
+            const avatar = getters['currentAvatar']
+            if (avatar) {
+                mqtt.sendMessage(TOPICS.BOARD, {
+                    type: BOARD_ACTIONS.SPEAK,
+                    avatar,
+                    speak: payload,
+                })
+            }
         },
         handleChatMessage({ commit }, { message }) {
             const model = {
@@ -157,6 +192,9 @@ export default {
                 avatar: {
                     id: uuidv4(),
                     ...avatar,
+                    w: 100,
+                    h: 100,
+                    opacity: 1,
                 }
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
@@ -168,6 +206,20 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        deleteObject(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.DESTROY,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
+        switchFrame(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SWITCH_FRAME,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
                 case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
@@ -175,6 +227,15 @@ export default {
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
                     commit('UPDATE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.DESTROY:
+                    commit('DELETE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.SWITCH_FRAME:
+                    commit('UPDATE_OBJECT', message.object)
+                    break;
+                case BOARD_ACTIONS.SPEAK:
+                    commit('SET_OBJECT_SPEAK', message);
                     break;
                 default:
                     break;
@@ -196,6 +257,13 @@ export default {
         },
         handleAudioMessage({ commit }, { message }) {
             commit('UPDATE_AUDIO', message)
+        },
+        closeSettingPopup({ commit }) {
+            commit('SET_SETTING_POPUP', { isActive: false })
+        },
+        openSettingPopup({ commit }, setting) {
+            setting.isActive = true;
+            commit('SET_SETTING_POPUP', setting)
         },
     },
 };

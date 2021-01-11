@@ -1,7 +1,7 @@
 <template>
   <TopBar :tool="tool" />
   <nav id="toolbox" class="panel">
-    <div class="panel-heading p-0 tabs is-toggle is-fullwidth">
+    <div class="panel-heading p-0 m-0 tabs is-toggle is-fullwidth">
       <ul>
         <li class="is-active">
           <a>
@@ -15,76 +15,78 @@
         </li>
       </ul>
     </div>
-    <a
-      @click="changeTool('Avatars')"
-      :class="{ 'is-active': tool === 'Avatars' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Avatars
-    </a>
-    <a
-      @click="changeTool('Props')"
-      :class="{ 'is-active': tool === 'Props' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Props
-    </a>
-    <a
-      @click="changeTool('Backdrops')"
-      :class="{ 'is-active': tool === 'Backdrops' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Backdrops
-    </a>
-    <a
-      @click="changeTool('Text')"
-      :class="{ 'is-active': tool === 'Text' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Text
-    </a>
-    <a
-      @click="changeTool('Audio')"
-      :class="{ 'is-active': tool === 'Audio' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Audio
-    </a>
-    <a
-      @click="changeTool('Draw')"
-      :class="{ 'is-active': tool === 'Draw' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Draw
-    </a>
-    <label
-      @click="changeTool('Streams')"
-      :class="{ 'is-active': tool === 'Streams' }"
-      class="panel-block"
-    >
-      <span class="panel-icon">
-        <i class="fas fa-folder" aria-hidden="true"></i>
-      </span>
-      Streams
-    </label>
+    <div class="panel-body">
+      <a
+        @click="changeTool('Avatars')"
+        :class="{ 'is-active': tool === 'Avatars' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Avatars
+      </a>
+      <a
+        @click="changeTool('Props')"
+        :class="{ 'is-active': tool === 'Props' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Props
+      </a>
+      <a
+        @click="changeTool('Backdrops')"
+        :class="{ 'is-active': tool === 'Backdrops' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Backdrops
+      </a>
+      <a
+        @click="changeTool('Text')"
+        :class="{ 'is-active': tool === 'Text' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Text
+      </a>
+      <a
+        @click="changeTool('Audio')"
+        :class="{ 'is-active': tool === 'Audio' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Audio
+      </a>
+      <a
+        @click="changeTool('Draw')"
+        :class="{ 'is-active': tool === 'Draw' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Draw
+      </a>
+      <label
+        @click="changeTool('Streams')"
+        :class="{ 'is-active': tool === 'Streams' }"
+        class="panel-block"
+      >
+        <span class="panel-icon">
+          <i class="fas fa-folder" aria-hidden="true"></i>
+        </span>
+        Streams
+      </label>
+    </div>
     <div class="panel-block">
       <button class="button is-primary is-fullwidth is-block">
         <span class="icon">
@@ -121,13 +123,26 @@ export default {
   width: 15%;
   min-width: 200px;
   left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 120px;
+  max-height: calc(100% - 130px);
   background-color: white;
   opacity: 0.9;
   .panel-block.is-active {
     border-left-width: 2px;
     border-left-style: solid;
+  }
+  .panel-body {
+    max-height: calc(100vh - 230px);
+    overflow-y: auto;
+  }
+
+  @media screen and (max-height: 500px) {
+    height: calc(100% - 130px);
+
+    .panel-body {
+      max-height: calc(100% - 96px);
+      overflow-y: auto;
+    }
   }
 }
 </style>

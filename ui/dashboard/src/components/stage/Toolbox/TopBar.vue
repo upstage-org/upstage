@@ -55,5 +55,8 @@ export default {
       }
     }
   }
+  @media screen and (max-width: 767px) {
+    overflow: visible;
+  }
 }
 </style>

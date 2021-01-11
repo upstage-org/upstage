@@ -20,8 +20,9 @@
 <script>
 import { ref } from "vue";
 export default {
-  setup: () => {
-    const isActive = ref(false);
+  props: ["active"],
+  setup: (props) => {
+    const isActive = ref(props.active);
 
     const openModal = () => (isActive.value = true);
     const closeModal = () => (isActive.value = false);

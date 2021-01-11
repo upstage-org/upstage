@@ -25,9 +25,11 @@ export default {
     let refs = [];
     const setRef = (el) => {
       refs.push(el);
-      el.addEventListener("ended", function () {
-        pauseAudio(audios[refs.indexOf(el)]);
-      });
+      if (el) {
+        el.addEventListener("ended", function () {
+          pauseAudio(audios[refs.indexOf(el)]);
+        });
+      }
     };
     watch(audios, () => {
       audios.forEach((audio, i) => {

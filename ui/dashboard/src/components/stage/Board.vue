@@ -1,6 +1,8 @@
 <template>
   <div id="board" @dragenter.prevent @dragover.prevent @drop.prevent="drop">
-    <Avatar v-for="avatar in avatars" :key="avatar" :avatar="avatar" />
+    <transition-group name="stage-avatars" :css="false" @leave="avatarLeave">
+      <Avatar v-for="avatar in avatars" :key="avatar" :avatar="avatar" />
+    </transition-group>
   </div>
 </template>
 
@@ -8,11 +10,13 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import Avatar from "@/components/objects/Avatar";
+import anime from "animejs";
 
 export default {
   components: { Avatar },
   setup: () => {
     const store = useStore();
+    const config = store.getters["stage/config"];
     const avatars = computed(() => store.getters["stage/avatars"]);
 
     const drop = (e) => {
@@ -22,12 +26,21 @@ export default {
           ...avatar,
           x: e.clientX - 50,
           y: e.clientY - 50,
-          w: 100,
-          h: 100,
         });
       }
     };
-    return { avatars, drop };
+    const avatarLeave = (el, complete) => {
+      anime({
+        targets: el.getElementsByTagName("img"),
+        scale: 0,
+        rotate: 180,
+        duration: config.animateDuration,
+        easing: "easeInOutQuad",
+        complete,
+      });
+    };
+
+    return { avatars, drop, avatarLeave };
   },
 };
 </script>
