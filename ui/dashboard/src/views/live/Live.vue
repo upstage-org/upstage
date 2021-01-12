@@ -57,8 +57,7 @@ export default {
 
 <style lang="scss">
 #live-stage {
-  background-size: contain;
-  background-position: center;
+  background-size: cover;
   * {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */

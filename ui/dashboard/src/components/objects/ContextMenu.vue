@@ -6,6 +6,12 @@
       </span>
       <span>Set as your avatar</span>
     </a>
+    <a class="panel-block has-text-info" @click="changeNickname">
+      <span class="panel-icon">
+        <i class="fas fa-comment-alt has-text-info"></i>
+      </span>
+      <span>Change your nickname</span>
+    </a>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
         <i class="fas fa-trash has-text-danger"></i>
@@ -53,7 +59,13 @@ export default {
       });
     };
 
-    return { switchFrame, setAsPrimaryAvatar, deleteObject };
+    const changeNickname = () =>
+      store.dispatch("stage/openSettingPopup", {
+        type: "Chat",
+        title: "Change your nick name",
+      });
+
+    return { switchFrame, setAsPrimaryAvatar, deleteObject, changeNickname };
   },
 };
 </script>
