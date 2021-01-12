@@ -8,7 +8,7 @@ import sys
 import paho.mqtt.client as paho
 
 import config as conf
-from db import build_client as db_client
+from db import build_mongo_client 
 
 
 def on_connect(client, userdata, flags, rc):
@@ -17,7 +17,7 @@ def on_connect(client, userdata, flags, rc):
 
 def on_message(client, userdata, msg):
     try:
-        client = db_client()
+        client = build_mongo_client()
         db = client[conf.MONGO_DB]
         db[conf.EVENT_COLLECTION].insert_one(
             {"topic": msg.topic, "payload": msg.payload, "timestamp": msg.timestamp}
