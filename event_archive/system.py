@@ -4,7 +4,7 @@ import json
 from multiprocessing import Process, cpu_count
 import os
 
-from db import build_client
+from db import build_mongo_client
 import config as conf
 
 
@@ -73,7 +73,7 @@ def functions_for(payload):
 
 def worker():
     logging.info(f"Worker started (PID: {os.getpid()})")
-    client = build_client()
+    client = build_mongo_client()
     db = client[conf.MONGO_DB]
     queue = db[conf.EVENT_COLLECTION]
     while True:
