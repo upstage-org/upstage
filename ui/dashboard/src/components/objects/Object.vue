@@ -143,7 +143,9 @@ export default {
     };
 
     const deleteObject = () => {
-      store.dispatch("stage/deleteObject", props.object);
+      if (loggedIn.value) {
+        store.dispatch("stage/deleteObject", props.object);
+      }
     };
 
     const setAsPrimaryAvatar = () => {
