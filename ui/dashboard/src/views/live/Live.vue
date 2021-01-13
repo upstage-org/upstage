@@ -6,7 +6,7 @@
   >
     <Board />
     <ConnectionStatus />
-    <Toolbox />
+    <Toolbox v-if="loggedIn" />
     <Chat />
     <AudioPlayer />
   </section>
@@ -50,7 +50,9 @@ export default {
       });
     });
 
-    return { background };
+    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+
+    return { background, loggedIn };
   },
 };
 </script>

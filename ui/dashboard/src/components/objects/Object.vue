@@ -14,6 +14,7 @@
     <ContextMenu>
       <template #trigger>
         <DragResize
+          v-if="loggedIn"
           class="object"
           :initW="100"
           :initH="100"
@@ -36,18 +37,18 @@
         </DragResize>
         <Image
           :src="object.src"
-          v-if="isDragging"
+          v-if="isDragging || !loggedIn"
           :style="{
             width: position.w + 'px',
             height: position.h + 'px',
             position: 'fixed',
-            left: beforeDragPosition.x + 'px',
-            top: beforeDragPosition.y + 'px',
+            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
           }"
           :opacity="object.opacity"
         />
       </template>
-      <template #context="slotProps">
+      <template #context="slotProps" v-if="loggedIn">
         <MenuContent :object="object" :closeMenu="slotProps.closeMenu" />
       </template>
     </ContextMenu>
@@ -56,7 +57,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -82,6 +83,7 @@ export default {
     // Vuex store
     const store = useStore();
     const config = store.getters["stage/config"];
+    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
     const active = ref(false);
@@ -145,12 +147,15 @@ export default {
     };
 
     const setAsPrimaryAvatar = () => {
-      const { name, id } = props.object;
-      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+      if (loggedIn.value) {
+        const { name, id } = props.object;
+        store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+      }
     };
 
     return {
       el,
+      loggedIn,
       print,
       dragStart,
       dragEnd,
