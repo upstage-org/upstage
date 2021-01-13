@@ -6,6 +6,18 @@
       </span>
       <span>Set as your avatar</span>
     </a>
+    <a class="panel-block has-text-info" @click="bringToFront">
+      <span class="panel-icon">
+        <i class="fas fa-angle-double-up has-text-info"></i>
+      </span>
+      <span>Bring to front</span>
+    </a>
+    <a class="panel-block has-text-info" @click="sendToBack">
+      <span class="panel-icon">
+        <i class="fas fa-angle-double-down has-text-info"></i>
+      </span>
+      <span>Send to back</span>
+    </a>
     <a class="panel-block has-text-info" @click="changeNickname">
       <span class="panel-icon">
         <i class="fas fa-comment-alt has-text-info"></i>
@@ -65,7 +77,22 @@ export default {
         title: "Change your nick name",
       });
 
-    return { switchFrame, setAsPrimaryAvatar, deleteObject, changeNickname };
+    const bringToFront = () => {
+      store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);
+    };
+
+    const sendToBack = () => {
+      store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
+    };
+
+    return {
+      switchFrame,
+      setAsPrimaryAvatar,
+      deleteObject,
+      changeNickname,
+      bringToFront,
+      sendToBack,
+    };
   },
 };
 </script>
