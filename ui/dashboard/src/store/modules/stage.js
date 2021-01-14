@@ -99,6 +99,22 @@ export default {
         },
         SET_SETTING_POPUP(state, setting) {
             state.settingPopup = setting;
+        },
+        BRING_TO_FRONT(state, object) {
+            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            if (index > -1) {
+                state.board.avatars.push(state.board.avatars.splice(index, 1)[0]);
+            } else {
+                state.board.avatars.push(object)
+            }
+        },
+        SEND_TO_BACK(state, object) {
+            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            if (index > -1) {
+                state.board.avatars.unshift(state.board.avatars.splice(index, 1)[0]);
+            } else {
+                state.board.avatars.push(object)
+            }
         }
     },
     actions: {
@@ -220,22 +236,44 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        bringToFront(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.BRING_TO_FRONT,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
+        sendToBack(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SEND_TO_BACK,
+                object,
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
                 case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
-                    commit('PUSH_AVATARS', message.avatar)
+                    commit('PUSH_AVATARS', message.avatar);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
-                    commit('UPDATE_OBJECT', message.object)
+                    commit('UPDATE_OBJECT', message.object);
+                    commit('BRING_TO_FRONT', message.object);
                     break;
                 case BOARD_ACTIONS.DESTROY:
-                    commit('DELETE_OBJECT', message.object)
+                    commit('DELETE_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.SWITCH_FRAME:
-                    commit('UPDATE_OBJECT', message.object)
+                    commit('UPDATE_OBJECT', message.object);
+                    commit('BRING_TO_FRONT', message.object);
                     break;
                 case BOARD_ACTIONS.SPEAK:
                     commit('SET_OBJECT_SPEAK', message);
+                    break;
+                case BOARD_ACTIONS.BRING_TO_FRONT:
+                    commit('BRING_TO_FRONT', message.object);
+                    break;
+                case BOARD_ACTIONS.SEND_TO_BACK:
+                    commit('SEND_TO_BACK', message.object);
                     break;
                 default:
                     break;

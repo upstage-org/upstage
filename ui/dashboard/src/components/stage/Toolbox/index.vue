@@ -1,6 +1,12 @@
 <template>
   <TopBar :tool="tool" />
-  <nav id="toolbox" class="panel">
+  <nav
+    id="toolbox"
+    class="panel"
+    :class="{ collapsed }"
+    @mouseenter="expand"
+    @mouseleave="waitToCollapse"
+  >
     <div class="panel-heading p-0 m-0 tabs is-toggle is-fullwidth">
       <ul>
         <li class="is-active">
@@ -22,7 +28,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-user-astronaut" aria-hidden="true"></i>
         </span>
         Avatars
       </a>
@@ -32,7 +38,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-mask" aria-hidden="true"></i>
         </span>
         Props
       </a>
@@ -42,7 +48,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-fill-drip" aria-hidden="true"></i>
         </span>
         Backdrops
       </a>
@@ -52,7 +58,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-font" aria-hidden="true"></i>
         </span>
         Text
       </a>
@@ -62,7 +68,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-music" aria-hidden="true"></i>
         </span>
         Audio
       </a>
@@ -72,7 +78,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-drafting-compass" aria-hidden="true"></i>
         </span>
         Draw
       </a>
@@ -82,7 +88,7 @@
         class="panel-block"
       >
         <span class="panel-icon">
-          <i class="fas fa-folder" aria-hidden="true"></i>
+          <i class="fas fa-stream" aria-hidden="true"></i>
         </span>
         Streams
       </label>
@@ -112,7 +118,19 @@ export default {
         tool.value = newTool;
       }
     };
-    return { tool, changeTool };
+    const collapsed = ref(false);
+    const timer = ref();
+    const expand = () => {
+      collapsed.value = false;
+      clearTimeout(timer.value);
+    };
+    const waitToCollapse = () => {
+      timer.value = setTimeout(() => (collapsed.value = true), 1000);
+    };
+
+    waitToCollapse();
+
+    return { tool, changeTool, collapsed, expand, waitToCollapse };
   },
 };
 </script>
@@ -127,6 +145,16 @@ export default {
   max-height: calc(100% - 130px);
   background-color: white;
   opacity: 0.9;
+  transition: transform 0.5s;
+
+  &.collapsed {
+    transform: translateX(-85%);
+    .panel-icon {
+      position: relative;
+      left: 160px;
+    }
+  }
+
   .panel-block.is-active {
     border-left-width: 2px;
     border-left-style: solid;
