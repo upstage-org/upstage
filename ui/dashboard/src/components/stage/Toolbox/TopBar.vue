@@ -33,8 +33,11 @@ export default {
   max-width: 80vw;
   height: 100px;
   top: -12px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin: auto;
+  text-align: center;
+  width: fit-content;
   opacity: 0.9;
   .card-content {
     padding: 0;
