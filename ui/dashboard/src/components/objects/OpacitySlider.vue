@@ -1,6 +1,11 @@
 <template>
   <input
-    class="opacity-slider slider is-fullwidth is-success"
+    class="opacity-slider slider is-fullwidth"
+    :class="{
+      'is-primary': sliderMode === 'opacity',
+      'is-warning': sliderMode === 'animation',
+      'is-danger': sliderMode === 'speed',
+    }"
     step="1"
     min="0"
     max="100"
@@ -51,7 +56,10 @@ export default {
         opacity,
       });
     };
-    return { keepActive, changeOpacity, sendChangeOpacity, value };
+
+    const sliderMode = computed(() => store.state.stage.preferences.slider);
+
+    return { keepActive, changeOpacity, sendChangeOpacity, value, sliderMode };
   },
 };
 </script>

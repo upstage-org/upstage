@@ -49,7 +49,11 @@
         />
       </template>
       <template #context="slotProps" v-if="loggedIn">
-        <MenuContent :object="object" :closeMenu="slotProps.closeMenu" />
+        <MenuContent
+          :object="object"
+          :closeMenu="slotProps.closeMenu"
+          v-model:active="active"
+        />
       </template>
     </ContextMenu>
   </div>

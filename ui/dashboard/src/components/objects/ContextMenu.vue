@@ -24,6 +24,45 @@
       </span>
       <span>Change your nickname</span>
     </a>
+    <a class="panel-block p-0">
+      <div class="field has-addons">
+        <p class="control">
+          <button class="button is-white">
+            <span class="panel-icon">
+              <i class="fas fa-sliders-h has-text-info"></i>
+            </span>
+            <span>Slider</span>
+          </button>
+        </p>
+        <p class="control">
+          <button
+            class="button is-light"
+            :class="{ 'is-primary': sliderMode === 'opacity' }"
+            @click="changeSliderMode('opacity')"
+          >
+            <span>Opacity</span>
+          </button>
+        </p>
+        <p class="control">
+          <button
+            class="button is-light"
+            :class="{ 'is-warning': sliderMode === 'animation' }"
+            @click="changeSliderMode('animation')"
+          >
+            <span>Frame Animation</span>
+          </button>
+        </p>
+        <p class="control">
+          <button
+            class="button is-light"
+            :class="{ 'is-danger': sliderMode === 'speed' }"
+            @click="changeSliderMode('speed')"
+          >
+            <span>Move Speed</span>
+          </button>
+        </p>
+      </div>
+    </a>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
         <i class="fas fa-trash has-text-danger"></i>
@@ -59,11 +98,13 @@
 <script>
 import { useStore } from "vuex";
 import Image from "@/components/Image";
+import { computed } from "vue";
 
 export default {
-  props: ["object", "closeMenu"],
+  props: ["object", "closeMenu", "active"],
+  emits: ["update:active"],
   components: { Image },
-  setup: (props) => {
+  setup: (props, { emit }) => {
     const store = useStore();
 
     const setAsPrimaryAvatar = () => {
@@ -103,6 +144,13 @@ export default {
       store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
     };
 
+    const sliderMode = computed(() => store.state.stage.preferences.slider);
+    const changeSliderMode = (mode) => {
+      store.dispatch("stage/changeSliderMode", mode).then(() => {
+        emit("update:active", true);
+      });
+    };
+
     return {
       switchFrame,
       setAsPrimaryAvatar,
@@ -111,6 +159,8 @@ export default {
       bringToFront,
       sendToBack,
       toggleAutoplayFrames,
+      sliderMode,
+      changeSliderMode,
     };
   },
 };

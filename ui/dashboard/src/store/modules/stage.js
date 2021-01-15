@@ -22,6 +22,9 @@ export default {
         tools: generateDemoData(),
         settingPopup: {
             isActive: false,
+        },
+        preferences: {
+            slider: 'opacity',
         }
     },
     getters: {
@@ -135,6 +138,9 @@ export default {
                 clearInterval(avatar.interval);
                 avatar.autoplayFrames = false;
             }
+        },
+        SET_PREFERENCES(state, preferences) {
+            Object.assign(state.preferences, preferences);
         }
     },
     actions: {
@@ -329,5 +335,8 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
+        changeSliderMode({ commit }, slider) {
+            commit('SET_PREFERENCES', { slider })
+        }
     },
 };
