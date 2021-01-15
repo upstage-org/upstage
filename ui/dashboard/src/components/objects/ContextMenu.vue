@@ -30,8 +30,19 @@
       </span>
       <span>Delete</span>
     </a>
-    <a v-if="object.multi" class="panel-block has-text-danger">
-      <div class="columns frame-selector is-multiline">
+    <a v-if="object.multi" class="panel-block">
+      <div class="columns is-vcentered frame-selector is-multiline">
+        <div class="column is-3" @click="toggleAutoplayFrames">
+          <div class="icon is-large autoplay-frames">
+            <i
+              class="fas fa-3x"
+              :class="{
+                'fa-play': !object.autoplayFrames,
+                'fa-pause': object.autoplayFrames,
+              }"
+            ></i>
+          </div>
+        </div>
         <div
           v-for="frame in object.frames"
           :key="frame"
@@ -71,6 +82,13 @@ export default {
       });
     };
 
+    const toggleAutoplayFrames = () => {
+      store.dispatch("stage/toggleAutoplayFrames", {
+        ...props.object,
+        autoplayFrames: props.object.autoplayFrames ? 0 : 100,
+      });
+    };
+
     const changeNickname = () =>
       store.dispatch("stage/openSettingPopup", {
         type: "Chat",
@@ -92,6 +110,7 @@ export default {
       changeNickname,
       bringToFront,
       sendToBack,
+      toggleAutoplayFrames,
     };
   },
 };
@@ -114,6 +133,10 @@ export default {
       cursor: pointer;
       border-radius: 5px;
     }
+  }
+  .autoplay-frames {
+    width: 100%;
+    height: 100%;
   }
 }
 </style>

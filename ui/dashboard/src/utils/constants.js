@@ -13,4 +13,5 @@ export const BOARD_ACTIONS = {
   SPEAK: 'speak',
   BRING_TO_FRONT: 'bringToFront',
   SEND_TO_BACK: 'sendToBack',
+  TOGGLE_AUTOPLAY_FRAMES: 'toggleAutoplayFrames',
 }

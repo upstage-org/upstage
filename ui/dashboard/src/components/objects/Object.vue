@@ -95,13 +95,15 @@ export default {
       props.object,
       () => {
         if (position.src !== props.object.src) {
-          anime({
-            targets: el.value.getElementsByClassName("the-object"),
-            rotate: ["-3deg", "3deg", "0deg"],
-            duration: config.animateDuration,
-            easing: "easeInOutQuad",
-            complete: () => (position.src = props.object.src),
-          });
+          if (!props.object.autoplayFrames) {
+            anime({
+              targets: el.value.getElementsByClassName("the-object"),
+              rotate: ["-3deg", "3deg", "0deg"],
+              duration: config.animateDuration,
+              easing: "easeInOutQuad",
+              complete: () => (position.src = props.object.src),
+            });
+          }
         } else {
           const { x, y, h, w } = props.object;
           anime({
