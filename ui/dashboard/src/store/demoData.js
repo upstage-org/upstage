@@ -50,16 +50,23 @@ export const generateDemoData = () => {
             ]
         },
         {
-            name: 'Logo',
-            src: "logo-upstage-official-print_500px.png",
+            name: 'Flower Girl',
+            src: "flowergirl1.png",
+            multi: true,
+            frames: [
+                "flowergirl1.png",
+                "flowergirl2.png",
+                "flowergirl3.png",
+                "flowergirl4.png",
+            ]
         },
         {
-            name: 'Logo',
-            src: "mobilise-demoblise-logo-version-black.gif",
+            name: 'Alien Mali',
+            src: "alienmali.png",
         },
         {
-            name: 'Logo',
-            src: "mobilise-demoblise-logo-version-white.png",
+            name: 'Lion Monkey',
+            src: "lionmonkey.png",
         },
     ]
     avatars.forEach(avatar => {
@@ -73,24 +80,12 @@ export const generateDemoData = () => {
             src: config.publicPath + "demo/backdrops/1.jpg",
         },
         {
-            name: "2",
-            src: config.publicPath + "demo/backdrops/2.jpg",
-        },
-        {
             name: "3",
             src: config.publicPath + "demo/backdrops/3.jpg",
         },
         {
-            name: "4",
-            src: config.publicPath + "demo/backdrops/4.jpg",
-        },
-        {
             name: "5",
             src: config.publicPath + "demo/backdrops/5.jpg",
-        },
-        {
-            name: "6",
-            src: config.publicPath + "demo/backdrops/6.jpg",
         },
         {
             name: "7",
@@ -107,13 +102,26 @@ export const generateDemoData = () => {
     ];
 
 
-    const propFiles = ["facemask_filter.png", "quarantini_clearcut.png"];
+    const propFiles = ["facemask_filter.png", "quarantini_clearcut.png", "fire013.gif", "fire017.gif", "fire020.gif", "logo-upstage-official-print_500px.png", "mobilise-demoblise-logo-version-black.gif", "mobilise-demoblise-logo-version-white.png"];
     const props = propFiles.map((file) => ({
-        name: file,
-        src: `${config.publicPath}demo/props/${file}`,
-    }));
+        name: file.split('.')[0].replace(/_/g, ' '),
+        src: file,
+    })).concat([{
+        name: 'Trees',
+        src: "trees.png",
+        multi: true,
+        frames: [
+            "trees.png",
+            "fallentree.png",
+        ]
+    }]);
 
-    const audioFiles = ['applause.mp3', 'op11.mp3', 'typing.mp3', 'LDBoogie.mp3', 'sea_waves.mp3']
+    props.forEach(prop => {
+        prop.src = `${config.publicPath}demo/props/${prop.src}`
+        prop.frames = prop.frames?.map(frame => `${config.publicPath}demo/props/${frame}`)
+    })
+
+    const audioFiles = ['applause.mp3', 'op11.mp3', 'typing.mp3', 'LDBoogie.mp3', 'sea_waves.mp3', 'rain_thunder_5m.mp3', 'thunder.mp3']
     const audios = audioFiles.map(file => {
         const name = file.split('.')[0].replace(/_/g, ' ');
         const src = `${config.publicPath}demo/audios/${file}`;
