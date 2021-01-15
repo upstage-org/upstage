@@ -27,7 +27,7 @@
     <a class="panel-block p-0">
       <div class="field has-addons">
         <p class="control">
-          <button class="button is-white">
+          <button class="button is-white" style="padding-left: 12px">
             <span class="panel-icon">
               <i class="fas fa-sliders-h has-text-info"></i>
             </span>

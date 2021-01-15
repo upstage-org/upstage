@@ -31,12 +31,12 @@
         >
           <Image
             class="the-object"
-            :src="object.src"
+            :src="src"
             :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
           />
         </DragResize>
         <Image
-          :src="object.src"
+          :src="src"
           v-if="isDragging || !loggedIn"
           :style="{
             width: position.w + 'px',
@@ -161,6 +161,39 @@ export default {
       }
     };
 
+    const frameAnimation = reactive({
+      interval: null,
+      currentFrame: null,
+    });
+    watch(
+      () => props.object.autoplayFrames,
+      () => {
+        const { autoplayFrames, frames, src } = props.object;
+        if (autoplayFrames) {
+          frameAnimation.currentFrame = src;
+          frameAnimation.interval = setInterval(() => {
+            let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
+            if (nextFrame >= frames.length) {
+              nextFrame = 0;
+            }
+            frameAnimation.currentFrame = frames[nextFrame];
+          }, autoplayFrames);
+        } else {
+          clearInterval(frameAnimation.interval);
+        }
+      },
+      {
+        immediate: true,
+      }
+    );
+    const src = computed(() => {
+      if (props.object.autoplayFrames) {
+        return frameAnimation.currentFrame;
+      } else {
+        return props.object.src;
+      }
+    });
+
     return {
       el,
       loggedIn,
@@ -174,6 +207,7 @@ export default {
       isDragging,
       deleteObject,
       setAsPrimaryAvatar,
+      src,
     };
   },
 };
