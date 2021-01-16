@@ -1,6 +1,11 @@
 <template>
   <div id="board" @dragenter.prevent @dragover.prevent @drop.prevent="drop">
-    <transition-group name="stage-avatars" :css="false" @leave="avatarLeave">
+    <transition-group
+      name="stage-avatars"
+      :css="false"
+      @enter="avatarEnter"
+      @leave="avatarLeave"
+    >
       <Avatar v-for="avatar in avatars" :key="avatar" :avatar="avatar" />
     </transition-group>
   </div>
@@ -29,6 +34,17 @@ export default {
         });
       }
     };
+
+    const avatarEnter = (el, complete) => {
+      anime({
+        targets: el.getElementsByTagName("img"),
+        scale: [0, 1],
+        translateY: [-200, 0],
+        duration: config.animateDuration,
+        easing: "easeInOutQuad",
+        complete,
+      });
+    };
     const avatarLeave = (el, complete) => {
       anime({
         targets: el.getElementsByTagName("img"),
@@ -40,7 +56,7 @@ export default {
       });
     };
 
-    return { avatars, drop, avatarLeave };
+    return { avatars, drop, avatarEnter, avatarLeave };
   },
 };
 </script>
