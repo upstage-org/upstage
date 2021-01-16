@@ -91,9 +91,10 @@ export default {
 
     // Local state
     const active = ref(false);
-    const position = reactive({ ...props.object, y: 0 });
+    const position = reactive({ ...props.object });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
+    const animation = ref();
 
     watch(
       props.object,
@@ -109,14 +110,16 @@ export default {
             });
           }
         } else {
-          const { x, y, h, w } = props.object;
-          anime({
+          const { x, y, h, w, moveSpeed } = props.object;
+          animation.value?.pause(true);
+          animation.value = anime({
             targets: position,
             x,
             y,
             h,
             w,
-            duration: config.animateDuration,
+            ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+            duration: moveSpeed ?? config.animateDuration,
           });
         }
       },
@@ -124,6 +127,7 @@ export default {
     );
 
     const dragStart = () => {
+      animation.value?.pause(true);
       isDragging.value = true;
       beforeDragPosition.value = {
         x: position.x,

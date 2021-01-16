@@ -35,6 +35,7 @@ export default {
     const store = useStore();
     const sliderMode = computed(() => store.state.stage.preferences.slider);
     const maxFrameSpeed = 50;
+    const maxMoveSpeed = 500;
     const value = computed(() => {
       switch (sliderMode.value) {
         case "opacity":
@@ -43,8 +44,11 @@ export default {
           return props.object.autoplayFrames == 0
             ? 0
             : maxFrameSpeed / props.object.autoplayFrames;
-        default:
-          break;
+        case "speed":
+          console.log(props.object.moveSpeed);
+          return props.object.moveSpeed == 0
+            ? 0
+            : maxMoveSpeed / props.object.moveSpeed;
       }
     });
 
@@ -76,6 +80,21 @@ export default {
       });
     };
 
+    const calcMoveSpeed = (e) =>
+      e.target.value == 0 ? 10000 : maxMoveSpeed / e.target.value;
+    const changeMoveSpeed = (e) => {
+      store.commit("stage/UPDATE_OBJECT", {
+        ...props.object,
+        moveSpeed: calcMoveSpeed(e),
+      });
+    };
+    const sendChangeMoveSpeed = (e) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        moveSpeed: calcMoveSpeed(e),
+      });
+    };
+
     const keepActive = () => {
       emit("update:active", true);
     };
@@ -88,7 +107,8 @@ export default {
         case "animation":
           changeFrameAnimationSpeed(e);
           break;
-        default:
+        case "speed":
+          changeMoveSpeed(e);
           break;
       }
     };
@@ -101,7 +121,8 @@ export default {
         case "animation":
           sendChangeFrameAnimationSpeed(e);
           break;
-        default:
+        case "speed":
+          sendChangeMoveSpeed(e);
           break;
       }
     };
