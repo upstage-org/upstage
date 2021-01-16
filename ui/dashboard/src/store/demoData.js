@@ -61,6 +61,19 @@ export const generateDemoData = () => {
             ]
         },
         {
+            name: 'Dave',
+            src: "dave_02.png",
+            multi: true,
+            frames: [
+                "dave_02.png",
+                "dave_05.png",
+                "dave_07.png",
+                "dave_11.png",
+                "dave_14.png",
+                "dave_15.png",
+            ]
+        },
+        {
             name: 'Alien Mali',
             src: "alienmali.png",
         },
