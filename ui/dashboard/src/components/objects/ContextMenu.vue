@@ -124,10 +124,14 @@ export default {
     };
 
     const toggleAutoplayFrames = () => {
-      store.dispatch("stage/toggleAutoplayFrames", {
-        ...props.object,
-        autoplayFrames: props.object.autoplayFrames ? 0 : 100,
-      });
+      store
+        .dispatch("stage/toggleAutoplayFrames", {
+          ...props.object,
+          autoplayFrames: props.object.autoplayFrames ? 0 : 100,
+        })
+        .then(() => {
+          emit("update:active", true);
+        });
     };
 
     const changeNickname = () =>

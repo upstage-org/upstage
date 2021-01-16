@@ -169,6 +169,7 @@ export default {
       () => props.object.autoplayFrames,
       () => {
         const { autoplayFrames, frames, src } = props.object;
+        clearInterval(frameAnimation.interval);
         if (autoplayFrames) {
           frameAnimation.currentFrame = src;
           frameAnimation.interval = setInterval(() => {
@@ -178,8 +179,6 @@ export default {
             }
             frameAnimation.currentFrame = frames[nextFrame];
           }, autoplayFrames);
-        } else {
-          clearInterval(frameAnimation.interval);
         }
       },
       {
