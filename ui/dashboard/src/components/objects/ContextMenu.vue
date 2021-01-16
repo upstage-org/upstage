@@ -1,5 +1,5 @@
 <template>
-  <div class="card-content p-0">
+  <div class="avatar-context-menu card-content p-0">
     <a
       v-if="object.type !== 'prop'"
       class="panel-block has-text-info"
@@ -33,8 +33,36 @@
       <span>Change your nickname</span>
     </a>
     <a class="panel-block p-0">
-      <div class="field has-addons">
-        <p class="control">
+      <div class="field has-addons menu-group">
+        <p class="control menu-group-title">
+          <button class="button is-white">
+            <span class="panel-icon">
+              <i class="fas fa-sliders-h has-text-info"></i>
+            </span>
+            <span>Rotation</span>
+          </button>
+        </p>
+        <p class="control menu-group-item">
+          <button class="button is-light" @click="rotate(+45)">
+            <span class="panel-icon">
+              <i class="fas fa-redo"></i>
+            </span>
+            <span>+ 45deg</span>
+          </button>
+        </p>
+        <p class="control menu-group-item">
+          <button class="button is-light" @click="rotate(-45)">
+            <span class="panel-icon">
+              <i class="fas fa-undo"></i>
+            </span>
+            <span>- 45deg</span>
+          </button>
+        </p>
+      </div>
+    </a>
+    <a class="panel-block p-0">
+      <div class="field has-addons menu-group">
+        <p class="control menu-group-title">
           <button class="button is-white" style="padding-left: 12px">
             <span class="panel-icon">
               <i class="fas fa-sliders-h has-text-info"></i>
@@ -42,7 +70,7 @@
             <span>Slider</span>
           </button>
         </p>
-        <p class="control">
+        <p class="control menu-group-item">
           <button
             class="button is-light"
             :class="{ 'is-primary': sliderMode === 'opacity' }"
@@ -51,7 +79,7 @@
             <span>Opacity</span>
           </button>
         </p>
-        <p class="control">
+        <p class="control menu-group-item">
           <button
             class="button is-light"
             :class="{ 'is-warning': sliderMode === 'animation' }"
@@ -60,7 +88,7 @@
             <span>Frame Animation</span>
           </button>
         </p>
-        <p class="control">
+        <p class="control menu-group-item">
           <button
             class="button is-light"
             :class="{ 'is-danger': sliderMode === 'speed' }"
@@ -163,6 +191,13 @@ export default {
       });
     };
 
+    const rotate = (deg) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        rotate: (props.object.rotate ?? 0) + deg,
+      });
+    };
+
     return {
       switchFrame,
       setAsPrimaryAvatar,
@@ -173,6 +208,7 @@ export default {
       toggleAutoplayFrames,
       sliderMode,
       changeSliderMode,
+      rotate,
     };
   },
 };
@@ -199,6 +235,30 @@ export default {
   .autoplay-frames {
     width: 100%;
     height: 100%;
+  }
+}
+.avatar-context-menu {
+  font-size: 14px;
+  .button {
+    font-size: 14px;
+  }
+  .menu-group {
+    width: 100%;
+    display: flex;
+    .menu-group-title {
+      flex: none;
+      width: 100px;
+      > button {
+        justify-content: start;
+        padding-left: 12px;
+      }
+    }
+    .menu-group-item {
+      flex: auto;
+    }
+    button {
+      width: 100%;
+    }
   }
 }
 </style>

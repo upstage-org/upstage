@@ -84,6 +84,7 @@ export default {
                 object.attachedProps.forEach(propId => {
                     const prop = state.board.avatars.find(object => object.id === propId);
                     if (prop) {
+                        prop.moveSpeed = object.moveSpeed;
                         prop.x = (prop.x - avatar.x) + object.x;
                         prop.y = (prop.y - avatar.y) + object.y;
                         attachPropToAvatar(state, prop);

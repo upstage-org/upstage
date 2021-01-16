@@ -33,6 +33,7 @@
             class="the-object"
             :src="src"
             :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+            :rotate="object.rotate"
           />
         </DragResize>
         <Image
@@ -46,6 +47,7 @@
             top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
           }"
           :opacity="object.opacity"
+          :rotate="object.rotate"
         />
       </template>
       <template #context="slotProps" v-if="loggedIn">
@@ -99,29 +101,17 @@ export default {
     watch(
       props.object,
       () => {
-        if (position.src !== props.object.src) {
-          if (!props.object.autoplayFrames) {
-            anime({
-              targets: el.value.getElementsByClassName("the-object"),
-              rotate: ["-3deg", "3deg", "0deg"],
-              duration: config.animateDuration,
-              easing: "easeInOutQuad",
-              complete: () => (position.src = props.object.src),
-            });
-          }
-        } else {
-          const { x, y, h, w, moveSpeed } = props.object;
-          animation.value?.pause(true);
-          animation.value = anime({
-            targets: position,
-            x,
-            y,
-            h,
-            w,
-            ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
-            duration: moveSpeed ?? config.animateDuration,
-          });
-        }
+        const { x, y, h, w, moveSpeed } = props.object;
+        animation.value?.pause(true);
+        animation.value = anime({
+          targets: position,
+          x,
+          y,
+          h,
+          w,
+          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          duration: moveSpeed ?? config.animateDuration,
+        });
       },
       { immediate: true }
     );
@@ -159,7 +149,7 @@ export default {
     };
 
     const setAsPrimaryAvatar = () => {
-      if (loggedIn.value && props.object.type !== 'prop') {
+      if (loggedIn.value && props.object.type !== "prop") {
         const { name, id } = props.object;
         store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
       }
@@ -169,28 +159,30 @@ export default {
       interval: null,
       currentFrame: null,
     });
-    watch(
-      () => props.object.autoplayFrames,
-      () => {
-        const { autoplayFrames, frames, src } = props.object;
-        clearInterval(frameAnimation.interval);
-        if (autoplayFrames) {
-          frameAnimation.currentFrame = src;
-          frameAnimation.interval = setInterval(() => {
-            let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
-            if (nextFrame >= frames.length) {
-              nextFrame = 0;
-            }
-            frameAnimation.currentFrame = frames[nextFrame];
-          }, autoplayFrames);
+    if (props.object.multi) {
+      watch(
+        () => props.object.autoplayFrames,
+        () => {
+          const { autoplayFrames, frames, src } = props.object;
+          clearInterval(frameAnimation.interval);
+          if (autoplayFrames) {
+            frameAnimation.currentFrame = src;
+            frameAnimation.interval = setInterval(() => {
+              let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
+              if (nextFrame >= frames.length) {
+                nextFrame = 0;
+              }
+              frameAnimation.currentFrame = frames[nextFrame];
+            }, autoplayFrames);
+          }
+        },
+        {
+          immediate: true,
         }
-      },
-      {
-        immediate: true,
-      }
-    );
+      );
+    }
     const src = computed(() => {
-      if (props.object.autoplayFrames) {
+      if (props.object.autoplayFrames && props.object.multi) {
         return frameAnimation.currentFrame;
       } else {
         return props.object.src;

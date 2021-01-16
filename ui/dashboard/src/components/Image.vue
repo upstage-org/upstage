@@ -1,10 +1,17 @@
 <template>
-  <img v-bind="$props" :style="{ 'object-fit': fit, opacity }" />
+  <img
+    v-bind="$props"
+    :style="{
+      'object-fit': fit,
+      opacity,
+      transform: `rotate(${rotate ?? 0}deg)`,
+    }"
+  />
 </template>
 
 <script>
 export default {
-  props: ["src", "fit", "opacity"],
+  props: ["src", "fit", "opacity", "rotate"],
 };
 </script>
 
