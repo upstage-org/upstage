@@ -159,7 +159,7 @@ export default {
     };
 
     const setAsPrimaryAvatar = () => {
-      if (loggedIn.value) {
+      if (loggedIn.value && props.object.type !== 'prop') {
         const { name, id } = props.object;
         store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
       }

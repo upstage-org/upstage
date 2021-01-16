@@ -1,6 +1,10 @@
 <template>
   <div class="card-content p-0">
-    <a class="panel-block has-text-info" @click="setAsPrimaryAvatar">
+    <a
+      v-if="object.type !== 'prop'"
+      class="panel-block has-text-info"
+      @click="setAsPrimaryAvatar"
+    >
       <span class="panel-icon">
         <i class="fas fa-map-marker-alt has-text-info"></i>
       </span>
@@ -18,7 +22,11 @@
       </span>
       <span>Send to back</span>
     </a>
-    <a class="panel-block has-text-info" @click="changeNickname">
+    <a
+      v-if="object.type !== 'prop'"
+      class="panel-block has-text-info"
+      @click="changeNickname"
+    >
       <span class="panel-icon">
         <i class="fas fa-comment-alt has-text-info"></i>
       </span>
