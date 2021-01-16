@@ -119,6 +119,7 @@ export const generateDemoData = () => {
     props.forEach(prop => {
         prop.src = `${config.publicPath}demo/props/${prop.src}`
         prop.frames = prop.frames?.map(frame => `${config.publicPath}demo/props/${frame}`)
+        prop.type = 'prop';
     })
 
     const audioFiles = ['applause.mp3', 'op11.mp3', 'typing.mp3', 'LDBoogie.mp3', 'sea_waves.mp3', 'rain_thunder_5m.mp3', 'thunder.mp3']

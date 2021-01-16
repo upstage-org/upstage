@@ -2,8 +2,9 @@ import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor } from '@/utils/common'
-import { generateDemoData } from '../demoData'
+import { generateDemoData } from '@/store/demoData'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
+import { attachPropToAvatar } from './reusable';
 
 export default {
     namespaced: true,
@@ -63,17 +64,32 @@ export default {
         PUSH_CHAT_MESSAGE(state, message) {
             state.chat.messages.push(message)
         },
-        PUSH_AVATARS(state, avatar) {
-            state.board.avatars.push(avatar)
+        PUSH_AVATARS(state, object) {
+            state.board.avatars.push(object)
+            attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
             const avatar = state.board.avatars.find(avatar => avatar.id === id);
             if (avatar) { // Object an is avatar
                 Object.assign(avatar, object);
+                attachPropToAvatar(state, object);
                 return;
             }
             state.board.avatars.push(object)
+        },
+        MOVE_ATTACHED_PROPS(state, object) {
+            const avatar = state.board.avatars.find(avatar => avatar.id === object.id);
+            if (avatar) {
+                object.attachedProps.forEach(propId => {
+                    const prop = state.board.avatars.find(object => object.id === propId);
+                    if (prop) {
+                        prop.x = (prop.x - avatar.x) + object.x;
+                        prop.y = (prop.y - avatar.y) + object.y;
+                        attachPropToAvatar(state, prop);
+                    }
+                })
+            }
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
@@ -269,6 +285,9 @@ export default {
                     commit('PUSH_AVATARS', message.avatar);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
+                    if (message.object.attachedProps) {
+                        commit('MOVE_ATTACHED_PROPS', message.object);
+                    }
                     commit('UPDATE_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.DESTROY:
