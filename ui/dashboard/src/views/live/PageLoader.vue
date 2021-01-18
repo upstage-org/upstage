@@ -42,7 +42,7 @@ export default {
       }
     };
 
-    setTimeout(stopLoading, 10000);
+    setTimeout(stopLoading, 60000);
 
     return { preloadableAssets, progress, increaseProgress };
   },

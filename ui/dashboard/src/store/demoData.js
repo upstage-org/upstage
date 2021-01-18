@@ -22,6 +22,19 @@ export const generateDemoData = () => {
             ]
         },
         {
+            name: 'Julius',
+            src: "julius_01.png",
+            multi: true,
+            frames: [
+                "julius_01.png",
+                "julius_03.png",
+                "julius_05.png",
+                "julius_07.png",
+                "julius_08.png",
+                "julius_10.png",
+            ]
+        },
+        {
             name: 'Blob',
             src: "blob_avatar_1.png",
             multi: true,
