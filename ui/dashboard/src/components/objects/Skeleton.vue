@@ -25,7 +25,6 @@
 <script>
 import { reactive, ref } from "vue";
 import Image from "@/components/Image";
-import dragghost from "@/assets/dragghost.png";
 import { useStore } from "vuex";
 
 export default {
@@ -39,9 +38,6 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      var img = new window.Image();
-      img.src = dragghost;
-      e.dataTransfer.setDragImage(img, 50, 50);
       e.dataTransfer.setData("avatar", JSON.stringify(props.data));
     };
 
@@ -71,6 +67,7 @@ export default {
 
 <style>
 .is-multi {
-  margin-left: -20px;
+  position: relative;
+  left: -20px;
 }
 </style>

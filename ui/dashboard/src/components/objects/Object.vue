@@ -14,6 +14,7 @@
     <ContextMenu>
       <template #trigger>
         <DragResize
+          v-if="loggedIn"
           class="object"
           :initW="100"
           :initH="100"
@@ -30,25 +31,31 @@
         >
           <Image
             class="the-object"
-            :src="object.src"
+            :src="src"
             :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+            :rotate="object.rotate"
           />
         </DragResize>
         <Image
-          :src="object.src"
-          v-if="isDragging"
+          :src="src"
+          v-if="isDragging || !loggedIn"
           :style="{
             width: position.w + 'px',
             height: position.h + 'px',
             position: 'fixed',
-            left: beforeDragPosition.x + 'px',
-            top: beforeDragPosition.y + 'px',
+            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
           }"
           :opacity="object.opacity"
+          :rotate="object.rotate"
         />
       </template>
-      <template #context="slotProps">
-        <MenuContent :object="object" :closeMenu="slotProps.closeMenu" />
+      <template #context="slotProps" v-if="loggedIn">
+        <MenuContent
+          :object="object"
+          :closeMenu="slotProps.closeMenu"
+          v-model:active="active"
+        />
       </template>
     </ContextMenu>
   </div>
@@ -56,7 +63,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -82,40 +89,35 @@ export default {
     // Vuex store
     const store = useStore();
     const config = store.getters["stage/config"];
+    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
     const active = ref(false);
-    const position = reactive({ ...props.object, y: 0 });
+    const position = reactive({ ...props.object });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
+    const animation = ref();
 
     watch(
       props.object,
       () => {
-        if (position.src !== props.object.src) {
-          anime({
-            targets: el.value.getElementsByClassName("the-object"),
-            rotate: ["-3deg", "3deg", "0deg"],
-            duration: config.animateDuration,
-            easing: "easeInOutQuad",
-            complete: () => (position.src = props.object.src),
-          });
-        } else {
-          const { x, y, h, w } = props.object;
-          anime({
-            targets: position,
-            x,
-            y,
-            h,
-            w,
-            duration: config.animateDuration,
-          });
-        }
+        const { x, y, h, w, moveSpeed } = props.object;
+        animation.value?.pause(true);
+        animation.value = anime({
+          targets: position,
+          x,
+          y,
+          h,
+          w,
+          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          duration: moveSpeed ?? config.animateDuration,
+        });
       },
       { immediate: true }
     );
 
     const dragStart = () => {
+      animation.value?.pause(true);
       isDragging.value = true;
       beforeDragPosition.value = {
         x: position.x,
@@ -141,16 +143,55 @@ export default {
     };
 
     const deleteObject = () => {
-      store.dispatch("stage/deleteObject", props.object);
+      if (loggedIn.value) {
+        store.dispatch("stage/deleteObject", props.object);
+      }
     };
 
     const setAsPrimaryAvatar = () => {
-      const { name, id } = props.object;
-      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+      if (loggedIn.value && props.object.type !== "prop") {
+        const { name, id } = props.object;
+        store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+      }
     };
+
+    const frameAnimation = reactive({
+      interval: null,
+      currentFrame: null,
+    });
+    if (props.object.multi) {
+      watch(
+        () => props.object.autoplayFrames,
+        () => {
+          const { autoplayFrames, frames, src } = props.object;
+          clearInterval(frameAnimation.interval);
+          if (autoplayFrames) {
+            frameAnimation.currentFrame = src;
+            frameAnimation.interval = setInterval(() => {
+              let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
+              if (nextFrame >= frames.length) {
+                nextFrame = 0;
+              }
+              frameAnimation.currentFrame = frames[nextFrame];
+            }, autoplayFrames);
+          }
+        },
+        {
+          immediate: true,
+        }
+      );
+    }
+    const src = computed(() => {
+      if (props.object.autoplayFrames && props.object.multi) {
+        return frameAnimation.currentFrame;
+      } else {
+        return props.object.src;
+      }
+    });
 
     return {
       el,
+      loggedIn,
       print,
       dragStart,
       dragEnd,
@@ -161,6 +202,7 @@ export default {
       isDragging,
       deleteObject,
       setAsPrimaryAvatar,
+      src,
     };
   },
 };

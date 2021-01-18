@@ -1,9 +1,14 @@
 <template>
   <input
-    class="opacity-slider slider is-fullwidth is-success"
-    step="1"
+    class="opacity-slider slider is-fullwidth"
+    :class="{
+      'is-primary': sliderMode === 'opacity',
+      'is-warning': sliderMode === 'animation',
+      'is-danger': sliderMode === 'speed',
+    }"
+    step="0.01"
     min="0"
-    max="100"
+    max="1"
     :value="value"
     type="range"
     :style="{
@@ -12,8 +17,8 @@
       width: position.h + 'px',
     }"
     v-show="active"
-    @input="changeOpacity"
-    @change="sendChangeOpacity"
+    @input="handleInput"
+    @change="handleChange"
     @mousedown.stop="keepActive"
     @mouseover.stop="keepActive"
     @mouseup.stop="keepActive"
@@ -28,30 +33,101 @@ export default {
   emits: ["update:active"],
   setup: (props, { emit }) => {
     const store = useStore();
+    const sliderMode = computed(() => store.state.stage.preferences.slider);
+    const maxFrameSpeed = 50;
+    const maxMoveSpeed = 500;
+    const value = computed(() => {
+      switch (sliderMode.value) {
+        case "opacity":
+          return props.object.opacity;
+        case "animation":
+          return props.object.autoplayFrames == 0
+            ? 0
+            : maxFrameSpeed / props.object.autoplayFrames;
+        case "speed":
+          console.log(props.object.moveSpeed);
+          return props.object.moveSpeed == 0
+            ? 0
+            : maxMoveSpeed / props.object.moveSpeed;
+      }
+    });
+
+    const changeOpacity = (e) => {
+      store.commit("stage/UPDATE_OBJECT", {
+        ...props.object,
+        opacity: e.target.value,
+      });
+    };
+    const sendChangeOpacity = (e) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        opacity: e.target.value,
+      });
+    };
+
+    const calcAutoplayFrames = (e) =>
+      e.target.value == 0 ? 0 : maxFrameSpeed / e.target.value;
+    const changeFrameAnimationSpeed = (e) => {
+      store.commit("stage/UPDATE_OBJECT", {
+        ...props.object,
+        autoplayFrames: calcAutoplayFrames(e),
+      });
+    };
+    const sendChangeFrameAnimationSpeed = (e) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        autoplayFrames: calcAutoplayFrames(e),
+      });
+    };
+
+    const calcMoveSpeed = (e) =>
+      e.target.value == 0 ? 10000 : maxMoveSpeed / e.target.value;
+    const changeMoveSpeed = (e) => {
+      store.commit("stage/UPDATE_OBJECT", {
+        ...props.object,
+        moveSpeed: calcMoveSpeed(e),
+      });
+    };
+    const sendChangeMoveSpeed = (e) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        moveSpeed: calcMoveSpeed(e),
+      });
+    };
+
     const keepActive = () => {
       emit("update:active", true);
     };
-    const calcOpacity = (e) => Number(e.target.value) / 100;
-    const value = computed(() => (props.object.opacity ?? 1) * 100);
-
-    const changeOpacity = (e) => {
+    const handleInput = (e) => {
       keepActive();
-      const opacity = calcOpacity(e);
-      store.commit("stage/UPDATE_OBJECT", {
-        ...props.object,
-        opacity,
-      });
+      switch (sliderMode.value) {
+        case "opacity":
+          changeOpacity(e);
+          break;
+        case "animation":
+          changeFrameAnimationSpeed(e);
+          break;
+        case "speed":
+          changeMoveSpeed(e);
+          break;
+      }
+    };
+    const handleChange = (e) => {
+      keepActive();
+      switch (sliderMode.value) {
+        case "opacity":
+          sendChangeOpacity(e);
+          break;
+        case "animation":
+          sendChangeFrameAnimationSpeed(e);
+          break;
+        case "speed":
+          sendChangeMoveSpeed(e);
+          break;
+      }
     };
 
-    const sendChangeOpacity = (e) => {
-      keepActive();
-      const opacity = calcOpacity(e);
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        opacity,
-      });
-    };
-    return { keepActive, changeOpacity, sendChangeOpacity, value };
+    return { keepActive, handleInput, handleChange, value, sliderMode };
   },
 };
 </script>

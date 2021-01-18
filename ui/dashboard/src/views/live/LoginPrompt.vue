@@ -8,7 +8,7 @@
       <span class="icon">
         <i class="fas fa-sign-in-alt"></i>
       </span>
-      <span>Login as Guest</span>
+      <span>Enter as Guest</span>
     </button>
   </div>
 </template>
