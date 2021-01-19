@@ -6,6 +6,7 @@ import './services/base';
 import './styles/bulma.scss'
 import "@fortawesome/fontawesome-free/css/all.css";
 import ClickOutside from '@/directives/ClickOutside';
+import './registerServiceWorker'
 
 createApp(App)
     .use(store)
