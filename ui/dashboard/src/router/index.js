@@ -106,6 +106,11 @@ router.beforeEach((to, from, next) => {
   if (to.name === 'Login' && loggedIn) {
     next("/dashboard");
   }
+  if (to.name === 'Live') {
+    document.querySelector("meta[name=viewport]").setAttribute("content", "");
+  } else {
+    document.querySelector("meta[name=viewport]").setAttribute("content", "width=device-width,initial-scale=1.0");
+  }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;
 });
