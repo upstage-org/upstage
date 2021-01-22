@@ -2,8 +2,8 @@
   <TopBar :tool="tool" />
   <nav
     id="toolbox"
-    class="panel"
     :class="{ collapsed }"
+    class="panel"
     @mouseenter="expand"
     @mouseleave="waitToCollapse"
   >
@@ -72,16 +72,29 @@
         </span>
         Audio
       </a>
-      <a
-        @click="changeTool('Draw')"
-        :class="{ 'is-active': tool === 'Draw' }"
-        class="panel-block"
-      >
-        <span class="panel-icon">
-          <i class="fas fa-drafting-compass" aria-hidden="true"></i>
-        </span>
-        Draw
-      </a>
+      <div class="dropdown is-hoverable is-fullwidth">
+        <div class="dropdown-trigger is-fullwidth">
+          <a
+            @click="changeTool('Draw')"
+            :class="{ 'is-active': tool === 'Draw' }"
+            class="panel-block"
+          >
+            <span class="panel-icon">
+              <i class="fas fa-drafting-compass" aria-hidden="true"></i>
+            </span>
+            <span class="is-fullwidth">Draw</span>
+            <span class="icon is-small">
+              <i class="fas fa-angle-right" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+          <div class="dropdown-content">
+            <a href="#" class="dropdown-item"> Add New </a>
+            <a href="#" class="dropdown-item"> Manage </a>
+          </div>
+        </div>
+      </div>
       <label
         @click="changeTool('Streams')"
         :class="{ 'is-active': tool === 'Streams' }"
@@ -153,6 +166,16 @@ export default {
       position: relative;
       left: 160px;
     }
+    .fa-angle-right {
+      display: none;
+    }
+  }
+
+  .dropdown-menu {
+    position: fixed;
+    left: 216px;
+    top: initial;
+    z-index: 100;
   }
 
   .panel-block.is-active {
