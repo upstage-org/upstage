@@ -13,56 +13,60 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 export default {
-  setup: () => {
+  props: ["color", "size"],
+  setup: (props) => {
     const el = ref();
     const data = reactive({});
     const store = useStore();
     const config = computed(() => store.getters["stage/config"]);
 
-    onMounted(() => {
+    const draw = () => {
       const { value: canvas } = el;
       var ctx = canvas.getContext("2d");
+      ctx.beginPath();
+      ctx.moveTo(data.prevX, data.prevY);
+      ctx.lineTo(data.currX, data.currY);
+      ctx.strokeStyle = props.color;
+      ctx.lineWidth = props.size;
+      ctx.stroke();
+      ctx.closePath();
+    };
 
-      const draw = () => {
-        ctx.beginPath();
-        ctx.moveTo(data.prevX, data.prevY);
-        ctx.lineTo(data.currX, data.currY);
-        ctx.strokeStyle = "black";
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.closePath();
-      };
+    const findxy = (res, e) => {
+      const { value: canvas } = el;
+      var ctx = canvas.getContext("2d");
+      if (res == "down") {
+        data.prevX = data.currX;
+        data.prevY = data.currY;
+        data.currX = e.clientX - canvas.offsetLeft;
+        data.currY = e.clientY - canvas.offsetTop;
 
-      const findxy = (res, e) => {
-        if (res == "down") {
+        data.flag = true;
+        data.dot_flag = true;
+        if (data.dot_flag) {
+          ctx.beginPath();
+          ctx.fillStyle = props.color;
+          ctx.fillRect(data.currX, data.currY, props.size, props.size);
+          ctx.closePath();
+          data.dot_flag = false;
+        }
+      }
+      if (res == "up" || res == "out") {
+        data.flag = false;
+      }
+      if (res == "move") {
+        if (data.flag) {
           data.prevX = data.currX;
           data.prevY = data.currY;
           data.currX = e.clientX - canvas.offsetLeft;
           data.currY = e.clientY - canvas.offsetTop;
+          draw();
+        }
+      }
+    };
 
-          data.flag = true;
-          data.dot_flag = true;
-          if (data.dot_flag) {
-            ctx.beginPath();
-            ctx.fillStyle = "black";
-            ctx.fillRect(data.currX, data.currY, 2, 2);
-            ctx.closePath();
-            data.dot_flag = false;
-          }
-        }
-        if (res == "up" || res == "out") {
-          data.flag = false;
-        }
-        if (res == "move") {
-          if (data.flag) {
-            data.prevX = data.currX;
-            data.prevY = data.currY;
-            data.currX = e.clientX - canvas.offsetLeft;
-            data.currY = e.clientY - canvas.offsetTop;
-            draw();
-          }
-        }
-      };
+    onMounted(() => {
+      const { value: canvas } = el;
 
       canvas.addEventListener(
         "mousemove",
@@ -131,9 +135,7 @@ export default {
       canvas.height = h;
       ctx.putImageData(cut, 0, 0);
 
-      var image = canvas.toDataURL(); //open cropped image in a new window
-      var win = window.open(image, "_blank");
-      win.focus();
+      var image = canvas.toDataURL();
       store.dispatch("stage/addDrawing", {
         src: image,
         x: pix.x[0],
@@ -143,7 +145,14 @@ export default {
       });
     };
 
-    window.crop = cropImageFromCanvas;
+    store.watch(
+      () => store.state.stage.preferences.isDrawing,
+      (value, oldValue) => {
+        if (!value && oldValue) {
+          cropImageFromCanvas();
+        }
+      }
+    );
 
     return { el, config, cropImageFromCanvas };
   },
