@@ -60,7 +60,7 @@ export default {
 <style lang="scss">
 #live-stage {
   background-size: cover;
-  * {
+  *:not(input) {
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
     -khtml-user-select: none; /* Konqueror HTML */

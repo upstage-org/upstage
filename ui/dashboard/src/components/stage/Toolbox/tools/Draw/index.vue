@@ -1,18 +1,42 @@
 <template>
   <template v-if="isDrawing">
-    <drawing-canvas :color="color" :size="size" />
+    <canvas ref="el" width="3840" height="2160" class="drawing">
+      Your browser does not support the HTML5 canvas tag.
+    </canvas>
     <div class="drawing-tool">
       <input type="color" v-model="color" />
     </div>
     <div class="drawing-tool">
-      <div
-        v-for="s in sizes"
-        :key="s"
-        @click="size = s"
-        class="dot"
-        :class="{ active: size === s }"
-        :style="{ width: s * 2 + 'px', height: s * 2 + 'px' }"
-      ></div>
+      <div class="size-preview">
+        <div
+          class="dot"
+          :style="{
+            width: size + 'px',
+            height: size + 'px',
+            'background-color': color,
+          }"
+        />
+      </div>
+      <input
+        class="slider is-fullwidth m-0 is-dark"
+        step="1"
+        min="1"
+        max="50"
+        type="range"
+        v-model="size"
+      />
+    </div>
+    <div class="drawing-tool" @click="undo">
+      <div class="icon is-large">
+        <i class="fas fa-undo fa-2x"></i>
+      </div>
+      <div>Undo</div>
+    </div>
+    <div class="drawing-tool" @click="clearCanvas">
+      <div class="icon is-large">
+        <i class="fas fa-broom fa-2x"></i>
+      </div>
+      <div>Clear</div>
     </div>
     <div class="drawing-tool" @click="save">
       <div class="icon is-large">
@@ -34,24 +58,25 @@
 <script>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import DrawingCanvas from "./DrawingCanvas";
+import { useDrawing } from "./composable";
 export default {
-  components: {
-    DrawingCanvas,
-  },
   setup: () => {
     const store = useStore();
     const isDrawing = computed(() => store.state.stage.preferences.isDrawing);
     const color = ref();
-    const size = ref(2);
-    const sizes = [2, 4, 6, 8, 10];
+    const size = ref(10);
+    const { el, cropImageFromCanvas, clearCanvas, undo } = useDrawing(
+      color,
+      size
+    );
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
     };
     const save = () => {
-      store.commit("stage/UPDATE_IS_DRAWING", false);
+      const drawing = cropImageFromCanvas();
+      store.dispatch("stage/addDrawing", drawing);
     };
-    return { isDrawing, color, size, sizes, create, save };
+    return { isDrawing, color, size, create, save, el, clearCanvas, undo };
   },
 };
 </script>
@@ -62,19 +87,26 @@ export default {
   position: relative;
   vertical-align: top;
 }
+.drawing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  background-color: rgba($color: #30ac45, $alpha: 0.3);
+}
 input[type="color"] {
   cursor: pointer;
   width: 100%;
   height: 100%;
 }
+.size-preview {
+  display: flex;
+  width: 100%;
+  height: 48px;
+}
 .dot {
-  float: left;
-  margin: 5px;
+  margin: auto;
   background-color: black;
   border-radius: 100%;
-  &:hover,
-  &.active {
-    box-shadow: 0 0 5px #30ac45;
-  }
 }
 </style>
