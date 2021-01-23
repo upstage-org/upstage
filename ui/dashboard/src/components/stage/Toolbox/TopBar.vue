@@ -39,7 +39,7 @@ export default {
   margin: auto;
   text-align: center;
   width: fit-content;
-  opacity: 0.9;
+  background-color: rgba($color: white, $alpha: 0.5);
   overflow: visible;
   .card-content {
     padding: 0;
@@ -53,8 +53,9 @@ export default {
       display: inline-block;
       padding: 12px;
 
-      &:hover {
-        background-color: hsl(0, 0%, 71%);
+      &:hover,
+      &.active {
+        background: rgba($color: black, $alpha: 0.5);
         cursor: pointer;
         border-radius: 5px;
       }

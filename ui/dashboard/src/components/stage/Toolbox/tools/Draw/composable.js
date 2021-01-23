@@ -1,6 +1,6 @@
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
-export const useDrawing = (color, size) => {
+export const useDrawing = (color, size, mode) => {
     const el = ref();
     const data = reactive({
         history: []
@@ -54,6 +54,9 @@ export const useDrawing = (color, size) => {
         };
     };
 
+    const eraseDot = (ctx) => {
+        ctx.clearRect(data.currX, data.currY, size.value, size.value);
+    }
     const drawDot = (ctx) => {
         ctx.beginPath();
         ctx.arc(data.currX, data.currY, size.value / 2, 0, Math.PI * 2, true);
@@ -84,7 +87,12 @@ export const useDrawing = (color, size) => {
             data.flag = true;
             data.dot_flag = true;
             if (data.dot_flag) {
-                drawDot(ctx);
+                if (mode.value === 'draw') {
+                    drawDot(ctx);
+                }
+                if (mode.value === 'erase') {
+                    eraseDot(ctx);
+                }
             }
         }
         if (res == "up" || res == "out") {
@@ -100,7 +108,12 @@ export const useDrawing = (color, size) => {
                 data.prevY = data.currY;
                 data.currX = e.clientX - left;
                 data.currY = e.clientY - top;
-                draw(ctx);
+                if (mode.value === 'draw') {
+                    draw(ctx);
+                }
+                if (mode.value === 'erase') {
+                    eraseDot(ctx);
+                }
             }
         }
     };
@@ -162,5 +175,29 @@ export const useDrawing = (color, size) => {
         return ctx;
     }
 
-    return { el, cropImageFromCanvas, clearCanvas, undo }
+    const cursor = computed(() => {
+        const canvas = document.createElement("canvas");
+        canvas.width = size.value;
+        canvas.height = size.value;
+        const ctx = canvas.getContext("2d");
+        if (mode.value === 'draw') {
+            console.log(size.value / 2)
+            ctx.beginPath();
+            const r = size.value / 2;
+            ctx.arc(r, r, r, 0, Math.PI * 2, true);
+            ctx.closePath();
+            ctx.fillStyle = color.value;
+            ctx.fill();
+            return `url(${canvas.toDataURL()}) ${r} ${r}, pointer`
+        }
+        if (mode.value === 'erase') {
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, size.value, size.value);
+            ctx.strokeRect(0, 0, size.value, size.value);
+        }
+        return `url(${canvas.toDataURL()}), pointer`
+
+    })
+
+    return { el, cursor, cropImageFromCanvas, clearCanvas, undo }
 }

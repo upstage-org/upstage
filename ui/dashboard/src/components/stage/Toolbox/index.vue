@@ -87,6 +87,7 @@
               <i class="fas fa-angle-right" aria-hidden="true"></i>
             </span>
           </a>
+          <span />
         </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
           <div class="dropdown-content">
