@@ -156,6 +156,8 @@ export const generateDemoData = () => {
     })
 
     const stageConfig = {
+        width: 1280,
+        height: 800,
         animateDuration: 500,
     }
 

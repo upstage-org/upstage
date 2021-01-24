@@ -209,6 +209,9 @@ export default {
 </script>
 
 <style scoped lang="scss">
+div[tabindex] {
+  outline: none;
+}
 .object {
   z-index: 10;
 }

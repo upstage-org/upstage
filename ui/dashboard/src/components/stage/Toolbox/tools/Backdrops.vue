@@ -3,7 +3,7 @@
     v-for="background in backgrounds"
     :key="background"
     :class="{
-      'has-background-primary': background.src === currentBackground,
+      active: background.src === currentBackground,
     }"
     @click="setBackground(background)"
   >

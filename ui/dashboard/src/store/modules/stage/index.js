@@ -2,9 +2,9 @@ import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor } from '@/utils/common'
-import { generateDemoData } from '@/store/demoData'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { attachPropToAvatar } from './reusable';
+import { generateDemoData } from './demoData'
 
 export default {
     namespaced: true,
@@ -19,6 +19,7 @@ export default {
         },
         board: {
             avatars: [],
+            drawings: [],
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -26,6 +27,7 @@ export default {
         },
         preferences: {
             slider: 'opacity',
+            isDrawing: true,
         }
     },
     getters: {
@@ -138,7 +140,13 @@ export default {
         },
         SET_PREFERENCES(state, preferences) {
             Object.assign(state.preferences, preferences);
-        }
+        },
+        PUSH_DRAWING(state, drawing) {
+            state.board.drawings.push(drawing);
+        },
+        UPDATE_IS_DRAWING(state, isDrawing) {
+            state.preferences.isDrawing = isDrawing;
+        },
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -230,9 +238,9 @@ export default {
                 type: BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE,
                 avatar: {
                     id: uuidv4(),
-                    ...avatar,
                     w: 100,
                     h: 100,
+                    ...avatar,
                     opacity: 1,
                 }
             }
@@ -339,6 +347,11 @@ export default {
         },
         changeSliderMode({ commit }, slider) {
             commit('SET_PREFERENCES', { slider })
+        },
+        addDrawing({ commit, dispatch }, drawing) {
+            commit('PUSH_DRAWING', drawing);
+            commit('UPDATE_IS_DRAWING', false);
+            dispatch('summonAvatar', drawing);
         }
     },
 };

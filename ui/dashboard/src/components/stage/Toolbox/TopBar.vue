@@ -12,10 +12,11 @@ import Avatars from "./tools/Avatars";
 import Backdrops from "./tools/Backdrops";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
+import Draw from "./tools/Draw/index";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrops, Props, Audio },
+  components: { Avatars, Backdrops, Props, Audio, Draw },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {
@@ -38,7 +39,8 @@ export default {
   margin: auto;
   text-align: center;
   width: fit-content;
-  opacity: 0.9;
+  background-color: rgba($color: white, $alpha: 0.5);
+  overflow: visible;
   .card-content {
     padding: 0;
     padding-top: 12px;
@@ -51,15 +53,16 @@ export default {
       display: inline-block;
       padding: 12px;
 
-      &:hover {
-        background-color: hsl(0, 0%, 71%);
+      &:hover,
+      &.active {
+        background: rgba($color: black, $alpha: 0.5);
         cursor: pointer;
         border-radius: 5px;
       }
+      .tag {
+        height: 1.5em;
+      }
     }
-  }
-  @media screen and (max-width: 767px) {
-    overflow: visible;
   }
 }
 </style>
