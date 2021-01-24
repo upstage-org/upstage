@@ -48,7 +48,6 @@ export const useDrawing = (color, size, mode) => {
         tmpCanvas.getContext('2d').putImageData(cut, 0, 0);
 
         const image = tmpCanvas.toDataURL();
-        console.log(pix)
         return {
             src: image,
             x: pix.x[0],
@@ -190,7 +189,6 @@ export const useDrawing = (color, size, mode) => {
         canvas.height = size.value;
         const ctx = canvas.getContext("2d");
         if (mode.value === 'draw') {
-            console.log(size.value / 2)
             ctx.beginPath();
             const r = size.value / 2;
             ctx.arc(r, r, r, 0, Math.PI * 2, true);

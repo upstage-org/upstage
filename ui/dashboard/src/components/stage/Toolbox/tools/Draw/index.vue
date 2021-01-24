@@ -94,7 +94,7 @@ export default {
       console.log(store.state.stage.board.drawings);
       return store.state.stage.preferences.isDrawing;
     });
-    const color = ref();
+    const color = ref("#000");
     const size = ref(10);
     const mode = ref("draw");
     const { el, cursor, cropImageFromCanvas, clearCanvas, undo } = useDrawing(
