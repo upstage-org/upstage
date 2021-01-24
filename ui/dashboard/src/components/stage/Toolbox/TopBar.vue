@@ -59,6 +59,9 @@ export default {
         cursor: pointer;
         border-radius: 5px;
       }
+      .tag {
+        height: 1.5em;
+      }
     }
   }
 }

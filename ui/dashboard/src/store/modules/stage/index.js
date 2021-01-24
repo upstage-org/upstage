@@ -238,9 +238,9 @@ export default {
                 type: BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE,
                 avatar: {
                     id: uuidv4(),
-                    ...avatar,
                     w: 100,
                     h: 100,
+                    ...avatar,
                     opacity: 1,
                 }
             }
@@ -348,10 +348,10 @@ export default {
         changeSliderMode({ commit }, slider) {
             commit('SET_PREFERENCES', { slider })
         },
-        addDrawing({ commit }, drawing) {
+        addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
             commit('UPDATE_IS_DRAWING', false);
-            commit('PUSH_AVATARS', drawing);
+            dispatch('summonAvatar', drawing);
         }
     },
 };

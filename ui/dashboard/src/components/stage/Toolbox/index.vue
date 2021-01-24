@@ -91,8 +91,12 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
           <div class="dropdown-content">
-            <a href="#" class="dropdown-item"> Add New </a>
-            <a href="#" class="dropdown-item"> Manage </a>
+            <a href="#" class="dropdown-item" @click="openDrawTool(true)">
+              Add New
+            </a>
+            <a href="#" class="dropdown-item" @click="openDrawTool(false)">
+              Manage
+            </a>
           </div>
         </div>
       </div>
@@ -121,6 +125,7 @@
 <script>
 import { ref } from "vue";
 import TopBar from "./TopBar";
+import { useStore } from "vuex";
 export default {
   components: { TopBar },
   setup: () => {
@@ -144,7 +149,20 @@ export default {
 
     waitToCollapse();
 
-    return { tool, changeTool, collapsed, expand, waitToCollapse };
+    const store = useStore();
+    const openDrawTool = (isDrawing) => {
+      tool.value = "Draw";
+      store.commit("stage/UPDATE_IS_DRAWING", isDrawing);
+    };
+
+    return {
+      tool,
+      changeTool,
+      collapsed,
+      expand,
+      waitToCollapse,
+      openDrawTool,
+    };
   },
 };
 </script>

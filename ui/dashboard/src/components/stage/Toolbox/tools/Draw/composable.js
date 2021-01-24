@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, onUpdated, reactive, ref } from "vue";
 
 export const useDrawing = (color, size, mode) => {
     const el = ref();
@@ -37,6 +37,9 @@ export const useDrawing = (color, size, mode) => {
 
         w = 1 + pix.x[n] - pix.x[0];
         h = 1 + pix.y[n] - pix.y[0];
+        if (isNaN(w) && isNaN(h)) {
+            return;
+        }
         var cut = ctx.getImageData(pix.x[0], pix.y[0], w, h);
 
         const tmpCanvas = document.createElement('canvas');
@@ -45,6 +48,7 @@ export const useDrawing = (color, size, mode) => {
         tmpCanvas.getContext('2d').putImageData(cut, 0, 0);
 
         const image = tmpCanvas.toDataURL();
+        console.log(pix)
         return {
             src: image,
             x: pix.x[0],
@@ -118,38 +122,43 @@ export const useDrawing = (color, size, mode) => {
         }
     };
 
-    onMounted(() => {
+    const attachEventLinsteners = () => {
         const { value: canvas } = el;
+        if (canvas) {
+            data.history = []
+            canvas.addEventListener(
+                "mousemove",
+                (e) => {
+                    findxy("move", e);
+                },
+                false
+            );
+            canvas.addEventListener(
+                "mousedown",
+                (e) => {
+                    findxy("down", e);
+                },
+                false
+            );
+            canvas.addEventListener(
+                "mouseup",
+                (e) => {
+                    findxy("up", e);
+                },
+                false
+            );
+            canvas.addEventListener(
+                "mouseout",
+                (e) => {
+                    findxy("out", e);
+                },
+                false
+            );
+        }
+    }
 
-        canvas.addEventListener(
-            "mousemove",
-            (e) => {
-                findxy("move", e);
-            },
-            false
-        );
-        canvas.addEventListener(
-            "mousedown",
-            (e) => {
-                findxy("down", e);
-            },
-            false
-        );
-        canvas.addEventListener(
-            "mouseup",
-            (e) => {
-                findxy("up", e);
-            },
-            false
-        );
-        canvas.addEventListener(
-            "mouseout",
-            (e) => {
-                findxy("out", e);
-            },
-            false
-        );
-    });
+    onMounted(attachEventLinsteners);
+    onUpdated(attachEventLinsteners);
 
     const clearCanvas = () => {
         const { value: canvas } = el;

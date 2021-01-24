@@ -11,7 +11,9 @@
     <div class="icon is-large" v-else>
       <i class="fas fa-play fa-2x"></i>
     </div>
-    <div class="audio-name" :title="audio.file">{{ audio.name }}</div>
+    <div class="audio-name tag is-light is-block" :title="audio.file">
+      {{ audio.name }}
+    </div>
   </div>
 </template>
 
@@ -43,6 +45,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/mixins.scss";
 .audio-name {
   font-weight: bold;
   font-size: 0.8rem;
@@ -50,5 +53,11 @@ export default {
   width: 100%;
   overflow-x: hidden;
   text-overflow: ellipsis;
+}
+.fas.fa-play {
+  @include gradientText(#0052d4, #a5fecb);
+}
+.fas.fa-pause {
+  @include gradientText(#ffb347, #a83279);
 }
 </style>
