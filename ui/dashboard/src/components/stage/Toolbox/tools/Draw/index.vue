@@ -1,14 +1,15 @@
 <template>
+  <canvas
+    v-show="isDrawing"
+    ref="el"
+    width="3840"
+    height="2160"
+    class="drawing"
+    :style="{ cursor }"
+  >
+    Your browser does not support the HTML5 canvas tag.
+  </canvas>
   <template v-if="isDrawing">
-    <canvas
-      ref="el"
-      width="3840"
-      height="2160"
-      class="drawing"
-      :style="{ cursor }"
-    >
-      Your browser does not support the HTML5 canvas tag.
-    </canvas>
     <div class="drawing-tool">
       <div class="icon is-large">
         <input type="color" v-model="color" />

@@ -1,7 +1,7 @@
-import { computed, onMounted, onUpdated, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 
 export const useDrawing = (color, size, mode) => {
-    const el = ref();
+    const el = ref(null);
     const data = reactive({
         history: []
     });
@@ -156,8 +156,7 @@ export const useDrawing = (color, size, mode) => {
         }
     }
 
-    onMounted(attachEventLinsteners);
-    onUpdated(attachEventLinsteners);
+    onMounted(attachEventLinsteners)
 
     const clearCanvas = () => {
         const { value: canvas } = el;
