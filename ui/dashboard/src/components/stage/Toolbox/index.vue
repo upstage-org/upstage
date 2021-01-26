@@ -103,7 +103,7 @@
       <div class="dropdown is-hoverable is-fullwidth">
         <div class="dropdown-trigger is-fullwidth">
           <a
-            @click="changeTool('Stream')"
+            @click="createStream()"
             :class="{ 'is-active': tool === 'Stream' }"
             class="panel-block"
           >

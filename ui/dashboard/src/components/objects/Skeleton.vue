@@ -53,7 +53,7 @@ export default {
 
     const touchend = () => {
       position.isDragging = false;
-      store.dispatch("stage/summonAvatar", {
+      store.dispatch("stage/placeObjectOnStage", {
         ...props.data,
         x: position.x,
         y: position.y,

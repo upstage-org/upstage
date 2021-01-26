@@ -155,11 +155,13 @@ export const generateDemoData = () => {
         return { name, src, file };
     })
 
+    const streams = [{ type: "stream", url: `${config.publicPath}demo/streams/bunny.mp4`, metadata: { _vei: {}, _vod: "" }, src: `${config.publicPath}demo/streams/bunny.png` }];
+
     const stageConfig = {
         width: 1280,
         height: 800,
         animateDuration: 500,
     }
 
-    return { avatars, props, backdrops, audios, config: stageConfig }
+    return { avatars, props, backdrops, audios, streams, config: stageConfig }
 }

@@ -18,8 +18,9 @@ export default {
             color: randomMessageColor(),
         },
         board: {
-            avatars: [],
+            objects: [],
             drawings: [],
+            streams: []
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -31,8 +32,18 @@ export default {
         }
     },
     getters: {
+        objects(state) {
+            return state.board.objects;
+        },
         avatars(state) {
-            return state.board.avatars;
+            console.log(state.board.objects)
+            return state.board.objects.filter(o => o.type === 'avatar' || !o.type);
+        },
+        props(state) {
+            return state.board.objects.filter(o => o.type === 'prop');
+        },
+        streams(state) {
+            return state.board.objects.filter(o => o.type === 'stream');
         },
         config(state) {
             return state.tools.config;
@@ -50,7 +61,7 @@ export default {
         },
         currentAvatar(state, getters, rootState) {
             const id = rootState.user.avatarId;
-            return state.board.avatars.find(avatar => avatar.id === id);
+            return state.board.objects.find(o => o.id === id);
         }
     },
     mutations: {
@@ -66,25 +77,25 @@ export default {
         PUSH_CHAT_MESSAGE(state, message) {
             state.chat.messages.push(message)
         },
-        PUSH_AVATARS(state, object) {
-            state.board.avatars.push(object)
+        PUSH_OBJECT(state, object) {
+            state.board.objects.push(object)
             attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
-            const avatar = state.board.avatars.find(avatar => avatar.id === id);
+            const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
             }
-            state.board.avatars.push(object)
+            state.board.objects.push(object)
         },
         MOVE_ATTACHED_PROPS(state, object) {
-            const avatar = state.board.avatars.find(avatar => avatar.id === object.id);
+            const avatar = state.board.objects.find(avatar => avatar.id === object.id);
             if (avatar) {
                 object.attachedProps.forEach(propId => {
-                    const prop = state.board.avatars.find(object => object.id === propId);
+                    const prop = state.board.objects.find(object => object.id === propId);
                     if (prop) {
                         prop.moveSpeed = object.moveSpeed;
                         prop.x = (prop.x - avatar.x) + object.x;
@@ -96,14 +107,14 @@ export default {
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
-            state.board.avatars = state.board.avatars.filter(avatar => avatar.id !== id);
+            state.board.objects = state.board.objects.filter(o => o.id !== id);
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
             const { id } = avatar;
-            let model = state.board.avatars.find(avatar => avatar.id === id);
+            let model = state.board.objects.find(o => o.id === id);
             if (!model) {
-                const length = state.board.avatars.push(avatar)
-                model = state.board.avatars[length - 1];
+                const length = state.board.objects.push(avatar)
+                model = state.board.objects[length - 1];
             }
             model.speak = speak;
             setTimeout(() => {
@@ -123,19 +134,19 @@ export default {
             state.settingPopup = setting;
         },
         BRING_TO_FRONT(state, object) {
-            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
-                state.board.avatars.push(state.board.avatars.splice(index, 1)[0]);
+                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
             } else {
-                state.board.avatars.push(object)
+                state.board.objects.push(object)
             }
         },
         SEND_TO_BACK(state, object) {
-            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
-                state.board.avatars.unshift(state.board.avatars.splice(index, 1)[0]);
+                state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
             } else {
-                state.board.avatars.push(object)
+                state.board.objects.push(object)
             }
         },
         SET_PREFERENCES(state, preferences) {
@@ -143,6 +154,10 @@ export default {
         },
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
+        },
+        PUSH_STREAM(state, stream) {
+            state.tools.streams.push(stream);
+            console.log(state.tools)
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -233,9 +248,9 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        summonAvatar(action, avatar) {
+        placeObjectOnStage(action, avatar) {
             const payload = {
-                type: BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE,
+                type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
                 avatar: {
                     id: uuidv4(),
                     w: 100,
@@ -290,8 +305,8 @@ export default {
         },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
-                case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
-                    commit('PUSH_AVATARS', message.avatar);
+                case BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE:
+                    commit('PUSH_OBJECT', message.avatar);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
                     if (message.object.attachedProps) {
@@ -351,7 +366,11 @@ export default {
         addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
             commit('UPDATE_IS_DRAWING', false);
-            dispatch('summonAvatar', drawing);
+            dispatch('placeObjectOnStage', drawing);
+        },
+        addStream({ commit, dispatch }, stream) {
+            commit('PUSH_STREAM', stream);
+            dispatch('placeObjectOnStage', stream);
         }
     },
 };

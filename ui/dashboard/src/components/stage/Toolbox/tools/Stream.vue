@@ -5,11 +5,18 @@
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
+  <div v-for="stream in streams" :key="stream">
+    <Skeleton :data="stream" />
+  </div>
 </template>
 
 <script>
+import { computed } from "vue";
 import { useStore } from "vuex";
+import Skeleton from "@/components/objects/Skeleton";
+
 export default {
+  components: { Skeleton },
   setup: () => {
     const store = useStore();
     const newStream = () => {
@@ -17,8 +24,9 @@ export default {
         type: "CreateStream",
       });
     };
+    const streams = computed(() => store.state.stage.tools.streams);
 
-    return { newStream };
+    return { streams, newStream };
   },
 };
 </script>

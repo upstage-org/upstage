@@ -2,66 +2,80 @@
   <div v-if="stream.url" class="card-content">
     <div class="columns">
       <div class="column">
-        <button v-if="stream.loading" class="button is-light is-loading is-fullwidth" style="height: 25vh">Loading</button>
-        <video v-show="!stream.loading" preload="auto" controls :src="stream.url" @loadedmetadata="handleMetadata"></video>
+        <button v-if="!stream.metadata" class="button is-light is-loading is-fullwidth"
+          style="height: 25vh">Loading</button>
+        <video ref="video" v-show="stream.metadata" preload="auto" controls :src="stream.url"
+          @loadeddata="handleData"></video>
       </div>
       <div class="column">
-        <template  v-if="stream.metadata">
-            <p>
-                <ul>
-                    <li>Duration: {{stream.metadata.duration}}</li>
-                </ul>
-            </p>
+        <template v-if="stream.metadata">
+          <p class="mb-4">
+          <ul>
+            <li>Duration: {{Math.round(stream.metadata.duration)}}s</li>
+            <li>Width: {{stream.metadata.videoWidth}}</li>
+            <li>Height: {{stream.metadata.videoHeight}}</li>
+          </ul>
+          </p>
+          <p>
+            <img :src="stream.src"/>
+          </p>
         </template>
-        <p class="title">Change URL</p>
-        <p>
-            <input
-                class="input"
-                type="text"
-                :placeholder="stream.url"
-                @keyup.enter="(e) => (stream.url = e.target.value)"
-            />
+        <p class="title mb-2">Stream URL</p>
+        <p class="mb-4">
+          <span class="title"></span>
+          <input-button-postfix :placeholder="stream.url" icon="fas fa-check" @ok="value => stream.url = value" />
         </p>
+      </div>
+    </div>
+    <div class="columns">
+      <div class="column">
+        <save-button :disabled="stream.loading" @click="save" />
       </div>
     </div>
   </div>
   <div v-else class="card-content">
-    <p class="title">Enter stream url</p>
+    <p class="title">Enter Stream URL</p>
     <p>
-      <input
-        class="input"
-        type="text"
-        placeholder="https://www.w3schools.com/html/mov_bbb.mp4"
-        @keyup.enter="(e) => (stream.url = e.target.value)"
-      />
+      <input-button-postfix icon="fas fa-check" @ok="value => stream.url = value"
+        value="demo/streams/bunny.mp4" />
     </p>
-    <p class="subtitle">{{ stream.url }}</p>
   </div>
-  <footer class="card-footer" v-if="stream.url">
-    <p class="card-footer-item has-background-primary has-text-white">
-      <span> Put on Stage </span>
-    </p>
-    <p class="card-footer-item">
-      <span class="has-text-primary"> Save </span>
-    </p>
-  </footer>
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
+import InputButtonPostfix from "@/components/form/InputButtonPostfix";
+import SaveButton from "@/components/form/SaveButton.vue";
+import { useStore } from "vuex";
+import { cropImageFromCanvas } from "@/utils/canvas";
+
 export default {
-  setup: () => {
+  components: { InputButtonPostfix, SaveButton },
+  setup: (props, { emit }) => {
+    const store = useStore();
+    const video = ref();
     const stream = reactive({
       loading: true,
     });
 
-    const handleMetadata = (e) => {
-      stream.loading = false;
+    const handleData = (e) => {
       stream.metadata = e.target;
-      console.log(stream.metadata);
+      const canvas = document.createElement("canvas");
+      canvas.width = stream.metadata.videoWidth;
+      canvas.height = stream.metadata.videoHeight;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video.value, 0, 0, canvas.width, canvas.height);
+      console.log(cropImageFromCanvas(canvas));
+      Object.assign(stream, cropImageFromCanvas(canvas));
+      stream.loading = false;
     };
 
-    return { stream, handleMetadata };
+    const save = () => {
+      stream.type = "stream";
+      store.dispatch("stage/addStream", stream).then(() => emit("close"));
+    };
+
+    return { video, stream, handleData, save };
   },
 };
 </script>
