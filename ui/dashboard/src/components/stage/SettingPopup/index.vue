@@ -4,19 +4,12 @@
       <div class="modal-background" @click="close"></div>
       <div ref="modal" class="modal-content">
         <div class="card">
-          <header class="card-header">
-            <p class="card-header-title">{{ title }}</p>
-            <a href="#" class="card-header-icon" @click="close">
-              <span class="icon">
-                <i class="fas fa-times" aria-hidden="true"></i>
-              </span>
-            </a>
-          </header>
-          <div class="card-content">
-            <div class="content">
-              <component :is="type" @close="close" />
-            </div>
-          </div>
+          <a href="#" class="card-header-icon" @click="close">
+            <span class="icon">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </span>
+          </a>
+          <component :is="type" @close="close" />
         </div>
       </div>
     </div>
@@ -27,9 +20,10 @@
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import Chat from "./settings/Chat";
+import CreateStream from "./settings/CreateStream";
 
 export default {
-  components: { Chat },
+  components: { Chat, CreateStream },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);
@@ -53,5 +47,9 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+.card-header-icon {
+  position: absolute;
+  right: 0;
 }
 </style>

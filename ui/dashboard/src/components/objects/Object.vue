@@ -51,11 +51,7 @@
         />
       </template>
       <template #context="slotProps" v-if="loggedIn">
-        <MenuContent
-          :object="object"
-          :closeMenu="slotProps.closeMenu"
-          v-model:active="active"
-        />
+        <slot name="menu" v-bind="slotProps" />
       </template>
     </ContextMenu>
   </div>
@@ -68,7 +64,6 @@ import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
-import MenuContent from "./ContextMenu";
 import OpacitySlider from "./OpacitySlider";
 import Topping from "./Topping.vue";
 
@@ -78,7 +73,6 @@ export default {
     DragResize,
     Image,
     ContextMenu,
-    MenuContent,
     OpacitySlider,
     Topping,
   },

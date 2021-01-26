@@ -173,7 +173,6 @@ export default {
     const changeNickname = () =>
       store.dispatch("stage/openSettingPopup", {
         type: "Chat",
-        title: "Change your nick name",
       });
 
     const bringToFront = () => {
