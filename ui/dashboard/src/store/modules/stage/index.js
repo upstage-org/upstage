@@ -20,7 +20,7 @@ export default {
         board: {
             objects: [],
             drawings: [],
-            streams: []
+            streams: {}
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -29,14 +29,14 @@ export default {
         preferences: {
             slider: 'opacity',
             isDrawing: true,
-        }
+        },
+        hosts: []
     },
     getters: {
         objects(state) {
             return state.board.objects;
         },
         avatars(state) {
-            console.log(state.board.objects)
             return state.board.objects.filter(o => o.type === 'avatar' || !o.type);
         },
         props(state) {
@@ -155,13 +155,18 @@ export default {
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
         },
-        PUSH_STREAM(state, stream) {
+        PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
-            console.log(state.tools)
+        },
+        PUSH_STREAM_HOST(state, stream) {
+            state.hosts.push(stream);
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
+        UPDATE_STREAM(state, { id, src }) {
+            state.board.streams[id] = src;
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -189,6 +194,7 @@ export default {
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
+                [TOPICS.STREAM]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -211,6 +217,9 @@ export default {
                     break;
                 case TOPICS.AUDIO:
                     dispatch('handleAudioMessage', { message });
+                    break;
+                case TOPICS.STREAM:
+                    dispatch('handleStreamMessage', { message });
                     break;
                 default:
                     break;
@@ -248,18 +257,23 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        placeObjectOnStage(action, avatar) {
+        placeObjectOnStage({ commit }, data) {
+            const object = {
+                id: uuidv4(),
+                w: 100,
+                h: 100,
+                ...data,
+                opacity: 1,
+            }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                avatar: {
-                    id: uuidv4(),
-                    w: 100,
-                    h: 100,
-                    ...avatar,
-                    opacity: 1,
-                }
+                object
             }
-            mqtt.sendMessage(TOPICS.BOARD, payload)
+            mqtt.sendMessage(TOPICS.BOARD, payload);
+            if (object.type === 'stream') {
+                commit('PUSH_STREAM_HOST', object);
+            }
+            return object;
         },
         shapeObject(action, object) {
             const payload = {
@@ -306,7 +320,7 @@ export default {
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
                 case BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE:
-                    commit('PUSH_OBJECT', message.avatar);
+                    commit('PUSH_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
                     if (message.object.attachedProps) {
@@ -369,8 +383,14 @@ export default {
             dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
-            commit('PUSH_STREAM', stream);
-            dispatch('placeObjectOnStage', stream);
-        }
+            commit('PUSH_STREAM_TOOL', stream);
+            dispatch('placeObjectOnStage', stream)
+        },
+        sendStreamData(action, data) {
+            mqtt.sendMessage(TOPICS.STREAM, data);
+        },
+        handleStreamMessage({ commit }, { message }) {
+            commit('UPDATE_STREAM', message)
+        },
     },
 };
