@@ -202,11 +202,33 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 div[tabindex] {
   outline: none;
 }
 .object {
   z-index: 10;
+}
+.frame-selector {
+  width: 440px;
+
+  @media screen and (max-width: 767px) {
+    width: 100px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .column {
+    height: 100px;
+
+    &:hover {
+      background-color: hsl(0, 0%, 71%);
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  }
+  .autoplay-frames {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>

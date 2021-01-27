@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Object from "./Object.vue";
+import Object from "../Object.vue";
 import MenuContent from "./ContextMenu";
 
 export default {

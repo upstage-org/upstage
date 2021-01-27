@@ -16,8 +16,8 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Avatar from "@/components/objects/Avatar";
-import Streamer from "@/components/objects/Streamer";
+import Avatar from "@/components/objects/Avatar/index";
+import Streamer from "@/components/objects/Streamer/index";
 import anime from "animejs";
 
 export default {
