@@ -2,7 +2,7 @@
   <div>
     <Object :object="object">
       <template #menu="slotProps">
-        <div class="avatar-context-menu card-content p-0">
+        <div v-if="isHost" class="avatar-context-menu card-content p-0">
           <a
             v-if="object.isPlaying"
             class="panel-block has-text-info"
@@ -42,13 +42,14 @@
       preload="auto"
       controls
       @play="handlePlay"
+      @ended="object.isPlaying = false"
       style="display: none"
     ></video>
   </div>
 </template>
 
 <script>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { cropImageFromCanvas } from "@/utils/canvas";
@@ -57,15 +58,15 @@ export default {
   props: ["stream"],
   setup: (props) => {
     const store = useStore();
-    const object = reactive(props.stream);
+    const object = reactive({ ...props.stream });
     const video = ref();
     const canvas = document.createElement("canvas");
-    const ctx = canvas.value.getContext("2d");
+    const ctx = canvas.getContext("2d");
 
-    watchEffect(() => {
-      object.src =
-        store.state.stage.board.streams[props.stream.id] ?? object.url;
-    });
+    // watchEffect(() => {
+    //   object.src =
+    //     store.state.stage.board.streams[props.stream.id] ?? object.url;
+    // });
 
     const isHost = computed(() =>
       store.state.stage.hosts.some((stream) => stream.id === props.stream.id)
@@ -84,19 +85,58 @@ export default {
       })();
     };
 
+    const changeShape = {
+      circle: () => {
+        ctx.save();
+        ctx.beginPath();
+        const r = canvas.height / 2;
+        ctx.arc(r, r, r, 0, Math.PI * 2, true);
+        ctx.clip();
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        video.value.play();
+        if (!object.isPlaying) {
+          video.value.pause();
+        }
+      },
+    };
+
+    watch(props.stream, () => {
+      console.log(props.stream.src);
+      if (props.stream.isPlaying) {
+        video.value.play();
+      } else {
+        video.value.pause();
+      }
+      if (object.shape !== props.stream.shape) {
+        changeShape[props.stream.shape]?.apply();
+      }
+      window.Object.assign(object, props.stream);
+    });
+
     const playStream = ({ closeMenu }) => {
-      video.value.play();
-      object.isPlaying = true;
-      closeMenu();
+      store
+        .dispatch("stage/shapeObject", {
+          ...object,
+          isPlaying: true,
+        })
+        .then(closeMenu);
     };
 
     const pauseStream = ({ closeMenu }) => {
-      video.value.pause();
-      object.isPlaying = false;
-      closeMenu();
+      store
+        .dispatch("stage/shapeObject", {
+          ...object,
+          isPlaying: false,
+        })
+        .then(closeMenu);
     };
 
-    const clipCircle = () => {};
+    const clipCircle = () => {
+      store.dispatch("stage/shapeObject", {
+        ...object,
+        shape: "circle",
+      });
+    };
 
     return {
       video,

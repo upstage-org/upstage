@@ -120,13 +120,18 @@ export default {
     };
 
     const dragEnd = (e) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        ...e,
-      });
-      position.x = beforeDragPosition.value.x;
-      position.y = beforeDragPosition.value.y;
-      isDragging.value = false;
+      if (
+        e.x !== beforeDragPosition.value.x &&
+        e.y !== beforeDragPosition.value.y
+      ) {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          ...e,
+        });
+        position.x = beforeDragPosition.value.x;
+        position.y = beforeDragPosition.value.y;
+        isDragging.value = false;
+      }
     };
 
     const resizeEnd = (e) => {
