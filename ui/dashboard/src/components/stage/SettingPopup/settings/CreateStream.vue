@@ -37,7 +37,7 @@
     <p class="title">Enter Stream URL</p>
     <p>
       <input-button-postfix icon="fas fa-check" @ok="value => stream.url = value"
-        value="demo/streams/bunny.mp4" />
+        placeholder="https://www.w3schools.com/html/mov_bbb.mp4" />
     </p>
   </div>
 </template>
@@ -47,7 +47,6 @@ import { reactive, ref } from "vue";
 import InputButtonPostfix from "@/components/form/InputButtonPostfix";
 import SaveButton from "@/components/form/SaveButton.vue";
 import { useStore } from "vuex";
-import { cropImageFromCanvas } from "@/utils/canvas";
 
 export default {
   components: { InputButtonPostfix, SaveButton },
@@ -60,13 +59,6 @@ export default {
 
     const handleData = (e) => {
       stream.metadata = e.target;
-      const canvas = document.createElement("canvas");
-      canvas.width = stream.metadata.videoWidth;
-      canvas.height = stream.metadata.videoHeight;
-      const ctx = canvas.getContext("2d");
-      ctx.drawImage(video.value, 0, 0, canvas.width, canvas.height);
-      console.log(cropImageFromCanvas(canvas));
-      Object.assign(stream, cropImageFromCanvas(canvas));
       stream.loading = false;
     };
 

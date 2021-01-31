@@ -6,7 +6,9 @@
     <span class="tag is-light is-block">New</span>
   </div>
   <div v-for="stream in streams" :key="stream">
-    <Skeleton :data="stream" />
+    <Skeleton :data="stream">
+      <video :src="stream.url"></video>
+    </Skeleton>
   </div>
 </template>
 
@@ -35,5 +37,8 @@ export default {
 @import "@/styles/mixins.scss";
 .fas.fa-plus {
   @include gradientText(#30ac45, #6fb1fc);
+}
+video {
+  height: 100%;
 }
 </style>

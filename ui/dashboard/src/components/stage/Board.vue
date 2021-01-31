@@ -30,7 +30,7 @@ export default {
     const streams = computed(() => store.getters["stage/streams"]);
 
     const drop = (e) => {
-      const avatar = JSON.parse(e.dataTransfer.getData("avatar"));
+      const avatar = JSON.parse(e.dataTransfer.getData("object"));
       if (e.clientX > 0 && e.clientY > 0) {
         store.dispatch("stage/placeObjectOnStage", {
           ...avatar,
