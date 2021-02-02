@@ -20,7 +20,6 @@ export default {
         board: {
             objects: [],
             drawings: [],
-            streams: {}
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -164,9 +163,6 @@ export default {
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
-        UPDATE_STREAM(state, { id, src }) {
-            state.board.streams[id] = src;
-        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -194,7 +190,6 @@ export default {
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
-                [TOPICS.STREAM]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -217,9 +212,6 @@ export default {
                     break;
                 case TOPICS.AUDIO:
                     dispatch('handleAudioMessage', { message });
-                    break;
-                case TOPICS.STREAM:
-                    dispatch('handleStreamMessage', { message });
                     break;
                 default:
                     break;
@@ -385,12 +377,6 @@ export default {
         addStream({ commit, dispatch }, stream) {
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
-        },
-        sendStreamData(action, data) {
-            mqtt.sendMessage(TOPICS.STREAM, data);
-        },
-        handleStreamMessage({ commit }, { message }) {
-            commit('UPDATE_STREAM', message)
         },
     },
 };
