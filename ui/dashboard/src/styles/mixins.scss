@@ -3,3 +3,15 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+@mixin boxShadow() {
+    $i: 0;
+    $shadow-size: 5;
+    $shadow: null;
+    @while $i < $shadow-size {
+        $i: $i + 0.5;
+        $shadow: $shadow $i*1px $i*-1px 0 $border-color#{if($i != $shadow-size, ',', '')};
+    }
+    box-shadow: $shadow;
+    transform: translate($shadow-size*-1px, $shadow-size*1px);
+    transition-duration: 0.25s;
+}
