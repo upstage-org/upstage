@@ -37,10 +37,9 @@
     </Object>
     <video
       ref="video"
-      v-if="isHost"
       :src="stream.url"
       preload="auto"
-      controls
+      :muted="!isHost"
       @ended="object.isPlaying = false"
       style="display: none"
     ></video>
@@ -74,7 +73,7 @@ export default {
       window.Object.assign(object, props.stream);
     });
 
-    const { src } = useShape(video.value, object.shape);
+    const { src } = useShape(video, object);
     watch(src, () => (object.src = src.value));
 
     const playStream = ({ closeMenu }) => {
