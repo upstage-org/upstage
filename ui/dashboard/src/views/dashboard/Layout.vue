@@ -6,21 +6,22 @@
         <router-link class="navbar-item" to="/dashboard">
           Dashboard
         </router-link>
+        <div class="vertical-divider" />
         <router-link class="navbar-item" to="/dashboard/media">
           Media
         </router-link>
+        <div class="vertical-divider" />
         <router-link class="navbar-item" to="/dashboard/my-stages">
           My Stages
         </router-link>
+        <div class="vertical-divider" />
         <router-link class="navbar-item" to="/dashboard/profile">
           Profile
         </router-link>
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item" title="Go back to UpStage homepage">
-          <Logo />
-        </div>
+        <Logo />
       </div>
     </div>
   </nav>
