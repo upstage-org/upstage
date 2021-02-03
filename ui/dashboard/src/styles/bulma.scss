@@ -77,6 +77,20 @@ $link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
+// Visual Identity
+$border-color: black;
+$button-hover-border-color: $border-color;
+
+$control-radius: 0;
+.button:hover {
+    box-shadow: 1px -1px 0px $border-color,
+                2px -2px 0px $border-color,
+                3px -3px 0px $border-color,
+                4px -4px 0px $border-color,
+                5px -5px 0px $border-color,
+                6px -6px 0px $border-color;
+}
+
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~bulma-slider"
