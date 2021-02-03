@@ -54,18 +54,11 @@
       <div class="card-footer-item">
         <div class="control has-icons-right is-fullwidth">
           <form autocomplete="off" @submit.prevent="sendChat">
-            <input
-              class="input is-rounded"
-              placeholder="Type message"
+            <emoji-input
               v-model="message"
+              placeholder="Type message"
+              :loading="loadingUser"
             />
-            <button
-              class="icon is-right clickable button is-primary is-rounded"
-              :class="{ 'is-loading': loadingUser }"
-              :disabled="loadingUser"
-            >
-              <i class="fas fa-paper-plane"></i>
-            </button>
           </form>
         </div>
       </div>
@@ -77,8 +70,10 @@
 import { computed, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
+import EmojiInput from "@/components/form/EmojiInput";
 
 export default {
+  components: { EmojiInput },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -130,6 +125,7 @@ export default {
   bottom: 16px;
   right: 16px;
   opacity: 0.9;
+  overflow: visible;
 
   .card-content {
     height: calc(100% - 64px);
