@@ -7,7 +7,7 @@
 }
 @media screen and (min-width: 1024px) {
     .navbar-start {
-        width: 100%;
+        flex: auto;
         justify-content: center !important;
     }
     .navbar-item {
