@@ -6,7 +6,7 @@
   >
     <Board />
     <ConnectionStatus />
-    <Toolbox v-if="loggedIn" />
+    <Toolbox />
     <Chat />
     <AudioPlayer />
   </section>
