@@ -2,19 +2,21 @@
   <div @contextmenu.prevent="openMenu">
     <slot name="trigger" />
   </div>
-  <div
-    class="card"
-    v-if="isActive"
-    v-click-outside="closeMenu"
-    :style="{
-      position: 'fixed',
-      top: position.y + 'px',
-      left: position.x + 'px',
-      'z-index': 100,
-    }"
-  >
-    <slot name="context" :closeMenu="closeMenu" />
-  </div>
+  <transition :css="false" @enter="contextAppear">
+    <div
+      class="card"
+      v-if="isActive"
+      v-click-outside="closeMenu"
+      :style="{
+        position: 'fixed',
+        top: position.y + 'px',
+        left: position.x + 'px',
+        'z-index': 100,
+      }"
+    >
+      <slot name="context" :closeMenu="closeMenu" />
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -32,7 +34,18 @@ export default {
     };
     const closeMenu = () => (isActive.value = false);
 
-    return { isActive, openMenu, closeMenu, position };
+    const contextAppear = (el) => {
+      const { width, height, right, bottom } =
+        el?.getBoundingClientRect() ?? {};
+      if (right > window.innerWidth) {
+        position.x = position.x - width;
+      }
+      if (bottom > window.innerHeight) {
+        position.y = position.y - height;
+      }
+    };
+
+    return { isActive, openMenu, closeMenu, position, contextAppear };
   },
 };
 </script>
