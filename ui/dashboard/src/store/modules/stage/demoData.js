@@ -43,6 +43,68 @@ export const generateDemoData = () => {
                 "blob_avatar_2.png",
             ]
         },
+        {
+            name: 'Dave',
+            src: "dave_02.png",
+            multi: true,
+            frames: [
+                "dave_02.png",
+                "dave_05.png",
+                "dave_07.png",
+                "dave_11.png",
+                "dave_14.png",
+                "dave_15.png",
+            ]
+        },
+        {
+            name: 'Manunui',
+            src: "Manunui1.png",
+            multi: true,
+            frames: [
+                "Manunui1.png",
+                "Manunui2.png",
+                "Manunui3.png",
+                "Manunui4.png",
+                "Manunui5.png",
+            ]
+        },
+        {
+            name: 'ViAv',
+            src: "ViAv1.png",
+            multi: true,
+            frames: [
+                "ViAv1.png",
+                "ViAv2.png",
+                "ViAv3.png",
+                "ViAv4.png",
+                "ViAv5.png",
+            ]
+        },
+        {
+            name: 'VincentPalace',
+            src: "VincentPalace.png",
+        },
+        {
+            name: 'VicPalace',
+            src: "VicPalace.png",
+        },
+        {
+            name: 'AudreyAv',
+            src: "AudreyAv.png",
+        },
+        {
+            name: 'lololol',
+            src: "lololol.png",
+        },
+        {
+            name: 'Pan',
+            src: "Pan.png",
+        },
+        {
+            name: 'Icarus',
+            src: "Icarus.png",
+        },
+
     ]
     avatars.forEach(avatar => {
         avatar.src = `${config.publicPath}demo/avatars/${avatar.src}`
@@ -86,14 +148,32 @@ export const generateDemoData = () => {
             name: "tunnel_beach",
             src: config.publicPath + "demo/backdrops/tunnel_beach_02.jpg",
         },
+        {
+            name: "Chart",
+            src: config.publicPath + "demo/backdrops/Chart.jpg",
+        },
+        {
+            name: 'Refinery',
+            src: config.publicPath + "demo/backdrops/Refinery.png",
+        }
     ];
 
 
-    const propFiles = ["quarantini_clearcut.png", "logo-upstage-official-print_500px.png", "mobilise-demoblise-logo-version-black.gif", "mobilise-demoblise-logo-version-white.png"];
+    const propFiles = ["quarantini_clearcut.png", "logo-upstage-official-print_500px.png", "mobilise-demoblise-logo-version-black.gif", "mobilise-demoblise-logo-version-white.png", "DrGraham.png", "Linsky.png", "Nelson.png", "hamilton.png", "romney.png", "campbellStokes.png"];
     const props = propFiles.map((file) => ({
         name: file.split('.')[0].replace(/_/g, ' '),
         src: file,
-    }));
+    })).concat([{
+        name: 'Brolly',
+        src: "brolly.png",
+        multi: true,
+        frames: ["brolly.png", "brolly1.png"]
+    }]).concat([{
+        name: 'Spiraldance',
+        src: "spiraldance.png",
+        multi: true,
+        frames: ["spiraldance.png", "spiraldance1.png"]
+    }]);
 
     props.forEach(prop => {
         prop.src = `${config.publicPath}demo/props/${prop.src}`
