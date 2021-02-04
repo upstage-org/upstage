@@ -1,0 +1,53 @@
+@import "./mixins";
+
+.button {
+    &:not(.no-shadow):hover {
+        @include boxShadow;
+    }
+}
+@media screen and (min-width: 1024px) {
+    .navbar-start {
+        flex: auto;
+        justify-content: center !important;
+    }
+    .navbar-item {
+        width: 150px;
+        margin: 8px 12px;
+        padding: 0 20px !important;
+        justify-content: center;
+        text-transform: uppercase;
+    }
+    .vertical-divider {
+        width: 8px;
+        height: 8px;
+        background-color: $primary;
+        border-radius: 100%;
+        margin: auto 0;
+    }
+    a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
+        &:hover {
+            @include boxShadow;
+            border: 1px solid $border-color;
+        }
+    }
+    .navbar-dropdown {
+        width: 100%;
+        padding: 0 !important;
+        border: 1px solid $border-color;
+        top: calc(100% + 1px) !important;
+        left: -1px !important;
+        width: calc(100% + 2px) !important;
+        a.navbar-item {
+            margin: 0;
+            padding: 8px 0 !important;
+            justify-content: center;
+            border-bottom: 1px solid $border-color;
+            &:last-child {
+                border-bottom: none;
+            }
+            &:focus, &:hover {
+    
+            }
+        }
+    }
+}

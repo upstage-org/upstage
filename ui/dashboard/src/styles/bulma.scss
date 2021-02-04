@@ -77,6 +77,15 @@ $link: $primary;
 $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
+// Visual Identity
+$control-radius: 0;
+$border-color: #363636;
+$button-hover-border-color: $border-color;
+$navbar-dropdown-radius: none;
+$navbar-dropdown-border-top: none;
+$navbar-item-hover-background-color: none;
+
+@import "./custom";
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~bulma-slider"

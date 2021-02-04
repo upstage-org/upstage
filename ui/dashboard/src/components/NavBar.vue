@@ -18,9 +18,9 @@
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         <router-link class="navbar-item" to="/">Home</router-link>
-
+        <div class="vertical-divider" />
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link"> More </a>
+          <a class="navbar-link is-arrowless"> More </a>
           <div class="navbar-dropdown">
             <a
               class="navbar-item"
@@ -41,21 +41,17 @@
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons" v-if="loggedIn">
-            <router-link to="/dashboard" class="button is-primary">
-              <strong>Dashboard</strong>
-            </router-link>
-            <button @click="logout" class="button">
-              <strong>Logout</strong>
-            </button>
-          </div>
-          <div class="buttons" v-else>
-            <router-link to="/login" class="button is-primary">
-              <strong>Login</strong>
-            </router-link>
-          </div>
-        </div>
+        <template v-if="loggedIn">
+          <router-link to="/dashboard" class="button is-primary m-2">
+            <strong>Dashboard</strong>
+          </router-link>
+          <button @click="logout" class="button m-2 mr-6">
+            <strong>Logout</strong>
+          </button>
+        </template>
+        <router-link v-else to="/login" class="button is-primary m-2 mr-6">
+          <strong>Login</strong>
+        </router-link>
       </div>
     </div>
   </nav>

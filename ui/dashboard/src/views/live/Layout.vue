@@ -29,13 +29,19 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 #main-content {
   min-height: calc(100vh - 120px);
 }
 #live-logo {
   position: fixed;
-  right: 10px;
+  right: 0px;
   z-index: 100;
+
+  @media screen and (min-width: 1024px) {
+    img {
+      max-height: unset;
+    }
+  }
 }
 </style>
