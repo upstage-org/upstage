@@ -6,31 +6,55 @@ export const useShape = (video, object) => {
     const ctx = canvas.getContext("2d");
     const src = ref();
 
+    const draw = () => {
+        if (video.value) {
+            ctx.drawImage(video.value, 0, 0, object.w, object.h);
+            src.value = cropImageFromCanvas(canvas)?.src;
+        }
+    }
+
     const loop = () => {
         if (!video.value.paused && !video.value.ended) {
-            ctx.drawImage(video.value, 0, 0);
-            src.value = cropImageFromCanvas(canvas).src;
+            draw();
             setTimeout(loop, 1000 / 30); // drawing at 30fps
         }
     }
 
     onMounted(() => video.value.addEventListener('play', loop))
 
-    watch(() => object.shape, () => {
+    const clipImage = (src) => new Promise(resolve => {
+        const img = document.createElement('img');
+        img.onload = function () {
+            ctx.drawImage(img, 0, 0, object.w, object.h);
+            ctx.globalCompositeOperation = 'source-in';
+            resolve();
+        };
+        img.onerror = () => {
+            resolve();
+        }
+        img.src = src;
+    })
+
+    watch(() => object.shape, async () => {
         const { shape } = object;
-        const r = Math.max(object.w, object.h) / 2;
+        const r = Math.min(object.w, object.h) / 2;
+        canvas.width = object.w;
+        canvas.height = object.h;
         switch (shape) {
             case 'circle':
-                ctx.save();
                 ctx.beginPath();
                 ctx.arc(r, r, r, 0, Math.PI * 2, true);
                 ctx.clip();
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                break;
+
+            case null:
+                ctx.restore();
                 break;
 
             default:
-                break;
+                await clipImage(shape);
         }
+        draw();
     }, { immediate: true })
 
     return { src }
