@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar } from './reusable';
+import { attachPropToAvatar, normalizeObject } from './reusable';
 import { generateDemoData } from './demoData'
 
 export default {
@@ -84,6 +84,9 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
+                if (object.type === 'drawing') {
+                    delete object.src;
+                }
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
@@ -270,14 +273,14 @@ export default {
         shapeObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.MOVE_TO,
-                object,
+                object: normalizeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object,
+                object: normalizeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -291,14 +294,14 @@ export default {
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
-                object,
+                object: normalizeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         sendToBack(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SEND_TO_BACK,
-                object,
+                object: normalizeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -370,6 +373,7 @@ export default {
             commit('SET_PREFERENCES', { slider })
         },
         addDrawing({ commit, dispatch }, drawing) {
+            drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
             commit('UPDATE_IS_DRAWING', false);
             dispatch('placeObjectOnStage', drawing);

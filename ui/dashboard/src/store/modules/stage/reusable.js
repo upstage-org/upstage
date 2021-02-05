@@ -31,3 +31,11 @@ export function attachPropToAvatar(state, object) {
         });
     }
 }
+
+export function normalizeObject(object) {
+    const { src, type } = object;
+    return {
+        ...object,
+        src: type === 'drawing' ? null : src
+    };
+}
