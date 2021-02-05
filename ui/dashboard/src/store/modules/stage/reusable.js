@@ -1,13 +1,13 @@
 export function attachPropToAvatar(state, object) {
     if (object.type === 'prop') {
         // Deattach from old avatar
-        state.board.avatars.forEach(a => {
+        state.board.objects.forEach(a => {
             if (a.attachedProps?.includes(object.id)) {
                 a.attachedProps = a.attachedProps.filter(id => id !== object.id);
             }
         })
         // Looking for underlaying avatar
-        state.board.avatars.forEach(a => {
+        state.board.objects.forEach(a => {
             if (a.type === 'prop') {
                 return false;
             }
@@ -36,6 +36,6 @@ export function normalizeObject(object) {
     const { src, type } = object;
     return {
         ...object,
-        src: type === 'drawing' ? null : src
+        src: type === 'drawing' || type === 'stream' ? null : src
     };
 }

@@ -6,7 +6,7 @@ export const TOPICS = {
 }
 
 export const BOARD_ACTIONS = {
-  PLACE_AVATAR_ON_STAGE: 'placeAvatarOnStage',
+  PLACE_OBJECT_ON_STAGE: 'placeObjectOnStage',
   MOVE_TO: 'moveTo',
   DESTROY: 'destroy',
   SWITCH_FRAME: 'switchFrame',

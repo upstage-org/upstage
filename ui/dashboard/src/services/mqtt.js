@@ -34,6 +34,7 @@ const mqttService = {
     })
   },
   sendMessage(topic, payload) {
+    console.log({ topic, payload })
     let message = payload;
     if (typeof payload === "object") {
       message = JSON.stringify(payload);

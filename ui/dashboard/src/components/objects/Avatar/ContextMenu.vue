@@ -173,7 +173,6 @@ export default {
     const changeNickname = () =>
       store.dispatch("stage/openSettingPopup", {
         type: "Chat",
-        title: "Change your nick name",
       });
 
     const bringToFront = () => {
@@ -215,28 +214,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.frame-selector {
-  width: 440px;
-
-  @media screen and (max-width: 767px) {
-    width: 100px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-  .column {
-    height: 100px;
-
-    &:hover {
-      background-color: hsl(0, 0%, 71%);
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  }
-  .autoplay-frames {
-    width: 100%;
-    height: 100%;
-  }
-}
 .avatar-context-menu {
   font-size: 14px;
   .button {

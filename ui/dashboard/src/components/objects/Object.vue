@@ -51,11 +51,7 @@
         />
       </template>
       <template #context="slotProps" v-if="loggedIn">
-        <MenuContent
-          :object="object"
-          :closeMenu="slotProps.closeMenu"
-          v-model:active="active"
-        />
+        <slot name="menu" v-bind="slotProps" />
       </template>
     </ContextMenu>
   </div>
@@ -68,7 +64,6 @@ import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
-import MenuContent from "./ContextMenu";
 import OpacitySlider from "./OpacitySlider";
 import Topping from "./Topping.vue";
 
@@ -78,7 +73,6 @@ export default {
     DragResize,
     Image,
     ContextMenu,
-    MenuContent,
     OpacitySlider,
     Topping,
   },
@@ -126,13 +120,18 @@ export default {
     };
 
     const dragEnd = (e) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        ...e,
-      });
-      position.x = beforeDragPosition.value.x;
-      position.y = beforeDragPosition.value.y;
-      isDragging.value = false;
+      if (
+        e.x !== beforeDragPosition.value.x &&
+        e.y !== beforeDragPosition.value.y
+      ) {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          ...e,
+        });
+        position.x = beforeDragPosition.value.x;
+        position.y = beforeDragPosition.value.y;
+        isDragging.value = false;
+      }
     };
 
     const resizeEnd = (e) => {
@@ -208,11 +207,33 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
 div[tabindex] {
   outline: none;
 }
 .object {
   z-index: 10;
+}
+.frame-selector {
+  width: 440px;
+
+  @media screen and (max-width: 767px) {
+    width: 100px;
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+  .column {
+    height: 100px;
+
+    &:hover {
+      background-color: hsl(0, 0%, 71%);
+      cursor: pointer;
+      border-radius: 5px;
+    }
+  }
+  .autoplay-frames {
+    width: 100%;
+    height: 100%;
+  }
 }
 </style>
