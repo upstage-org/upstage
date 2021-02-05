@@ -36,6 +36,6 @@ export function normalizeObject(object) {
     const { src, type } = object;
     return {
         ...object,
-        src: type === 'drawing' ? null : src
+        src: type === 'drawing' || type === 'stream' ? null : src
     };
 }

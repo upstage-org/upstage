@@ -84,7 +84,7 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing') {
+                if (object.type === 'drawing' || object.type === 'stream') {
                     delete object.src;
                 }
                 Object.assign(avatar, object);
@@ -379,6 +379,7 @@ export default {
             dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
+            stream.type = 'stream';
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
         },

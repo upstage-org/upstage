@@ -51,6 +51,7 @@
       :src="stream.url"
       preload="auto"
       :muted="!isHost"
+      @loadeddata="loadeddata"
       @ended="object.isPlaying = false"
       style="display: none"
     ></video>
@@ -71,21 +72,29 @@ export default {
   props: ["stream"],
   setup: (props) => {
     const store = useStore();
-    const object = reactive({ ...props.stream });
+    const object = reactive({ ...props.stream, isPlaying: true });
     const video = ref();
 
     const isHost = computed(() =>
       store.state.stage.hosts.some((stream) => stream.id === props.stream.id)
     );
 
-    watch(props.stream, () => {
-      if (props.stream.isPlaying) {
+    const synchronize = () => {
+      if (object.isPlaying) {
         video.value.play();
       } else {
         video.value.pause();
       }
+    };
+
+    watch(props.stream, () => {
       window.Object.assign(object, props.stream);
+      synchronize();
     });
+
+    const loadeddata = () => {
+      synchronize();
+    };
 
     const { src } = useShape(video, object);
     watch(src, () => (object.src = src.value));
@@ -119,6 +128,7 @@ export default {
       video,
       object,
       isHost,
+      loadeddata,
       playStream,
       pauseStream,
       clip,
