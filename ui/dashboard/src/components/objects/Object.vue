@@ -95,7 +95,10 @@ export default {
     watch(
       props.object,
       () => {
-        const { x, y, h, w, moveSpeed } = props.object;
+        const { x, y, h, w, moveSpeed, type, isPlaying } = props.object;
+        if (type === "stream" && isPlaying && isDragging.value) {
+          return;
+        }
         animation.value?.pause(true);
         animation.value = anime({
           targets: position,
