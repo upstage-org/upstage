@@ -2,7 +2,7 @@
   <div>
     <Object :object="object">
       <template #menu="slotProps">
-        <div v-if="isHost" class="avatar-context-menu card-content p-0">
+        <div class="avatar-context-menu card-content p-0">
           <a
             v-if="object.isPlaying"
             class="panel-block has-text-info"
@@ -88,6 +88,7 @@ export default {
     };
 
     watch(props.stream, () => {
+      delete props.stream.src;
       window.Object.assign(object, props.stream);
       synchronize();
     });
