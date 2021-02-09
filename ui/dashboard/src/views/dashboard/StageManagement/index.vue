@@ -29,7 +29,7 @@
             <ul>
               <li><a>Avatar</a></li>
               <li><a>Props</a></li>
-              <li><a>Backdrops</a></li>
+              <li><a>Backdrop</a></li>
               <li><a>Sound</a></li>
               <li><a>Videos</a></li>
               <li><a>Loading</a></li>

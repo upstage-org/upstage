@@ -1,6 +1,8 @@
 // Import Bulma's core
 @import "~bulma/sass/utilities/_all";
 
+$text: $black;
+$text-strong: $black;
 // Set your colors
 $primary: #30ac45;
 $primary-light: findLightColor($primary);
@@ -78,14 +80,28 @@ $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
 // Visual Identity
+$radius: 0;
 $control-radius: 0;
+$card-radius: 0;
+$panel-radius: 0;
+$tabs-toggle-link-radius: 0;
+$control-shadow: 0 0 0 1px black;
 $border-color: #363636;
 $button-hover-border-color: $border-color;
 $navbar-dropdown-radius: none;
 $navbar-dropdown-border-top: none;
 $navbar-item-hover-background-color: none;
+$card-shadow: $control-shadow;
+$panel-shadow: $control-shadow;
+$panel-item-border: none;
+$panel-heading-background-color: transparent;
+$tabs-toggle-link-active-background-color: transparent;
+$tabs-toggle-link-active-color: $black;
+$tabs-toggle-link-active-border-color: transparent;
+$dropdown-content-padding-top: 0;
+$dropdown-content-padding-bottom: 0;
+$dropdown-content-shadow: $control-shadow;
 
-@import "./custom";
 // Import Bulma and Buefy styles
 @import "~bulma";
 @import "~bulma-slider"

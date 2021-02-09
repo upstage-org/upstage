@@ -1,10 +1,37 @@
 @import "./mixins";
+@import "./bulma";
 
+$green-bar: 10px solid #007000;
 .button {
     &:not(.no-shadow):hover {
         @include boxShadow;
     }
+    &:not(.is-large) .icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
 }
+.card, .panel {
+    border-top: $green-bar
+}
+.panel-body {
+    overflow: visible !important;
+    .button{
+        text-align: left;
+        border: none;
+        &:hover {
+            border: 1px solid $border-color;
+            z-index: 100;
+        }
+    }
+}
+.panel-heading {
+    overflow: visible !important;
+}
+#topbar {
+    border-top: none;
+}
+// Desktop only css
 @media screen and (min-width: 1024px) {
     .navbar-start {
         flex: auto;
@@ -44,9 +71,6 @@
             border-bottom: 1px solid $border-color;
             &:last-child {
                 border-bottom: none;
-            }
-            &:focus, &:hover {
-    
             }
         }
     }
