@@ -44,36 +44,6 @@ export const generateDemoData = () => {
             ]
         },
         {
-            name: 'Plague Doctor',
-            src: "plague_doctor_clearcut.png",
-            multi: true,
-            frames: [
-                "plague_doctor_clearcut.png",
-                "plague_doctor_clearcut2.png",
-            ]
-        },
-        {
-            name: 'Virus',
-            src: "virus_1.png",
-            multi: true,
-            frames: [
-                "virus_1.png",
-                "virus_2.png",
-                "virus_3.png",
-            ]
-        },
-        {
-            name: 'Flower Girl',
-            src: "flowergirl1.png",
-            multi: true,
-            frames: [
-                "flowergirl1.png",
-                "flowergirl2.png",
-                "flowergirl3.png",
-                "flowergirl4.png",
-            ]
-        },
-        {
             name: 'Dave',
             src: "dave_02.png",
             multi: true,
@@ -87,13 +57,54 @@ export const generateDemoData = () => {
             ]
         },
         {
-            name: 'Alien Mali',
-            src: "alienmali.png",
+            name: 'Manunui',
+            src: "Manunui1.png",
+            multi: true,
+            frames: [
+                "Manunui1.png",
+                "Manunui2.png",
+                "Manunui3.png",
+                "Manunui4.png",
+                "Manunui5.png",
+            ]
         },
         {
-            name: 'Lion Monkey',
-            src: "lionmonkey.png",
+            name: 'ViAv',
+            src: "ViAv1.png",
+            multi: true,
+            frames: [
+                "ViAv1.png",
+                "ViAv2.png",
+                "ViAv3.png",
+                "ViAv4.png",
+                "ViAv5.png",
+            ]
         },
+        {
+            name: 'VincentPalace',
+            src: "VincentPalace.png",
+        },
+        {
+            name: 'VicPalace',
+            src: "VicPalace.png",
+        },
+        {
+            name: 'AudreyAv',
+            src: "AudreyAv.png",
+        },
+        {
+            name: 'lololol',
+            src: "lololol.png",
+        },
+        {
+            name: 'Pan',
+            src: "Pan.png",
+        },
+        {
+            name: 'Icarus',
+            src: "Icarus.png",
+        },
+
     ]
     avatars.forEach(avatar => {
         avatar.src = `${config.publicPath}demo/avatars/${avatar.src}`
@@ -106,40 +117,62 @@ export const generateDemoData = () => {
             src: config.publicPath + "demo/backdrops/1.jpg",
         },
         {
+            name: "2",
+            src: config.publicPath + "demo/backdrops/2.jpg",
+        },
+        {
             name: "3",
             src: config.publicPath + "demo/backdrops/3.jpg",
+        },
+        {
+            name: "4",
+            src: config.publicPath + "demo/backdrops/4.jpg",
         },
         {
             name: "5",
             src: config.publicPath + "demo/backdrops/5.jpg",
         },
         {
-            name: "7",
+            name: "6",
+            src: config.publicPath + "demo/backdrops/6.jpg",
+        },
+        {
+            name: "map",
             src: config.publicPath + "demo/backdrops/map.png",
         },
         {
-            name: "8",
+            name: "monarch_butterfly_backdrop",
             src: config.publicPath + "demo/backdrops/monarch_butterfly_backdrop.jpg",
         },
         {
-            name: "9",
+            name: "tunnel_beach",
             src: config.publicPath + "demo/backdrops/tunnel_beach_02.jpg",
         },
+        {
+            name: "Chart",
+            src: config.publicPath + "demo/backdrops/Chart.jpg",
+        },
+        {
+            name: 'Refinery',
+            src: config.publicPath + "demo/backdrops/Refinery.png",
+        }
     ];
 
 
-    const propFiles = ["facemask_filter.png", "quarantini_clearcut.png", "fire013.gif", "fire017.gif", "fire020.gif", "logo-upstage-official-print_500px.png", "mobilise-demoblise-logo-version-black.gif", "mobilise-demoblise-logo-version-white.png"];
+    const propFiles = ["quarantini_clearcut.png", "logo-upstage-official-print_500px.png", "mobilise-demoblise-logo-version-black.gif", "mobilise-demoblise-logo-version-white.png", "DrGraham.png", "Linsky.png", "Nelson.png", "hamilton.png", "romney.png", "campbellStokes.png"];
     const props = propFiles.map((file) => ({
         name: file.split('.')[0].replace(/_/g, ' '),
         src: file,
     })).concat([{
-        name: 'Trees',
-        src: "trees.png",
+        name: 'Brolly',
+        src: "brolly.png",
         multi: true,
-        frames: [
-            "trees.png",
-            "fallentree.png",
-        ]
+        frames: ["brolly.png", "brolly1.png"]
+    }]).concat([{
+        name: 'Spiraldance',
+        src: "spiraldance.png",
+        multi: true,
+        frames: ["spiraldance.png", "spiraldance1.png"]
     }]);
 
     props.forEach(prop => {
@@ -155,11 +188,13 @@ export const generateDemoData = () => {
         return { name, src, file };
     })
 
+    const streams = [{ type: "stream", url: `${config.publicPath}demo/streams/bunny.mp4`, metadata: { _vei: {}, _vod: "" }, w: 320, h: 176 }];
+
     const stageConfig = {
         width: 1280,
         height: 800,
         animateDuration: 500,
     }
 
-    return { avatars, props, backdrops, audios, config: stageConfig }
+    return { avatars, props, backdrops, audios, streams, config: stageConfig }
 }

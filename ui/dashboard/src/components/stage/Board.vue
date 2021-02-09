@@ -7,6 +7,8 @@
       @leave="avatarLeave"
     >
       <Avatar v-for="avatar in avatars" :key="avatar" :avatar="avatar" />
+      <Prop v-for="prop in props" :key="prop" :avatar="prop" />
+      <Streamer v-for="stream in streams" :key="stream" :stream="stream" />
     </transition-group>
   </div>
 </template>
@@ -14,20 +16,23 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Avatar from "@/components/objects/Avatar";
+import Avatar from "@/components/objects/Avatar/index";
+import Streamer from "@/components/objects/Streamer/index";
 import anime from "animejs";
 
 export default {
-  components: { Avatar },
+  components: { Avatar, Prop: Avatar, Streamer },
   setup: () => {
     const store = useStore();
     const config = store.getters["stage/config"];
     const avatars = computed(() => store.getters["stage/avatars"]);
+    const props = computed(() => store.getters["stage/props"]);
+    const streams = computed(() => store.getters["stage/streams"]);
 
     const drop = (e) => {
-      const avatar = JSON.parse(e.dataTransfer.getData("avatar"));
+      const avatar = JSON.parse(e.dataTransfer.getData("object"));
       if (e.clientX > 0 && e.clientY > 0) {
-        store.dispatch("stage/summonAvatar", {
+        store.dispatch("stage/placeObjectOnStage", {
           ...avatar,
           x: e.clientX - 50,
           y: e.clientY - 50,
@@ -56,7 +61,7 @@ export default {
       });
     };
 
-    return { avatars, drop, avatarEnter, avatarLeave };
+    return { avatars, drop, avatarEnter, avatarLeave, props, streams };
   },
 };
 </script>

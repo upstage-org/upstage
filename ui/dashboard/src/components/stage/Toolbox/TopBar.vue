@@ -13,10 +13,11 @@ import Backdrops from "./tools/Backdrops";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
+import Stream from "./tools/Stream";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrops, Props, Audio, Draw },
+  components: { Avatars, Backdrops, Props, Audio, Draw, Stream },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {

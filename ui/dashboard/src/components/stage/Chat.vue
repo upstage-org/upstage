@@ -101,7 +101,6 @@ export default {
     const openChatSetting = () =>
       store.dispatch("stage/openSettingPopup", {
         type: "Chat",
-        title: "Change your nick name",
       });
 
     return {
