@@ -4,6 +4,9 @@
     tabindex="0"
     @keyup.delete="deleteObject"
     @dblclick="setAsPrimaryAvatar"
+    :style="{
+      ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
+    }"
   >
     <OpacitySlider
       :position="position"
