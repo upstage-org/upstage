@@ -38,7 +38,6 @@ $green-bar: 10px solid #007000;
         justify-content: center !important;
     }
     .navbar-item {
-        width: 150px;
         margin: 8px 12px;
         padding: 0 20px !important;
         justify-content: center;
@@ -52,6 +51,7 @@ $green-bar: 10px solid #007000;
         margin: auto 0;
     }
     a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
+        width: 200px;
         &:hover {
             @include boxShadow;
             border: 1px solid $border-color;
