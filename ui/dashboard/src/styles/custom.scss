@@ -1,7 +1,17 @@
 @import "./mixins";
 @import "./bulma";
 
-$green-bar: 10px solid #007000;
+$green-bar: 10px solid $primary;
+nav {
+  a {
+    color: $black;
+
+    &.router-link-exact-active {
+      font-weight: bold;
+      color: $primary;
+    }
+  }
+}
 .button {
     &:not(.no-shadow):hover {
         @include boxShadow;

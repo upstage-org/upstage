@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-medium is-white is-bold is-fullheight">
+  <section class="hero">
     <div id="welcome" class="hero-body">
       <div class="container">
         <h1 class="title">CYBERFORMANCE PLATFORM</h1>

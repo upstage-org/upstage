@@ -16,6 +16,7 @@
     transition-duration: 0.25s;
 }
 @mixin textShadow() {
+    color: $black;
     text-shadow: -3px 0 $primary;
     text-transform: uppercase;
 }
