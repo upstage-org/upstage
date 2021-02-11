@@ -32,114 +32,110 @@
       </span>
       <span>Change your nickname</span>
     </a>
-    <a class="panel-block p-0">
-      <div class="field has-addons menu-group">
-        <p class="control menu-group-title">
-          <button class="button is-white">
-            <span class="panel-icon">
-              <i class="fas fa-sliders-h has-text-info"></i>
-            </span>
-            <span>Rotation</span>
-          </button>
-        </p>
-        <p class="control menu-group-item">
-          <button class="button is-light" @click="rotate(+45)">
-            <span class="panel-icon">
-              <i class="fas fa-redo"></i>
-            </span>
-            <span>+ 45deg</span>
-          </button>
-        </p>
-        <p class="control menu-group-item">
-          <button class="button is-light" @click="rotate(-45)">
-            <span class="panel-icon">
-              <i class="fas fa-undo"></i>
-            </span>
-            <span>- 45deg</span>
-          </button>
-        </p>
-      </div>
-    </a>
-    <a class="panel-block p-0">
-      <div class="field has-addons menu-group">
-        <p class="control menu-group-title">
-          <button class="button is-white" style="padding-left: 12px">
-            <span class="panel-icon">
-              <i class="fas fa-sliders-h has-text-info"></i>
-            </span>
-            <span>Slider</span>
-          </button>
-        </p>
-        <p class="control menu-group-item">
-          <button
-            class="button is-light"
-            :class="{ 'is-primary': sliderMode === 'opacity' }"
-            @click="changeSliderMode('opacity')"
-          >
-            <span>Opacity</span>
-          </button>
-        </p>
-        <p class="control menu-group-item">
-          <button
-            class="button is-light"
-            :class="{ 'is-warning': sliderMode === 'animation' }"
-            @click="changeSliderMode('animation')"
-          >
-            <span>Frame Animation</span>
-          </button>
-        </p>
-        <p class="control menu-group-item">
-          <button
-            class="button is-light"
-            :class="{ 'is-danger': sliderMode === 'speed' }"
-            @click="changeSliderMode('speed')"
-          >
-            <span>Move Speed</span>
-          </button>
-        </p>
-      </div>
-    </a>
+    <div class="field has-addons menu-group">
+      <p class="control menu-group-title">
+        <span class="panel-icon pt-1">
+          <i class="fas fa-sliders-h has-text-info"></i>
+        </span>
+        <span class="has-text-info">Rotation</span>
+      </p>
+      <p class="control menu-group-item">
+        <button class="button is-light" @click="rotate(+45)">
+          <span class="panel-icon">
+            <i class="fas fa-redo"></i>
+          </span>
+          <span>+ 45deg</span>
+        </button>
+      </p>
+      <p class="control menu-group-item">
+        <button class="button is-light" @click="rotate(-45)">
+          <span class="panel-icon">
+            <i class="fas fa-undo"></i>
+          </span>
+          <span>- 45deg</span>
+        </button>
+      </p>
+    </div>
+    <div class="field has-addons menu-group">
+      <p class="control menu-group-title">
+        <span class="panel-icon pt-1">
+          <i class="fas fa-sliders-h has-text-info"></i>
+        </span>
+        <span class="has-text-info">Slider</span>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary has-text-white': sliderMode === 'opacity',
+          }"
+          @click="changeSliderMode('opacity')"
+        >
+          <span>Opacity</span>
+        </button>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-warning': sliderMode === 'animation',
+          }"
+          @click="changeSliderMode('animation')"
+        >
+          <span>Frame Animation</span>
+        </button>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-danger has-text-white': sliderMode === 'speed',
+          }"
+          @click="changeSliderMode('speed')"
+        >
+          <span>Move Speed</span>
+        </button>
+      </p>
+    </div>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
         <i class="fas fa-trash has-text-danger"></i>
       </span>
       <span>Delete</span>
     </a>
-    <a v-if="object.multi" class="panel-block">
-      <div class="columns is-vcentered frame-selector is-multiline">
-        <div class="column is-3" @click="toggleAutoplayFrames">
-          <div class="icon is-large autoplay-frames">
-            <i
-              class="fas fa-3x"
-              :class="{
-                'fa-play': !object.autoplayFrames,
-                'fa-pause': object.autoplayFrames,
-              }"
-            ></i>
-          </div>
-        </div>
-        <div
-          v-for="frame in object.frames"
-          :key="frame"
-          class="column is-3"
-          @click="switchFrame(frame)"
-        >
-          <Image :src="frame" />
-        </div>
-      </div>
-    </a>
+    <div v-if="object.multi" class="field has-addons menu-group">
+      <p class="control menu-group-item" @click="toggleAutoplayFrames()">
+        <button class="button is-light">
+          <i
+            class="fas fa-3x"
+            :class="{
+              'fa-play': !object.autoplayFrames,
+              'fa-pause': object.autoplayFrames,
+            }"
+          ></i>
+        </button>
+      </p>
+      <p
+        v-for="frame in object.frames"
+        :key="frame"
+        @click="switchFrame(frame)"
+        class="control menu-group-item"
+      >
+        <button class="button is-light">
+          <img :src="frame" style="height: 100%" />
+        </button>
+      </p>
+    </div>
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
-import Image from "@/components/Image";
 import { computed } from "vue";
 
 export default {
   props: ["object", "closeMenu", "active"],
   emits: ["update:active"],
-  components: { Image },
   setup: (props, { emit }) => {
     const store = useStore();
 
@@ -214,17 +210,31 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
 .avatar-context-menu {
-  font-size: 14px;
-  .button {
+  * {
     font-size: 14px;
+  }
+  .panel-block {
+    &:hover {
+      @include boxShadow;
+      border: 1px solid $black;
+      z-index: 100;
+      position: relative;
+      font-size: 14px;
+    }
   }
   .menu-group {
     width: 100%;
     display: flex;
+    margin-bottom: 0;
     .menu-group-title {
       flex: none;
+      padding: 6px 12px;
       width: 100px;
+      white-space: nowrap;
       > button {
         justify-content: start;
         padding-left: 12px;

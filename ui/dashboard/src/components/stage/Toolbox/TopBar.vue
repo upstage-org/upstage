@@ -30,6 +30,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
 #topbar {
   position: fixed;
   max-width: 80vw;
@@ -53,15 +56,17 @@ export default {
       height: 88px;
       display: inline-block;
       padding: 12px;
+      background: $light;
+
+      .tag {
+        height: 1.5em;
+        box-shadow: none;
+      }
 
       &:hover,
       &.active {
-        background: rgba($color: black, $alpha: 0.5);
         cursor: pointer;
-        border-radius: 5px;
-      }
-      .tag {
-        height: 1.5em;
+        background-color: $primary;
       }
     }
   }

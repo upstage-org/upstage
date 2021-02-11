@@ -11,7 +11,8 @@
         position: 'fixed',
         top: position.y + 'px',
         left: position.x + 'px',
-        'z-index': 100,
+        'z-index': 10000,
+        overflow: 'visible',
       }"
     >
       <slot name="context" :closeMenu="closeMenu" />

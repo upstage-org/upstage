@@ -23,26 +23,33 @@
             </span>
             <span>Play</span>
           </a>
-          <a class="panel-block">
-            <div class="columns is-vcentered frame-selector is-multiline">
-              <div class="column is-3" @click="clip(null)">
-                <div class="icon is-large autoplay-frames">
-                  <i class="fas fa-3x fa-ban"></i>
+
+          <div class="field has-addons menu-group">
+            <p class="control menu-group-item">
+              <button class="button is-light" @click="clip(null)">
+                <div class="icon">
+                  <i class="fas fa-ban"></i>
                 </div>
-              </div>
-              <div class="column is-3" @click="clip('circle')">
-                <div class="icon is-large autoplay-frames">
-                  <i class="fas fa-3x fa-circle"></i>
+              </button>
+            </p>
+            <p class="control menu-group-item" @click="clip('circle')">
+              <button class="button is-light">
+                <div class="icon">
+                  <i class="fas fa-circle"></i>
                 </div>
-              </div>
-              <div class="column is-3" @click="clip(vue)">
-                <Image :src="vue" />
-              </div>
-              <div class="column is-3" @click="clip(dog)">
-                <Image :src="dog" />
-              </div>
-            </div>
-          </a>
+              </button>
+            </p>
+            <p class="control menu-group-item" @click="clip(vue)">
+              <button class="button is-light">
+                <img style="height: 100%" :src="vue" />
+              </button>
+            </p>
+            <p class="control menu-group-item" @click="clip(dog)">
+              <button class="button is-light">
+                <img style="height: 100%" :src="dog" />
+              </button>
+            </p>
+          </div>
         </div>
       </template>
     </Object>
@@ -60,7 +67,6 @@
 
 <script>
 import { computed, reactive, ref, watch } from "vue";
-import Image from "@/components/Image";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useShape } from "./composable";
@@ -68,7 +74,7 @@ import vue from "@/assets/logo.png";
 import dog from "@/assets/dog.png";
 
 export default {
-  components: { Object, Image },
+  components: { Object },
   props: ["stream"],
   setup: (props) => {
     const store = useStore();

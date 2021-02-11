@@ -38,6 +38,9 @@ nav {
 .panel-heading {
     overflow: visible !important;
 }
+.tag {
+    box-shadow: 3px -3px 0 0 $black;
+}
 #topbar {
     border-top: none;
 }
