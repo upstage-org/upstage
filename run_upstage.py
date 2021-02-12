@@ -20,7 +20,7 @@ from config.settings import FLASK_HOST,FLASK_PORT, RUNFROM_PORT, ENV_TYPE
 from config.signals import add_signals
 
 from auth import auth,auth_api
-from user import user,user_api
+from user import user,user_api,schema
 from asset import asset
 from asset.views import assets
 from license.views import licenses
