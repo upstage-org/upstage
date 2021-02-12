@@ -58,6 +58,10 @@ export default {
       padding: 12px;
       background: $light;
 
+      &:first-child {
+        float: left;
+      }
+
       .tag {
         height: 1.5em;
         box-shadow: none;

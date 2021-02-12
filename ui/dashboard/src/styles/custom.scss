@@ -1,6 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,400;0,700;1,400&display=swap');
 @import "./mixins";
 @import "./bulma";
 
+* {
+    font-family: 'Josefin Sans', sans-serif;
+}
 $green-bar: 10px solid $primary;
 nav {
   a {
