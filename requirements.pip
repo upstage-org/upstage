@@ -1,4 +1,6 @@
 arrow
+blinker
+cryptography
 flask
 flask-caching
 flask-cors
@@ -14,6 +16,8 @@ pyotp
 qrcode
 requests
 sqlalchemy
+tqdm
 uwsgi
+vimeo
 websockets
 pymongo
