@@ -46,10 +46,9 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     # Allows sorting over multiple columns, by default over the primary key
     parent_stage = SQLAlchemyConnectionField(ParentStage.connection)
-    parent_asset = SQLAlchemyConnectionField(ParentStage.connection)
+    parent_asset = SQLAlchemyConnectionField(ParentAsset.connection)
     performance_config = SQLAlchemyConnectionField(PerformanceConfig.connection)
     scene = SQLAlchemyConnectionField(Scene.connection)
     performance_communication = SQLAlchemyConnectionField(PerformanceMQTTConfig.connection)
 
 performance_schema = graphene.Schema(query=Query)
-schema.execute(context_value={'session': session})
