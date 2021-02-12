@@ -13,9 +13,9 @@ from config.project_globals import DBSession
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from performance.models import (ParentStage as ParentStageModel, ParentAsset as ParentAssetModel,
-    Performance as PerformanceModel, Scene as SceneModel,
-    LivePerformanceMQTTConfig as LivePerformanceMQTTConfigModel)
+from performance_config.models import (ParentStage as ParentStageModel, ParentAsset as ParentAssetModel,
+    PerformanceConfig as PerformanceConfigModel, Scene as SceneModel,
+    PerformanceMQTTConfig as PerformanceMQTTConfigModel)
 
 class ParentStage(SQLAlchemyObjectType):
     class Meta:
@@ -27,9 +27,9 @@ class ParentAsset(SQLAlchemyObjectType):
         model = ParentAssetModel
         interfaces = (relay.Node, )
 
-class Performance(SQLAlchemyObjectType):
+class PerformanceConfig(SQLAlchemyObjectType):
     class Meta:
-        model = PerformanceModel
+        model = PerformanceConfigModel
         interfaces = (relay.Node, )
 
 class Scene(SQLAlchemyObjectType):
@@ -37,19 +37,18 @@ class Scene(SQLAlchemyObjectType):
         model = SceneModel
         interfaces = (relay.Node, )
 
-class LivePerformanceMQTTConfig(SQLAlchemyObjectType):
+class PerformanceMQTTConfig(SQLAlchemyObjectType):
     class Meta:
-        model = LivePerformanceMQTTConfigModel
+        model = PerformanceMQTTConfigModel
         interfaces = (relay.Node, )
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     # Allows sorting over multiple columns, by default over the primary key
     parent_stage = SQLAlchemyConnectionField(ParentStage.connection)
-    parent_asset = SQLAlchemyConnectionField(ParentStage.connection)
-    performance = SQLAlchemyConnectionField(Performance.connection)
+    parent_asset = SQLAlchemyConnectionField(ParentAsset.connection)
+    performance_config = SQLAlchemyConnectionField(PerformanceConfig.connection)
     scene = SQLAlchemyConnectionField(Scene.connection)
-    live_performance_communication = SQLAlchemyConnectionField(LivePerformanceMQTTConfig.connection)
+    performance_communication = SQLAlchemyConnectionField(PerformanceMQTTConfig.connection)
 
 performance_schema = graphene.Schema(query=Query)
-schema.execute(context_value={'session': session})

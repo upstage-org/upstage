@@ -50,8 +50,8 @@ class ParentAsset(Base,db.Model):
     asset = relationship(Asset, foreign_keys=[asset_id])
     child_asset = relationship(Asset, foreign_keys=[child_asset_id])
 
-class Performance(Base,db.Model):
-    __tablename__ = "performance"
+class PerformanceConfig(Base,db.Model):
+    __tablename__ = "performance_config"
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
@@ -78,14 +78,15 @@ class Scene(Base,db.Model):
     parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
     # A scene can only belong to one performance. They shouldn't be reused, although
     # maybe we should let them be copied?
-    performance_id = Column(Integer, ForeignKey(Performance_id.id), nullable=False, default=0)
+    performance_config_id = Column(Integer, ForeignKey(Performance_config.id), nullable=False, default=0)
     owner = relationship(User, foreign_keys=[owner_id])
     parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
-    performance = relationship(Performance, foreign_keys=[performance_id])
+    performance_config = relationship(PerformanceConfig, foreign_keys=[performance_config_id])
 
-class LivePerformanceMQTTConfig(Base,db.Model):
+class PerformanceMQTTConfig(Base,db.Model):
     # This holds the MQTT server configuration for one performance, to make connecting easier.
-    __tablename__ = "live_performance_mqtt_config"
+    # There may be > 1 MQTT connection in a performance.
+    __tablename__ = "performance_mqtt_config"
     id = Column(BigInteger, primary_key=True)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     ip_address = Column(Text, nullable=False)
@@ -102,6 +103,6 @@ class LivePerformanceMQTTConfig(Base,db.Model):
     password = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     expires_on = Column(DateTime, nullable=False, default=None)
-    performance_id = Column(Integer, ForeignKey(Performance_id.id), nullable=False, default=0)
+    performance_config_id = Column(Integer, ForeignKey(PerformanceConfig.id), nullable=False, default=0)
     owner = relationship(User, foreign_keys=[owner_id])
-    performance = relationship(Performance, foreign_keys=[performance_id])
+    performance_config = relationship(PerformanceConfig, foreign_keys=[performance_config_id])
