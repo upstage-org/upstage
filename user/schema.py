@@ -6,6 +6,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_se
     app,api)
 from auth.auth_api import jwt_required
 from user.models import User as UserModel
+from flask_graphql import GraphQLView
 
 class UserAttribute:
     username = graphene.String(description="Username.")
@@ -87,5 +88,11 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    user= graphene.relay.Node.Field(User)
-    userList = SQLAlchemyConnectionField(User)
+    userList = SQLAlchemyConnectionField(User.connection)
+
+user_schema = graphene.Schema(query=Query)
+app.add_url_rule(
+    '/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    graphiql=True
+    ))
+
