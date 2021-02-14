@@ -44,7 +44,7 @@
             <span> Scene: x files </span><br />
             <span> Avatar: x files </span><br />
             <span> Props: x files </span><br />
-            <span> Backdrops: x files </span><br />
+            <span> Backdrop: x files </span><br />
             <span> Sound: x files </span><br />
             <span> Video: x files </span><br />
           </div>

@@ -17,18 +17,19 @@
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
-        <router-link class="navbar-item" to="/">Home</router-link>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link is-arrowless"> About </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#"> FAQs </a>
+            <a class="navbar-item" href="#"> Contacts </a>
+            <a class="navbar-item" href="#"> Diversity + Inclusion </a>
+          </div>
+        </div>
         <div class="vertical-divider" />
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> More </a>
+          <a class="navbar-link is-arrowless"> Learn </a>
           <div class="navbar-dropdown">
-            <a
-              class="navbar-item"
-              href="https://github.com/upstage-org/mobilise/"
-              target="_blank"
-            >
-              GitHub
-            </a>
+            <a class="navbar-item" href="#"> Research </a>
             <a
               class="navbar-item"
               href="https://github.com/upstage-org/documentation"
@@ -38,6 +39,26 @@
             </a>
           </div>
         </div>
+        <div class="vertical-divider" />
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link is-arrowless"> Festivals </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#"> 10th Birthday </a>
+            <a class="navbar-item" href="#"> 121212 </a>
+          </div>
+        </div>
+        <div class="vertical-divider" />
+        <a
+          class="navbar-item"
+          href="https://github.com/upstage-org/mobilise/"
+          target="_blank"
+        >
+          Develop
+        </a>
+        <div class="vertical-divider" />
+        <router-link class="navbar-item" to="/donate">Donate</router-link>
+        <div class="vertical-divider" />
+        <router-link class="navbar-item" to="/live">Stage</router-link>
       </div>
 
       <div class="navbar-end">

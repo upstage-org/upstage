@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-primary is-fullheight">
+  <section class="hero is-fullheight">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">
@@ -54,5 +54,12 @@ export default {
   width: 0px;
   height: 0px;
   overflow: hidden;
+}
+section {
+  background-color: #30ac45;
+  * {
+    color: white;
+    background-color: transparent !important;
+  }
 }
 </style>

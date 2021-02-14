@@ -36,7 +36,7 @@ export default {
             return state.board.objects;
         },
         avatars(state) {
-            return state.board.objects.filter(o => o.type === 'avatar' || !o.type);
+            return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
         },
         props(state) {
             return state.board.objects.filter(o => o.type === 'prop');

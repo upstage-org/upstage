@@ -15,7 +15,7 @@
           </a>
         </li>
         <li>
-          <a>
+          <a class="button">
             <span>Scene</span>
           </a>
         </li>
@@ -23,92 +23,54 @@
     </div>
     <div class="panel-body">
       <a
-        @click="changeTool('Avatars')"
-        :class="{ 'is-active': tool === 'Avatars' }"
-        class="panel-block"
+        @click="changeTool('Backdrop')"
+        :class="{ 'is-active': tool === 'Backdrop' }"
+        class="panel-block button"
       >
         <span class="panel-icon">
-          <i class="fas fa-user-astronaut" aria-hidden="true"></i>
+          <Icon src="backdrop.svg" />
+        </span>
+        Backdrop
+      </a>
+      <a
+        @click="changeTool('Avatars')"
+        :class="{ 'is-active': tool === 'Avatars' }"
+        class="panel-block button"
+      >
+        <span class="panel-icon">
+          <Icon src="avatar.svg" />
         </span>
         Avatars
       </a>
       <a
         @click="changeTool('Props')"
         :class="{ 'is-active': tool === 'Props' }"
-        class="panel-block"
+        class="panel-block button"
       >
         <span class="panel-icon">
-          <i class="fas fa-mask" aria-hidden="true"></i>
+          <Icon src="props.svg" />
         </span>
         Props
       </a>
       <a
-        @click="changeTool('Backdrops')"
-        :class="{ 'is-active': tool === 'Backdrops' }"
-        class="panel-block"
-      >
-        <span class="panel-icon">
-          <i class="fas fa-fill-drip" aria-hidden="true"></i>
-        </span>
-        Backdrops
-      </a>
-      <a
-        @click="changeTool('Text')"
-        :class="{ 'is-active': tool === 'Text' }"
-        class="panel-block"
-      >
-        <span class="panel-icon">
-          <i class="fas fa-font" aria-hidden="true"></i>
-        </span>
-        Text
-      </a>
-      <a
         @click="changeTool('Audio')"
         :class="{ 'is-active': tool === 'Audio' }"
-        class="panel-block"
+        class="panel-block button"
       >
         <span class="panel-icon">
-          <i class="fas fa-music" aria-hidden="true"></i>
+          <Icon src="audio.svg" />
         </span>
         Audio
       </a>
       <div class="dropdown is-hoverable is-fullwidth">
         <div class="dropdown-trigger is-fullwidth">
           <a
-            @click="changeTool('Draw')"
-            :class="{ 'is-active': tool === 'Draw' }"
-            class="panel-block"
-          >
-            <span class="panel-icon">
-              <i class="fas fa-drafting-compass" aria-hidden="true"></i>
-            </span>
-            <span class="is-fullwidth">Draw</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </span>
-          </a>
-          <span />
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a href="#" class="dropdown-item" @click="openDrawTool(true)">
-              Add New
-            </a>
-            <a href="#" class="dropdown-item" @click="openDrawTool(false)">
-              Manage
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="dropdown is-hoverable is-fullwidth">
-        <div class="dropdown-trigger is-fullwidth">
-          <a
             @click="changeTool('Stream')"
             :class="{ 'is-active': tool === 'Stream' }"
-            class="panel-block"
+            class="panel-block button"
           >
             <span class="panel-icon">
-              <i class="fas fa-stream" aria-hidden="true"></i>
+              <Icon src="stream.svg" />
             </span>
             <span class="is-fullwidth">Streams</span>
             <span class="icon is-small">
@@ -119,20 +81,70 @@
         </div>
         <div class="dropdown-menu" id="dropdown-menu4" role="menu">
           <div class="dropdown-content">
-            <a href="#" class="dropdown-item" @click="createStream()">
+            <a href="#" class="dropdown-item button" @click="createStream()">
               Add New
             </a>
-            <a href="#" class="dropdown-item" @click="changeTool('Stream')">
+            <a
+              href="#"
+              class="dropdown-item button"
+              @click="changeTool('Stream')"
+            >
               Manage
             </a>
           </div>
         </div>
       </div>
+      <div class="dropdown is-hoverable is-fullwidth">
+        <div class="dropdown-trigger is-fullwidth">
+          <a
+            @click="changeTool('Draw')"
+            :class="{ 'is-active': tool === 'Draw' }"
+            class="panel-block button"
+          >
+            <span class="panel-icon">
+              <Icon src="draw.svg" />
+            </span>
+            <span class="is-fullwidth">Draw</span>
+            <span class="icon is-small">
+              <i class="fas fa-angle-right" aria-hidden="true"></i>
+            </span>
+          </a>
+          <span />
+        </div>
+        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
+          <div class="dropdown-content">
+            <a
+              href="#"
+              class="dropdown-item button"
+              @click="openDrawTool(true)"
+            >
+              Add New
+            </a>
+            <a
+              href="#"
+              class="dropdown-item button"
+              @click="openDrawTool(false)"
+            >
+              Manage
+            </a>
+          </div>
+        </div>
+      </div>
+      <a
+        @click="changeTool('Text')"
+        :class="{ 'is-active': tool === 'Text' }"
+        class="panel-block button"
+      >
+        <span class="panel-icon">
+          <Icon src="text.svg" />
+        </span>
+        Text
+      </a>
     </div>
     <div class="panel-block">
-      <button class="button is-primary is-fullwidth is-block">
+      <button class="button is-fullwidth is-block">
         <span class="icon">
-          <i class="fas fa-check"></i>
+          <Icon src="savescene.svg" />
         </span>
         <span>Save Scene</span>
       </button>
@@ -144,8 +156,10 @@
 import { ref } from "vue";
 import TopBar from "./TopBar";
 import { useStore } from "vuex";
+import Icon from "@/components/Icon";
+
 export default {
-  components: { TopBar },
+  components: { TopBar, Icon },
   setup: () => {
     const tool = ref();
     const changeTool = (newTool) => {
@@ -205,11 +219,15 @@ export default {
   opacity: 0.9;
   transition: transform 0.5s;
 
+  .panel-icon {
+    width: 1.5em;
+  }
+
   &.collapsed {
     transform: translateX(-85%);
     .panel-icon {
       position: relative;
-      left: 160px;
+      left: 150px;
     }
     .fa-angle-right {
       display: none;
@@ -223,7 +241,7 @@ export default {
     z-index: 100;
   }
 
-  .panel-block.is-active {
+  .panel-block button.is-active {
     border-left-width: 2px;
     border-left-style: solid;
   }

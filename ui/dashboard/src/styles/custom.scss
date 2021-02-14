@@ -1,17 +1,60 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,400;0,700;1,400&display=swap');
 @import "./mixins";
+@import "./bulma";
 
+* {
+    font-family: 'Josefin Sans', sans-serif;
+}
+$green-bar: 10px solid $primary;
+nav {
+  a {
+    color: $black;
+
+    &.router-link-exact-active {
+      font-weight: bold;
+      color: $primary;
+    }
+  }
+}
 .button {
     &:not(.no-shadow):hover {
         @include boxShadow;
     }
+    &:not(.is-large) .icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
 }
+.card, .panel {
+    border-top: $green-bar
+}
+.panel-body {
+    overflow: visible !important;
+    .button{
+        text-align: left;
+        border: none;
+        &:hover {
+            border: 1px solid $border-color;
+            z-index: 100;
+        }
+    }
+}
+.panel-heading {
+    overflow: visible !important;
+}
+.tag {
+    box-shadow: 3px -3px 0 0 $black;
+}
+#topbar {
+    border-top: none;
+}
+// Desktop only css
 @media screen and (min-width: 1024px) {
     .navbar-start {
         flex: auto;
         justify-content: center !important;
     }
     .navbar-item {
-        width: 150px;
         margin: 8px 12px;
         padding: 0 20px !important;
         justify-content: center;
@@ -25,6 +68,7 @@
         margin: auto 0;
     }
     a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
+        width: 200px;
         &:hover {
             @include boxShadow;
             border: 1px solid $border-color;
@@ -44,9 +88,6 @@
             border-bottom: 1px solid $border-color;
             &:last-child {
                 border-bottom: none;
-            }
-            &:focus, &:hover {
-    
             }
         }
     }

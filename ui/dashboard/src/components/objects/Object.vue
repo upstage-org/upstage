@@ -98,7 +98,10 @@ export default {
     watch(
       props.object,
       () => {
-        const { x, y, h, w, moveSpeed } = props.object;
+        const { x, y, h, w, moveSpeed, type, isPlaying } = props.object;
+        if (type === "stream" && isPlaying && isDragging.value) {
+          return;
+        }
         animation.value?.pause(true);
         animation.value = anime({
           targets: position,
@@ -211,32 +214,13 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
 div[tabindex] {
   outline: none;
 }
 .object {
   z-index: 10;
-}
-.frame-selector {
-  width: 440px;
-
-  @media screen and (max-width: 767px) {
-    width: 100px;
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-  .column {
-    height: 100px;
-
-    &:hover {
-      background-color: hsl(0, 0%, 71%);
-      cursor: pointer;
-      border-radius: 5px;
-    }
-  }
-  .autoplay-frames {
-    width: 100%;
-    height: 100%;
-  }
 }
 </style>
