@@ -4,6 +4,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
     app,api)
+from config.settings import VERSION
 from auth.auth_api import jwt_required
 from user.models import User as UserModel
 from flask_graphql import GraphQLView
@@ -92,7 +93,7 @@ class Query(graphene.ObjectType):
 
 user_schema = graphene.Schema(query=Query)
 app.add_url_rule(
-    '/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
     ))
 
