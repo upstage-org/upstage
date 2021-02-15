@@ -1,36 +1,28 @@
 <template>
-  View Scenes wireframes
-  <a
-    href="https://github.com/upstage-org/mobilise/issues/64#issuecomment-740554084"
-    target="_blank"
-    >here</a
-  >
-  <div v-if="loading">Loading...</div>
-  <div v-else>
-    {{ json(result) }}
+  <div>
+    View Scenes wireframes
+    <a
+      href="https://github.com/upstage-org/mobilise/issues/64#issuecomment-740554084"
+      target="_blank"
+      >here</a
+    >
+    <div>{{ result }}</div>
   </div>
 </template>
 
 <script>
-import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-
+import { computed } from "vue";
+import { useStore } from "vuex";
 export default {
   setup() {
-    const { result, loading } = useQuery(gql`
-      query Posts {
-        posts {
-          data {
-            id
-            title
-          }
-          meta {
-            totalCount
-          }
-        }
-      }
-    `);
-    return { result, loading, json: JSON.stringify };
+    const store = useStore();
+    const userList = computed(() => store.state.user.userList);
+    const result = computed(() =>
+      userList.value ? JSON.stringify(userList.value) : "Loading..."
+    );
+    store.dispatch("user/getUserList");
+
+    return { result };
   },
 };
 </script>

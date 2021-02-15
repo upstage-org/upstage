@@ -18,7 +18,13 @@
               >Layout</router-link
             >
           </li>
-          <li><a>Chat</a></li>
+          <li>
+            <router-link
+              to="/dashboard/stage-management/chat"
+              exact-active-class="is-active"
+              >Chat</router-link
+            >
+          </li>
           <li><a>Record</a></li>
           <li>
             <router-link

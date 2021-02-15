@@ -71,6 +71,11 @@ const routes = [
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
           },
           {
+            name: 'Chat',
+            path: '/dashboard/stage-management/chat',
+            component: () => import('../views/dashboard/StageManagement/Chat.vue'),
+          },
+          {
             name: 'Scenes',
             path: '/dashboard/stage-management/scenes',
             component: () => import('../views/dashboard/StageManagement/Scenes.vue'),
