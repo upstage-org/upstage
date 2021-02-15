@@ -71,7 +71,7 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         input = UpdateUserInput(required=True)
 
-    # decorate this with jwt login fn.
+    # decorate this with jwt login decorator.
     def mutate(self, info, input):
         data = utils.input_to_dictionary(input)
         local_db_session = get_scoped_session()
