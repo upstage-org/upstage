@@ -4,9 +4,11 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
     app,api)
+from config.settings import VERSION
 from auth.auth_api import jwt_required
 from user.models import User as UserModel
 from flask_graphql import GraphQLView
+from auth.fernet_crypto import encrypt,decrypt
 
 class UserAttribute:
     username = graphene.String(description="Username.")
@@ -47,7 +49,9 @@ class CreateUser(graphene.Mutation):
     def mutate(self, info, input):
         data = utils.input_to_dictionary(input)
 
-        user = UserModel(**data) #todo
+        user = UserModel(**data)
+        # Add validation for non-empty passwords, etc.
+        user.password = encrypt(user.password)
         db_session.add(user)
         db_session.commit()
         db_session.close()
@@ -67,9 +71,9 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         input = UpdateUserInput(required=True)
 
+    # decorate this with jwt login decorator.
     def mutate(self, info, input):
         data = utils.input_to_dictionary(input)
-        #todo use User., etc
         local_db_session = get_scoped_session()
 
         local_db_session.query(UserModel)\
@@ -92,7 +96,7 @@ class Query(graphene.ObjectType):
 
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    '/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
     ))
 
