@@ -1,6 +1,11 @@
 <template>
   <div id="topbar" class="card is-light" v-if="tool">
-    <div ref="bar" class="card-content" @wheel="horizontalScroll">
+    <div
+      ref="bar"
+      class="card-content"
+      :id="tool + 'tool'"
+      @wheel="horizontalScroll"
+    >
       <component :is="tool" />
     </div>
   </div>
@@ -36,7 +41,6 @@ export default {
 
 #topbar {
   position: fixed;
-  z-index: 50;
   max-width: 80vw;
   height: 100px;
   top: -12px;

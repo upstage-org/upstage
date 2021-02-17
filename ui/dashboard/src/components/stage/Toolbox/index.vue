@@ -196,9 +196,7 @@ export default {
 
     const createText = () => {
       changeTool("Text");
-      store.dispatch("stage/openSettingPopup", {
-        type: "CreateText",
-      });
+      store.commit("stage/UPDATE_IS_WRITING", true);
     };
 
     return {

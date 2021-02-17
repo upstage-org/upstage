@@ -59,6 +59,9 @@ nav {
 #topbar {
     border-top: none;
 }
+#Texttool {
+    overflow: visible !important;
+}
 // Desktop only css
 @media screen and (min-width: 1024px) {
     .navbar-start {

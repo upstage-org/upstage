@@ -170,6 +170,9 @@ export default {
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
+        UPDATE_IS_WRITING(state, isWriting) {
+            state.preferences.isWriting = isWriting;
+        },
     },
     actions: {
         connect({ commit, dispatch }) {

@@ -21,10 +21,9 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import Chat from "./settings/Chat";
 import CreateStream from "./settings/CreateStream";
-import CreateText from "./settings/CreateText";
 
 export default {
-  components: { Chat, CreateStream, CreateText },
+  components: { Chat, CreateStream },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);
