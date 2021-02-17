@@ -131,7 +131,7 @@
         </div>
       </div>
       <a
-        @click="changeTool('Text')"
+        @click="createText"
         :class="{ 'is-active': tool === 'Text' }"
         class="panel-block button"
       >
@@ -194,6 +194,13 @@ export default {
       });
     };
 
+    const createText = () => {
+      changeTool("Text");
+      store.dispatch("stage/openSettingPopup", {
+        type: "CreateText",
+      });
+    };
+
     return {
       tool,
       changeTool,
@@ -202,6 +209,7 @@ export default {
       waitToCollapse,
       openDrawTool,
       createStream,
+      createText,
     };
   },
 };

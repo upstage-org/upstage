@@ -1,6 +1,6 @@
 <template>
   <div id="topbar" class="card is-light" v-if="tool">
-    <div ref="bar" class="card-content" @wheel.prevent="horizontalScroll">
+    <div ref="bar" class="card-content" @wheel="horizontalScroll">
       <component :is="tool" />
     </div>
   </div>
@@ -14,10 +14,11 @@ import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
 import Stream from "./tools/Stream";
+import Text from "./tools/Text";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrop, Props, Audio, Draw, Stream },
+  components: { Avatars, Backdrop, Props, Audio, Draw, Stream, Text },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {
@@ -35,6 +36,7 @@ export default {
 
 #topbar {
   position: fixed;
+  z-index: 50;
   max-width: 80vw;
   height: 100px;
   top: -12px;

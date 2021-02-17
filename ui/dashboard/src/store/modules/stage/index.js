@@ -28,6 +28,10 @@ export default {
         preferences: {
             slider: 'opacity',
             isDrawing: true,
+            text: {
+                fontSize: '12px',
+                fontFamily: 'Josefin Sans',
+            }
         },
         hosts: []
     },
