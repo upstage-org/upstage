@@ -1,5 +1,9 @@
 <template>
-  <section v-show="isWriting" class="writing"></section>
+  <section v-if="isWriting" class="writing" @click="onClickWriting">
+    <p ref="el" :style="options" contenteditable="true">
+      Write or paste<br />your text here
+    </p>
+  </section>
   <div v-if="!isWriting" @click="createText" class="text-tool">
     <div class="icon is-large">
       <i class="fas fa-plus fa-2x"></i>
@@ -30,16 +34,17 @@
   </div>
   <div class="text-tool" style="z-index: 1003">
     <span class="tag is-block">Color</span>
-    <Dropdown v-model="options.fontSize" :data="fontSizes" />
+    <ColorPicker v-model="options.color" />
   </div>
 </template>
 
 <script>
 import Dropdown from "@/components/form/Dropdown";
+import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 export default {
-  components: { Dropdown },
+  components: { Dropdown, ColorPicker },
   setup: () => {
     const store = useStore();
     const isWriting = computed(() => store.state.stage.preferences.isWriting);
@@ -80,6 +85,16 @@ export default {
       store.commit("stage/UPDATE_IS_WRITING", false);
     };
 
+    const el = ref();
+    const onClickWriting = (e) => {
+      const { width, height } = el.value.getBoundingClientRect() ?? {};
+      store.commit("stage/UPDATE_TEXT_OPTIONS", {
+        left: e.clientX - width / 2 + "px",
+        top: e.clientY - height / 2 + "px",
+      });
+      el.value.focus();
+    };
+
     return {
       options,
       fontSizes,
@@ -87,12 +102,18 @@ export default {
       createText,
       isWriting,
       cancelWriting,
+      onClickWriting,
+      el,
     };
   },
 };
 </script>
 
 <style lang="scss">
+[contenteditable] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+}
 .writing {
   position: fixed;
   top: 0;
@@ -102,6 +123,9 @@ export default {
   z-index: 1000;
   background-color: rgba($color: white, $alpha: 0.5);
   backdrop-filter: blur(5px);
+  > p {
+    position: absolute;
+  }
 }
 .text-tool {
   z-index: 1001;

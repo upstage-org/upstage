@@ -29,7 +29,7 @@ export default {
             slider: 'opacity',
             isDrawing: true,
             text: {
-                fontSize: '12px',
+                fontSize: '20px',
                 fontFamily: 'Josefin Sans',
             }
         },
@@ -173,6 +173,9 @@ export default {
         UPDATE_IS_WRITING(state, isWriting) {
             state.preferences.isWriting = isWriting;
         },
+        UPDATE_TEXT_OPTIONS(state, options) {
+            Object.assign(state.preferences.text, options);
+        }
     },
     actions: {
         connect({ commit, dispatch }) {

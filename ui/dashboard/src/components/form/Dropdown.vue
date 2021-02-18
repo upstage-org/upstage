@@ -60,7 +60,6 @@ export default {
     const selectedItem = computed(() =>
       props.data?.find((item) => props.renderValue(item) === props.modelValue)
     );
-    console.log(selectedItem.value);
     const isActive = ref();
     const select = (item) => {
       const value = props.renderValue(item);
