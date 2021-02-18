@@ -3,7 +3,7 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+    app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
 from user.models import User as UserModel
@@ -53,10 +53,13 @@ class CreateUser(graphene.Mutation):
         user = UserModel(**data)
         # Add validation for non-empty passwords, etc.
         user.password = encrypt(user.password)
-        db_session.add(user)
-        db_session.commit()
-        db_session.close()
+        local_db_session = get_scoped_session()
+        local_db_session.add(user)
+        local_db_session.flush()
+        user_id = user.id
+        local_db_session.commit()
 
+        user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         return CreateUser(user=user)
 
 
