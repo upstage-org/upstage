@@ -29,7 +29,7 @@ from flask import jsonify,url_for
 from flask_restx import Resource, abort
 from flask import  request, redirect, render_template, make_response
 from flask_jwt_extended import (jwt_required,get_jwt_identity,
-    jwt_refresh_token_required,create_access_token,create_refresh_token,
+    create_access_token,create_refresh_token,
     verify_jwt_in_request,JWTManager)
 from flask_jwt_extended import utils as jwt_utils
 
@@ -120,7 +120,7 @@ class TokenNoList(object):
                 JWTNoList.remove_after < datetime.utcnow()).delete()
 
 TNL=TokenNoList()
-jwt.token_in_blacklist_loader(TNL.check)
+jwt.token_in_blocklist_loader(TNL.check)
 
 @app.route('/{0}'.format(URL_PREFIX),defaults={'path': ''})
 def catch_all(path):
@@ -602,7 +602,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
 
 @app.route('{0}refresh/'.format(BASE_URL), methods=['POST'])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     current_user_id = get_jwt_identity()
     refresh_token = request.headers[app.config['JWT_HEADER_NAME']]
