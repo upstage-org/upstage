@@ -43,7 +43,7 @@ export default {
             return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
         },
         props(state) {
-            return state.board.objects.filter(o => o.type === 'prop');
+            return state.board.objects.filter(o => o.type === 'prop' || o.type === 'text');
         },
         streams(state) {
             return state.board.objects.filter(o => o.type === 'stream');
@@ -392,6 +392,10 @@ export default {
             stream.type = 'stream';
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
+        },
+        addText({ dispatch }, text) {
+            text.type = 'text';
+            dispatch('placeObjectOnStage', text)
         },
     },
 };

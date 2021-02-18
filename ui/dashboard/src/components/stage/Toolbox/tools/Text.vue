@@ -11,7 +11,7 @@
     <span class="tag is-light is-block">New</span>
   </div>
   <template v-else>
-    <div class="text-tool">
+    <div class="text-tool" @click="saveText">
       <div class="icon is-large">
         <i class="fas fa-check fa-2x"></i>
       </div>
@@ -43,6 +43,8 @@ import Dropdown from "@/components/form/Dropdown";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
+import { cropImageFromCanvas } from "@/utils/canvas";
+
 export default {
   components: { Dropdown, ColorPicker },
   setup: () => {
@@ -88,11 +90,26 @@ export default {
     const el = ref();
     const onClickWriting = (e) => {
       const { width, height } = el.value.getBoundingClientRect() ?? {};
+      const x = e.clientX - width / 2;
+      const y = e.clientY - height / 2;
       store.commit("stage/UPDATE_TEXT_OPTIONS", {
-        left: e.clientX - width / 2 + "px",
-        top: e.clientY - height / 2 + "px",
+        left: x + "px",
+        top: y + "px",
+        x,
+        y,
       });
       el.value.focus();
+    };
+
+    const saveText = () => {
+      const canvas = document.createElement("canvas");
+      canvas.getContext("2d").fillText(el.value.innerHTML, 0, 0);
+      const image = cropImageFromCanvas(canvas);
+      store.dispatch("stage/addText", {
+        ...image,
+        ...options.value,
+      });
+      store.commit("stage/UPDATE_IS_WRITING", false);
     };
 
     return {
@@ -103,6 +120,7 @@ export default {
       isWriting,
       cancelWriting,
       onClickWriting,
+      saveText,
       el,
     };
   },
