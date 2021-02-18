@@ -88,7 +88,7 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing' || object.type === 'stream') {
+                if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
                     delete object.src;
                 }
                 Object.assign(avatar, object);
