@@ -1,5 +1,5 @@
-import { userService } from "@/services";
-import { userGraph, gql } from '@/services/graphql';
+import { userService } from "@/services/rest";
+import { userGraph } from '@/services/graphql';
 
 export default {
   namespaced: true,
@@ -8,7 +8,6 @@ export default {
     loadingUser: false,
     nickname: null,
     avatarId: null,
-    userList: null
   },
   mutations: {
     SET_USER_DATA(state, data) {
@@ -23,9 +22,6 @@ export default {
     SET_AVATAR_ID(state, id) {
       state.avatarId = id;
     },
-    SET_USER_LIST(state, users) {
-      state.userList = users;
-    }
   },
   actions: {
     fetchCurrent({ commit }) {
@@ -45,34 +41,22 @@ export default {
           });
       });
     },
-    saveNickname({ commit }, { nickname }) {
+    async saveNickname({ commit, state }, { nickname }) {
       commit('SET_NICK_NAME', nickname);
-      return nickname;
+      try {
+        const response = await userGraph.updateUser({
+          id: state.user.id,
+          displayName: nickname
+        });
+        return response.updateUser.user.displayName;
+      } catch (error) {
+        return nickname;
+      }
     },
     setAvatarId({ commit }, { name, id }) {
       commit('SET_NICK_NAME', name);
       commit('SET_AVATAR_ID', id);
     },
-    async getUserList({ commit }) {
-      const users = await userGraph.request(
-        gql`
-          {
-            userList {
-              edges {
-                node {
-                  id
-                  username
-                  firstName
-                  role
-                  email
-                  displayName
-                }
-              }
-            }
-          }
-        `);
-      commit('SET_USER_LIST', users);
-    }
   },
   getters: {
     nickname(state) {
