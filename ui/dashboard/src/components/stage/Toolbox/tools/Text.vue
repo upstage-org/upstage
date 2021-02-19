@@ -25,16 +25,46 @@
     </div>
   </template>
   <div class="text-tool" style="width: 200px; z-index: 1005">
-    <span class="tag is-block">Font</span>
+    <span class="tag muted is-block">Font</span>
     <Dropdown v-model="options.fontFamily" :data="fontFamilies" />
   </div>
   <div class="text-tool" style="z-index: 1004">
-    <span class="tag is-block">Size</span>
+    <span class="tag muted is-block">Size</span>
     <Dropdown v-model="options.fontSize" :data="fontSizes" />
   </div>
   <div class="text-tool" style="z-index: 1003">
-    <span class="tag is-block">Color</span>
+    <span class="tag muted is-block">Color</span>
     <ColorPicker v-model="options.color" />
+  </div>
+  <div
+    class="text-tool"
+    :class="{ active: options.fontWeight }"
+    @click="toggleBold"
+  >
+    <div class="icon is-large">
+      <i class="fas fa-bold fa-2x"></i>
+    </div>
+    <span class="tag is-light is-block">Bold</span>
+  </div>
+  <div
+    class="text-tool"
+    :class="{ active: options.fontStyle }"
+    @click="toggleItalic"
+  >
+    <div class="icon is-large">
+      <i class="fas fa-italic fa-2x"></i>
+    </div>
+    <span class="tag is-light is-block">Italic</span>
+  </div>
+  <div
+    class="text-tool"
+    :class="{ active: options.textDecoration }"
+    @click="toggleUnderline"
+  >
+    <div class="icon is-large">
+      <i class="fas fa-underline fa-2x"></i>
+    </div>
+    <span class="tag is-light is-block">Underline</span>
   </div>
 </template>
 
@@ -115,6 +145,30 @@ export default {
       });
     };
 
+    const toggleBold = () => {
+      let fontWeight;
+      if (!options.value.fontWeight) {
+        fontWeight = "bold";
+      }
+      store.commit("stage/UPDATE_TEXT_OPTIONS", { fontWeight });
+    };
+
+    const toggleItalic = () => {
+      let fontStyle;
+      if (!options.value.fontStyle) {
+        fontStyle = "italic";
+      }
+      store.commit("stage/UPDATE_TEXT_OPTIONS", { fontStyle });
+    };
+
+    const toggleUnderline = () => {
+      let textDecoration;
+      if (!options.value.textDecoration) {
+        textDecoration = "underline";
+      }
+      store.commit("stage/UPDATE_TEXT_OPTIONS", { textDecoration });
+    };
+
     return {
       options,
       fontSizes,
@@ -125,6 +179,9 @@ export default {
       onClickWriting,
       saveText,
       el,
+      toggleBold,
+      toggleItalic,
+      toggleUnderline,
     };
   },
 };
@@ -146,6 +203,9 @@ export default {
   backdrop-filter: blur(5px);
   > p {
     position: absolute;
+    * {
+      font-family: inherit;
+    }
   }
 }
 .text-tool {
@@ -156,8 +216,9 @@ export default {
     position: absolute;
     transform: translateX(-50%);
   }
-  &:hover {
-    .tag {
+  &:hover,
+  &.active {
+    .tag.muted {
       background: transparent;
       color: white;
     }
