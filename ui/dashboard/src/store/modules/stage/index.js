@@ -28,6 +28,10 @@ export default {
         preferences: {
             slider: 'opacity',
             isDrawing: true,
+            text: {
+                fontSize: '20px',
+                fontFamily: 'Josefin Sans',
+            }
         },
         hosts: []
     },
@@ -39,7 +43,7 @@ export default {
             return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
         },
         props(state) {
-            return state.board.objects.filter(o => o.type === 'prop');
+            return state.board.objects.filter(o => o.type === 'prop' || o.type === 'text');
         },
         streams(state) {
             return state.board.objects.filter(o => o.type === 'stream');
@@ -84,7 +88,7 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing' || object.type === 'stream') {
+                if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
                     delete object.src;
                 }
                 Object.assign(avatar, object);
@@ -166,6 +170,12 @@ export default {
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
+        UPDATE_IS_WRITING(state, isWriting) {
+            state.preferences.isWriting = isWriting;
+        },
+        UPDATE_TEXT_OPTIONS(state, options) {
+            Object.assign(state.preferences.text, options);
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -382,6 +392,10 @@ export default {
             stream.type = 'stream';
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
+        },
+        addText({ dispatch }, text) {
+            text.type = 'text';
+            dispatch('placeObjectOnStage', text)
         },
     },
 };

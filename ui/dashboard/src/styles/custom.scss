@@ -28,6 +28,17 @@ nav {
 .card, .panel {
     border-top: $green-bar
 }
+.dropdown.is-active {
+    .dropdown-trigger .button {
+        @include boxShadow;
+    }
+    .dropdown-menu {
+        margin-left: -4px;
+    }
+} 
+.dropdown-trigger .button {
+    border: 1px solid $border-color;
+}
 .panel-body {
     overflow: visible !important;
     .button{
@@ -47,6 +58,9 @@ nav {
 }
 #topbar {
     border-top: none;
+}
+#Texttool {
+    overflow: visible !important;
 }
 // Desktop only css
 @media screen and (min-width: 1024px) {

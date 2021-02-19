@@ -12,7 +12,7 @@
   <template v-if="isDrawing">
     <div class="drawing-tool">
       <div class="icon is-large">
-        <input type="color" v-model="color" />
+        <ColorPicker v-model="color" />
       </div>
       <span class="tag is-light is-block">Color</span>
     </div>
@@ -86,8 +86,10 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useDrawing } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
+import ColorPicker from "@/components/form/ColorPicker";
+
 export default {
-  components: { Skeleton },
+  components: { Skeleton, ColorPicker },
   setup: () => {
     const store = useStore();
     const drawings = computed(() => store.state.stage.board.drawings);
@@ -162,11 +164,6 @@ export default {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
   }
-}
-input[type="color"] {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
 }
 .size-preview {
   display: flex;

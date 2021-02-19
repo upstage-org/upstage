@@ -131,7 +131,7 @@
         </div>
       </div>
       <a
-        @click="changeTool('Text')"
+        @click="createText"
         :class="{ 'is-active': tool === 'Text' }"
         class="panel-block button"
       >
@@ -194,6 +194,11 @@ export default {
       });
     };
 
+    const createText = () => {
+      changeTool("Text");
+      store.commit("stage/UPDATE_IS_WRITING", true);
+    };
+
     return {
       tool,
       changeTool,
@@ -202,6 +207,7 @@ export default {
       waitToCollapse,
       openDrawTool,
       createStream,
+      createText,
     };
   },
 };
