@@ -3,12 +3,13 @@ import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,get_scoped_session,
-    app,api)
+    app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
 from user.models import User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
+from utils import graphql_utils
 
 class UserAttribute:
     username = graphene.String(description="Username.")
@@ -47,15 +48,18 @@ class CreateUser(graphene.Mutation):
         input = CreateUserInput(required=True)
 
     def mutate(self, info, input):
-        data = utils.input_to_dictionary(input)
+        data = graphql_utils.input_to_dictionary(input)
 
         user = UserModel(**data)
         # Add validation for non-empty passwords, etc.
         user.password = encrypt(user.password)
-        db_session.add(user)
-        db_session.commit()
-        db_session.close()
+        local_db_session = get_scoped_session()
+        local_db_session.add(user)
+        local_db_session.flush()
+        user_id = user.id
+        local_db_session.commit()
 
+        user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         return CreateUser(user=user)
 
 
@@ -73,15 +77,16 @@ class UpdateUser(graphene.Mutation):
 
     # decorate this with jwt login decorator.
     def mutate(self, info, input):
-        data = utils.input_to_dictionary(input)
+        data = graphql_utils.input_to_dictionary(input)
         local_db_session = get_scoped_session()
 
-        local_db_session.query(UserModel)\
-            .filter_by(id=data['id'])\
-            .update(data, synchronize_session=False)
-        db_session.commit()
-        db_session.close()
-        user = DBSession(User).filter_by(id=data['id']).first()
+        user = local_db_session.query(UserModel)\
+            .filter(UserModel.id==data['id']).first()
+        for key, value in data.items():
+            if hasattr(user, key):
+                setattr(user, key, value)
+        local_db_session.commit()
+        user = DBSession.query(UserModel).filter(UserModel.id==data['id']).first()
 
         return UpdateUser(user=user)
 
