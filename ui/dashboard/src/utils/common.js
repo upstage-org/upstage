@@ -7,6 +7,8 @@ export const isJson = (d) => {
   return true;
 };
 
+export const randomRange = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+
 export const randomColor = () => {
   var letters = "0123456789ABCDEF";
   var color = "#";

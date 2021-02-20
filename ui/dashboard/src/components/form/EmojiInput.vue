@@ -1,23 +1,33 @@
 <template>
   <input
+    v-if="!pickerOnly"
     ref="input"
     class="input is-rounded"
     v-bind="$attrs"
     :value="modelValue"
     @input="$emit('update:modelValue', $event.target.value)"
   />
-  <button
-    type="button"
-    class="icon is-right clickable button is-primary is-rounded"
-    :class="{ 'is-loading': loading }"
-    :disabled="loading"
-    @click="isPicking = !isPicking"
-  >
-    <i class="far fa-smile"></i>
-  </button>
-  <transition :css="false" @enter="pickerEnter">
-    <emoji-picker v-show="isPicking" class="light" />
-  </transition>
+  <div v-click-outside="() => (isPicking = false)" style="display: inline">
+    <button
+      type="button"
+      class="icon is-right clickable button is-rounded"
+      :class="{
+        'is-loading': loading,
+        'is-primary': !className,
+        [className]: true,
+      }"
+      :disabled="loading"
+      :style="style"
+      @click="isPicking = !isPicking"
+    >
+      <slot name="icon">
+        <i class="far fa-smile"></i>
+      </slot>
+    </button>
+    <transition :css="false" @enter="pickerEnter">
+      <emoji-picker v-show="isPicking" class="light" />
+    </transition>
+  </div>
 </template>
 
 <script>
@@ -26,23 +36,27 @@ import { ref } from "vue";
 import anime from "animejs";
 
 export default {
-  props: ["loading", "modelValue"],
+  props: ["loading", "modelValue", "pickerOnly", "style", "className"],
   emits: ["update:modelValue"],
   setup: (props, { emit }) => {
     const input = ref();
     const isPicking = ref(false);
 
     const handleEmoji = ({ detail: { unicode } }) => {
-      const start = input.value.selectionStart;
-      const end = input.value.selectionEnd;
-      const value = props.modelValue ?? "";
-      emit(
-        "update:modelValue",
-        `${value.substring(0, start)}${unicode}${value.substring(
-          end,
-          value.length
-        )}`
-      );
+      if (props.pickerOnly) {
+        emit("update:modelValue", unicode);
+      } else {
+        const start = input.value.selectionStart;
+        const end = input.value.selectionEnd;
+        const value = props.modelValue ?? "";
+        emit(
+          "update:modelValue",
+          `${value.substring(0, start)}${unicode}${value.substring(
+            end,
+            value.length
+          )}`
+        );
+      }
     };
     const pickerEnter = (el, complete) => {
       el.addEventListener("emoji-click", handleEmoji);

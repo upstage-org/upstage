@@ -3,6 +3,7 @@ export const TOPICS = {
   BOARD: "topic/board",
   BACKGROUND: "topic/background",
   AUDIO: "topic/audio",
+  REACTION: "topic/reaction",
 }
 
 export const BOARD_ACTIONS = {
