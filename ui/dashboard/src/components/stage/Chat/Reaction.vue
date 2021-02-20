@@ -7,6 +7,18 @@
   >
     {{ react }}
   </button>
+  <span v-if="customEmoji">
+    <emoji-input
+      :picker-only="true"
+      :style="{ height: '30px' }"
+      className="no-shadow is-white"
+      @update:model-value="sendCustomReaction"
+    >
+      <template #icon>
+        <i class="far fa-plus"></i>
+      </template>
+    </emoji-input>
+  </span>
   <div class="flying-reactions">
     <transition-group :css="false" @enter="flyin" @leave="flyout">
       <div
@@ -29,8 +41,11 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
+import EmojiInput from "@/components/form/EmojiInput.vue";
 
 export default {
+  components: { EmojiInput },
+  props: ["customEmoji"],
   setup: () => {
     const store = useStore();
 
@@ -59,18 +74,27 @@ export default {
       });
     };
 
+    const sendCustomReaction = (e) => {
+      console.log(e);
+      sendReaction(e);
+    };
+
     return {
       reactions,
       sendReaction,
       flyingReactions,
       flyin,
       flyout,
+      sendCustomReaction,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.flying-reactions {
+  position: fixed;
+}
 .reaction {
   width: 16px;
   margin-left: 4px;

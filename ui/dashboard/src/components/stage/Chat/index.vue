@@ -54,7 +54,7 @@
     <footer class="card-footer">
       <div class="card-footer-item">
         <div class="is-fullwidth my-1">
-          <Reaction v-if="!collapsed" />
+          <Reaction v-if="!collapsed" :custom-emoji="true" />
         </div>
         <div class="control has-icons-right is-fullwidth">
           <form autocomplete="off" @submit.prevent="sendChat">
