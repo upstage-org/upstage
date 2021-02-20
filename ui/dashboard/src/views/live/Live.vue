@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import Chat from "@/components/stage/Chat";
+import Chat from "@/components/stage/Chat/index";
 import Toolbox from "@/components/stage/Toolbox";
 import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";

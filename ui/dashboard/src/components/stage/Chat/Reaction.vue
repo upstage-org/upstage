@@ -1,0 +1,79 @@
+<template>
+  <button
+    class="button no-shadow is-light is-small is-rounded reaction"
+    v-for="react in reactions"
+    :key="react"
+    @click="sendReaction(react)"
+  >
+    {{ react }}
+  </button>
+  <div class="flying-reactions">
+    <transition-group :css="false" @enter="flyin" @leave="flyout">
+      <div
+        v-for="react in flyingReactions"
+        :key="react"
+        :style="{
+          position: 'fixed',
+          left: react.x + 'px',
+          top: react.y + 'px',
+          fontSize: '42px',
+        }"
+      >
+        {{ react.reaction }}
+      </div>
+    </transition-group>
+  </div>
+</template>
+
+<script>
+import { computed } from "vue";
+import { useStore } from "vuex";
+import anime from "animejs";
+
+export default {
+  setup: () => {
+    const store = useStore();
+
+    const reactions = ["❤️", "🤣", "🙌", "👏"];
+    const sendReaction = (react) => {
+      store.dispatch("stage/sendReaction", react);
+    };
+
+    const flyingReactions = computed(() => store.state.stage.reactions);
+
+    const flyin = (el) => {
+      anime({
+        targets: el,
+        translateY: [100, 0],
+        scale: [1, 1.5, 1],
+      });
+    };
+    const flyout = (el, complete) => {
+      anime({
+        targets: el,
+        scale: 0,
+        rotate: 180,
+        translateY: 100,
+        duration: 2000,
+        complete,
+      });
+    };
+
+    return {
+      reactions,
+      sendReaction,
+      flyingReactions,
+      flyin,
+      flyout,
+    };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.reaction {
+  width: 16px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+</style>

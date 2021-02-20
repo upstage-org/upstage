@@ -1,6 +1,7 @@
 <template>
   <div id="chatbox" class="card is-light" :class="{ collapsed }">
     <div class="actions">
+      <Reaction v-if="collapsed" />
       <button
         class="chat-setting button is-rounded is-light"
         @click="collapsed = !collapsed"
@@ -52,6 +53,9 @@
     </div>
     <footer class="card-footer">
       <div class="card-footer-item">
+        <div class="is-fullwidth my-1">
+          <Reaction v-if="!collapsed" />
+        </div>
         <div class="control has-icons-right is-fullwidth">
           <form autocomplete="off" @submit.prevent="sendChat">
             <emoji-input
@@ -71,9 +75,10 @@ import { computed, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 import EmojiInput from "@/components/form/EmojiInput";
+import Reaction from "./Reaction";
 
 export default {
-  components: { EmojiInput },
+  components: { EmojiInput, Reaction },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -128,9 +133,13 @@ export default {
   overflow: visible;
 
   .card-content {
-    height: calc(100% - 64px);
+    height: calc(100% - 84px);
     overflow-y: auto;
     padding-top: 36px;
+  }
+  .card-footer-item {
+    flex-wrap: wrap;
+    padding-top: 0;
   }
 
   &.collapsed {
