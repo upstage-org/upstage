@@ -1,4 +1,13 @@
-# flask_sqlalchemy/schema.py
+# -*- coding: iso8859-15 -*-
+import sys,os
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
+
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
@@ -28,7 +37,6 @@ class UserAttribute:
     agreed_to_terms = graphene.Boolean(description="Agreed to terms")
     accept_rent_payment = graphene.Boolean(description="Accept rent payment")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
-
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
@@ -65,10 +73,9 @@ class CreateUser(graphene.Mutation):
         return CreateUser(user=user)
 
 
-class UpdateUserInput(graphene.InputObjectType, UserAttribute):
+class UpdateUserInput(graphene.InputObjectType,UserAttribute,):
     """Arguments to update a user."""
     id = graphene.ID(required=True, description="Global Id of the user.")
-
 
 class UpdateUser(graphene.Mutation):
     """Update a user."""

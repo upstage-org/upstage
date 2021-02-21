@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: iso8859-15 -*-
 import pdb
 import os,sys
