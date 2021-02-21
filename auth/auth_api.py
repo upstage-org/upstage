@@ -60,7 +60,7 @@ class ProfileError(Exception):
 
 class TokenNoList(object):
 
-    def check(self,token):
+    def check(self,header,token):
         # Check if token has already been no-listed.
         origtoken = token
         if 'jti' not in token and 'token' not in token:
@@ -93,7 +93,7 @@ class TokenNoList(object):
             token_type=decoded_token['type']
             token=decoded_token['jti']
 
-        if self.check(decoded_token):
+        if self.check('x',decoded_token):
             return
 
         # Already restricted.

@@ -12,7 +12,7 @@ from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
 
 class UserAttribute:
-    username = graphene.String(description="Username.")
+    username = graphene.String(description="Username")
     password = graphene.String(description="Password")
     email = graphene.String(description="Email Address")
     bin_name = graphene.String(description="bin_name")
@@ -31,9 +31,11 @@ class UserAttribute:
 
 
 class User(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
     class Meta:
         model = UserModel
-        interfaces = (relay.Node, )
+        model.db_id = model.id
+        interfaces = (relay.Node,)
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
