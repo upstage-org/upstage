@@ -49,7 +49,6 @@ class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
     pass
 
-
 class CreateUser(graphene.Mutation):
     """Mutation to create a user."""
     user = graphene.Field(lambda: User, description="User created by this mutation.")
@@ -71,7 +70,6 @@ class CreateUser(graphene.Mutation):
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         return CreateUser(user=user)
-
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute,):
     """Arguments to update a user."""
@@ -99,6 +97,8 @@ class UpdateUser(graphene.Mutation):
 
         return UpdateUser(user=user)
 
+class StatusInput(graphene.InputObjectType):
+    username = graphene.String()
 
 class Mutation(graphene.ObjectType):
     createUser = CreateUser.Field()
@@ -107,6 +107,7 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
+    oneUser = graphql_utils.FilteredConnectionField(User, StatusInput)
 
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
