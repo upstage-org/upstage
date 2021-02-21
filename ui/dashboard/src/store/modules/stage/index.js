@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { isJson, randomMessageColor } from '@/utils/common'
+import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { attachPropToAvatar, normalizeObject } from './reusable';
 import { generateDemoData } from './demoData'
@@ -33,7 +33,8 @@ export default {
                 fontFamily: 'Josefin Sans',
             }
         },
-        hosts: []
+        hosts: [],
+        reactions: []
     },
     getters: {
         objects(state) {
@@ -175,7 +176,17 @@ export default {
         },
         UPDATE_TEXT_OPTIONS(state, options) {
             Object.assign(state.preferences.text, options);
-        }
+        },
+        PUSH_REACTION(state, reaction) {
+            state.reactions.push({
+                reaction,
+                x: randomRange(150, window.innerWidth) - 300,
+                y: window.innerHeight - 100,
+            });
+            setTimeout(() => {
+                state.reactions.shift();
+            }, state.tools.config.reactionDuration);
+        },
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -203,6 +214,7 @@ export default {
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
+                [TOPICS.REACTION]: { qos: 2 }
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -225,6 +237,9 @@ export default {
                     break;
                 case TOPICS.AUDIO:
                     dispatch('handleAudioMessage', { message });
+                    break;
+                case TOPICS.REACTION:
+                    dispatch('handleReactionMessage', { message });
                     break;
                 default:
                     break;
@@ -397,5 +412,11 @@ export default {
             text.type = 'text';
             dispatch('placeObjectOnStage', text)
         },
+        handleReactionMessage({ commit }, { message }) {
+            commit('PUSH_REACTION', message)
+        },
+        sendReaction(_, reaction) {
+            mqtt.sendMessage(TOPICS.REACTION, reaction);
+        }
     },
 };
