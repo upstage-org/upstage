@@ -1,6 +1,6 @@
 CREATE TABLE public.jwt_no_list (
         id BIGSERIAL NOT NULL,
-        token TEXT unique not null
+        token TEXT unique not null,
         token_type TEXT not null,
         remove_after timestamp without time zone default (now() at time zone 'utc'),
         PRIMARY KEY (id)

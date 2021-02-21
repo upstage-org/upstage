@@ -26,7 +26,7 @@ CREATE TABLE "public"."performance" (
     "splash_screen_text" TEXT default null,
     "splash_screen_animation_urls" TEXT default null,
     "owner_id" integer NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
+    "created_on" timestamp DEFAULT (now() at time zone 'utc'),
     "expires_on" timestamp DEFAULT null,
     PRIMARY KEY ("id")
 );
@@ -38,12 +38,12 @@ CREATE TABLE "public"."scene" (
     "scene_order" integer not null default 0,
     "owner_id" integer not null default 0,
     "description" TEXT not null,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
+    "created_on" timestamp DEFAULT (now() at time zone 'utc'),
     "expires_on" timestamp DEFAULT null,
     "parent_stage_id" integer NOT NULL,
     "performance_id" integer NOT NULL,
     FOREIGN KEY (parent_stage_id) REFERENCES parent_stage(id),
-    FOREIGN KEY (performnce_id) REFERENCES performance(id),
+    FOREIGN KEY (performance_id) REFERENCES performance(id),
     FOREIGN KEY (owner_id) REFERENCES owner(id),
     PRIMARY KEY ("id")
 );
@@ -60,10 +60,10 @@ CREATE TABLE "public"."live_performance_mqtt_config" (
     "topic_name" TEXT unique not null,
     "username" TEXT not null,
     "password" TEXT not null,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc')),
+    "created_on" timestamp DEFAULT (now() at time zone 'utc'),
     "expires_on" timestamp DEFAULT null,
     "performance_id" integer NOT NULL,
-    FOREIGN KEY (performnce_id) REFERENCES performance(id),
+    FOREIGN KEY (performance_id) REFERENCES performance(id),
     FOREIGN KEY (owner_id) REFERENCES owner(id),
     PRIMARY KEY ("id")
 );
