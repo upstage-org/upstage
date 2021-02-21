@@ -1,4 +1,4 @@
-const { APP_CONFIG } = process.env;
+const { VUE_APP_CONFIG } = process.env;
 
 let configs = {
     API_ENDPOINT: 'http://159.89.19.111/V4.0/',
@@ -18,11 +18,11 @@ let configs = {
     },
 }
 
-if (APP_CONFIG) {
-    const envConfig = JSON.parse(APP_CONFIG);
+if (VUE_APP_CONFIG) {
+    const envConfig = JSON.parse(VUE_APP_CONFIG);
     configs = {
         ...configs,
-        envConfig
+        ...envConfig
     }
 }
 
