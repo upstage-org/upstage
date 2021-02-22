@@ -21,6 +21,16 @@ from flask.json import JSONEncoder
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 from flask_talisman import Talisman
+from flask_graphql_auth import (
+    AuthInfoField,
+    GraphQLAuth,
+    get_jwt_identity,
+    create_access_token,
+    create_refresh_token,
+    query_header_jwt_required,
+    mutation_jwt_refresh_token_required,
+    mutation_jwt_required,
+)
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -48,9 +58,10 @@ app.url_map.strict_slashes=True
 
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = datetime.timedelta(minutes=JWT_ACCESS_TOKEN_MINUTES)
 app.config['JWT_REFRESH_TOKEN_EXPIRES'] = datetime.timedelta(days=JWT_REFRESH_TOKEN_DAYS)
-app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_HEADER_NAME'] = 'X-Access-Token'
 app.config['JWT_HEADER_TYPE'] = ''
+
+graphql_auth = GraphQLAuth(app)
 
 app.config['SECRET_KEY'] = SECRET_KEY
 

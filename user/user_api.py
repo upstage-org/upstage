@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: iso8859-15 -*-
 import pdb
 import os,sys
@@ -90,7 +89,7 @@ def current_user_info():
         abort(code,error)
 
     access_token = request.headers.get(app.config['JWT_HEADER_NAME'],None)
-    app.logger.info("access token:{0}".format(access_token))
+    #app.logger.info("access token:{0}".format(access_token))
 
     # If latest user session access token doesn't match, kick them out.
     user_session = DBSession.query(UserSession).filter(

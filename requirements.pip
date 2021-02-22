@@ -5,6 +5,7 @@ flask
 flask-caching
 flask-cors
 flask-graphql
+flask-graphql-auth
 flask-jwt-extended
 flask-restx
 flask-sqlalchemy

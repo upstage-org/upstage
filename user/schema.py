@@ -1,4 +1,14 @@
-# flask_sqlalchemy/schema.py
+# -*- coding: iso8859-15 -*-
+import sys,os
+import json
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
+
 import graphene
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
@@ -10,9 +20,11 @@ from user.models import User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
+from auth.auth_mutation import AuthMutation,RefreshMutation
+
 
 class UserAttribute:
-    username = graphene.String(description="Username.")
+    username = graphene.String(description="Username")
     password = graphene.String(description="Password")
     email = graphene.String(description="Email Address")
     bin_name = graphene.String(description="bin_name")
@@ -29,16 +41,16 @@ class UserAttribute:
     accept_rent_payment = graphene.Boolean(description="Accept rent payment")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
 
-
 class User(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
     class Meta:
         model = UserModel
-        interfaces = (relay.Node, )
+        model.db_id = model.id
+        interfaces = (relay.Node,)
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
     pass
-
 
 class CreateUser(graphene.Mutation):
     """Mutation to create a user."""
@@ -62,11 +74,9 @@ class CreateUser(graphene.Mutation):
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         return CreateUser(user=user)
 
-
-class UpdateUserInput(graphene.InputObjectType, UserAttribute):
+class UpdateUserInput(graphene.InputObjectType,UserAttribute,):
     """Arguments to update a user."""
     id = graphene.ID(required=True, description="Global Id of the user.")
-
 
 class UpdateUser(graphene.Mutation):
     """Update a user."""
@@ -90,15 +100,27 @@ class UpdateUser(graphene.Mutation):
 
         return UpdateUser(user=user)
 
+class CurrentUserInput(graphene.InputObjectType):
+    username = graphene.String(required=False)
 
+class OneUserInput(graphene.InputObjectType):
+    username = graphene.String(required=False)
+    db_id = graphene.Int(required=False)
+    email = graphene.String(required=False)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     createUser = CreateUser.Field()
     updateUser = UpdateUser.Field()
+    authUser = AuthMutation.Field()
+    refreshUser = RefreshMutation.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
+    oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
