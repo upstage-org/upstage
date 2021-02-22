@@ -1,3 +1,4 @@
 import userGraph from './user'
+import stageGraph from './stage'
 
-export { userGraph }
+export { userGraph, stageGraph }

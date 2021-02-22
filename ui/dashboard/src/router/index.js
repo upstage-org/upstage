@@ -57,8 +57,13 @@ const routes = [
         component: () => import('../views/dashboard/Profile.vue'),
       },
       {
-        path: '/dashboard/stage-management',
+        path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
+      },
+      {
+        path: '/dashboard/stage-management/:id',
+        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        props: route => ({ id: route.params.id }),
         children: [
           {
             name: 'Stage Management',

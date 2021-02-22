@@ -14,5 +14,18 @@ export default {
         }
       }
     }
-  `, variables)
+  `, variables),
+  oneUser: () => client.request(gql`
+    {
+      oneUser {
+        edges {
+          node {
+            id
+            username
+            displayName
+          }
+        }
+      }
+    }
+  `)
 } 
