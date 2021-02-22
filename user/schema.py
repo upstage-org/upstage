@@ -1,5 +1,6 @@
 # -*- coding: iso8859-15 -*-
 import sys,os
+import json
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir,'..'))
@@ -19,6 +20,8 @@ from user.models import User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
+from auth.auth_mutation import AuthMutation,RefreshMutation
+
 
 class UserAttribute:
     username = graphene.String(description="Username")
@@ -97,18 +100,27 @@ class UpdateUser(graphene.Mutation):
 
         return UpdateUser(user=user)
 
-class StatusInput(graphene.InputObjectType):
-    username = graphene.String()
+class CurrentUserInput(graphene.InputObjectType):
+    username = graphene.String(required=False)
 
+class OneUserInput(graphene.InputObjectType):
+    username = graphene.String(required=False)
+    db_id = graphene.Int(required=False)
+    email = graphene.String(required=False)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     createUser = CreateUser.Field()
     updateUser = UpdateUser.Field()
+    authUser = AuthMutation.Field()
+    refreshUser = RefreshMutation.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
-    oneUser = graphql_utils.FilteredConnectionField(User, StatusInput)
+    oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
 
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
