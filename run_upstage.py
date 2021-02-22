@@ -24,6 +24,7 @@ from user import user,user_api,schema
 from asset import asset
 from asset.views import assets
 from license.views import licenses
+from stage import schema
 
 # Below, duplicate names are actually app names.
 # See __init__.py in each directory to verify app name.
