@@ -1,7 +1,7 @@
 <template>
-  <div @click="openModal">
+  <span @click="openModal">
     <slot name="trigger" />
-  </div>
+  </span>
   <div class="modal" :class="{ 'is-active': isActive }">
     <div class="modal-background" @click="closeModal"></div>
     <div class="modal-card" style="width: 80%">

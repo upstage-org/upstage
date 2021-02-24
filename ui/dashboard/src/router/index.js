@@ -57,27 +57,39 @@ const routes = [
         component: () => import('../views/dashboard/Profile.vue'),
       },
       {
-        path: '/dashboard/stage-management',
+        name: 'Create New Stage',
+        path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         children: [
           {
-            name: 'Stage Management',
-            path: '/dashboard/stage-management',
+            path: '',
+            component: () => import('../views/dashboard/StageManagement/General.vue'),
+          },
+        ]
+      },
+      {
+        name: 'Stage Management',
+        path: '/dashboard/stage-management/:id',
+        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        props: route => ({ id: route.params.id }),
+        children: [
+          {
+            path: '',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
           {
             name: 'Stage Layout',
-            path: '/dashboard/stage-management/layout',
+            path: 'layout',
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
           },
           {
             name: 'Chat',
-            path: '/dashboard/stage-management/chat',
+            path: 'chat',
             component: () => import('../views/dashboard/StageManagement/Chat.vue'),
           },
           {
             name: 'Scenes',
-            path: '/dashboard/stage-management/scenes',
+            path: 'scenes',
             component: () => import('../views/dashboard/StageManagement/Scenes.vue'),
           }
         ]

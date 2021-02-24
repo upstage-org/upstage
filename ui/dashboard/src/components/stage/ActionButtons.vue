@@ -16,7 +16,7 @@
   </div>
   <template v-else>
     <router-link
-      to="/dashboard/stage-management"
+      :to="`/dashboard/stage-management/${stage.id}/`"
       class="button mx-2 is-block is-fullwidth is-primary"
     >
       <span class="icon">
@@ -45,6 +45,7 @@
 <script>
 import { ref } from "vue";
 export default {
+  props: ["stage"],
   setup: () => {
     const editing = ref(false);
     const stageName = ref("");

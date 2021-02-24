@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from "@/store/index";
 import { notification } from "@/utils/notification";
-import config from '../config';
+import config from '@/config';
 
 const baseURL = new URL(config.API_ENDPOINT).toString();
 
