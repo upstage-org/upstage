@@ -7,7 +7,7 @@
       <div class="field-body">
         <Field
           placeholder="Full Name"
-          v-model="stage.name"
+          v-model="form.name"
           required
           requiredMessage="Stage name is required"
           expanded
@@ -15,7 +15,7 @@
         <Field
           required
           placeholder="Short Name"
-          v-model="stage.fileLocation"
+          v-model="form.fileLocation"
           requiredMessage="Short name is required"
           right="fas fa-check"
           help="From which the stage URL is created"
@@ -34,7 +34,7 @@
             <textarea
               class="textarea"
               placeholder="enter a description (previously only for the splash screen that displays while loading - do we need 2 description fields now, one for the foyer display & one for the splash screen?)"
-              v-model="stage.description"
+              v-model="form.description"
             ></textarea>
           </div>
         </div>
@@ -68,9 +68,9 @@
         <div class="field is-narrow">
           <div class="control">
             <div class="select is-fullwidth">
-              <select v-model="stage.ownerId">
+              <select v-model="form.ownerId">
                 <option v-for="user in users" :key="user" :value="user.id">
-                  {{ user.displayName ? user.displayName : user.username }}
+                  {{ displayName(user) }}
                 </option>
               </select>
             </div>
@@ -132,42 +132,41 @@
 <script>
 import { useMutation, useQuery } from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { reactive, watchEffect } from "vue";
+import { inject, reactive, watchEffect } from "vue";
 import Field from "@/components/form/Field";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
+import { displayName } from "@/utils/auth";
 
 export default {
   components: { Field },
   setup: () => {
-    const stage = reactive({});
-    const { loading, mutation, data } = useMutation(
-      stageGraph.createStage,
-      stage
-    );
+    const router = useRouter();
+    const stage = inject("stage");
+
+    const form = reactive({ ...stage.value, ownerId: stage.value.owner?.id });
+    watchEffect(() => {
+      console.log(form)
+    })
 
     const { nodes: users } = useQuery(userGraph.oneUser);
-    watchEffect(() => {
-      console.log(stage);
-    });
-
-    const router = useRouter();
+    const { loading, mutation, data } = useMutation(
+      stageGraph.createStage,
+      form
+    );
     const createStage = async () => {
       await mutation();
       if (data) {
         notification.success(
           "Stage created successfully! ID: " + data.value.createStage.stage.id
         );
-        router.push({
-          name: "Stage Management",
-          params: {
-            id: data.value.createStage.stage.id,
-          },
-        });
+        router.push(
+          `/dashboard/stage-management/${data.value.createStage.stage.id}/`
+        );
       }
     };
 
-    return { stage, createStage, loading, users, json: JSON.stringify };
+    return { form, createStage, loading, users, displayName };
   },
 };
 </script>

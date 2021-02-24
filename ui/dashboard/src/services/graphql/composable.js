@@ -9,10 +9,10 @@ export const useRequest = (service, ...params) => {
         const key = Object.keys(data.value)[0];
         return data.value[key].edges.map((edge) => edge.node)
     });
-    const fetch = async () => {
+    const fetch = async (...newParams) => {
         try {
             loading.value = true;
-            data.value = await service(...params);
+            data.value = newParams.length ? await service(...newParams) : await service(...params);
         } catch (error) {
             notification.error(error.response.errors[0].message);
         } finally {
@@ -34,3 +34,7 @@ export const useQuery = (...params) => {
     fetch();
     return { fetch, ...rest }
 };
+
+export const useFirst = (nodes) => {
+    return computed(() => (nodes.value && nodes.value.length && nodes.value[0]) ?? {});
+}

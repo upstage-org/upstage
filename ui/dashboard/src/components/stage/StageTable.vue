@@ -1,20 +1,16 @@
 <template>
-  <table class="table">
+  <table class="table" :class="{ 'is-loading': loading }">
     <thead>
       <tr>
         <th><abbr title="Name (url)">Stage name</abbr></th>
+        <th><abbr title="Creator of the stage">Owner</abbr></th>
         <th><abbr title="Duplicate/Manage stage">Actions</abbr></th>
         <th><abbr title="Chat log">Chat log</abbr></th>
         <th><abbr title="Screen recordings">Screen recordings</abbr></th>
       </tr>
     </thead>
     <tfoot>
-      <tr>
-        <th><abbr title="Name (url)">Stage name</abbr></th>
-        <th><abbr title="Duplicate/Manage stage">Actions</abbr></th>
-        <th><abbr title="Chat log">Chat log</abbr></th>
-        <th><abbr title="Screen recordings">Screen recordings</abbr></th>
-      </tr>
+      <tr></tr>
     </tfoot>
     <tbody>
       <tr v-for="stage in stages" :key="stage">
@@ -23,6 +19,9 @@
             {{ stage.name }}
           </router-link>
         </td>
+        <td>
+          {{ displayName(stage.owner) }}
+        </td>
         <td class="has-text-centered">
           <Modal>
             <template #trigger>
@@ -30,7 +29,7 @@
             </template>
             <template #header>Stage Detail</template>
             <template #content><Detail :name="stage.name" /></template>
-            <template #footer><ActionButtons /></template>
+            <template #footer><ActionButtons :stage="stage" /></template>
           </Modal>
         </td>
         <td class="has-text-centered">
@@ -45,26 +44,18 @@
 </template>
 
 <script>
+import { useQuery } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
 import Modal from "../Modal";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
+import { displayName } from "@/utils/auth";
 
 export default {
   components: { Modal, ActionButtons, Detail },
   setup: () => {
-    const stages = [
-      {
-        name: "Making Absence Present",
-      },
-      {
-        name: "Waiting for Brexit",
-      },
-      {
-        name: "Pandemic Party",
-      },
-    ];
-
-    return { stages };
+    const { nodes: stages, loading } = useQuery(stageGraph.stageList);
+    return { loading, stages, displayName };
   },
 };
 </script>

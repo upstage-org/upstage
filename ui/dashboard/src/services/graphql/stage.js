@@ -13,5 +13,23 @@ export default {
         }
       }
     }
+  `, variables),
+  stageList: (variables) => client.request(gql`
+    query ListStage($id: ID, $nameLike: String) {
+      stageList(id: $id, nameLike: $nameLike) {
+        edges {
+          node {
+            id
+            name
+            fileLocation
+            owner {
+              id
+              username
+              displayName
+            }
+          }
+        }
+      }
+    }
   `, variables)
 } 

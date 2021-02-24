@@ -3,37 +3,35 @@
     <div class="column is-4">
       <aside class="menu box has-background-light mx-4">
         <p class="menu-label">
-          <span v-if="id">Name of the Stage</span>
+          <span v-if="id">{{ stage.name }}</span>
           <span v-else>Create new stage</span>
         </p>
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/stage-management"
+              :to="
+                id
+                  ? `/dashboard/stage-management/${id}/`
+                  : '/dashboard/new-stage'
+              "
               exact-active-class="is-active"
               >General Information</router-link
             >
           </li>
           <template v-if="id">
             <li>
-              <router-link
-                to="/dashboard/stage-management/layout"
-                exact-active-class="is-active"
+              <router-link to="layout" exact-active-class="is-active"
                 >Layout</router-link
               >
             </li>
             <li>
-              <router-link
-                to="/dashboard/stage-management/chat"
-                exact-active-class="is-active"
+              <router-link to="chat" exact-active-class="is-active"
                 >Chat</router-link
               >
             </li>
             <li><a>Record</a></li>
             <li>
-              <router-link
-                to="/dashboard/stage-management/scenes"
-                exact-active-class="is-active"
+              <router-link to="scenes" exact-active-class="is-active"
                 >Scenes</router-link
               >
               <ul>
@@ -51,18 +49,36 @@
     </div>
     <div class="column is-8">
       <div class="pt-4 pr-4 pb-4">
-        <router-view />
+        <button class="is-loading" v-if="!!id && loading"></button>
+        <router-view v-else />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { provide } from "vue";
+import { provide, watch } from "vue";
+import { useFirst, useRequest } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
 export default {
   props: ["id"],
   setup: (props) => {
     provide("id", props.id);
+    const { nodes, loading, fetch } = useRequest(stageGraph.stageList);
+    const stage = useFirst(nodes);
+    provide("stage", stage);
+    watch(
+      () => props.id,
+      () => {
+        if (props.id) {
+          fetch({
+            id: props.id,
+          });
+        }
+      },
+      { immediate: true }
+    );
+    return { stage, loading };
   },
 };
 </script>
