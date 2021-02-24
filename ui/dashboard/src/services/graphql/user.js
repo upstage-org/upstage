@@ -27,5 +27,12 @@ export default {
         }
       }
     }
-  `)
+  `),
+  refreshUser: (variables, headers) => client.request(gql`
+    mutation RefreshToken($refreshToken: String) {
+      refreshUser(refreshToken: $refreshToken) {
+        newToken
+      }
+    }
+  `, variables, headers),
 } 

@@ -45,7 +45,7 @@ class RefreshMutation(graphene.Mutation):
     new_token = graphene.String()
 
     @jwt_required(refresh=True)
-    def mutate(self):
+    def mutate(self, info, refresh_token):
         current_user_id = get_jwt_identity()
         refresh_token = request.headers[app.config['JWT_HEADER_NAME']]
 
