@@ -19,10 +19,10 @@
           Profile
         </router-link>
       </div>
+    </div>
 
-      <div class="navbar-end">
-        <Logo />
-      </div>
+    <div class="navbar-brand">
+      <Logo />
     </div>
   </nav>
   <div id="main-content">

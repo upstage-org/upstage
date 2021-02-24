@@ -219,8 +219,6 @@ export default {
   }
   .panel-block {
     &:hover {
-      @include boxShadow;
-      border: 1px solid $black;
       z-index: 100;
       position: relative;
       font-size: 14px;

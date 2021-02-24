@@ -17,7 +17,7 @@ nav {
   }
 }
 .button {
-    &:not(.no-shadow):hover {
+    &.shadow:hover {
         @include boxShadow;
     }
     &:not(.is-large) .icon {
@@ -53,9 +53,6 @@ nav {
 .panel-heading {
     overflow: visible !important;
 }
-.tag {
-    box-shadow: 3px -3px 0 0 $black;
-}
 #topbar {
     border-top: none;
 }
@@ -87,6 +84,7 @@ nav {
         padding: 0 20px !important;
         justify-content: center;
         text-transform: uppercase;
+        border: 1px solid transparent;
     }
     .vertical-divider {
         width: 8px;
@@ -95,17 +93,16 @@ nav {
         border-radius: 100%;
         margin: auto 0;
     }
-    a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
-        width: 200px;
-        &:hover {
-            @include boxShadow;
-            border: 1px solid $border-color;
+    .navbar-menu {
+        a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
+            &:hover {
+                @include boxShadow;
+                border: 1px solid $border-color;
+            }
         }
     }
     .navbar-dropdown {
-        width: 100%;
         padding: 0 !important;
-        border: 1px solid $border-color;
         top: calc(100% + 1px) !important;
         left: -1px !important;
         width: calc(100% + 2px) !important;
@@ -113,9 +110,14 @@ nav {
             margin: 0;
             padding: 8px 0 !important;
             justify-content: center;
-            border-bottom: 1px solid $border-color;
-            &:last-child {
-                border-bottom: none;
+            border-width: 0 1px 1px 1px;
+            border-style: solid;
+            border-color: $border-color;
+            white-space: normal;
+            text-align: center;
+            &:hover {
+                box-shadow: none !important;
+                border-width: 0 1px 1px 1px !important;
             }
         }
     }
