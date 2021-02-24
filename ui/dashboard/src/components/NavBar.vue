@@ -27,7 +27,7 @@
         </div>
         <div class="vertical-divider" />
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> Learn </a>
+          <a class="navbar-link is-arrowless"> &nbsp; Learn &nbsp; </a>
           <div class="navbar-dropdown">
             <a class="navbar-item" href="#"> Research </a>
             <a

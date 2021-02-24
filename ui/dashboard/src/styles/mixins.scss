@@ -12,7 +12,6 @@
         $shadow: $shadow $i*1px $i*-1px 0 $border-color#{if($i != $shadow-size, ',', '')};
     }
     box-shadow: $shadow;
-    transform: translate($shadow-size*-1px, $shadow-size*1px);
     transition-duration: 0.25s;
 }
 @mixin textShadow() {
