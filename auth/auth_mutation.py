@@ -7,13 +7,15 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
+from flask import request
 from flask_jwt_extended import (jwt_required,get_jwt_identity,
     create_access_token,create_refresh_token,
     verify_jwt_in_request,JWTManager)
 
-from config.project_globals import app
+from config.project_globals import app,DBSession,ScopedSession
 from auth.fernet_crypto import encrypt,decrypt
 from auth.auth_api import TNL
+from auth.models import UserSession
 from user.models import User
 
 jwt = JWTManager(app)
@@ -45,7 +47,7 @@ class RefreshMutation(graphene.Mutation):
     new_token = graphene.String()
 
     @jwt_required(refresh=True)
-    def mutate(self):
+    def mutate(self, info, refresh_token):
         current_user_id = get_jwt_identity()
         refresh_token = request.headers[app.config['JWT_HEADER_NAME']]
 
