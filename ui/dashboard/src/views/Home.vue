@@ -1,6 +1,6 @@
 <template>
-  <section class="hero">
-    <div id="welcome" class="hero-body">
+  <section id="welcome" class="hero is-fullheight">
+    <div class="hero-body">
       <div class="container">
         <h1 class="title">CYBERFORMANCE PLATFORM</h1>
         <h2 class="subtitle">
@@ -46,6 +46,7 @@ export default {
 #welcome {
   background-image: url(../assets/foyerbg.png);
   text-align: center;
+  min-height: calc(100vh - 120px);
   .title {
     @include textShadow;
     font-size: 50px;
