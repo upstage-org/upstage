@@ -18,38 +18,20 @@
                 requiredMessage="Username is required"
                 :touched="touched"
               />
-              <Field
+              <Password
                 v-model="form.password"
                 left="fas fa-lock"
-                right="fas fa-eye"
                 placeholder="Password"
-                :type="showPassword ? 'text' : 'password'"
                 required
                 requiredMessage="Password is required"
                 :touched="touched"
-              >
-                <template #right>
-                  <Eye
-                    :slash="showPassword"
-                    @click="() => (showPassword = !showPassword)"
-                  />
-                </template>
-              </Field>
-              <Field
+              />
+              <Password
                 v-model="form.confirmPassword"
                 left="fas fa-lock"
-                right="fas fa-eye"
                 placeholder="Confirm Password"
-                :type="showPassword ? 'text' : 'password'"
                 :error="confirmPasswordError"
-              >
-                <template #right>
-                  <Eye
-                    :slash="showPassword"
-                    @click="() => (showPassword = !showPassword)"
-                  />
-                </template>
-              </Field>
+              />
               <div class="columns">
                 <div class="column pr-0 pb-0">
                   <Field
@@ -90,24 +72,18 @@
 
 <script>
 import Field from "@/components/form/Field.vue";
+import Password from "@/components/form/Password.vue";
 import { computed, reactive, ref } from "vue";
 import { useMutation } from "@/services/graphql/composable";
 import { userGraph } from "@/services/graphql";
 import { useRouter } from "vue-router";
 import { notification } from "@/utils/notification";
+
 export default {
-  components: {
-    Field,
-    Eye: (props) => (
-      <a className="icon is-small is-right clickable" onClick={props.onClick}>
-        <i className={`fas fa-${props.slash ? "eye-slash" : "eye"}`}></i>
-      </a>
-    ),
-  },
+  components: { Field, Password },
   setup: () => {
     const router = useRouter();
     const form = reactive({});
-    const showPassword = ref(false);
     const { mutation, loading } = useMutation(userGraph.createUser, form);
     const confirmPasswordError = computed(() =>
       form.password !== form.confirmPassword
@@ -140,7 +116,6 @@ export default {
 
     return {
       form,
-      showPassword,
       loading,
       submit,
       confirmPasswordError,
