@@ -1,5 +1,4 @@
 import { computed, ref } from "vue";
-import { notification } from "@/utils/notification";
 
 export const useRequest = (service, ...params) => {
     const loading = ref(false);
@@ -13,8 +12,9 @@ export const useRequest = (service, ...params) => {
         try {
             loading.value = true;
             data.value = newParams.length ? await service(...newParams) : await service(...params);
+            return data.value;
         } catch (error) {
-            notification.error(error.response.errors[0].message);
+            throw error.response.errors[0].message;
         } finally {
             loading.value = false;
         }

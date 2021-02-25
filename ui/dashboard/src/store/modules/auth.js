@@ -1,3 +1,4 @@
+import { userGraph } from "@/services/graphql";
 import { authService } from "@/services/rest";
 
 import {
@@ -54,16 +55,14 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     fetchRefreshToken({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        authService
-          .getRefreshToken(state.refresh_token)
-          .then((resp) => {
-            commit("SET_TOKEN", resp);
-            resolve();
-            return resp;
-          })
-          .catch((err) => reject(err));
-      });
+      return userGraph.refreshUser({
+        refreshToken: state.refresh_token
+      }, {
+        'X-Access-Token': state.refresh_token
+      }).then(response => {
+        console.log(response)
+        return response.refreshUser.newToken
+      })
     },
   },
   getters: {

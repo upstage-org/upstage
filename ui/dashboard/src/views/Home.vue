@@ -1,5 +1,5 @@
 <template>
-  <section id="welcome" class="hero is-fullheight">
+  <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
         <h1 class="title">CYBERFORMANCE PLATFORM</h1>
@@ -44,9 +44,7 @@ export default {
 @import "@/styles/mixins";
 
 #welcome {
-  background-image: url(../assets/foyerbg.png);
   text-align: center;
-  min-height: calc(100vh - 120px);
   .title {
     @include textShadow;
     font-size: 50px;

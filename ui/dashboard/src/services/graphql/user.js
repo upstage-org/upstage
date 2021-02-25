@@ -4,6 +4,16 @@ import { createClient } from "./graphql";
 const client = createClient('user_graphql')
 
 export default {
+  createUser: (variables) => client.request(gql`
+    mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String) {
+      createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, active: true}) {
+        user {
+          id
+          username
+        }
+      }
+    }
+  `, variables),
   updateUser: (variables) => client.request(gql`
     mutation UpdateUser($id: ID!, $displayName: String) {
       updateUser(input: {id: $id, displayName: $displayName}) {
@@ -27,5 +37,12 @@ export default {
         }
       }
     }
-  `)
+  `),
+  refreshUser: (variables, headers) => client.request(gql`
+    mutation RefreshToken($refreshToken: String) {
+      refreshUser(refreshToken: $refreshToken) {
+        newToken
+      }
+    }
+  `, variables, headers),
 } 

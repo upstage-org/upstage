@@ -73,6 +73,10 @@ nav {
         border-width: 0.25em;
     }
 }
+.foyer-background {
+  background-image: url(../assets/foyerbg.png);
+  min-height: calc(100vh - 120px);
+}
 // Desktop only css
 @media screen and (min-width: 1024px) {
     .navbar-start {

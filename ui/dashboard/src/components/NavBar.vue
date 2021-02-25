@@ -70,9 +70,14 @@
             <strong>Logout</strong>
           </button>
         </template>
-        <router-link v-else to="/login" class="button is-primary m-2 mr-6">
-          <strong>Login</strong>
-        </router-link>
+        <template v-else>
+          <router-link to="/login" class="button is-primary m-2">
+            <strong>Login</strong>
+          </router-link>
+          <router-link to="/register" class="button is-primary m-2 mr-6">
+            <strong>Register</strong>
+          </router-link>
+        </template>
       </div>
     </div>
   </nav>

@@ -1,0 +1,159 @@
+<template>
+  <div class="columns is-mobile is-centered is-vcentered foyer-background">
+    <div
+      class="column is-three-quarters-mobile is-two-thirds-tablet is-half-desktop is-one-third-widescreen is-one-quarter-fullhd"
+    >
+      <form @submit.prevent="submit">
+        <div class="card">
+          <header class="card-header">
+            <p class="card-header-title">Create a account with UpStage</p>
+          </header>
+          <div class="card-content">
+            <div class="content">
+              <Field
+                v-model="form.username"
+                left="fas fa-user"
+                placeholder="Username"
+                required
+                requiredMessage="Username is required"
+                :touched="touched"
+              />
+              <Field
+                v-model="form.password"
+                left="fas fa-lock"
+                right="fas fa-eye"
+                placeholder="Password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                requiredMessage="Password is required"
+                :touched="touched"
+              >
+                <template #right>
+                  <a
+                    class="icon is-small is-right clickable"
+                    @click="showPassword = !showPassword"
+                  >
+                    <i
+                      :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"
+                    ></i>
+                  </a>
+                </template>
+              </Field>
+              <Field
+                v-model="form.confirmPassword"
+                left="fas fa-lock"
+                right="fas fa-eye"
+                placeholder="Confirm Password"
+                :type="showPassword ? 'text' : 'password'"
+                :error="confirmPasswordError"
+              >
+                <template #right>
+                  <a
+                    class="icon is-small is-right clickable"
+                    @click="showPassword = !showPassword"
+                  >
+                    <i
+                      :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"
+                    ></i>
+                  </a>
+                </template>
+              </Field>
+              <div class="columns">
+                <div class="column pr-0 pb-0">
+                  <Field
+                    v-model="form.firstName"
+                    left="fas fa-user"
+                    placeholder="First Name"
+                  />
+                </div>
+                <div class="column pb-0">
+                  <Field v-model="form.lastName" placeholder="Last Name" />
+                </div>
+              </div>
+              <Field
+                v-model="form.email"
+                left="fas fa-envelope"
+                placeholder="Email"
+                type="email"
+              />
+            </div>
+          </div>
+          <footer class="card-footer">
+            <button
+              class="card-footer-item is-white button no-shadow has-text-primary"
+              :class="{ 'is-loading': loading }"
+              type="submit"
+            >
+              <span>Register</span>
+              <span class="icon is-medium">
+                <i class="fas fa-check"></i>
+              </span>
+            </button>
+          </footer>
+        </div>
+      </form>
+    </div>
+  </div>
+</template>
+
+<script>
+import Field from "@/components/form/Field.vue";
+import { computed, reactive, ref } from "vue";
+import { useMutation } from "@/services/graphql/composable";
+import { userGraph } from "@/services/graphql";
+import { useRouter } from "vue-router";
+import { notification } from "@/utils/notification";
+export default {
+  components: { Field },
+  setup: () => {
+    const router = useRouter();
+    const form = reactive({});
+    const showPassword = ref(false);
+    const loading = ref(false);
+    const { mutation } = useMutation(userGraph.createUser, form);
+    const confirmPasswordError = computed(() =>
+      form.password !== form.confirmPassword
+        ? "Confirm password mismatch"
+        : false
+    );
+    const touched = ref(false);
+    const submit = async () => {
+      touched.value = true;
+      if (!form.username || !form.password) return;
+      if (confirmPasswordError.value) return;
+      try {
+        const response = await mutation();
+        notification.success(
+          "Username " +
+            response.createUser.user.username +
+            " created successfully!"
+        );
+        router.push("/login");
+      } catch (error) {
+        if (error.includes("upstage_user_username_key")) {
+          notification.error("Username " + form.username + " already exists!");
+        } else if (error.includes("upstage_user_email_key")) {
+          notification.error("Email " + form.email + " already exists!");
+        } else {
+          notification.error(error);
+        }
+      }
+    };
+
+    return {
+      form,
+      showPassword,
+      loading,
+      submit,
+      confirmPasswordError,
+      touched,
+    };
+  },
+};
+</script>
+
+<style>
+.clickable {
+  pointer-events: all;
+}
+</style>

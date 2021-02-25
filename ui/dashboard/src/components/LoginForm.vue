@@ -35,7 +35,7 @@
               style="pointer-events: all"
               @click="toggleShowPassword"
             >
-              <i class="fas fa-eye"></i>
+              <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
             </a>
           </p>
         </div>
@@ -47,7 +47,7 @@
         :class="{ 'is-loading': loading }"
         @click="submit"
       >
-        Login&nbsp;
+        <span>Login</span>
         <span class="icon is-medium">
           <i class="fas fa-chevron-right"></i>
         </span>
