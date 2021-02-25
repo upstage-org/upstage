@@ -11,20 +11,27 @@
     >
       <input
         class="input"
-        :class="{ 'is-danger': isRequired }"
+        :class="{ 'is-danger': isRequired || error }"
         :type="type"
         :placeholder="placeholder"
         :value="modelValue"
         @input="$emit('update:modelValue', $event.target.value)"
-        @blur="touched = true"
+        @blur="stateTouched = true"
       />
-      <span class="icon is-small is-left" v-if="left">
-        <i :class="left"></i>
-      </span>
-      <span class="icon is-small is-right" v-if="right">
-        <i :class="right"></i>
-      </span>
+      <slot name="left">
+        <span class="icon is-small is-left" v-if="left">
+          <i :class="left"></i>
+        </span>
+      </slot>
+      <slot name="right">
+        <span class="icon is-small is-right" v-if="right">
+          <i :class="right"></i>
+        </span>
+      </slot>
     </div>
+    <p class="help is-danger" v-if="isTouched && error">
+      <span>{{ error }}</span>
+    </p>
     <p class="help is-danger" v-if="isRequired">
       <span v-if="requiredMessage">{{ requiredMessage }}</span>
       <span v-else>{{ label }} is required</span>
@@ -76,15 +83,23 @@ export default {
     help: {
       type: String,
     },
+    error: {
+      type: String,
+    },
+    touched: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
   setup: (props) => {
-    const touched = ref(false);
+    const stateTouched = ref(false);
+    const isTouched = computed(() => props.touched || stateTouched.value);
     const isRequired = computed(
-      () => props.required && touched.value && !props.modelValue
+      () => props.required && isTouched.value && !props.modelValue
     );
 
-    return { touched, isRequired };
+    return { isRequired, stateTouched, isTouched };
   },
 };
 </script>
