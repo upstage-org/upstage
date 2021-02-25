@@ -11,7 +11,7 @@
     >
       <input
         class="input"
-        :class="{ 'is-danger': isRequired || error }"
+        :class="{ 'is-danger': isTouched && (isRequired || error) }"
         :type="type"
         :placeholder="placeholder"
         :value="modelValue"

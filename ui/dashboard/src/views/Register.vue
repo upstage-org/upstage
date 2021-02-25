@@ -29,14 +29,10 @@
                 :touched="touched"
               >
                 <template #right>
-                  <a
-                    class="icon is-small is-right clickable"
-                    @click="showPassword = !showPassword"
-                  >
-                    <i
-                      :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"
-                    ></i>
-                  </a>
+                  <Eye
+                    :slash="showPassword"
+                    @click="() => (showPassword = !showPassword)"
+                  />
                 </template>
               </Field>
               <Field
@@ -48,14 +44,10 @@
                 :error="confirmPasswordError"
               >
                 <template #right>
-                  <a
-                    class="icon is-small is-right clickable"
-                    @click="showPassword = !showPassword"
-                  >
-                    <i
-                      :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"
-                    ></i>
-                  </a>
+                  <Eye
+                    :slash="showPassword"
+                    @click="() => (showPassword = !showPassword)"
+                  />
                 </template>
               </Field>
               <div class="columns">
@@ -104,13 +96,19 @@ import { userGraph } from "@/services/graphql";
 import { useRouter } from "vue-router";
 import { notification } from "@/utils/notification";
 export default {
-  components: { Field },
+  components: {
+    Field,
+    Eye: (props) => (
+      <a className="icon is-small is-right clickable" onClick={props.onClick}>
+        <i className={`fas fa-${props.slash ? "eye-slash" : "eye"}`}></i>
+      </a>
+    ),
+  },
   setup: () => {
     const router = useRouter();
     const form = reactive({});
     const showPassword = ref(false);
-    const loading = ref(false);
-    const { mutation } = useMutation(userGraph.createUser, form);
+    const { mutation, loading } = useMutation(userGraph.createUser, form);
     const confirmPasswordError = computed(() =>
       form.password !== form.confirmPassword
         ? "Confirm password mismatch"
