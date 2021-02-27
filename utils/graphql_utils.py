@@ -31,8 +31,8 @@ def input_to_dictionary(input):
 def _json_object_hook(d):
     return namedtuple('X', d.keys())(*d.values())
 
-
 def json2obj(data):
+    """ Convert JSON to an object Graphene can handle """
     return json.loads(data, object_hook=_json_object_hook)
 
 
@@ -55,54 +55,33 @@ class FilteredConnectionField(SQLAlchemyConnectionField):
               query = query.filter(col == val)
         return query
 
+"""
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# In case we want to pass errors directly to the front end...
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class CustomClientIDMutationMeta(ClientIDMutationMeta):
+    ''' We have to subclass the metaclass of ClientIDMutation and inject the errors field.
+        we do this because ClientIDMutation subclasses do not inherit the fields on it.
+    '''
+    def __new__(mcs, name, bases, attrs):
+        attrs['errors'] = String()
+        return super().__new__(mcs, name, bases, attrs)
 
-class CurrentUserField(SQLAlchemyConnectionField):
-
-    def __init__(self, type, input_type, *args, **kwargs):
-        #fields = {name: field.type() for name, field in input_type._meta.fields.items()}
-        #kwargs.update(fields)
-        self.result={}
-        super().__init__(type, *args, **kwargs)
-
+class CustomClientIDMutation(ClientIDMutation, metaclass=CustomClientIDMutationMeta):
+    ''' Custom ClientIDMutation that has a errors  @fields.'''
     @classmethod
-    @jwt_required
-    def get_query(cls, model, info, sort=None, **args):
-        print("here 1")
-        code,error,user,buildings,groups,timezone = current_user()
-        if code != 200:
-            abort(code,error)
+    def mutate(cls, root, args, context, info):
+        try:
+            return super().mutate(root, args, context, info)
 
-        print("here 2")
-        access_token = request.headers.get(app.config['JWT_HEADER_NAME'],None)
-        #app.logger.info("access token:{0}".format(access_token))
-    
-        print("here 3")
-        # If latest user session access token doesn't match, kick them out.
-        user_session = DBSession.query(UserSession).filter(
-            UserSession.user_id==user.id).order_by(
-            UserSession.recorded_time.desc()).first()
-  
-        print("here 4")
-        if not user_session:
-            abort(403,'Bad user session (3)')
+        except MutationException as e:
+            return cls(errors=str(e))
 
-        print("here 5")
-        if (user_session.access_token != access_token):
-            TNL.add(access_token)
-            # No. user session may be valid, from a newer login on a different device.
-            #TNL.add(user_session.refresh_token)
-            #TNL.add(user_session.access_token)
-            abort(403,'Access token is invalid (4)')
-
-        print("here 6")
-        self.result = {
-            'user_id':user.id,'role':user.role,
-            'phone':user.phone,
-            'first_name':user.first_name, 'last_name': user.last_name,
-            'email':user.email,
-            'timezone':timezone if timezone != pytz.UTC else None,
-            'groups':[],
-            'username':user.username,
-            }
-        return self.result
-  
+class MutationException(Exception):
+    '''A Mutation Exception is an exception that is raised
+       when an error message needs to be passed back to the frontend client
+       our mutation base class will catch it and return it appropriately
+    '''
+    pass
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
