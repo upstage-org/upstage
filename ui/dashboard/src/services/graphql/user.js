@@ -45,4 +45,23 @@ export default {
       }
     }
   `, variables, headers),
+  loggedIn: () => client.request(gql`
+    query {
+      loggedIn {
+        edges {
+          node {
+            id
+            dbId
+            username
+            displayName
+            firstName
+            lastName
+            email
+            phone
+            active
+          }
+        }
+      } 
+    }
+  `),
 } 

@@ -21,7 +21,7 @@ from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
 from auth.auth_mutation import AuthMutation,RefreshMutation
-
+from flask_jwt_extended import jwt_required,get_jwt_identity
 
 class UserAttribute:
     username = graphene.String(description="Username")
@@ -100,8 +100,17 @@ class UpdateUser(graphene.Mutation):
 
         return UpdateUser(user=user)
 
-class CurrentUserInput(graphene.InputObjectType):
-    username = graphene.String(required=False)
+class LoggedInConnectionField(SQLAlchemyConnectionField):
+    @classmethod
+    @jwt_required()
+    def get_query(cls, model, info, **args):
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            raise Exception("Your session expired. Please log in again.")
+        query = super(LoggedInConnectionField, cls).get_query(model, info, **args)
+        query = query.filter(getattr(model, 'id') == current_user_id)
+        return query
+
 
 class OneUserInput(graphene.InputObjectType):
     username = graphene.String(required=False)
@@ -119,11 +128,13 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
     oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
+    loggedIn = LoggedInConnectionField(User)
+        
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
-    ))
+))
 

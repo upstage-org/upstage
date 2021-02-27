@@ -1,4 +1,3 @@
-import { userService } from "@/services/rest";
 import { userGraph } from '@/services/graphql';
 
 export default {
@@ -24,22 +23,15 @@ export default {
     },
   },
   actions: {
-    fetchCurrent({ commit }) {
-      return new Promise((resolve) => {
-        commit("SET_LOADING_USER", true);
-        userService
-          .getCurrent()
-          .then((data) => {
-            commit("SET_USER_DATA", data);
-            resolve();
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-          .finally(() => {
-            commit("SET_LOADING_USER", false);
-          });
-      });
+    async fetchCurrent({ commit }) {
+      commit("SET_LOADING_USER", true);
+      try {
+        const data = await userGraph.loggedIn();
+        commit("SET_USER_DATA", data);
+        return data;
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
     async saveNickname({ commit, state }, { nickname }) {
       commit('SET_NICK_NAME', nickname);
