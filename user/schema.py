@@ -107,9 +107,10 @@ class OneUserInput(graphene.InputObjectType):
     email = graphene.String(required=False)
 
 class OneUser(graphene.ObjectType):
+    #search = OneUserInput()
+
     """User lookup. If not an admin, you can only look yourself up,
        and only if you're logged in."""
-    user = graphene.Field(lambda: User, description="User lookup for current user, or admin other user lookup.")
 
     class Arguments:
         """ Looking up current user requires no arguments. """
@@ -156,10 +157,11 @@ class OneUser(graphene.ObjectType):
             'phone':user.phone,
             'first_name':user.first_name, 'last_name': user.last_name,
             'email':user.email,
-            'timezone':timezone if timezone != pytz.UTC else None,
+            'timezone':timezone,
             'groups':[],
             'username':user.username,
             }
+        #return result
         return graphql_utils.json2obj(self.result)
 
 
@@ -174,7 +176,8 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
-    oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
+    #oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
+    #oneUser = OneUser.search
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
