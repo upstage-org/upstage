@@ -73,8 +73,6 @@ import Dropdown from "@/components/form/Dropdown";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";
-import { cropImageFromCanvas } from "@/utils/canvas";
-import html2canvas from "html2canvas";
 
 export default {
   components: { Dropdown, ColorPicker },
@@ -139,15 +137,13 @@ export default {
     });
 
     const saveText = async () => {
+      const { width, height } = el.value.getBoundingClientRect() ?? {};
       store.commit("stage/UPDATE_IS_WRITING", false);
-      const canvas = await html2canvas(el.value, {
-        scale: 1,
-        backgroundColor: null,
-      });
-      const image = cropImageFromCanvas(canvas);
       store.dispatch("stage/addText", {
-        ...image,
         ...options.value,
+        content: el.value.innerHTML,
+        w: width + 10,
+        h: height + 10,
       });
     };
 

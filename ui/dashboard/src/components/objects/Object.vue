@@ -32,26 +32,35 @@
           @drag-end="dragEnd"
           @resize-end="resizeEnd"
         >
-          <Image
-            class="the-object"
-            :src="src"
-            :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
-            :rotate="object.rotate"
-          />
+          <slot name="render">
+            <Image
+              class="the-object"
+              :src="src"
+              :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
+              :rotate="object.rotate"
+            />
+          </slot>
         </DragResize>
-        <Image
-          :src="src"
-          v-if="isDragging || !loggedIn"
-          :style="{
-            width: position.w + 'px',
-            height: position.h + 'px',
-            position: 'fixed',
-            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
-            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
-          }"
-          :opacity="object.opacity"
-          :rotate="object.rotate"
-        />
+        <template v-if="isDragging || !loggedIn">
+          true----
+          <div
+            :style="{
+              position: 'fixed',
+              left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+              top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
+              width: position.w + 'px',
+              height: position.h + 'px',
+            }"
+          >
+            <slot name="render">
+              <Image
+                :src="src"
+                :opacity="object.opacity"
+                :rotate="object.rotate"
+              />
+            </slot>
+          </div>
+        </template>
       </template>
       <template #context="slotProps" v-if="loggedIn">
         <slot name="menu" v-bind="slotProps" />
@@ -136,8 +145,8 @@ export default {
         });
         position.x = beforeDragPosition.value.x;
         position.y = beforeDragPosition.value.y;
-        isDragging.value = false;
       }
+      isDragging.value = false;
     };
 
     const resizeEnd = (e) => {
@@ -194,7 +203,7 @@ export default {
       }
     });
 
-    console.log(position)
+    console.log(position);
 
     return {
       el,
