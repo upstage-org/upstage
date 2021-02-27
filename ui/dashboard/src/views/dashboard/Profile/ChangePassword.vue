@@ -10,7 +10,7 @@
     <Password
       horizontal
       label="New password"
-      v-model="form.password"
+      v-model="form.newPassword"
       left="fas fa-lock"
       required
     />
@@ -25,7 +25,9 @@
       <button
         class="button mr-2 mt-2 is-primary"
         :class="{ 'is-loading': loading }"
-        :disabled="!form.password || !form.oldPassword || !form.confirmPassword"
+        :disabled="
+          !form.oldPassword || !form.newPassword || !form.confirmPassword
+        "
         @click="changePassword"
       >
         Change Password
@@ -41,25 +43,24 @@ import { computed, reactive } from "vue";
 import { useMutation } from "@/services/graphql/composable";
 import { userGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
+import { useStore } from "vuex";
 export default {
   components: { Password, ActionsField },
   setup: () => {
-    const form = reactive({});
-    const { loading, mutation: updateUser } = useMutation(
-      userGraph.updateUser,
-      form
-    );
+    const store = useStore();
+    const form = reactive({ id: store.state.user.user.id });
+    const { loading, mutation } = useMutation(userGraph.changePassword, form);
 
     const confirmPasswordError = computed(() =>
-      form.password !== form.confirmPassword
+      form.newPassword !== form.confirmPassword
         ? "Confirm password mismatch"
         : false
     );
     const changePassword = async () => {
       if (confirmPasswordError.value) return;
       try {
-        await updateUser();
-        notification.success("Player information updated successfully!");
+        await mutation();
+        notification.success("Password changed successfully!");
       } catch (error) {
         notification.error(error);
       }

@@ -66,4 +66,11 @@ export default {
     }
     ${userFragment}
   `),
+  changePassword: (variables) => client.request(gql`
+    mutation ChangePassword($id: ID!, $oldPassword: String!, $newPassword: String!) {
+      changePassword(input: {id: $id, oldPassword: $oldPassword, newPassword: $newPassword}) {
+        success
+      }
+    }
+  `, variables)
 } 

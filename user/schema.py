@@ -92,6 +92,8 @@ class UpdateUser(graphene.Mutation):
 
         user = local_db_session.query(UserModel)\
             .filter(UserModel.id==data['id']).first()
+        if ('password' in data):
+            del data['password'] # Password should not be updated directly using this mutation, since it require an old password to change
         for key, value in data.items():
             if hasattr(user, key):
                 setattr(user, key, value)
@@ -105,12 +107,36 @@ class OneUserInput(graphene.InputObjectType):
     db_id = graphene.Int(required=False)
     email = graphene.String(required=False)
 
+class ChangePasswordInput(graphene.InputObjectType,UserAttribute,):
+    """Arguments to update a user."""
+    id = graphene.ID(required=True, description="Global Id of the user.")
+    oldPassword = graphene.String(required=True)
+    newPassword = graphene.String(required=True)
+
+class ChangePassword(graphene.Mutation):
+    success = graphene.Boolean(description="Password changed successful or not")
+
+    class Arguments:
+        input = ChangePasswordInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = graphql_utils.input_to_dictionary(input)
+        local_db_session = get_scoped_session()
+        user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
+        if decrypt(user.password) != data['oldPassword']:
+            raise Exception('Old password incorrect')
+        else:
+            user.password = encrypt(data['newPassword'])
+        local_db_session.commit()
+        return ChangePassword(success=True)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     createUser = CreateUser.Field()
     updateUser = UpdateUser.Field()
     authUser = AuthMutation.Field()
     refreshUser = RefreshMutation.Field()
+    changePassword = ChangePassword.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
