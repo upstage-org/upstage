@@ -76,5 +76,3 @@ class RefreshMutation(graphene.Mutation):
             user_session_id = user_session.id
 
         return RefreshMutation(new_token=access_token)
-
-

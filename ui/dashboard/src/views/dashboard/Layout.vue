@@ -15,7 +15,7 @@
           My Stages
         </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/dashboard/profile">
+        <router-link class="navbar-item" to="/dashboard/profile/">
           Profile
         </router-link>
       </div>
