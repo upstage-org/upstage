@@ -1,5 +1,7 @@
-import { userService } from "@/services/rest";
+import router from '@/router';
 import { userGraph } from '@/services/graphql';
+import { displayName, logout } from '@/utils/auth';
+import { notification } from '@/utils/notification';
 
 export default {
   namespaced: true,
@@ -24,27 +26,26 @@ export default {
     },
   },
   actions: {
-    fetchCurrent({ commit }) {
-      return new Promise((resolve) => {
-        commit("SET_LOADING_USER", true);
-        userService
-          .getCurrent()
-          .then((data) => {
-            commit("SET_USER_DATA", data);
-            resolve();
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-          .finally(() => {
-            commit("SET_LOADING_USER", false);
-          });
-      });
+    async fetchCurrent({ commit }) {
+      commit("SET_LOADING_USER", true);
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        commit("SET_USER_DATA", currentUser);
+        return currentUser;
+      } catch (error) {
+        notification.warning('You have been logged out of this session!');
+        logout();
+        if (router.currentRoute.value.meta.requireAuth) {
+          router.push("/login");
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
     async saveNickname({ commit, state }, { nickname }) {
       commit('SET_NICK_NAME', nickname);
       try {
-        const response = await userGraph.updateUser({
+        const response = await userGraph.saveNickname({
           id: state.user.id,
           displayName: nickname
         });
@@ -60,7 +61,7 @@ export default {
   },
   getters: {
     nickname(state) {
-      return state.nickname ?? (state.user ? (state.user.firstname ?? state.user.username) : "Guest");
+      return state.nickname ?? (state.user ? displayName(state.user) : "Guest");
     },
   },
 };

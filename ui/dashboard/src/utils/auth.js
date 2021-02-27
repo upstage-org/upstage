@@ -20,6 +20,6 @@ export const logout = () => store.dispatch("auth/logout");
 
 export function displayName(user) {
   if (user.displayName) return user.displayName
-  if (user.firstName || user.lastName) return `${user.firstName} ${user.lastName}`.trim()
+  if (user.firstName || user.lastName) return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
   return user.username
 }
