@@ -75,7 +75,6 @@ export default {
     };
 
     const sendCustomReaction = (e) => {
-      console.log(e);
       sendReaction(e);
     };
 

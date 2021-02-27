@@ -72,7 +72,7 @@
 import Dropdown from "@/components/form/Dropdown";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { cropImageFromCanvas } from "@/utils/canvas";
 import html2canvas from "html2canvas";
 
@@ -131,6 +131,12 @@ export default {
       });
       el.value.focus();
     };
+    onMounted(() => {
+      onClickWriting({
+        clientX: window.innerWidth / 2,
+        clientY: window.innerHeight / 2,
+      });
+    });
 
     const saveText = async () => {
       store.commit("stage/UPDATE_IS_WRITING", false);
