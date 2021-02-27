@@ -62,8 +62,9 @@ def current_user(user_id=None,admin_initial=False,internal_use=False):
         if not user_session and not internal_use:
             return 403, 'Bad user session (2)',None,None,None,None
 
+    # TODO: Get user timezone from front end.
     timezone='UTC'
-    return 200,None,user,[],[],timezone
+    return 200,None,user,timezone
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
