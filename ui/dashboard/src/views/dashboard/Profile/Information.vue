@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <form @submit.prevent="updateInformation">
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Full Name</label>
@@ -17,19 +17,13 @@
       help="In stage chat nickname"
     />
     <Field
-      disabled
       horizontal
+      type="email"
       label="Email"
       placeholder="Email"
       v-model="form.email"
     />
     <Field horizontal label="Phone" placeholder="Phone" v-model="form.phone" />
-    <Field
-      horizontal
-      label="Apartment"
-      placeholder="Apartment"
-      v-model="form.apartment"
-    />
     <div class="field is-horizontal">
       <div class="field-label"><label class="label">Status</label></div>
       <div class="field-body">
@@ -68,12 +62,12 @@
       <button
         class="button mr-2 mt-2 is-primary"
         :class="{ 'is-loading': loading }"
-        @click="updateInformation"
+        type="submit"
       >
         Update Information
       </button>
     </ActionsField>
-  </div>
+  </form>
 </template>
 
 <script>

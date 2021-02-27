@@ -100,18 +100,6 @@ class UpdateUser(graphene.Mutation):
 
         return UpdateUser(user=user)
 
-class LoggedInConnectionField(SQLAlchemyConnectionField):
-    @classmethod
-    @jwt_required()
-    def get_query(cls, model, info, **args):
-        current_user_id = get_jwt_identity()
-        if not current_user_id:
-            raise Exception("Your session expired. Please log in again.")
-        query = super(LoggedInConnectionField, cls).get_query(model, info, **args)
-        query = query.filter(getattr(model, 'id') == current_user_id)
-        return query
-
-
 class OneUserInput(graphene.InputObjectType):
     username = graphene.String(required=False)
     db_id = graphene.Int(required=False)
@@ -128,8 +116,16 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
     oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
-    loggedIn = LoggedInConnectionField(User)
-        
+    currentUser = graphene.Field(User)
+
+    @jwt_required()
+    def resolve_currentUser(self, info):
+        current_user_id = get_jwt_identity()
+        if not current_user_id:
+            raise Exception("Your session expired. Please log in again.")
+        query = User.get_query(info)
+        user = query.get(current_user_id)
+        return user
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
