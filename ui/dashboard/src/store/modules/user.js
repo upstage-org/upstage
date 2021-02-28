@@ -33,10 +33,10 @@ export default {
         commit("SET_USER_DATA", currentUser);
         return currentUser;
       } catch (error) {
-        notification.warning('You have been logged out of this session!');
         logout();
         if (router.currentRoute.value.meta.requireAuth) {
           router.push("/login");
+          notification.warning('You have been logged out of this session!');
         }
       } finally {
         commit("SET_LOADING_USER", false);

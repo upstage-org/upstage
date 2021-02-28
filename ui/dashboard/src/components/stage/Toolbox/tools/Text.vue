@@ -190,10 +190,6 @@ export default {
 </script>
 
 <style lang="scss">
-[contenteditable] {
-  -webkit-user-select: text !important;
-  user-select: text !important;
-}
 .writing {
   position: fixed;
   top: 0;
@@ -205,9 +201,6 @@ export default {
   backdrop-filter: blur(5px);
   > p {
     position: absolute;
-    * {
-      font-family: inherit;
-    }
   }
 }
 .text-tool {

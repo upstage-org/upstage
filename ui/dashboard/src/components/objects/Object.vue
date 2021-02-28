@@ -42,7 +42,6 @@
           </slot>
         </DragResize>
         <template v-if="isDragging || !loggedIn">
-          true----
           <div
             :style="{
               position: 'fixed',
