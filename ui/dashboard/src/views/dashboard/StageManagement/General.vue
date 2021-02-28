@@ -41,7 +41,7 @@
       </div>
     </div>
 
-    <div class="field is-horizontal">
+    <!-- <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Media</label>
       </div>
@@ -58,7 +58,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
@@ -146,8 +146,8 @@ export default {
 
     const form = reactive({ ...stage.value, ownerId: stage.value.owner?.id });
     watchEffect(() => {
-      console.log(form)
-    })
+      console.log(form);
+    });
 
     const { nodes: users } = useQuery(userGraph.oneUser);
     const { loading, mutation, data } = useMutation(
@@ -155,14 +155,16 @@ export default {
       form
     );
     const createStage = async () => {
-      await mutation();
-      if (data) {
+      try {
+        await mutation();
         notification.success(
           "Stage created successfully! ID: " + data.value.createStage.stage.id
         );
         router.push(
           `/dashboard/stage-management/${data.value.createStage.stage.id}/`
         );
+      } catch (error) {
+        notification.error(error);
       }
     };
 

@@ -58,8 +58,19 @@ const routes = [
       },
       {
         path: '/dashboard/profile',
-        name: 'Player Profile',
-        component: () => import('../views/dashboard/Profile.vue'),
+        component: () => import('../views/dashboard/Profile/index.vue'),
+        children: [
+          {
+            path: '',
+            name: 'Player Profile',
+            component: () => import('../views/dashboard/Profile/Information.vue'),
+          },
+          {
+            path: 'change-password',
+            name: 'Change Password',
+            component: () => import('../views/dashboard/Profile/ChangePassword.vue'),
+          },
+        ]
       },
       {
         name: 'Create New Stage',
