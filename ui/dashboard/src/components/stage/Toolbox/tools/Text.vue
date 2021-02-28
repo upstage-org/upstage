@@ -26,11 +26,19 @@
   </template>
   <div class="text-tool" style="width: 200px; z-index: 1005">
     <span class="tag muted is-block">Font</span>
-    <Dropdown v-model="options.fontFamily" :data="fontFamilies" />
+    <Dropdown v-model="options.fontFamily" :data="fontFamilies">
+      <template #option="{ label }">
+        <span :style="{ 'font-family': label }">{{ label }}</span>
+      </template>
+    </Dropdown>
   </div>
   <div class="text-tool" style="z-index: 1004">
-    <span class="tag muted is-block">Size</span>
-    <Dropdown v-model="options.fontSize" :data="fontSizes" />
+    <span class="tag muted is-block">Size (px)</span>
+    <Field
+      :modelValue="options.fontSize.slice(0, -2)"
+      @update:modelValue="changeFontSize"
+      type="number"
+    />
   </div>
   <div class="text-tool" style="z-index: 1003">
     <span class="tag muted is-block">Color</span>
@@ -70,20 +78,17 @@
 
 <script>
 import Dropdown from "@/components/form/Dropdown";
+import Field from "@/components/form/Field";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";
 
 export default {
-  components: { Dropdown, ColorPicker },
+  components: { Dropdown, Field, ColorPicker },
   setup: () => {
     const store = useStore();
     const isWriting = computed(() => store.state.stage.preferences.isWriting);
-    const options = computed(() => store.state.stage.preferences.text);
-    let fontSizes = [];
-    for (let i = 1; i <= 100; i++) {
-      fontSizes.push(`${i}px`);
-    }
+    const options = store.state.stage.preferences.text;
     const fontFamilies = [
       "Josefin Sans",
       "Arial",
@@ -107,6 +112,9 @@ export default {
       "Lucida Bright",
       "Copperplate",
     ];
+    const changeFontSize = (value) => {
+      options.fontSize = value.replace(/^\D+/g, "") + "px";
+    };
 
     const createText = () => {
       store.commit("stage/UPDATE_IS_WRITING", true);
@@ -140,7 +148,7 @@ export default {
       const { width, height } = el.value.getBoundingClientRect() ?? {};
       store.commit("stage/UPDATE_IS_WRITING", false);
       store.dispatch("stage/addText", {
-        ...options.value,
+        ...options,
         content: el.value.innerHTML,
         w: width + 10,
         h: height + 10,
@@ -149,7 +157,7 @@ export default {
 
     const toggleBold = () => {
       let fontWeight;
-      if (!options.value.fontWeight) {
+      if (!options.fontWeight) {
         fontWeight = "bold";
       }
       store.commit("stage/UPDATE_TEXT_OPTIONS", { fontWeight });
@@ -157,7 +165,7 @@ export default {
 
     const toggleItalic = () => {
       let fontStyle;
-      if (!options.value.fontStyle) {
+      if (!options.fontStyle) {
         fontStyle = "italic";
       }
       store.commit("stage/UPDATE_TEXT_OPTIONS", { fontStyle });
@@ -165,7 +173,7 @@ export default {
 
     const toggleUnderline = () => {
       let textDecoration;
-      if (!options.value.textDecoration) {
+      if (!options.textDecoration) {
         textDecoration = "underline";
       }
       store.commit("stage/UPDATE_TEXT_OPTIONS", { textDecoration });
@@ -173,7 +181,6 @@ export default {
 
     return {
       options,
-      fontSizes,
       fontFamilies,
       createText,
       isWriting,
@@ -184,6 +191,7 @@ export default {
       toggleBold,
       toggleItalic,
       toggleUnderline,
+      changeFontSize,
     };
   },
 };
