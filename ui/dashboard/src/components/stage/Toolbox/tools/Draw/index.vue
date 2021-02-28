@@ -69,7 +69,7 @@
     </div>
   </template>
   <template v-else>
-    <div @click="create">
+    <div @click="create" class="is-pulled-left">
       <div class="icon is-large">
         <i class="fas fa-plus fa-2x"></i>
       </div>

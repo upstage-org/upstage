@@ -202,8 +202,6 @@ export default {
       }
     });
 
-    console.log(position);
-
     return {
       el,
       loggedIn,

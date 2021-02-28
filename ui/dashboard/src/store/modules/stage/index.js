@@ -20,6 +20,7 @@ export default {
         board: {
             objects: [],
             drawings: [],
+            texts: [],
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -164,6 +165,9 @@ export default {
         },
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
+        },
+        PUSH_TEXT(state, text) {
+            state.board.texts.push(text);
         },
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
@@ -411,8 +415,9 @@ export default {
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
         },
-        addText({ dispatch }, text) {
+        addText({ commit, dispatch }, text) {
             text.type = 'text';
+            commit('PUSH_TEXT', text);
             dispatch('placeObjectOnStage', text)
         },
         handleReactionMessage({ commit }, { message }) {

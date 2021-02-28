@@ -1,5 +1,6 @@
 <template>
   <div
+    class="is-flex is-align-items-center"
     draggable="true"
     @dragstart="dragstart"
     @touchmove="touchmove"
@@ -41,7 +42,6 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      console.log(e);
       e.dataTransfer.setData("object", JSON.stringify(props.data));
     };
 

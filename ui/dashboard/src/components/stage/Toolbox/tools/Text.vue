@@ -4,12 +4,26 @@
       Write or paste<br />your text here
     </p>
   </section>
-  <div v-if="!isWriting" @click="createText" class="text-tool">
-    <div class="icon is-large">
-      <i class="fas fa-plus fa-2x"></i>
+  <template v-if="!isWriting">
+    <div @click="createText" class="text-tool">
+      <div class="icon is-large">
+        <i class="fas fa-plus fa-2x"></i>
+      </div>
+      <span class="tag is-light is-block">New</span>
     </div>
-    <span class="tag is-light is-block">New</span>
-  </div>
+    <div v-for="text in savedTexts" :key="text" class="is-pulled-left">
+      <Skeleton :data="text">
+        <p
+          :style="{
+            ...text,
+            transform: `scale(${76 / text.w})`,
+            'transform-origin': 0,
+          }"
+          v-html="text.content"
+        ></p>
+      </Skeleton>
+    </div>
+  </template>
   <template v-else>
     <div class="text-tool" @click="saveText">
       <div class="icon is-large">
@@ -23,68 +37,69 @@
       </div>
       <span class="tag is-light is-block">Cancel</span>
     </div>
+    <div class="text-tool" style="width: 200px; z-index: 1005">
+      <span class="tag muted is-block">Font</span>
+      <Dropdown v-model="options.fontFamily" :data="fontFamilies">
+        <template #option="{ label }">
+          <span :style="{ 'font-family': label }">{{ label }}</span>
+        </template>
+      </Dropdown>
+    </div>
+    <div class="text-tool" style="z-index: 1004">
+      <span class="tag muted is-block">Size (px)</span>
+      <Field
+        :modelValue="options.fontSize.slice(0, -2)"
+        @update:modelValue="changeFontSize"
+        type="number"
+      />
+    </div>
+    <div class="text-tool" style="z-index: 1003">
+      <span class="tag muted is-block">Color</span>
+      <ColorPicker v-model="options.color" />
+    </div>
+    <div
+      class="text-tool"
+      :class="{ active: options.fontWeight }"
+      @click="toggleBold"
+    >
+      <div class="icon is-large">
+        <i class="fas fa-bold fa-2x"></i>
+      </div>
+      <span class="tag is-light is-block">Bold</span>
+    </div>
+    <div
+      class="text-tool"
+      :class="{ active: options.fontStyle }"
+      @click="toggleItalic"
+    >
+      <div class="icon is-large">
+        <i class="fas fa-italic fa-2x"></i>
+      </div>
+      <span class="tag is-light is-block">Italic</span>
+    </div>
+    <div
+      class="text-tool"
+      :class="{ active: options.textDecoration }"
+      @click="toggleUnderline"
+    >
+      <div class="icon is-large">
+        <i class="fas fa-underline fa-2x"></i>
+      </div>
+      <span class="tag is-light is-block">Underline</span>
+    </div>
   </template>
-  <div class="text-tool" style="width: 200px; z-index: 1005">
-    <span class="tag muted is-block">Font</span>
-    <Dropdown v-model="options.fontFamily" :data="fontFamilies">
-      <template #option="{ label }">
-        <span :style="{ 'font-family': label }">{{ label }}</span>
-      </template>
-    </Dropdown>
-  </div>
-  <div class="text-tool" style="z-index: 1004">
-    <span class="tag muted is-block">Size (px)</span>
-    <Field
-      :modelValue="options.fontSize.slice(0, -2)"
-      @update:modelValue="changeFontSize"
-      type="number"
-    />
-  </div>
-  <div class="text-tool" style="z-index: 1003">
-    <span class="tag muted is-block">Color</span>
-    <ColorPicker v-model="options.color" />
-  </div>
-  <div
-    class="text-tool"
-    :class="{ active: options.fontWeight }"
-    @click="toggleBold"
-  >
-    <div class="icon is-large">
-      <i class="fas fa-bold fa-2x"></i>
-    </div>
-    <span class="tag is-light is-block">Bold</span>
-  </div>
-  <div
-    class="text-tool"
-    :class="{ active: options.fontStyle }"
-    @click="toggleItalic"
-  >
-    <div class="icon is-large">
-      <i class="fas fa-italic fa-2x"></i>
-    </div>
-    <span class="tag is-light is-block">Italic</span>
-  </div>
-  <div
-    class="text-tool"
-    :class="{ active: options.textDecoration }"
-    @click="toggleUnderline"
-  >
-    <div class="icon is-large">
-      <i class="fas fa-underline fa-2x"></i>
-    </div>
-    <span class="tag is-light is-block">Underline</span>
-  </div>
 </template>
 
 <script>
 import Dropdown from "@/components/form/Dropdown";
 import Field from "@/components/form/Field";
 import ColorPicker from "@/components/form/ColorPicker";
+import Skeleton from "@/components/objects/Skeleton";
 import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";
 
 export default {
-  components: { Dropdown, Field, ColorPicker },
+  components: { Dropdown, Field, ColorPicker, Skeleton },
   setup: () => {
     const store = useStore();
     const isWriting = computed(() => store.state.stage.preferences.isWriting);
@@ -179,6 +194,8 @@ export default {
       store.commit("stage/UPDATE_TEXT_OPTIONS", { textDecoration });
     };
 
+    const savedTexts = computed(() => store.state.stage.board.texts);
+
     return {
       options,
       fontFamilies,
@@ -192,6 +209,7 @@ export default {
       toggleItalic,
       toggleUnderline,
       changeFontSize,
+      savedTexts,
     };
   },
 };
