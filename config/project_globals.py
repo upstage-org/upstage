@@ -37,6 +37,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Boolean, Integer, Column, text
 from sqlalchemy.exc import IntegrityError
+from psycopg2.errors import UniqueViolation
 
 from config.settings import (ENV_TYPE,
     HOSTNAME,SQLALCHEMY_POOL_SIZE,
