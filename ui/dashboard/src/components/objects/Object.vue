@@ -32,26 +32,36 @@
           @drag-end="dragEnd"
           @resize-end="resizeEnd"
         >
-          <Image
-            class="the-object"
-            :src="src"
-            :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
-            :rotate="object.rotate"
-          />
+          <div
+            :style="{
+              width: '100%',
+              height: '100%',
+              opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+            }"
+          >
+            <slot name="render">
+              <Image class="the-object" :src="src" />
+            </slot>
+          </div>
         </DragResize>
-        <Image
-          :src="src"
-          v-if="isDragging || !loggedIn"
-          :style="{
-            width: position.w + 'px',
-            height: position.h + 'px',
-            position: 'fixed',
-            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
-            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
-          }"
-          :opacity="object.opacity"
-          :rotate="object.rotate"
-        />
+        <template v-if="isDragging || !loggedIn">
+          <div
+            :style="{
+              position: 'fixed',
+              left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+              top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
+              width: position.w + 'px',
+              height: position.h + 'px',
+              opacity: object.opacity,
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+            }"
+          >
+            <slot name="render">
+              <Image :src="src" />
+            </slot>
+          </div>
+        </template>
       </template>
       <template #context="slotProps" v-if="loggedIn">
         <slot name="menu" v-bind="slotProps" />
@@ -136,8 +146,8 @@ export default {
         });
         position.x = beforeDragPosition.value.x;
         position.y = beforeDragPosition.value.y;
-        isDragging.value = false;
       }
+      isDragging.value = false;
     };
 
     const resizeEnd = (e) => {
@@ -193,8 +203,6 @@ export default {
         return props.object.src;
       }
     });
-
-    console.log(position)
 
     return {
       el,

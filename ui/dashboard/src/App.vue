@@ -28,4 +28,11 @@ html {
 .clickable {
   pointer-events: all !important;
 }
+[contenteditable] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  * {
+    font-family: inherit;
+  }
+}
 </style>

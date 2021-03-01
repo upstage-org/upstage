@@ -28,7 +28,9 @@
             class="dropdown-item"
             :class="{ 'is-active': modelValue === renderValue(item) }"
           >
-            {{ renderLabel(item) }}
+            <slot name="option" :label="renderLabel(item)" :item="item">
+              {{ renderLabel(item) }}
+            </slot>
           </a>
         </template>
         <div v-else class="dropdown-item">
