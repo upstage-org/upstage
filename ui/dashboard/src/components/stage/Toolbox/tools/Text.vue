@@ -152,6 +152,8 @@ export default {
       });
       el.value.focus();
     };
+
+    createText();
     onMounted(() => {
       onClickWriting({
         clientX: window.innerWidth / 2,

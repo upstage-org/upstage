@@ -32,14 +32,18 @@
           @drag-end="dragEnd"
           @resize-end="resizeEnd"
         >
-          <slot name="render">
-            <Image
-              class="the-object"
-              :src="src"
-              :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
-              :rotate="object.rotate"
-            />
-          </slot>
+          <div
+            :style="{
+              width: '100%',
+              height: '100%',
+              opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+            }"
+          >
+            <slot name="render">
+              <Image class="the-object" :src="src" />
+            </slot>
+          </div>
         </DragResize>
         <template v-if="isDragging || !loggedIn">
           <div
@@ -49,14 +53,12 @@
               top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
               width: position.w + 'px',
               height: position.h + 'px',
+              opacity: object.opacity,
+              transform: `rotate(${object.rotate ?? 0}deg)`,
             }"
           >
             <slot name="render">
-              <Image
-                :src="src"
-                :opacity="object.opacity"
-                :rotate="object.rotate"
-              />
+              <Image :src="src" />
             </slot>
           </div>
         </template>

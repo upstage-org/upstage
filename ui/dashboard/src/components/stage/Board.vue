@@ -45,7 +45,7 @@ export default {
 
     const avatarEnter = (el, complete) => {
       anime({
-        targets: el.getElementsByTagName("img"),
+        targets: el.querySelector(".object"),
         scale: [0, 1],
         translateY: [-200, 0],
         duration: config.animateDuration,
@@ -55,7 +55,7 @@ export default {
     };
     const avatarLeave = (el, complete) => {
       anime({
-        targets: el.getElementsByTagName("img"),
+        targets: el.querySelector(".object"),
         scale: 0,
         rotate: 180,
         duration: config.animateDuration,
