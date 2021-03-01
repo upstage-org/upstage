@@ -97,10 +97,10 @@ class ScopedSession(object):
         try:
             self.session.commit()
 
-        # except IntegrityError as e:
-        #     if isinstance(e.orig, UniqueViolation):
-        #         self.session.remove()
-        #         logging.error(f"Duplicate unique key, rejecting: {e}")
+        except IntegrityError as e:
+            if isinstance(e.orig, UniqueViolation):
+                self.session.remove()
+                logging.error(f"Duplicate unique key, rejecting: {e}")
 
         except Exception as e:
             if self.rollback_upon_failure:

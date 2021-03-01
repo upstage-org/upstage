@@ -66,7 +66,7 @@ class CreateUser(graphene.Mutation):
         user_id = None
         # Add validation for non-empty passwords, etc.
         user.password = encrypt(user.password)
-        with ScopedSession() as local_db_session:
+        with ScopedSession as local_db_session:
             local_db_session.add(user)
             local_db_session.flush()
             user_id = user.id
@@ -85,10 +85,10 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         inbound = UpdateUserInput(required=True)
 
-    @jwt_required()
+    @jwt_required
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
-        with ScopedSession() as local_db_session:
+        with ScopedSession as local_db_session:
             user = local_db_session.query(UserModel)\
                 .filter(UserModel.id==data['id']).first()
             if ('password' in data):
@@ -183,13 +183,13 @@ class ChangePassword(graphene.Mutation):
     # decorate this with jwt login decorator.
     def mutate(self, info, input):
         data = graphql_utils.input_to_dictionary(input)
-        with ScopedSession() as local_db_session:
-            user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
-            if decrypt(user.password) != data['oldPassword']:
-                raise Exception('Old password incorrect')
-            else:
-                user.password = encrypt(data['newPassword'])
-            local_db_session.commit()
+        local_db_session = get_scoped_session()
+        user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
+        if decrypt(user.password) != data['oldPassword']:
+            raise Exception('Old password incorrect')
+        else:
+            user.password = encrypt(data['newPassword'])
+        local_db_session.commit()
         return ChangePassword(success=True)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
