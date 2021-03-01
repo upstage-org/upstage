@@ -20,6 +20,7 @@ export default {
         board: {
             objects: [],
             drawings: [],
+            texts: [],
         },
         tools: generateDemoData(),
         settingPopup: {
@@ -44,10 +45,13 @@ export default {
             return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
         },
         props(state) {
-            return state.board.objects.filter(o => o.type === 'prop' || o.type === 'text');
+            return state.board.objects.filter(o => o.type === 'prop');
         },
         streams(state) {
             return state.board.objects.filter(o => o.type === 'stream');
+        },
+        texts(state) {
+            return state.board.objects.filter(o => o.type === 'text');
         },
         config(state) {
             return state.tools.config;
@@ -161,6 +165,9 @@ export default {
         },
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
+        },
+        PUSH_TEXT(state, text) {
+            state.board.texts.push(text);
         },
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
@@ -408,8 +415,9 @@ export default {
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
         },
-        addText({ dispatch }, text) {
+        addText({ commit, dispatch }, text) {
             text.type = 'text';
+            commit('PUSH_TEXT', text);
             dispatch('placeObjectOnStage', text)
         },
         handleReactionMessage({ commit }, { message }) {

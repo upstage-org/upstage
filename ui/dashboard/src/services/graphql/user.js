@@ -23,7 +23,7 @@ export const userFragment = gql`
 export default {
   createUser: (variables) => client.request(gql`
     mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String) {
-      createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, active: true}) {
+      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, active: true}) {
         user {
           ...userFragment
         }
@@ -33,7 +33,7 @@ export default {
   `, variables),
   updateUser: (variables) => client.request(gql`
     mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $phone: String, $agreedToTerms: Boolean, $okToSms: Boolean, $validatedViaPortal: Boolean) {
-      updateUser(input: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, agreedToTerms: $agreedToTerms, okToSms: $okToSms, validatedViaPortal: $validatedViaPortal}) {
+      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, agreedToTerms: $agreedToTerms, okToSms: $okToSms, validatedViaPortal: $validatedViaPortal}) {
         user {
           ...userFragment
         }
@@ -43,7 +43,7 @@ export default {
   `, variables),
   saveNickname: (variables) => client.request(gql`
     mutation UpdateUser($id: ID!, $displayName: String) {
-      updateUser(input: {id: $id, displayName: $displayName}) {
+      updateUser(inbound: {id: $id, displayName: $displayName}) {
         user {
           ...userFragment
         }

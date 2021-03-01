@@ -94,44 +94,18 @@
           </div>
         </div>
       </div>
-      <div class="dropdown is-hoverable is-fullwidth">
-        <div class="dropdown-trigger is-fullwidth">
-          <a
-            @click="changeTool('Draw')"
-            :class="{ 'is-active': tool === 'Draw' }"
-            class="panel-block button"
-          >
-            <span class="panel-icon">
-              <Icon src="draw.svg" />
-            </span>
-            <span class="is-fullwidth">Draw</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </span>
-          </a>
-          <span />
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="openDrawTool(true)"
-            >
-              Add New
-            </a>
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="openDrawTool(false)"
-            >
-              Manage
-            </a>
-          </div>
-        </div>
-      </div>
       <a
-        @click="createText"
+        @click="changeTool('Draw')"
+        :class="{ 'is-active': tool === 'Draw' }"
+        class="panel-block button"
+      >
+        <span class="panel-icon">
+          <Icon src="draw.svg" />
+        </span>
+        <span class="is-fullwidth">Draw</span>
+      </a>
+      <a
+        @click="changeTool('Text')"
         :class="{ 'is-active': tool === 'Text' }"
         class="panel-block button"
       >
@@ -182,10 +156,6 @@ export default {
     waitToCollapse();
 
     const store = useStore();
-    const openDrawTool = (isDrawing) => {
-      tool.value = "Draw";
-      store.commit("stage/UPDATE_IS_DRAWING", isDrawing);
-    };
 
     const createStream = () => {
       changeTool("Stream");
@@ -194,20 +164,13 @@ export default {
       });
     };
 
-    const createText = () => {
-      changeTool("Text");
-      store.commit("stage/UPDATE_IS_WRITING", true);
-    };
-
     return {
       tool,
       changeTool,
       collapsed,
       expand,
       waitToCollapse,
-      openDrawTool,
       createStream,
-      createText,
     };
   },
 };

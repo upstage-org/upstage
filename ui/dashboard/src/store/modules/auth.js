@@ -34,7 +34,6 @@ export default {
           .then((resp) => {
             if (resp) {
               const { access_token, refresh_token } = resp;
-              console.log(refresh_token);
               setToken(access_token);
               setRefreshToken(refresh_token);
               commit("SET_TOKEN", access_token);
@@ -60,7 +59,6 @@ export default {
       }, {
         'X-Access-Token': state.refresh_token
       }).then(response => {
-        console.log(response)
         return response.refreshUser.newToken
       })
     },
