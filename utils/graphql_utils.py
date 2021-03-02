@@ -14,7 +14,7 @@ from graphql_relay.node.node import from_global_id
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 
 from config.project_globals import app,DBSession
-from user.user_api import current_user
+from user.user_utils import current_user
 from auth.auth_api import TNL,jwt_required
 
 def input_to_dictionary(input):
