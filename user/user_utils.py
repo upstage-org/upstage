@@ -34,17 +34,6 @@ from auth import fernet_crypto
 from auth.auth_api import TNL
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def maintenance_resident_user_groups(user):
-    # Maintenance resident sits between the world: They live in one building and can see services only there,
-    # but may do maintenance in multiple buildings and groups.
-    if user.role == MAINTENANCE_RESIDENT:
-        groups_user = list(set([x.group for x in DBSession.query(GroupUser).filter(GroupUser.user_id==user.id).all()]))
-        buildings_from_groups = list(set([x.building for x in DBSession.query(
-            BuildingGroup).filter(BuildingGroup.group_id.in_([x.id for x in groups_user])).all()]))
-        return groups_user,buildings_from_groups
-    return None,None
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def current_user(user_id=None,admin_initial=False,internal_use=False):
     current_user_id = get_jwt_identity() if not user_id else user_id
 
@@ -65,27 +54,3 @@ def current_user(user_id=None,admin_initial=False,internal_use=False):
     # TODO: Get user timezone from front end.
     timezone='UTC'
     return 200,None,user,timezone
-
-
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-def log_users_off(user_id=None,building_id=None):
-    # One of these parameters must be set.
-    if user_id:
-        user_sessions = DBSession.query(UserSession).filter(
-            UserSession.user_id==user.id).all()
-    else:
-        results = DBSession.query(UserSession,BuildingUser).join(
-            UserSession,UserSession.user_id==BuildingUser.user_id).filter(
-            BuildingUser.building_id==building_id).all();
-        user_sessions = list(set([x[0] for x in results]))
-
-    for user_session in user_sessions:
-        try:
-            TNL.add(user_session.access_token)
-        except psycopg2.errors.UniqueViolation:
-            pass
-        try:
-            TNL.add(user_session.refresh_token)
-        except psycopg2.errors.UniqueViolation:
-            pass
-
