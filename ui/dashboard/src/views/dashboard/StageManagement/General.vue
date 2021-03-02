@@ -149,7 +149,7 @@ export default {
       console.log(form);
     });
 
-    const { nodes: users } = useQuery(userGraph.oneUser);
+    const { nodes: users } = useQuery(userGraph.userList);
     const { loading, mutation, data } = useMutation(
       stageGraph.createStage,
       form

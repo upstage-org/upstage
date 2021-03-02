@@ -47,12 +47,6 @@
               className="is-rounded is-success"
               label="OK to SMS"
             />
-            &nbsp;
-            <Switch
-              v-model="form.acceptRentPayment"
-              className="is-rounded is-success"
-              label="Accept rent payment"
-            />
           </div>
         </div>
       </div>

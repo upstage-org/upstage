@@ -73,24 +73,24 @@ const routes = [
         ]
       },
       {
-        name: 'Create New Stage',
         path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         children: [
           {
             path: '',
+            name: 'Create New Stage',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
         ]
       },
       {
-        name: 'Stage Management',
         path: '/dashboard/stage-management/:id',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         props: route => ({ id: route.params.id }),
         children: [
           {
             path: '',
+            name: 'Stage Management',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
           {

@@ -107,7 +107,11 @@ export default {
         if (error.includes("upstage_user_username_key")) {
           notification.error("Username " + form.username + " already exists!");
         } else if (error.includes("upstage_user_email_key")) {
-          notification.error("Email " + form.email + " already exists!");
+          if (form.email) {
+            notification.error("Email " + form.email + " already exists!");
+          } else {
+            notification.error("Email is required!");
+          }
         } else {
           notification.error(error);
         }
