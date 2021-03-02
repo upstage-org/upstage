@@ -48,11 +48,12 @@ class Stage(Base,db.Model):
     __tablename__ = "stage"
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)
-    description = Column(Text, nullable=False)
+    description = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
     owner = relationship(User, foreign_keys=[owner_id])
+    attributes = relationship(lambda: StageAttribute, lazy='dynamic')
 
 class AssetAttribute(Base,db.Model):
     '''

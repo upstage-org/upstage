@@ -3,7 +3,7 @@ from config.project_globals import (DBSession, Base, metadata, engine, get_scope
                                     app, api, ScopedSession)
 from utils import graphql_utils
 from flask_graphql import GraphQLView
-from asset.models import Stage as StageModel
+from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
 from config.settings import VERSION
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
@@ -24,6 +24,12 @@ class StageAttribute:
     description = graphene.String(description="Stage Description")
     owner_id = graphene.String(description="User ID of the owner")
     file_location = graphene.String(description="Unique File Location")
+    status = graphene.String(description="Live/Upcoming/Rehearsal")
+
+
+class StageAttributes(SQLAlchemyObjectType):
+    class Meta:
+        model = StageAttributeModel
 
 
 class Stage(SQLAlchemyObjectType):
@@ -74,15 +80,15 @@ class CreateStage(graphene.Mutation):
 
         stage = StageModel(**data)
         # Add validation for non-empty passwords, etc.
-        local_db_session = get_scoped_session()
-        local_db_session.add(stage)
-        local_db_session.flush()
-        stage_id = stage.id
-        local_db_session.commit()
+        with ScopedSession() as local_db_session:
+            local_db_session.add(stage)
+            local_db_session.flush()
+            stage_id = stage.id
+            local_db_session.commit()
 
-        stage = DBSession.query(StageModel).filter(
-            StageModel.id == stage_id).first()
-        return CreateStage(stage=stage)
+            stage = DBSession.query(StageModel).filter(
+                StageModel.id == stage_id).first()
+            return CreateStage(stage=stage)
 
 
 class UpdateStageInput(graphene.InputObjectType, StageAttribute):
@@ -100,18 +106,31 @@ class UpdateStage(graphene.Mutation):
     # decorate this with jwt login decorator.
     def mutate(self, info, input):
         data = graphql_utils.input_to_dictionary(input)
-        local_db_session = get_scoped_session()
+        with ScopedSession() as local_db_session:
 
-        stage = local_db_session.query(StageModel)\
-            .filter(StageModel.id == data['id']).first()
-        for key, value in data.items():
-            if hasattr(stage, key):
-                setattr(stage, key, value)
-        local_db_session.commit()
-        stage = DBSession.query(StageModel).filter(
-            StageModel.id == data['id']).first()
+            stage = local_db_session.query(StageModel).filter(
+                StageModel.id == data['id']
+            ).first()
+            for key, value in data.items():
+                if hasattr(stage, key):
+                    setattr(stage, key, value)
+                elif value:
+                    attribute = stage.attributes.filter(
+                        StageAttributeModel.name == key
+                    ).first()
+                    if attribute:
+                        attribute.description = value
+                    else:
+                        attribute = StageAttributeModel(
+                            stage_id=data['id'], name=key, description=value
+                        )
+                        local_db_session.add(attribute)
 
-        return UpdateStage(stage=stage)
+            local_db_session.commit()
+            stage = DBSession.query(StageModel).filter(
+                StageModel.id == data['id']).first()
+
+            return UpdateStage(stage=stage)
 
 
 class Mutation(graphene.ObjectType):

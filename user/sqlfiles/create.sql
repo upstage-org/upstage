@@ -10,7 +10,6 @@ CREATE TABLE public.upstage_user (
         display_name TEXT default null,
         phone TEXT not null,
         active BOOLEAN not null default false,
-        validated_via_portal BOOLEAN not null default false,
         ok_to_sms BOOLEAN not null default true,
         agreed_to_terms BOOLEAN not null default false,
         firebase_pushnot_id TEXT default null,

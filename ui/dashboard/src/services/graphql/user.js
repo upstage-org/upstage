@@ -16,7 +16,6 @@ export const userFragment = gql`
     createdOn
     agreedToTerms
     okToSms
-    validatedViaPortal
   }
 `
 

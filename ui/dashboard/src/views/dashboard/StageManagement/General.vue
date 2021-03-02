@@ -41,25 +41,6 @@
       </div>
     </div>
 
-    <!-- <div class="field is-horizontal">
-      <div class="field-label is-normal">
-        <label class="label">Media</label>
-      </div>
-      <div class="field-body">
-        <div class="field is-narrow">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select>
-                <option>Media 1</option>
-                <option>Media 2</option>
-                <option>Media 3</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Users</label>
@@ -79,7 +60,7 @@
       </div>
     </div>
 
-    <div class="field is-horizontal">
+    <div class="field is-horizontal" v-if="id">
       <div class="field-label">
         <label class="label">Stage Status</label>
       </div>
@@ -87,15 +68,15 @@
         <div class="field is-narrow">
           <div class="control">
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="live" />
               Live
             </label>
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="upcoming" />
               Upcoming
             </label>
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="rehearsal" />
               Rehearsal
             </label>
           </div>
@@ -109,19 +90,30 @@
       <div class="field-body">
         <div class="field">
           <div class="control">
-            <button
-              class="button mr-2 mt-2 is-primary"
-              :class="{ 'is-loading': loading }"
-              @click="createStage"
-            >
-              Save Stage
-            </button>
-            <button class="button mr-2 mt-2 is-warning">Clear Chat</button>
-            <button class="button mr-2 mt-2 is-warning">Sweep Stage</button>
-            <button class="button mr-2 mt-2 is-dark">
-              Hide From Stage List
-            </button>
-            <button class="button mr-2 mt-2 is-danger">Delete Stage</button>
+            <template v-if="id">
+              <button
+                class="button mr-2 mt-2 is-primary"
+                :class="{ 'is-loading': loading }"
+                @click="updateStage"
+              >
+                Save Stage
+              </button>
+              <button class="button mr-2 mt-2 is-warning">Clear Chat</button>
+              <button class="button mr-2 mt-2 is-warning">Sweep Stage</button>
+              <button class="button mr-2 mt-2 is-dark">
+                Hide From Stage List
+              </button>
+              <button class="button mr-2 mt-2 is-danger">Delete Stage</button>
+            </template>
+            <template v-else>
+              <button
+                class="button mr-2 mt-2 is-primary"
+                :class="{ 'is-loading': loading }"
+                @click="createStage"
+              >
+                Create Stage
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -143,15 +135,22 @@ export default {
   setup: () => {
     const router = useRouter();
     const stage = inject("stage");
+    const id = inject("id");
 
-    const form = reactive({ ...stage.value, ownerId: stage.value.owner?.id });
+    const form = reactive({
+      ...stage.value,
+      id: id.value,
+      ownerId: stage.value.owner?.id,
+      status: stage.value.attributes.find((a) => a.name === "status")
+        .description,
+    });
     watchEffect(() => {
       console.log(form);
     });
 
     const { nodes: users } = useQuery(userGraph.userList);
     const { loading, mutation, data } = useMutation(
-      stageGraph.createStage,
+      id.value ? stageGraph.updateStage : stageGraph.createStage,
       form
     );
     const createStage = async () => {
@@ -167,8 +166,16 @@ export default {
         notification.error(error);
       }
     };
+    const updateStage = async () => {
+      try {
+        await mutation();
+        notification.success("Stage updated successfully!");
+      } catch (error) {
+        notification.error(error);
+      }
+    };
 
-    return { form, createStage, loading, users, displayName };
+    return { id, form, createStage, updateStage, loading, users, displayName };
   },
 };
 </script>
