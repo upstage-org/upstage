@@ -63,5 +63,8 @@ export default {
     nickname(state) {
       return state.nickname ?? (state.user ? displayName(state.user) : "Guest");
     },
+    isAdmin(state) {
+      return state.user?.role > 0;
+    },
   },
 };
