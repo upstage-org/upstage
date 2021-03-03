@@ -43,7 +43,7 @@
   </table>
 </template>
 
-<script>
+<script setup>
 import { useQuery } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import Modal from "../Modal";
@@ -51,13 +51,7 @@ import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
 
-export default {
-  components: { Modal, ActionButtons, Detail },
-  setup: () => {
-    const { nodes: stages, loading } = useQuery(stageGraph.stageList);
-    return { loading, stages, displayName };
-  },
-};
+const { nodes: stages, loading } = useQuery(stageGraph.stageList);
 </script>
 
 <style scoped>
