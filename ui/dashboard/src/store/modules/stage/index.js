@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, denormalizeObject, normalizeObject } from './reusable';
+import { attachPropToAvatar, deserializeObject, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
 
 export default {
@@ -70,6 +70,21 @@ export default {
         currentAvatar(state, getters, rootState) {
             const id = rootState.user.avatarId;
             return state.board.objects.find(o => o.id === id);
+        },
+        stageSize(state, getters) {
+            let width = window.innerWidth;
+            let height = window.innerHeight;
+            let left = 0;
+            let top = 0;
+            const ratio = getters.config.ratio;
+            if (width / height > ratio) {
+                width = height * ratio;
+                left = (window.innerWidth - width) / 2;
+            } else {
+                height = width / ratio;
+                top = (window.innerHeight - height) / 2;
+            }
+            return { width, height, left, top };
         }
     },
     mutations: {
@@ -86,7 +101,7 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
-            denormalizeObject(object, true);
+            deserializeObject(object, true);
             state.board.objects.push(object)
             attachPropToAvatar(state, object);
         },
@@ -94,7 +109,7 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                denormalizeObject(object);
+                deserializeObject(object);
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
@@ -293,7 +308,7 @@ export default {
             }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object: normalizeObject(object, true)
+                object: serializeObject(object, true)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
             if (object.type === 'stream') {
@@ -304,14 +319,14 @@ export default {
         shapeObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.MOVE_TO,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -325,14 +340,14 @@ export default {
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         sendToBack(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },

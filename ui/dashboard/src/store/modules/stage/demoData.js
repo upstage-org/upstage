@@ -195,6 +195,7 @@ export const generateDemoData = () => {
         height: 800,
         animateDuration: 500,
         reactionDuration: 5000,
+        ratio: 16 / 9,
     }
 
     return { avatars, props, backdrops, audios, streams, config: stageConfig }

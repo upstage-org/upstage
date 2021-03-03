@@ -1,5 +1,21 @@
 <template>
-  <div id="board" @dragenter.prevent @dragover.prevent @drop.prevent="drop">
+  <div
+    id="board"
+    @dragenter.prevent
+    @dragover.prevent
+    @drop.prevent="drop"
+    :style="{
+      width: stageSize.width + 'px',
+      height: stageSize.height + 'px',
+      transform:
+        'translateX(' +
+        stageSize.left +
+        'px) translateY(' +
+        stageSize.top +
+        'px)',
+      'background-image': 'url(' + background + ')',
+    }"
+  >
     <transition-group
       name="stage-avatars"
       :css="false"
@@ -15,7 +31,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import Avatar from "@/components/objects/Avatar/index";
 import Streamer from "@/components/objects/Streamer/index";
@@ -26,7 +42,9 @@ export default {
   components: { Avatar, Prop: Avatar, Streamer, Text },
   setup: () => {
     const store = useStore();
-    const config = store.getters["stage/config"];
+    const background = computed(() => store.state.stage.background);
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
+    const config = computed(() => store.getters["stage/config"]);
     const avatars = computed(() => store.getters["stage/avatars"]);
     const props = computed(() => store.getters["stage/props"]);
     const streams = computed(() => store.getters["stage/streams"]);
@@ -48,7 +66,7 @@ export default {
         targets: el.querySelector(".object"),
         scale: [0, 1],
         translateY: [-200, 0],
-        duration: config.animateDuration,
+        duration: config.value.animateDuration,
         easing: "easeInOutQuad",
         complete,
       });
@@ -58,13 +76,31 @@ export default {
         targets: el.querySelector(".object"),
         scale: 0,
         rotate: 180,
-        duration: config.animateDuration,
+        duration: config.value.animateDuration,
         easing: "easeInOutQuad",
         complete,
       });
     };
 
-    return { avatars, drop, avatarEnter, avatarLeave, props, streams, texts };
+    watch(background, () => {
+      anime({
+        targets: "#live-stage",
+        opacity: [0, 1],
+        duration: 5000,
+      });
+    });
+
+    return {
+      avatars,
+      drop,
+      avatarEnter,
+      avatarLeave,
+      props,
+      streams,
+      texts,
+      stageSize,
+      background,
+    };
   },
 };
 </script>
@@ -72,9 +108,6 @@ export default {
 <style scoped>
 #board {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  background-size: cover;
 }
 </style>

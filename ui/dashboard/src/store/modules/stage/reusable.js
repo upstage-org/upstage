@@ -1,3 +1,5 @@
+import store from "@/store";
+
 export function attachPropToAvatar(state, object) {
     if (object.type === 'prop') {
         // Deattach from old avatar
@@ -33,14 +35,16 @@ export function attachPropToAvatar(state, object) {
 }
 
 export function toRelative(size) {
-    return size / window.innerWidth;
+    const stageSize = store.getters['stage/stageSize'];
+    return size / stageSize.width;
 }
 
 export function toAbsolute(size) {
-    return size * window.innerWidth;
+    const stageSize = store.getters['stage/stageSize'];
+    return size * stageSize.width;
 }
 
-export function normalizeObject(object, keepSrc) {
+export function serializeObject(object, keepSrc) {
     const { src, type } = object;
     if (!keepSrc) {
         object = {
@@ -58,7 +62,7 @@ export function normalizeObject(object, keepSrc) {
     return object;
 }
 
-export function denormalizeObject(object, keepSrc) {
+export function deserializeObject(object, keepSrc) {
     if (!keepSrc) {
         if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
             delete object.src;
