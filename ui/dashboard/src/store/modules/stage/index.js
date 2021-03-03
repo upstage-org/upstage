@@ -5,6 +5,7 @@ import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { attachPropToAvatar, deserializeObject, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
+import { getViewport } from './reactiveViewport';
 
 export default {
     namespaced: true,
@@ -35,7 +36,8 @@ export default {
             }
         },
         hosts: [],
-        reactions: []
+        reactions: [],
+        viewport: getViewport()
     },
     getters: {
         objects(state) {
@@ -72,8 +74,8 @@ export default {
             return state.board.objects.find(o => o.id === id);
         },
         stageSize(state, getters) {
-            let width = window.innerWidth;
-            let height = window.innerHeight;
+            let width = state.viewport.width;
+            let height = state.viewport.height;
             let left = 0;
             let top = 0;
             const ratio = getters.config.ratio;
@@ -107,9 +109,9 @@ export default {
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
+            deserializeObject(object);
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                deserializeObject(object);
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
@@ -208,6 +210,9 @@ export default {
                 state.reactions.shift();
             }, state.tools.config.reactionDuration);
         },
+        UPDATE_VIEWPORT(state, viewport) {
+            state.viewport = viewport;
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
