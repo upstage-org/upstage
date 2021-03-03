@@ -16,13 +16,14 @@ export const userFragment = gql`
     createdOn
     agreedToTerms
     okToSms
+    role
   }
 `
 
 export default {
   createUser: (variables) => client.request(gql`
     mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String) {
-      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, active: true}) {
+      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName}) {
         user {
           ...userFragment
         }
@@ -31,8 +32,8 @@ export default {
     ${userFragment}
   `, variables),
   updateUser: (variables) => client.request(gql`
-    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $phone: String, $agreedToTerms: Boolean, $okToSms: Boolean) {
-      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, agreedToTerms: $agreedToTerms, okToSms: $okToSms}) {
+    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $phone: String, $agreedToTerms: Boolean, $okToSms: Boolean, $active: Boolean) {
+      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, agreedToTerms: $agreedToTerms, okToSms: $okToSms, active: $active}) {
         user {
           ...userFragment
         }
@@ -70,15 +71,12 @@ export default {
       userList {
         edges {
           node {
-            id
-            username
-            firstName
-            lastName
-            displayName
+            ...userFragment
           }
         }
       }
     }
+    ${userFragment}
   `),
   changePassword: (variables) => client.request(gql`
     mutation ChangePassword($id: ID!, $oldPassword: String!, $newPassword: String!) {
