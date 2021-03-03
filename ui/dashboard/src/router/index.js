@@ -73,6 +73,21 @@ const routes = [
         ]
       },
       {
+        path: '/dashboard/admin',
+        component: () => import('../views/dashboard/Admin/index.vue'),
+        children: [
+          {
+            path: '',
+            redirect: '/dashboard/admin/approval',
+          },
+          {
+            path: 'approval',
+            name: 'Registration Approval',
+            component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
+          },
+        ]
+      },
+      {
         path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         children: [

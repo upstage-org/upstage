@@ -18,6 +18,14 @@
         <router-link class="navbar-item" to="/dashboard/profile/">
           Profile
         </router-link>
+        <template v-if="isAdmin">
+          <div class="vertical-divider" />
+          <router-link class="navbar-item" to="/dashboard/admin/">
+            <span>
+              Admin <i class="fas fa-shield-alt has-text-warning"></i>
+            </span>
+          </router-link>
+        </template>
       </div>
     </div>
 
@@ -34,8 +42,17 @@
 <script>
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
+import { useStore } from "vuex";
+import { computed } from "vue";
 export default {
   components: { Footer, Logo },
+  setup: () => {
+    const store = useStore();
+
+    const isAdmin = computed(() => store.getters["user/isAdmin"]);
+
+    return { isAdmin };
+  },
 };
 </script>
 
