@@ -141,8 +141,7 @@ export default {
       ...stage.value,
       id: id.value,
       ownerId: stage.value.owner?.id,
-      status: stage.value.attributes.find((a) => a.name === "status")
-        .description,
+      status: stage.value.attributes?.find((a) => a.name === "status")?.description,
     });
     watchEffect(() => {
       console.log(form);
