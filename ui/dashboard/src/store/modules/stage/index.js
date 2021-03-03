@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, normalizeObject } from './reusable';
+import { attachPropToAvatar, denormalizeObject, normalizeObject } from './reusable';
 import { generateDemoData } from './demoData'
 
 export default {
@@ -86,6 +86,7 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
+            denormalizeObject(object, true);
             state.board.objects.push(object)
             attachPropToAvatar(state, object);
         },
@@ -93,9 +94,7 @@ export default {
             const { id } = object;
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
-                    delete object.src;
-                }
+                denormalizeObject(object);
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
@@ -294,7 +293,7 @@ export default {
             }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object
+                object: normalizeObject(object, true)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
             if (object.type === 'stream') {
