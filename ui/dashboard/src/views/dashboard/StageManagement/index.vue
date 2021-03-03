@@ -57,13 +57,16 @@
 </template>
 
 <script>
-import { provide, watch } from "vue";
+import { computed, provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 export default {
   props: ["id"],
   setup: (props) => {
-    provide("id", props.id);
+    provide(
+      "id",
+      computed(() => props.id)
+    );
     const { nodes, loading, fetch } = useRequest(stageGraph.stageList);
     const stage = useFirst(nodes);
     provide("stage", stage);
