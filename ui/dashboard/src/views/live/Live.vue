@@ -1,7 +1,7 @@
 <template>
   <section
     id="live-stage"
-    class="hero bg-cover has-background-dark is-fullheight"
+    class="hero bg-cover has-background-primary-light is-fullheight"
   >
     <Board />
     <ConnectionStatus />
