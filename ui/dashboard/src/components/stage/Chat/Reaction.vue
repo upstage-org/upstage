@@ -15,7 +15,7 @@
       @update:model-value="sendCustomReaction"
     >
       <template #icon>
-        <i class="far fa-plus"></i>
+        <i class="fas fa-plus"></i>
       </template>
     </emoji-input>
   </span>
