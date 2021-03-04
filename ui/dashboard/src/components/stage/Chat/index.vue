@@ -53,8 +53,8 @@
     </div>
     <footer class="card-footer">
       <div class="card-footer-item">
-        <div class="is-fullwidth my-1">
-          <Reaction v-if="!collapsed" :custom-emoji="true" />
+        <div v-if="!collapsed" class="is-fullwidth my-1" style="height: 30px">
+          <Reaction :custom-emoji="true" />
         </div>
         <div class="control has-icons-right is-fullwidth">
           <form autocomplete="off" @submit.prevent="sendChat">
@@ -125,7 +125,7 @@ export default {
 #chatbox {
   position: fixed;
   width: 20%;
-  min-width: 200px;
+  min-width: 250px;
   height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
@@ -151,6 +151,9 @@ export default {
         display: none;
       }
     }
+  .card-footer-item {
+    padding-top: 6px;
+  }
   }
 
   .message {

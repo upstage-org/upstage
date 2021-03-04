@@ -38,8 +38,6 @@ export default {
     const maxMoveSpeed = 500;
     const value = computed(() => {
       switch (sliderMode.value) {
-        case "opacity":
-          return props.object.opacity;
         case "animation":
           return props.object.autoplayFrames == 0
             ? 0
@@ -49,6 +47,8 @@ export default {
           return props.object.moveSpeed == 0
             ? 0
             : maxMoveSpeed / props.object.moveSpeed;
+        default:
+          return props.object.opacity;
       }
     });
 

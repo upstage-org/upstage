@@ -1,8 +1,7 @@
 <template>
   <section
     id="live-stage"
-    class="hero bg-cover has-background-primary-light is-fullheight"
-    :style="'background-image: url(' + background + ')'"
+    class="hero bg-cover has-background-dark is-fullheight"
   >
     <Board />
     <ConnectionStatus />
@@ -32,7 +31,6 @@ export default {
   },
   setup: () => {
     const store = useStore();
-    const background = computed(() => store.state.stage.background);
 
     onMounted(() => {
       store.dispatch("stage/connect");
@@ -42,24 +40,15 @@ export default {
       store.dispatch("stage/disconnect");
     });
 
-    watch(background, () => {
-      anime({
-        targets: "#live-stage",
-        opacity: [0, 1],
-        duration: 5000,
-      });
-    });
-
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
-    return { background, loggedIn };
+    return { loggedIn };
   },
 };
 </script>
 
 <style lang="scss">
 #live-stage {
-  background-size: cover;
   *:not(input) {
     -webkit-user-select: none; /* Safari */
     user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */

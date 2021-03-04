@@ -3,8 +3,9 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, normalizeObject } from './reusable';
+import { attachPropToAvatar, deserializeObject, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
+import { getViewport } from './reactiveViewport';
 
 export default {
     namespaced: true,
@@ -35,7 +36,8 @@ export default {
             }
         },
         hosts: [],
-        reactions: []
+        reactions: [],
+        viewport: getViewport()
     },
     getters: {
         objects(state) {
@@ -70,6 +72,21 @@ export default {
         currentAvatar(state, getters, rootState) {
             const id = rootState.user.avatarId;
             return state.board.objects.find(o => o.id === id);
+        },
+        stageSize(state, getters) {
+            let width = state.viewport.width;
+            let height = state.viewport.height;
+            let left = 0;
+            let top = 0;
+            const ratio = getters.config.ratio;
+            if (width / height > ratio) {
+                width = height * ratio;
+                left = (window.innerWidth - width) / 2;
+            } else {
+                height = width / ratio;
+                top = (window.innerHeight - height) / 2;
+            }
+            return { width, height, left, top };
         }
     },
     mutations: {
@@ -86,16 +103,15 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
+            deserializeObject(object, true);
             state.board.objects.push(object)
             attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
+            deserializeObject(object);
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
-                    delete object.src;
-                }
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
@@ -194,6 +210,9 @@ export default {
                 state.reactions.shift();
             }, state.tools.config.reactionDuration);
         },
+        UPDATE_VIEWPORT(state, viewport) {
+            state.viewport = viewport;
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -294,7 +313,7 @@ export default {
             }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object
+                object: serializeObject(object, true)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
             if (object.type === 'stream') {
@@ -305,14 +324,14 @@ export default {
         shapeObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.MOVE_TO,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -326,14 +345,14 @@ export default {
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         sendToBack(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
