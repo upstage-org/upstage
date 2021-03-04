@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, deserializeObject, serializeObject } from './reusable';
+import { attachPropToAvatar, deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
 import { getViewport } from './reactiveViewport';
 
@@ -212,6 +212,15 @@ export default {
         },
         UPDATE_VIEWPORT(state, viewport) {
             state.viewport = viewport;
+        },
+        RESCALE_OBJECTS(state, ratio) {
+            state.board.objects.forEach(object => {
+                object.x = object.x * ratio;
+                object.y = object.y * ratio;
+                object.w = object.w * ratio;
+                object.h = object.h * ratio;
+                recalcFontSize(object, s => s * ratio)
+            })
         }
     },
     actions: {
