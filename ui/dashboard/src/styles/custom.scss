@@ -43,7 +43,7 @@ nav {
     overflow: visible !important;
 }
 #board {
-    box-shadow: 0 0.5em 1em -0.125em black
+    box-shadow: 0 0 1em -0.125em $dark;
 }
 #topbar {
     border-top: none;

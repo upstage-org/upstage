@@ -14,7 +14,11 @@
       :object="object"
     />
     <Topping :position="position" :object="object" />
-    <ContextMenu>
+    <ContextMenu
+      :pad-left="-stageSize.left"
+      :pad-top="-stageSize.top"
+      :pad-right="250"
+    >
       <template #trigger>
         <DragResize
           v-if="loggedIn"
@@ -96,6 +100,7 @@ export default {
     // Vuex store
     const store = useStore();
     const config = store.getters["stage/config"];
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
@@ -218,6 +223,7 @@ export default {
       deleteObject,
       setAsPrimaryAvatar,
       src,
+      stageSize,
     };
   },
 };

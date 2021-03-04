@@ -338,7 +338,7 @@ export default {
         switchFrame(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SWITCH_FRAME,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -359,7 +359,7 @@ export default {
         toggleAutoplayFrames(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
         },
