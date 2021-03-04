@@ -44,6 +44,12 @@ export function toAbsolute(size) {
     return size * stageSize.width;
 }
 
+export function recalcFontSize(object, f) {
+    if (object.type === 'text') {
+        object.fontSize = f(object.fontSize.slice(0, -2)) + 'px'
+    }
+}
+
 export function serializeObject(object, keepSrc) {
     const { src, type } = object;
     if (!keepSrc) {
@@ -56,9 +62,7 @@ export function serializeObject(object, keepSrc) {
     object.y = toRelative(object.y)
     object.w = toRelative(object.w)
     object.h = toRelative(object.h)
-    if (object.type === 'text') {
-        object.fontSize = toRelative(object.fontSize.slice(0, -2)) + 'px'
-    }
+    recalcFontSize(toRelative);
     return object;
 }
 
@@ -72,8 +76,6 @@ export function deserializeObject(object, keepSrc) {
     object.y = toAbsolute(object.y)
     object.w = toAbsolute(object.w)
     object.h = toAbsolute(object.h)
-    if (object.type === 'text') {
-        object.fontSize = toAbsolute(object.fontSize.slice(0, -2)) + 'px'
-    }
+    recalcFontSize(toAbsolute);
     return object;
 }
