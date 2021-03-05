@@ -15,10 +15,15 @@
   </div>
 </template>
 
-<script setup>
-const { inject, watch } = require("@vue/runtime-core");
+<script>
+import { inject } from "@vue/runtime-core";
 
-const mediaList = inject("mediaList");
+export default {
+  setup: () => {
+    const mediaList = inject("mediaList");
+    return { mediaList };
+  },
+};
 </script>
 
 <style>

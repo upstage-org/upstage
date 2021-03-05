@@ -46,7 +46,7 @@
   </Modal>
 </template>
 
-<script setup="props, { emit }">
+<script>
 import Modal from "./Modal.vue";
 import SaveButton from "./form/SaveButton";
 import HorizontalField from "./form/HorizontalField";
@@ -57,40 +57,47 @@ import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 
-const active = ref();
-const data = reactive({});
+export default {
+  components: { Modal, SaveButton, HorizontalField, Field },
+  setup: (props, { emit }) => {
+    const active = ref();
+    const data = reactive({});
 
-const isImage = computed(() => data.file?.type?.startsWith("image"));
+    const isImage = computed(() => data.file?.type?.startsWith("image"));
 
-const handleBlurName = () => {
-  if (!data.name) {
-    data.name = data.file?.name;
-  }
-};
+    const handleBlurName = () => {
+      if (!data.name) {
+        data.name = data.file?.name;
+      }
+    };
 
-const handleInputFile = (e) => {
-  const reader = new FileReader();
-  reader.readAsDataURL(e.target.files[0]);
-  reader.onload = () => {
-    data.base64 = reader.result;
-  };
-  data.file = e.target.files[0];
-  handleBlurName();
-};
+    const handleInputFile = (e) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = () => {
+        data.base64 = reader.result;
+      };
+      data.file = e.target.files[0];
+      handleBlurName();
+    };
 
-const { loading, mutation } = useMutation(stageGraph.uploadMedia);
-const upload = () => {
-  try {
-    const response = mutation({
-      name: data.name,
-      base64: data.base64,
-    });
-    active.value = false;
-    notification.success("Media uploaded successfully!");
-    emit("complete", response);
-  } catch (error) {
-    notification.error(error);
-  }
+    const { loading, mutation } = useMutation(stageGraph.uploadMedia);
+    const upload = () => {
+      try {
+        const response = mutation({
+          name: data.name,
+          base64: data.base64,
+        });
+        active.value = false;
+        notification.success("Media uploaded successfully!");
+        emit("complete", response);
+      } catch (error) {
+        notification.error(error);
+      }
+    };
+
+    return { isImage, handleInputFile, loading, upload };
+  },
 };
 </script>
 

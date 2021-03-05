@@ -40,19 +40,24 @@
   </div>
 </template>
 
-<script setup>
+<script>
 import MediaList from "./MediaList";
 import MediaUpload from "@/components/MediaUpload";
 import Skeleton from "@/components/Skeleton";
 import { provide } from "@vue/runtime-core";
-
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
 
-const { loading, nodes: mediaList, fetch } = useQuery(stageGraph.mediaList);
-provide("mediaList", mediaList);
-provide("loading", loading);
-provide("refresh", fetch);
+export default {
+  setup: () => {
+    const { loading, nodes: mediaList, fetch } = useQuery(stageGraph.mediaList);
+    provide("mediaList", mediaList);
+    provide("loading", loading);
+    provide("refresh", fetch);
+
+    return { MediaList, MediaUpload, Skeleton, fetch };
+  },
+};
 </script>
 
 <style>

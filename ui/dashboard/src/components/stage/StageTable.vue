@@ -1,5 +1,5 @@
 <template>
-  <DataTable :query="stageGraph.stageList" :headers="headers">
+  <DataTable :query="stageList" :headers="headers">
     <template #name="{ item }">
       <router-link to="/live" class="has-text-primary has-text-weight-bold">
         {{ item.name }}
@@ -23,38 +23,43 @@
   </DataTable>
 </template>
 
-<script setup>
-import { useQuery } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
+<script>
 import DataTable from "@/components/DataTable";
 import Modal from "../Modal";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
+import { stageGraph } from "@/services/graphql";
 
-const headers = [
-  {
-    title: "Stage name",
-    description: "Name (url)",
-    slot: "name",
+export default {
+  components: { DataTable, Modal, ActionButtons, Detail },
+  setup: () => {
+    const headers = [
+      {
+        title: "Stage name",
+        description: "Name (url)",
+        slot: "name",
+      },
+      {
+        title: "Owner",
+        description: "Creator of the stage",
+        render: (item) => displayName(item.owner),
+      },
+      {
+        title: "Detail",
+        description: "Duplicate/Manage stage",
+        slot: "detail",
+        align: "center",
+      },
+      {
+        title: "Edit Stage",
+        slot: "edit",
+        align: "center",
+      },
+    ];
+    return { headers, stageList: stageGraph.stageList };
   },
-  {
-    title: "Owner",
-    description: "Creator of the stage",
-    render: (item) => displayName(item.owner),
-  },
-  {
-    title: "Detail",
-    description: "Duplicate/Manage stage",
-    slot: "detail",
-    align: "center",
-  },
-  {
-    title: "Edit Stage",
-    slot: "edit",
-    align: "center",
-  },
-];
+};
 </script>
 
 <style scoped>
