@@ -4,7 +4,9 @@ import config from '@/config';
 import store from "@/store/index";
 
 
-const options = { headers: {} };
+const options = {
+    headers: {}
+};
 
 export const createClient = namespace => ({
     request: async (...params) => {

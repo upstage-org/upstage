@@ -41,7 +41,7 @@
       </HorizontalField>
     </template>
     <template #footer>
-      <SaveButton />
+      <SaveButton @click="upload" :loading="loading" />
     </template>
   </Modal>
 </template>
@@ -53,6 +53,8 @@ import HorizontalField from "./form/HorizontalField";
 import Field from "./form/Field";
 import { reactive } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
+import { useMutation } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
 
 const data = reactive({});
 
@@ -60,7 +62,7 @@ const isImage = computed(() => data.file?.type?.startsWith("image"));
 
 const handleBlurName = () => {
   if (!data.name) {
-    data.name = data.file.name;
+    data.name = data.file?.name;
   }
 };
 
@@ -72,6 +74,14 @@ const handleInputFile = (e) => {
   };
   data.file = e.target.files[0];
   handleBlurName();
+};
+
+const { loading, mutation } = useMutation(stageGraph.uploadMedia);
+const upload = () => {
+  mutation({
+    name: data.name,
+    base64: data.base64,
+  });
 };
 </script>
 

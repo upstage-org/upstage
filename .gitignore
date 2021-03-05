@@ -11,7 +11,7 @@ uploads/
 .DS_Store
 node_modules
 /dist
-/V4.0/static
+/ui/static/assets
 
 
 # local env files

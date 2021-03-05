@@ -1,13 +1,14 @@
 import os
 import uuid
+
 from config.project_globals import appdir, ScopedSession
 from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
 from graphene_sqlalchemy import SQLAlchemyObjectType
 import graphene
 from base64 import b64decode
-from config.settings import VERSION
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
-storagePath = f'{VERSION}/static/'
+storagePath = 'ui/static/assets'
 
 
 class Asset(SQLAlchemyObjectType):
@@ -32,8 +33,9 @@ class UploadMedia(graphene.Mutation):
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
 
+    @jwt_required()
     def mutate(self, info, name, base64, media_type):
-        # current_user_id = get_jwt_identity()
+        current_user_id = get_jwt_identity()
         absolutePath = os.path.dirname(appdir)
 
         with ScopedSession() as local_db_session:
@@ -54,13 +56,14 @@ class UploadMedia(graphene.Mutation):
                 storagePath, media_type, uuid.uuid4().hex)
             filename = os.path.join(absolutePath, file_location)
             with open(filename, "wb") as fh:
-                fh.write(b64decode(base64))
+                fh.write(b64decode(base64.split(',')[1]))
 
             asset = AssetModel(
                 name=name,
                 file_location=file_location,
                 asset_type_id=asset_type.id,
-                owner_id=26)
+                owner_id=current_user_id
+            )
             local_db_session.add(asset)
             local_db_session.flush()
             local_db_session.commit()

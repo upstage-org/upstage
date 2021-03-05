@@ -54,5 +54,18 @@ export default {
       }
     }
     ${stageFragment}
-  `, variables)
-} 
+  `, variables),
+  uploadMedia: (variables) => client.request(gql`
+    mutation uploadMedia($name: String!, $base64: String!, $mediaType: String) {
+      uploadMedia(name: $name, base64: $base64, mediaType: $mediaType) {
+        asset {
+          id
+          name
+          assetTypeId
+          fileLocation
+          dbId
+        }
+      }
+    }
+  `, variables),
+}
