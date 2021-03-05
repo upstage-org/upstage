@@ -48,16 +48,15 @@ class UploadMedia(graphene.Mutation):
                 local_db_session.flush()
 
             # Save base64 to file
+            filename = uuid.uuid4().hex
             mediaDirectory = os.path.join(
-                absolutePath, storagePath, media_type)
+                absolutePath, storagePath, asset_type.file_location)
             if not os.path.exists(mediaDirectory):
                 os.makedirs(mediaDirectory)
-            file_location = os.path.join(
-                storagePath, media_type, uuid.uuid4().hex)
-            filename = os.path.join(absolutePath, file_location)
-            with open(filename, "wb") as fh:
+            with open(os.path.join(mediaDirectory, filename), "wb") as fh:
                 fh.write(b64decode(base64.split(',')[1]))
 
+            file_location = os.path.join(asset_type.file_location, filename)
             asset = AssetModel(
                 name=name,
                 file_location=file_location,
