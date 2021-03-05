@@ -1,4 +1,5 @@
 # -*- coding: iso8859-15 -*-
+from stage.asset import Asset, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -136,12 +137,15 @@ class UpdateStage(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
+    uploadMedia = UploadMedia.Field()
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
         Stage, id=graphene.ID(), name_like=graphene.String())
+    assetList = StageConnectionField(
+        Asset, id=graphene.ID(), name_like=graphene.String())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

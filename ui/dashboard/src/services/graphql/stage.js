@@ -22,6 +22,16 @@ export const stageFragment = gql`
   }
 `
 
+export const assetFragment = gql`
+  fragment assetFragment on Asset {
+    id
+    name
+    assetTypeId
+    fileLocation
+    dbId
+  }
+`
+
 export default {
   createStage: (variables) => client.request(gql`
     mutation CreateStage($name: String, $description: String, $ownerId: String, $fileLocation: String) {
@@ -54,5 +64,27 @@ export default {
       }
     }
     ${stageFragment}
-  `, variables)
-} 
+  `, variables),
+  uploadMedia: (variables) => client.request(gql`
+    mutation uploadMedia($name: String!, $base64: String!, $mediaType: String) {
+      uploadMedia(name: $name, base64: $base64, mediaType: $mediaType) {
+        asset {
+          ...assetFragment
+        }
+      }
+    }
+    ${assetFragment}
+  `, variables),
+  mediaList: (variables) => client.request(gql`
+    query AssetList($id: ID, $nameLike: String) {
+      assetList(id: $id, nameLike: $nameLike) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+    }
+    ${assetFragment}
+  `, variables),
+}

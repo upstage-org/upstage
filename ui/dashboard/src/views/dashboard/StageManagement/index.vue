@@ -1,4 +1,9 @@
 <template>
+  <section class="hero is-small is-primary is-bold">
+    <div class="hero-body">
+      <h1 class="title">Stage Management</h1>
+    </div>
+  </section>
   <div class="columns">
     <div class="column is-4">
       <aside class="menu box has-background-light mx-4">
@@ -49,7 +54,7 @@
     </div>
     <div class="column is-8">
       <div class="pt-4 pr-4 pb-4">
-        <button class="is-loading" v-if="!!id && loading"></button>
+        <Skeleton v-if="!!id && loading" height="400px" />
         <router-view v-else />
       </div>
     </div>
@@ -60,8 +65,10 @@
 import { computed, provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
+import Skeleton from "@/components/Skeleton";
 export default {
   props: ["id"],
+  components: { Skeleton },
   setup: (props) => {
     provide(
       "id",

@@ -1,5 +1,9 @@
 <template>
-  <button class="button is-primary" @click="$emit('click')">
+  <button
+    class="button is-primary"
+    :class="{ 'is-loading': loading }"
+    v-bind="$attrs"
+  >
     <span class="icon is-small">
       <i class="fas fa-check"></i>
     </span>
@@ -9,7 +13,7 @@
 
 <script>
 export default {
-  emits: ["click"],
+  props: ["loading"],
 };
 </script>
 

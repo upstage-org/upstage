@@ -1,5 +1,6 @@
 <template>
-  <table class="table" :class="{ 'is-loading': loading }">
+  <Skeleton v-if="loading" />
+  <table v-else class="table">
     <thead>
       <tr>
         <th v-if="numbered">#</th>
@@ -14,7 +15,11 @@
     <tbody>
       <tr v-for="(item, index) in nodes" :key="item">
         <td v-if="numbered">{{ index + 1 }}</td>
-        <td v-for="header in headers" :key="header">
+        <td
+          v-for="header in headers"
+          :key="header"
+          :style="{ 'text-align': header.align }"
+        >
           <slot :name="header.slot" :item="item">
             {{ header.render ? header.render(item) : item[header.key] }}
           </slot>
@@ -26,6 +31,7 @@
 
 <script>
 import { useQuery } from "@/services/graphql/composable";
+import Skeleton from "@/components/Skeleton";
 
 export default {
   props: {
@@ -41,6 +47,7 @@ export default {
       default: false,
     },
   },
+  components: { Skeleton },
   setup: (props) => {
     const { nodes, loading } = useQuery(props.query);
     return { loading, nodes };
