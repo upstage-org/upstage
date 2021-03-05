@@ -1,6 +1,6 @@
 <template>
-  <div class="columns">
-    <div class="column is-3" v-for="media in mediaList" :key="media">
+  <div class="columns is-multiline">
+    <div class="column" v-for="media in mediaList" :key="media">
       <div class="">
         <div class="card-image">
           <figure class="image is-4by3">

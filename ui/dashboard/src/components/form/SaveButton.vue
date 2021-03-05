@@ -2,7 +2,7 @@
   <button
     class="button is-primary"
     :class="{ 'is-loading': loading }"
-    @click="$emit('click')"
+    v-bind="$attrs"
   >
     <span class="icon is-small">
       <i class="fas fa-check"></i>
@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  emits: ["click", "loading"],
+  props: ["loading"],
 };
 </script>
 

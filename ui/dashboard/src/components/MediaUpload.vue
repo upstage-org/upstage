@@ -41,7 +41,7 @@
       </HorizontalField>
     </template>
     <template #footer>
-      <SaveButton @click="upload" :loading="loading" />
+      <SaveButton @click="upload" :loading="loading" :disabled="!data.file" />
     </template>
   </Modal>
 </template>
@@ -59,6 +59,7 @@ import { notification } from "@/utils/notification";
 
 export default {
   components: { Modal, SaveButton, HorizontalField, Field },
+  emits: ["complete"],
   setup: (props, { emit }) => {
     const active = ref();
     const data = reactive({});
@@ -82,9 +83,9 @@ export default {
     };
 
     const { loading, mutation } = useMutation(stageGraph.uploadMedia);
-    const upload = () => {
+    const upload = async () => {
       try {
-        const response = mutation({
+        const response = await mutation({
           name: data.name,
           base64: data.base64,
         });
@@ -96,7 +97,7 @@ export default {
       }
     };
 
-    return { isImage, handleInputFile, loading, upload };
+    return { isImage, handleInputFile, loading, upload, data, active };
   },
 };
 </script>
