@@ -18,11 +18,12 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { ref, watchEffect } from "vue";
 export default {
   props: ["active"],
   setup: (props) => {
     const isActive = ref(props.active);
+    watchEffect(() => (isActive.value = props.active));
 
     const openModal = () => (isActive.value = true);
     const closeModal = () => (isActive.value = false);

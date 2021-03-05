@@ -3,7 +3,7 @@
     <div class="hero-body">
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload />
+      <MediaUpload @complete="fetch" />
     </div>
   </section>
   <div class="columns">
@@ -33,7 +33,8 @@
     </div>
     <div class="column is-8">
       <div class="pt-4 pr-4 pb-4">
-        <MediaList />
+        <Skeleton v-if="loading" />
+        <MediaList v-else />
       </div>
     </div>
   </div>
@@ -42,6 +43,16 @@
 <script setup>
 import MediaList from "./MediaList";
 import MediaUpload from "@/components/MediaUpload";
+import Skeleton from "@/components/Skeleton";
+import { provide } from "@vue/runtime-core";
+
+import { stageGraph } from "@/services/graphql";
+import { useQuery } from "@/services/graphql/composable";
+
+const { loading, nodes: mediaList, fetch } = useQuery(stageGraph.mediaList);
+provide("mediaList", mediaList);
+provide("loading", loading);
+provide("refresh", fetch);
 </script>
 
 <style>

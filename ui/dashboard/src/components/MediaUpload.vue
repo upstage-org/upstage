@@ -1,5 +1,5 @@
 <template>
-  <Modal>
+  <Modal :active="active">
     <template #trigger>
       <button class="button">
         <span class="icon">
@@ -46,16 +46,18 @@
   </Modal>
 </template>
 
-<script setup>
+<script setup="props, { emit }">
 import Modal from "./Modal.vue";
 import SaveButton from "./form/SaveButton";
 import HorizontalField from "./form/HorizontalField";
 import Field from "./form/Field";
-import { reactive } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
+import { notification } from "@/utils/notification";
 
+const active = ref();
 const data = reactive({});
 
 const isImage = computed(() => data.file?.type?.startsWith("image"));
@@ -78,10 +80,17 @@ const handleInputFile = (e) => {
 
 const { loading, mutation } = useMutation(stageGraph.uploadMedia);
 const upload = () => {
-  mutation({
-    name: data.name,
-    base64: data.base64,
-  });
+  try {
+    const response = mutation({
+      name: data.name,
+      base64: data.base64,
+    });
+    active.value = false;
+    notification.success("Media uploaded successfully!");
+    emit("complete", response);
+  } catch (error) {
+    notification.error(error);
+  }
 };
 </script>
 
