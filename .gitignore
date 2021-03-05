@@ -11,6 +11,7 @@ uploads/
 .DS_Store
 node_modules
 /dist
+/V4.0/static
 
 
 # local env files
