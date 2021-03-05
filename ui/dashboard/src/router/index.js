@@ -42,11 +42,6 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
       },
       {
-        path: '/dashboard/media',
-        name: 'Media',
-        component: () => import('../views/dashboard/Media.vue'),
-      },
-      {
         path: '/dashboard/my-stages',
         name: 'My Stages',
         component: () => import('../views/dashboard/MyStages.vue'),
@@ -55,6 +50,11 @@ const routes = [
         path: '/dashboard/workshop',
         name: 'Workshop',
         component: () => import('../views/dashboard/Workshop.vue'),
+      },
+      {
+        path: '/dashboard/media',
+        name: 'Media',
+        component: () => import('../views/dashboard/Media/index.vue'),
       },
       {
         path: '/dashboard/profile',
