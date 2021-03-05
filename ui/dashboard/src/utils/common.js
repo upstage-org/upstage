@@ -1,3 +1,5 @@
+import config from '@/config';
+
 export const isJson = (d) => {
   try {
     JSON.parse(d);
@@ -64,4 +66,8 @@ export function titleCase(str) {
     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
   }
   return splitStr.join(' ');
+}
+
+export function absolutePath(path) {
+  return `${config.STATIC_ASSETS_ENDPOINT}${path}`
 }

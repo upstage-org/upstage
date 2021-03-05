@@ -4,7 +4,7 @@
       <div class="">
         <div class="card-image">
           <figure class="image is-4by3">
-            <img :src="'/' + media.fileLocation" />
+            <img :src="absolutePath(media.fileLocation)" />
           </figure>
         </div>
         <header class="card-header">
@@ -17,11 +17,12 @@
 
 <script>
 import { inject } from "@vue/runtime-core";
+import { absolutePath } from "@/utils/common";
 
 export default {
   setup: () => {
     const mediaList = inject("mediaList");
-    return { mediaList };
+    return { mediaList, absolutePath };
   },
 };
 </script>
