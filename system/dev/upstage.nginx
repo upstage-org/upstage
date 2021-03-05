@@ -2,13 +2,13 @@ limit_req_zone $binary_remote_addr zone=limitone:10m rate=10r/s;
 limit_req_zone $binary_remote_addr zone=limittwo:10m rate=5r/s;
 
 server {
-        server_name 159.89.19.111;
+        server_name 192.241.148.233;
         listen 80;
-#        rewrite ^ https://159.89.19.111$request_uri? permanent;
+#        rewrite ^ https://192.241.148.233$request_uri? permanent;
 #}
 #
 #server {
-#        server_name 159.89.19.111;
+#        server_name 192.241.148.233;
 #        listen 443 ssl;
 #        ssl_dhparam /etc/ssl/urbnplayground/dhparam.pem;
 #        ssl_ecdh_curve secp384r1;
