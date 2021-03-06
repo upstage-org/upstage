@@ -1,5 +1,5 @@
 <template>
-  <audio v-if="asset.assetType.name === 'audio'" :src="src"></audio>
+  <audio controls v-if="asset.assetType.name === 'audio'" :src="src"></audio>
   <img v-else :src="src" />
 </template>
 
