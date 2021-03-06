@@ -1,5 +1,5 @@
 <template>
-  <Modal :active="active">
+  <Modal v-model="active">
     <template #trigger>
       <button class="button">
         <span class="icon">
@@ -106,7 +106,12 @@ export default {
     const upload = async () => {
       try {
         const { name, base64, mediaType } = data;
-        const response = await mutation({ name, base64, mediaType });
+        const response = await mutation({
+          name,
+          base64,
+          mediaType,
+          filename: data.file.name,
+        });
         active.value = false;
         notification.success("Media uploaded successfully!");
         emit("complete", response);

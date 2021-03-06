@@ -1,11 +1,18 @@
 <template>
   <div class="columns is-multiline">
-    <div class="column" v-for="media in mediaList" :key="media">
+    <div
+      v-for="media in mediaList"
+      :key="media"
+      :class="`column media-column ${
+        ['backdrop', 'audio'].includes(media.assetType.name) ? 'is-6' : 'is-2'
+      }`"
+    >
       <div class="">
+        <span class="tag is-light is-small type-tag">
+          {{ media.assetType.name }}
+        </span>
         <div class="card-image">
-          <figure class="image is-4by3">
-            <img :src="absolutePath(media.fileLocation)" />
-          </figure>
+          <Asset :asset="media" />
         </div>
         <header class="card-header">
           <p class="card-header-title">{{ media.name }}</p>
@@ -18,8 +25,10 @@
 <script>
 import { inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
+import Asset from "@/components/Asset";
 
 export default {
+  components: { Asset },
   setup: () => {
     const mediaList = inject("mediaList");
     return { mediaList, absolutePath };
@@ -28,4 +37,13 @@ export default {
 </script>
 
 <style>
+.media-column {
+  position: relative;
+}
+.type-tag {
+  position: absolute;
+  z-index: 10;
+  top: 20px;
+  right: 0;
+}
 </style>

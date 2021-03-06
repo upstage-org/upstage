@@ -20,13 +20,18 @@
 <script>
 import { ref, watchEffect } from "vue";
 export default {
-  props: ["active"],
-  setup: (props) => {
-    const isActive = ref(props.active);
-    watchEffect(() => (isActive.value = props.active));
+  props: ["modelValue"],
+  emits: ["update:modelValue"],
+  setup: (props, { emit }) => {
+    const isActive = ref(props.modelValue);
+    watchEffect(() => (isActive.value = props.modelValue));
 
-    const openModal = () => (isActive.value = true);
-    const closeModal = () => (isActive.value = false);
+    const setVisible = (visible) => {
+      isActive.value = visible;
+      emit("update:modelValue", visible);
+    };
+    const openModal = () => setVisible(true);
+    const closeModal = () => setVisible(false);
 
     return { isActive, openModal, closeModal };
   },

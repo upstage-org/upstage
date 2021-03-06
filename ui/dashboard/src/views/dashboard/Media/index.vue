@@ -42,7 +42,7 @@
 import MediaList from "./MediaList";
 import MediaUpload from "@/components/MediaUpload";
 import Skeleton from "@/components/Skeleton";
-import { provide, ref, watchEffect } from "@vue/runtime-core";
+import { provide, ref, watch } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
 
@@ -62,7 +62,7 @@ export default {
     };
     provide("refresh", refresh);
 
-    watchEffect(refresh);
+    watch(mediaType, refresh);
 
     const { loading: loadingTypes, nodes: types } = useQuery(
       stageGraph.assetTypeList
