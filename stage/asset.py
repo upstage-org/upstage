@@ -20,6 +20,15 @@ class Asset(SQLAlchemyObjectType):
         interfaces = (graphene.relay.Node,)
 
 
+class AssetType(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
+
+    class Meta:
+        model = AssetTypeModel
+        model.db_id = model.id
+        interfaces = (graphene.relay.Node,)
+
+
 class UploadMedia(graphene.Mutation):
     """Mutation to upload a media."""
     asset = graphene.Field(

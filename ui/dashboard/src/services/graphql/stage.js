@@ -26,7 +26,10 @@ export const assetFragment = gql`
   fragment assetFragment on Asset {
     id
     name
-    assetTypeId
+    assetType {
+      id
+      name
+    }
     fileLocation
     dbId
   }
@@ -69,15 +72,14 @@ export default {
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType) {
         asset {
-          ...assetFragment
+          id
         }
       }
     }
-    ${assetFragment}
   `, variables),
   mediaList: (variables) => client.request(gql`
-    query AssetList($id: ID, $nameLike: String) {
-      assetList(id: $id, nameLike: $nameLike) {
+    query AssetList($id: ID, $nameLike: String, $assetTypeId: ID) {
+      assetList(id: $id, nameLike: $nameLike, assetTypeId: $assetTypeId) {
         edges {
           node {
             ...assetFragment
@@ -86,5 +88,18 @@ export default {
       }
     }
     ${assetFragment}
+  `, variables),
+  assetTypeList: (variables) => client.request(gql`
+    query AssetTypeList($id: ID, $nameLike: String) {
+      assetTypeList(id: $id, nameLike: $nameLike) {
+        edges {
+          node {
+            id
+            dbId
+            name
+          }
+        }
+      }
+    }
   `, variables),
 }

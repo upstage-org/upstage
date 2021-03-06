@@ -19,6 +19,9 @@ export default {
 html {
   overflow-y: auto !important;
 }
+body.waiting * {
+  cursor: wait !important;
+}
 .is-fullwidth {
   width: 100%;
 }

@@ -1,5 +1,5 @@
 # -*- coding: iso8859-15 -*-
-from stage.asset import Asset, UploadMedia
+from stage.asset import Asset, AssetType, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -145,7 +145,9 @@ class Query(graphene.ObjectType):
     stageList = StageConnectionField(
         Stage, id=graphene.ID(), name_like=graphene.String())
     assetList = StageConnectionField(
-        Asset, id=graphene.ID(), name_like=graphene.String())
+        Asset, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
+    assetTypeList = StageConnectionField(
+        AssetType, id=graphene.ID(), name_like=graphene.String())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

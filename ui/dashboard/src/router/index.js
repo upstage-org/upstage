@@ -147,6 +147,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  document.body.classList.add('waiting');
+
   const loggedIn = store.getters["auth/loggedIn"];
 
   if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
@@ -164,6 +166,10 @@ router.beforeEach((to, from, next) => {
   }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;
+});
+
+router.afterEach(() => {
+  document.body.classList.remove('waiting');
 });
 
 export default router
