@@ -32,8 +32,6 @@ export default {
       store.dispatch("stage/setBackground", background.src);
     };
 
-    console.log(currentBackground.value);
-
     return {
       backgrounds,
       setBackground,

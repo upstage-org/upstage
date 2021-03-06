@@ -33,7 +33,9 @@ export default {
         commit("SET_USER_DATA", currentUser);
         return currentUser;
       } catch (error) {
-        logout();
+        if (error.message?.includes('Missing X-Access-Token Header')) {
+          logout();
+        }
         if (router.currentRoute.value.meta.requireAuth) {
           router.push("/login");
           notification.warning('You have been logged out of this session!');

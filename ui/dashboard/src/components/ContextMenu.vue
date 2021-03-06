@@ -56,7 +56,6 @@ export default {
     const contextAppear = (el) => {
       const { width, height, right, bottom } =
         el?.getBoundingClientRect() ?? {};
-      console.log(right, window.innerWidth, props.padRight);
       if (right > window.innerWidth - props.padRight) {
         position.x = position.x - width;
       }

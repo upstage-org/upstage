@@ -59,7 +59,9 @@ export default {
       }, {
         'X-Access-Token': state.refresh_token
       }).then(response => {
-        return response.refreshUser.newToken
+        const token = response.refreshUser.newToken
+        commit('SET_TOKEN', token)
+        return token
       })
     },
   },
