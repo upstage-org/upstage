@@ -1,4 +1,6 @@
-import { computed, ref } from "vue";
+import store from "@/store";
+import { computed, reactive, ref } from "vue";
+import hash from 'object-hash';
 
 export const useRequest = (service, ...params) => {
     const loading = ref(false);
@@ -8,10 +10,23 @@ export const useRequest = (service, ...params) => {
         const key = Object.keys(data.value)[0];
         return data.value[key].edges.map((edge) => edge.node)
     });
+    const cacheKeys = reactive([]);
+
     const fetch = async (...newParams) => {
         try {
-            loading.value = true;
-            data.value = newParams.length ? await service(...newParams) : await service(...params);
+            const args = newParams.length ? newParams : params
+            const cacheKey = hash(args);
+            const cached = store.state.cache.graphql[cacheKey];
+            if (cached) {
+                data.value = cached;
+            } else {
+                loading.value = true;
+                data.value = await service(...args);
+                if (data.value) {
+                    store.commit('cache/SET_GRAPHQL_CACHE', { key: cacheKey, value: data.value });
+                    cacheKeys.push(cacheKey)
+                }
+            }
             return data.value;
         } catch (error) {
             throw error.response.errors[0].message;
@@ -20,7 +35,17 @@ export const useRequest = (service, ...params) => {
         }
     }
 
-    return { loading, data, nodes, fetch }
+    const clearCache = () => {
+        store.commit('cache/CLEAR_GRAPHQL_CACHES', { keys: cacheKeys });
+        cacheKeys.length = 0;
+    }
+
+    const refresh = (...params) => {
+        clearCache();
+        return fetch(...params);
+    }
+
+    return { loading, data, nodes, fetch, clearCache, refresh }
 }
 
 export const useMutation = (...params) => {

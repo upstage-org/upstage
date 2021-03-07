@@ -3,7 +3,7 @@
     <div class="hero-body">
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="fetch" />
+      <MediaUpload @complete="getMediaList()" />
     </div>
   </section>
   <div class="columns">
@@ -50,25 +50,27 @@ export default {
   components: { MediaList, MediaUpload, Skeleton },
   setup: () => {
     const mediaType = ref({});
-    const { loading, nodes: mediaList, fetch } = useQuery(stageGraph.mediaList);
+    const { loading, nodes: mediaList, fetch, refresh } = useQuery(
+      stageGraph.mediaList
+    );
     provide("mediaList", mediaList);
     provide("loading", loading);
-    const refresh = () => {
+    const getMediaList = (useCache) => {
       const assetTypeId =
         mediaType.value.name === "media" ? null : mediaType.value.dbId;
-      fetch({
+      const f = useCache ? fetch : refresh;
+      f({
         assetTypeId,
       });
     };
-    provide("refresh", refresh);
 
-    watch(mediaType, refresh);
+    watch(mediaType, getMediaList);
 
     const { loading: loadingTypes, nodes: types } = useQuery(
       stageGraph.assetTypeList
     );
 
-    return { fetch, loading, loadingTypes, types, mediaType };
+    return { fetch, loading, loadingTypes, types, mediaType, getMediaList };
   },
 };
 </script>
