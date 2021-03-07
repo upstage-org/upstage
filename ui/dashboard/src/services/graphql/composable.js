@@ -14,14 +14,14 @@ export const useRequest = (service, ...params) => {
 
     const fetch = async (...newParams) => {
         try {
-            const args = newParams.length ? newParams : params
-            const cacheKey = hash(args);
+            const payload = newParams.length ? newParams : params
+            const cacheKey = hash({ service, payload });
             const cached = store.state.cache.graphql[cacheKey];
             if (cached) {
                 data.value = cached;
             } else {
                 loading.value = true;
-                data.value = await service(...args);
+                data.value = await service(...payload);
                 if (data.value) {
                     store.commit('cache/SET_GRAPHQL_CACHE', { key: cacheKey, value: data.value });
                     cacheKeys.push(cacheKey)
