@@ -193,10 +193,10 @@ export default {
   }
 
   &.collapsed {
-    transform: translateX(-85%);
+    transform: translateX(-90%);
     .panel-icon {
-      position: relative;
-      left: 150px;
+      position: absolute;
+      right: 0;
     }
     .fa-angle-right {
       display: none;
