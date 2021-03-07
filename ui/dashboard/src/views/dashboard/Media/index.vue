@@ -3,31 +3,29 @@
     <div class="hero-body">
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="fetch" />
+      <MediaUpload @complete="getMediaList()" />
     </div>
   </section>
   <div class="columns">
     <div class="column is-4">
       <aside class="menu box has-background-light mx-4">
         <ul class="menu-list">
-          <li>
-            <a class="is-active">My Media</a>
-          </li>
-          <li>
-            <a>Backdrops</a>
-          </li>
-          <li>
-            <a>Avatars</a>
-          </li>
-          <li>
-            <a>Props</a>
-          </li>
-          <li>
-            <a>Audio</a>
-          </li>
-          <li>
-            <a>Stream</a>
-          </li>
+          <Skeleton v-if="loadingTypes" />
+          <template v-else>
+            <li v-for="type in types" :key="type">
+              <a
+                @click="mediaType = type"
+                class="type-name"
+                :class="{
+                  'is-active':
+                    mediaType === type ||
+                    (!mediaType.name && type.name === 'media'),
+                }"
+              >
+                {{ type.name }}
+              </a>
+            </li>
+          </template>
         </ul>
       </aside>
     </div>
@@ -44,22 +42,41 @@
 import MediaList from "./MediaList";
 import MediaUpload from "@/components/MediaUpload";
 import Skeleton from "@/components/Skeleton";
-import { provide } from "@vue/runtime-core";
+import { provide, ref, watch } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
 
 export default {
   components: { MediaList, MediaUpload, Skeleton },
   setup: () => {
-    const { loading, nodes: mediaList, fetch } = useQuery(stageGraph.mediaList);
+    const mediaType = ref({});
+    const { loading, nodes: mediaList, fetch, refresh } = useQuery(
+      stageGraph.mediaList
+    );
     provide("mediaList", mediaList);
     provide("loading", loading);
-    provide("refresh", fetch);
+    const getMediaList = (useCache) => {
+      const assetTypeId =
+        mediaType.value.name === "media" ? null : mediaType.value.dbId;
+      const f = useCache ? fetch : refresh;
+      f({
+        assetTypeId,
+      });
+    };
 
-    return { fetch, loading };
+    watch(mediaType, getMediaList);
+
+    const { loading: loadingTypes, nodes: types } = useQuery(
+      stageGraph.assetTypeList
+    );
+
+    return { fetch, loading, loadingTypes, types, mediaType, getMediaList };
   },
 };
 </script>
 
 <style>
+.type-name {
+  text-transform: capitalize;
+}
 </style>

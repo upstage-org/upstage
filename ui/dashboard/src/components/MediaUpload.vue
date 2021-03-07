@@ -1,5 +1,5 @@
 <template>
-  <Modal :active="active">
+  <Modal v-model="active">
     <template #trigger>
       <button class="button">
         <span class="icon">
@@ -16,6 +16,26 @@
           help="Leave blank for default filename"
           @blur="handleBlurName"
         />
+      </HorizontalField>
+      <HorizontalField title="Type">
+        <div class="control">
+          <label class="radio">
+            <input type="radio" v-model="data.mediaType" value="avatar" />
+            Avatar
+          </label>
+          <label class="radio">
+            <input type="radio" v-model="data.mediaType" value="prop" />
+            Prop
+          </label>
+          <label class="radio">
+            <input type="radio" v-model="data.mediaType" value="backdrop" />
+            Backdrop
+          </label>
+          <label class="radio">
+            <input type="radio" v-model="data.mediaType" value="audio" />
+            Audio
+          </label>
+        </div>
       </HorizontalField>
       <HorizontalField title="Attachment">
         <div class="file">
@@ -85,9 +105,12 @@ export default {
     const { loading, mutation } = useMutation(stageGraph.uploadMedia);
     const upload = async () => {
       try {
+        const { name, base64, mediaType } = data;
         const response = await mutation({
-          name: data.name,
-          base64: data.base64,
+          name,
+          base64,
+          mediaType,
+          filename: data.file.name,
         });
         active.value = false;
         notification.success("Media uploaded successfully!");

@@ -20,6 +20,15 @@ class Asset(SQLAlchemyObjectType):
         interfaces = (graphene.relay.Node,)
 
 
+class AssetType(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
+
+    class Meta:
+        model = AssetTypeModel
+        model.db_id = model.id
+        interfaces = (graphene.relay.Node,)
+
+
 class UploadMedia(graphene.Mutation):
     """Mutation to upload a media."""
     asset = graphene.Field(
@@ -32,9 +41,11 @@ class UploadMedia(graphene.Mutation):
             required=True, description="Base64 encoded content of the uploading media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        filename = graphene.String(
+            required=True, description="Original file name")
 
     @jwt_required()
-    def mutate(self, info, name, base64, media_type):
+    def mutate(self, info, name, base64, media_type, filename):
         current_user_id = get_jwt_identity()
         absolutePath = os.path.dirname(appdir)
 
@@ -48,15 +59,17 @@ class UploadMedia(graphene.Mutation):
                 local_db_session.flush()
 
             # Save base64 to file
-            filename = uuid.uuid4().hex
+            filename, file_extension = os.path.splitext(filename)
+            unique_filename = uuid.uuid4().hex + file_extension
             mediaDirectory = os.path.join(
                 absolutePath, storagePath, asset_type.file_location)
             if not os.path.exists(mediaDirectory):
                 os.makedirs(mediaDirectory)
-            with open(os.path.join(mediaDirectory, filename), "wb") as fh:
+            with open(os.path.join(mediaDirectory, unique_filename), "wb") as fh:
                 fh.write(b64decode(base64.split(',')[1]))
 
-            file_location = os.path.join(asset_type.file_location, filename)
+            file_location = os.path.join(
+                asset_type.file_location, unique_filename)
             asset = AssetModel(
                 name=name,
                 file_location=file_location,

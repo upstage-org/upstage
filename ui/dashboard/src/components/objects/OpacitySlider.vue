@@ -42,7 +42,6 @@ export default {
             ? 0
             : maxFrameSpeed / props.object.autoplayFrames;
         case "speed":
-          console.log(props.object.moveSpeed);
           return props.object.moveSpeed == 0
             ? 0
             : maxMoveSpeed / props.object.moveSpeed;
@@ -51,12 +50,6 @@ export default {
       }
     });
 
-    const changeOpacity = (e) => {
-      store.commit("stage/UPDATE_OBJECT", {
-        ...props.object,
-        opacity: e.target.value,
-      });
-    };
     const sendChangeOpacity = (e) => {
       store.dispatch("stage/shapeObject", {
         ...props.object,

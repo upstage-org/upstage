@@ -18,8 +18,7 @@ import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
 import { useStore } from "vuex";
-import { computed, onMounted, onUnmounted, watch } from "vue";
-import anime from "animejs";
+import { computed, onMounted, onUnmounted } from "vue";
 
 export default {
   components: {

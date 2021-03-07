@@ -124,7 +124,7 @@
 <script>
 import { useMutation, useQuery } from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { inject, reactive, watchEffect } from "vue";
+import { inject, reactive } from "vue";
 import Field from "@/components/form/Field";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
@@ -141,10 +141,8 @@ export default {
       ...stage.value,
       id: id.value,
       ownerId: stage.value.owner?.id,
-      status: stage.value.attributes?.find((a) => a.name === "status")?.description,
-    });
-    watchEffect(() => {
-      console.log(form);
+      status: stage.value.attributes?.find((a) => a.name === "status")
+        ?.description,
     });
 
     const { nodes: users } = useQuery(userGraph.userList);
