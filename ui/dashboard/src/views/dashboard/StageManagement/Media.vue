@@ -1,4 +1,5 @@
 <template>
+  <SaveButton class="mb-4" :loading="saving" @click="saveMedia" />
   <MultiSelectList
     :loading="loading"
     :titles="['Available Media', 'Selected Media']"
@@ -22,16 +23,52 @@
 <script>
 import MultiSelectList from "@/components/MultiSelectList";
 import Asset from "@/components/Asset";
+import SaveButton from "@/components/form/SaveButton";
 import { stageGraph } from "@/services/graphql";
-import { useQuery } from "@/services/graphql/composable";
+import {
+  useAttribute,
+  useMutation,
+  useQuery,
+} from "@/services/graphql/composable";
 import { ref } from "@vue/reactivity";
+import { inject, watchEffect } from "@vue/runtime-core";
+import { notification } from "@/utils/notification";
 export default {
-  components: { MultiSelectList, Asset },
+  components: { MultiSelectList, Asset, SaveButton },
   setup: () => {
+    const id = inject("id");
+    const stage = inject("stage");
     const selectedMedia = ref([]);
     const { loading, nodes: mediaList } = useQuery(stageGraph.mediaList);
+    const { loading: saving, mutation } = useMutation(
+      stageGraph.saveStageMedia
+    );
 
-    return { loading, mediaList, selectedMedia };
+    watchEffect(() => {
+      const savedMedia = useAttribute(stage, "media", true);
+      if (!savedMedia.value || !mediaList.value) return;
+      selectedMedia.value = mediaList.value.filter((media) => {
+        return savedMedia.value.some((m) => m.src === media.fileLocation);
+      });
+    });
+
+    const saveMedia = async () => {
+      try {
+        const payload = JSON.stringify(
+          selectedMedia.value.map((media) => ({
+            name: media.name,
+            type: media.assetType.name,
+            src: media.fileLocation,
+          }))
+        );
+        await mutation(id.value, payload);
+        notification.success("Media saved successfully!");
+      } catch (error) {
+        notification.error(error);
+      }
+    };
+
+    return { loading, mediaList, selectedMedia, saveMedia, saving };
   },
 };
 </script>
