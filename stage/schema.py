@@ -26,6 +26,8 @@ class StageAttribute:
     owner_id = graphene.String(description="User ID of the owner")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
+    media = graphene.String(description="Media attached to stage")
+    config = graphene.String(description="Stage configurations")
 
 
 class StageAttributes(SQLAlchemyObjectType):
