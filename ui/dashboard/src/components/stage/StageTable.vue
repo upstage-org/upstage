@@ -1,7 +1,10 @@
 <template>
   <DataTable :query="stageList" :headers="headers">
     <template #name="{ item }">
-      <router-link to="/live" class="has-text-primary has-text-weight-bold">
+      <router-link
+        :to="`/live/${item.fileLocation}`"
+        class="has-text-primary has-text-weight-bold"
+      >
         {{ item.name }}
       </router-link>
     </template>

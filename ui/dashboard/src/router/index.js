@@ -134,15 +134,9 @@ const routes = [
   },
 
   {
-    path: '/live',
+    path: '/live/:url?',
+    name: 'Live',
     component: () => import('../views/live/Layout.vue'),
-    children: [
-      {
-        path: '/live',
-        name: 'Live',
-        component: () => import('../views/live/Live.vue'),
-      },
-    ]
   },
 ]
 

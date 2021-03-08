@@ -67,7 +67,7 @@ export const useFirst = (nodes) => {
 export function useAttribute(node, attributeName, isJson) {
     return computed(() => {
         let value = node.value.attributes.find(a => a.name === attributeName)?.description;
-        if (isJson) {
+        if (isJson && value) {
             value = JSON.parse(value);
         }
         return value;

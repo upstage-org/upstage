@@ -57,8 +57,8 @@ export default {
     ${stageFragment}
   `, variables),
   stageList: (variables) => client.request(gql`
-    query ListStage($id: ID, $nameLike: String) {
-      stageList(id: $id, nameLike: $nameLike) {
+    query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
+      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {
         edges {
           node {
             ...stageFragment

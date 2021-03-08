@@ -1,16 +1,19 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { isJson, randomMessageColor, randomRange } from '@/utils/common'
+import { absolutePath, isJson, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { attachPropToAvatar, deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
 import { getViewport } from './reactiveViewport';
+import { stageGraph } from '@/services/graphql';
+import { useAttribute } from '@/services/graphql/composable';
 
 export default {
     namespaced: true,
     state: {
         preloading: true,
+        model: null,
         background: null,
         status: 'OFFLINE',
         subscribeSuccess: false,
@@ -23,7 +26,20 @@ export default {
             drawings: [],
             texts: [],
         },
-        tools: generateDemoData(),
+        tools: {
+            avatars: [],
+            props: [],
+            backdrops: [],
+            audios: [],
+            streams: [],
+            config: {
+                width: 1280,
+                height: 800,
+                animateDuration: 500,
+                reactionDuration: 5000,
+                ratio: 16 / 9,
+            }
+        },
         settingPopup: {
             isActive: false,
         },
@@ -90,6 +106,34 @@ export default {
         }
     },
     mutations: {
+        SET_MODEL(state, model) {
+            state.model = model
+            state.tools.avatars = [];
+            state.tools.props = [];
+            state.tools.backdrops = []
+            state.tools.audios = []
+            state.tools.streams = [];
+            if (model) {
+                console.log(model)
+                const media = useAttribute({ value: model }, 'media', true).value;
+                if (media && media.length) {
+                    media.forEach(item => {
+                        item.src = absolutePath(item.src);
+                        const key = item.type + 's';
+                        if (!state.tools[key]) {
+                            state.tools[key] = [];
+                        }
+                        state.tools[key].push(item)
+                    });
+                } else {
+                    state.preloading = false;
+                }
+            }
+        },
+        LOAD_DEMO_STAGE(state) {
+            const demoData = generateDemoData();
+            Object.assign(state.tools, demoData);
+        },
         SET_BACKGROUND(state, background) {
             state.background = background
         },
@@ -453,6 +497,19 @@ export default {
         },
         sendReaction(_, reaction) {
             mqtt.sendMessage(TOPICS.REACTION, reaction);
+        },
+        async loadStage({ commit }, url) {
+            commit('SET_MODEL', null);
+            commit('SET_PRELOADING_STATUS', true);
+            if (url) {
+                const response = await stageGraph.stageList({
+                    fileLocation: url
+                })
+                const model = response.stageList.edges[0]?.node;
+                commit('SET_MODEL', model);
+            } else {
+                commit('LOAD_DEMO_STAGE');
+            }
         }
     },
 };
