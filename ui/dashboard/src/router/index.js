@@ -114,6 +114,11 @@ const routes = [
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
           },
           {
+            name: 'Stage Media',
+            path: 'media',
+            component: () => import('../views/dashboard/StageManagement/Media.vue'),
+          },
+          {
             name: 'Chat',
             path: 'chat',
             component: () => import('../views/dashboard/StageManagement/Chat.vue'),

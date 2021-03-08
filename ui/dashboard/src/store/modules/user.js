@@ -33,12 +33,13 @@ export default {
         commit("SET_USER_DATA", currentUser);
         return currentUser;
       } catch (error) {
-        if (error.message?.includes('Missing X-Access-Token Header')) {
+        if (['Missing X-Access-Token Header', 'Signature verification failed'].some(message => error.message?.includes(message))) {
           logout();
-        }
-        if (router.currentRoute.value.meta.requireAuth) {
-          router.push("/login");
-          notification.warning('You have been logged out of this session!');
+
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            notification.warning('You have been logged out of this session!');
+          }
         }
       } finally {
         commit("SET_LOADING_USER", false);

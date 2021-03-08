@@ -5,7 +5,7 @@
     </div>
   </section>
   <div class="columns" :class="{ 'is-loading': !user }">
-    <div class="column is-4">
+    <div class="column is-narrow">
       <aside class="menu box has-background-light mx-4">
         <ul class="menu-list">
           <li>
@@ -19,7 +19,7 @@
         </ul>
       </aside>
     </div>
-    <div class="column is-8">
+    <div class="column">
       <div class="pt-4 pr-4 pb-4">
         <router-view v-if="user" />
       </div>

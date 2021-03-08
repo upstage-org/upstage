@@ -1,4 +1,6 @@
-<template><UnderConstruction /></template>
+<template>
+  <UnderConstruction />
+</template>
 
 <script>
 import UnderConstruction from "@/components/UnderConstruction";
