@@ -1,6 +1,8 @@
 import config from '@/config'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from "mqtt";
+import { namespaceTopic, unnamespaceTopic } from '@/store/modules/stage/reusable';
+import { isJson } from '@/utils/common';
 
 const mqttService = {
   client: null,
@@ -20,9 +22,11 @@ const mqttService = {
     });
   },
   subscribe(topics) {
+    const namespacedTopics = {};
+    Object.keys(topics).forEach(key => namespacedTopics[namespaceTopic(key)] = topics[key]);
     return new Promise((resolve, reject) => {
       this.client.subscribe(
-        topics,
+        namespacedTopics,
         (error, res) => {
           if (error) {
             reject(error)
@@ -34,6 +38,7 @@ const mqttService = {
     })
   },
   sendMessage(topic, payload) {
+    topic = namespaceTopic(topic);
     console.log({ topic, payload })
     let message = payload;
     if (typeof payload === "object") {
@@ -59,6 +64,14 @@ const mqttService = {
         }
       );
     })
+  },
+  receiveMessage(handler) {
+    this.client.on("message", (topic, rawMessage) => {
+      topic = unnamespaceTopic(topic);
+      const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
+      const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
+      handler({ topic, message })
+    });
   }
 }
 

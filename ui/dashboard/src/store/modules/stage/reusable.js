@@ -79,3 +79,13 @@ export function deserializeObject(object, keepSrc) {
     recalcFontSize(toAbsolute);
     return object;
 }
+
+export function namespaceTopic(topicName) {
+    const url = store.getters['stage/url'];
+    return `${url}/${topicName}`;
+}
+
+export function unnamespaceTopic(topicName) {
+    const url = store.getters['stage/url'];
+    return topicName.substring(url.length + 1);
+}

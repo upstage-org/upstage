@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { absolutePath, isJson, randomMessageColor, randomRange } from '@/utils/common'
+import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { attachPropToAvatar, deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
@@ -56,6 +56,9 @@ export default {
         viewport: getViewport()
     },
     getters: {
+        url(state) {
+            return state.model ? state.model.fileLocation : 'demo';
+        },
         objects(state) {
             return state.board.objects;
         },
@@ -108,11 +111,6 @@ export default {
     mutations: {
         SET_MODEL(state, model) {
             state.model = model
-            state.tools.avatars = [];
-            state.tools.props = [];
-            state.tools.backdrops = []
-            state.tools.audios = []
-            state.tools.streams = [];
             if (model) {
                 console.log(model)
                 const media = useAttribute({ value: model }, 'media', true).value;
@@ -129,6 +127,20 @@ export default {
                     state.preloading = false;
                 }
             }
+        },
+        CLEAN_STAGE(state) {
+            state.model = null;
+            // state.background = null;
+            state.tools.avatars = [];
+            state.tools.props = [];
+            state.tools.backdrops = []
+            state.tools.audios = []
+            state.tools.streams = [];
+            state.board.objects = [];
+            state.board.drawings = [];
+            state.board.texts = [];
+            state.chat.messages = [];
+            state.chat.color = randomColor();
         },
         LOAD_DEMO_STAGE(state) {
             const demoData = generateDemoData();
@@ -281,11 +293,9 @@ export default {
                 console.log(error);
                 commit('SET_STATUS', 'OFFLINE')
             });
-            client.on("message", (topic, rawMessage) => {
-                const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
-                const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
-                dispatch('handleMessage', { topic, message });
-            });
+            mqtt.receiveMessage((payload) => {
+                dispatch('handleMessage', payload);
+            })
         },
         subscribe({ commit }) {
             const topics = {
@@ -499,7 +509,7 @@ export default {
             mqtt.sendMessage(TOPICS.REACTION, reaction);
         },
         async loadStage({ commit }, url) {
-            commit('SET_MODEL', null);
+            commit('CLEAN_STAGE', null);
             commit('SET_PRELOADING_STATUS', true);
             if (url) {
                 const response = await stageGraph.stageList({
