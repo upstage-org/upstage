@@ -63,3 +63,13 @@ export const useQuery = (...params) => {
 export const useFirst = (nodes) => {
     return computed(() => (nodes.value && nodes.value.length && nodes.value[0]) ?? {});
 }
+
+export function useAttribute(node, attributeName, isJson) {
+    return computed(() => {
+        let value = node.value.attributes.find(a => a.name === attributeName)?.description;
+        if (isJson && value) {
+            value = JSON.parse(value);
+        }
+        return value;
+    })
+}

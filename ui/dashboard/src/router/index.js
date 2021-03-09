@@ -114,6 +114,11 @@ const routes = [
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
           },
           {
+            name: 'Stage Media',
+            path: 'media',
+            component: () => import('../views/dashboard/StageManagement/Media.vue'),
+          },
+          {
             name: 'Chat',
             path: 'chat',
             component: () => import('../views/dashboard/StageManagement/Chat.vue'),
@@ -129,15 +134,9 @@ const routes = [
   },
 
   {
-    path: '/live',
+    path: '/live/:url?',
+    name: 'Live',
     component: () => import('../views/live/Layout.vue'),
-    children: [
-      {
-        path: '/live',
-        name: 'Live',
-        component: () => import('../views/live/Live.vue'),
-      },
-    ]
   },
 ]
 

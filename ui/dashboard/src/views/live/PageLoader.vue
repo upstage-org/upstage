@@ -2,13 +2,19 @@
   <section class="hero is-fullheight">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">
-          <button class="button is-primary is-loading is-large" />
-          <span style="line-height: 1.75">Demo Stage</span>
+        <h1 class="title" v-if="model">
+          {{ model.name }}
         </h1>
+        <h1 class="title" v-else-if="preloadableAssets.length">Demo Stage</h1>
         <h2 class="subtitle">
-          Preloading avatars, props and backdrops...
-          {{ progress }}/{{ preloadableAssets.length }}
+          <button class="button is-primary is-loading" />
+          <span style="line-height: 2">
+            <span v-if="preloadableAssets.length">
+              Preloading avatars, props and backdrops...
+              {{ progress }}/{{ preloadableAssets.length }}
+            </span>
+            <span v-else>Loading stage information...</span>
+          </span>
         </h2>
         <div id="preloading-area">
           <img
@@ -32,6 +38,7 @@ export default {
     const preloadableAssets = computed(
       () => store.getters["stage/preloadableAssets"]
     );
+    const model = computed(() => store.state.stage.model);
     const progress = ref(0);
     const stopLoading = () =>
       store.commit("stage/SET_PRELOADING_STATUS", false);
@@ -44,7 +51,7 @@ export default {
 
     setTimeout(stopLoading, 60000);
 
-    return { preloadableAssets, progress, increaseProgress };
+    return { model, preloadableAssets, progress, increaseProgress };
   },
 };
 </script>

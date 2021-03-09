@@ -26,6 +26,8 @@ class StageAttribute:
     owner_id = graphene.String(description="User ID of the owner")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
+    media = graphene.String(description="Media attached to stage")
+    config = graphene.String(description="Stage configurations")
 
 
 class StageAttributes(SQLAlchemyObjectType):
@@ -143,7 +145,7 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
-        Stage, id=graphene.ID(), name_like=graphene.String())
+        Stage, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
     assetList = StageConnectionField(
         Asset, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
     assetTypeList = StageConnectionField(

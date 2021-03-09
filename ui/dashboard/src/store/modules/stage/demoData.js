@@ -190,13 +190,5 @@ export const generateDemoData = () => {
 
     const streams = [{ type: "stream", url: `${config.publicPath}demo/streams/bunny.mp4`, metadata: { _vei: {}, _vod: "" }, w: 320, h: 176 }];
 
-    const stageConfig = {
-        width: 1280,
-        height: 800,
-        animateDuration: 500,
-        reactionDuration: 5000,
-        ratio: 16 / 9,
-    }
-
-    return { avatars, props, backdrops, audios, streams, config: stageConfig }
+    return { avatars, props, backdrops, audios, streams }
 }

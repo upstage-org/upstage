@@ -57,8 +57,8 @@ export default {
     ${stageFragment}
   `, variables),
   stageList: (variables) => client.request(gql`
-    query ListStage($id: ID, $nameLike: String) {
-      stageList(id: $id, nameLike: $nameLike) {
+    query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
+      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {
         edges {
           node {
             ...stageFragment
@@ -102,4 +102,24 @@ export default {
       }
     }
   `, variables),
+  saveStageMedia: (id, media) => client.request(gql`
+    mutation UpdateStage($id: ID!, $media: String) {
+      updateStage(input: {id: $id, media: $media}) {
+        stage {
+          ...stageFragment
+        }
+      }
+    }
+    ${stageFragment}
+  `, { id, media }),
+  saveStageConfig: (id, config) => client.request(gql`
+    mutation UpdateStage($id: ID!, $config: String) {
+      updateStage(input: {id: $id, config: $config}) {
+        stage {
+          ...stageFragment
+        }
+      }
+    }
+    ${stageFragment}
+  `, { id, config }),
 }
