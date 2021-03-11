@@ -14,7 +14,7 @@
           <i class="fas fa-lg fa-eye" />
         </template>
         <template #header>Stage Detail</template>
-        <template #content><Detail :name="item.name" /></template>
+        <template #content><Detail :stage="item" /></template>
         <template #footer><ActionButtons :stage="item" /></template>
       </Modal>
     </template>

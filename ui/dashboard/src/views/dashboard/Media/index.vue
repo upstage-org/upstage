@@ -7,7 +7,7 @@
     </div>
   </section>
   <div class="columns">
-    <div class="column is-narrow">
+    <div class="column is-3">
       <aside class="menu box has-background-light mx-4">
         <ul class="menu-list">
           <Skeleton v-if="loadingTypes" />
@@ -29,7 +29,7 @@
         </ul>
       </aside>
     </div>
-    <div class="column">
+    <div class="column is-9">
       <div class="pt-4 pr-4 pb-4">
         <Skeleton v-if="loading" />
         <MediaList v-else />

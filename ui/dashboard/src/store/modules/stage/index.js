@@ -126,6 +126,10 @@ export default {
                 } else {
                     state.preloading = false;
                 }
+                const config = useAttribute({ value: model }, 'config', true).value;
+                if (config) {
+                    state.tools.config.ratio = config.ratio.width / config.ratio.height
+                }
             }
         },
         CLEAN_STAGE(state) {

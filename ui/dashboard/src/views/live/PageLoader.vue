@@ -2,9 +2,14 @@
   <section class="hero is-fullheight">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title" v-if="model">
-          {{ model.name }}
-        </h1>
+        <template v-if="model">
+          <h1 class="title" :class="{ 'mb-0': model.description }">
+            {{ model.name }}
+          </h1>
+          <h2 v-if="model.description" class="subtittle">
+            {{ model.description }}
+          </h2>
+        </template>
         <h1 class="title" v-else-if="preloadableAssets.length">Demo Stage</h1>
         <h2 class="subtitle">
           <button class="button is-primary is-loading" />
