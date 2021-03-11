@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { computed, provide, watch } from "vue";
+import { provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import Skeleton from "@/components/Skeleton";
@@ -74,10 +74,6 @@ export default {
   props: ["id"],
   components: { Skeleton },
   setup: (props) => {
-    provide(
-      "id",
-      computed(() => props.id)
-    );
     const { nodes, loading, fetch } = useRequest(stageGraph.stageList);
     const stage = useFirst(nodes);
     provide("stage", stage);

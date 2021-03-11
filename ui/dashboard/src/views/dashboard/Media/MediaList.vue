@@ -4,7 +4,7 @@
       v-for="media in mediaList"
       :key="media"
       :class="`column media-column ${
-        ['backdrop', 'audio'].includes(media.assetType.name) ? 'is-6' : 'is-2'
+        ['backdrop', 'audio'].includes(media.assetType.name) ? 'is-4' : 'is-2'
       }`"
     >
       <div class="">

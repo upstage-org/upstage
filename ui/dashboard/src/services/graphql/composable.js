@@ -1,6 +1,7 @@
 import store from "@/store";
 import { computed, reactive, ref } from "vue";
 import hash from 'object-hash';
+import { notification } from "@/utils/notification";
 
 export const useRequest = (service, ...params) => {
     const loading = ref(false);
@@ -50,7 +51,22 @@ export const useRequest = (service, ...params) => {
 
 export const useMutation = (...params) => {
     const { fetch, ...rest } = useRequest(...params);
-    return { mutation: fetch, ...rest }
+    const mutation = fetch
+    const save = async (success, ...params) => {
+        try {
+            const response = await mutation(...params)
+            if (typeof success === 'function') {
+                success()
+            } else {
+                notification.success(success);
+            }
+            return response
+        } catch (error) {
+            notification.error(error)
+        }
+    }
+
+    return { mutation, save, ...rest }
 };
 
 

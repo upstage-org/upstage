@@ -13,7 +13,7 @@
       </article>
     </template>
     <template #header>Stage Detail</template>
-    <template #content><Detail :name="stage.name" /></template>
+    <template #content><Detail :stage="stage" /></template>
     <template #footer><ActionButtons :stage="stage" /></template>
   </Modal>
 </template>

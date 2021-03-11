@@ -32,17 +32,13 @@ import {
 } from "@/services/graphql/composable";
 import { ref } from "@vue/reactivity";
 import { inject, watchEffect } from "@vue/runtime-core";
-import { notification } from "@/utils/notification";
 export default {
   components: { MultiSelectList, Asset, SaveButton },
   setup: () => {
-    const id = inject("id");
     const stage = inject("stage");
     const selectedMedia = ref([]);
     const { loading, nodes: mediaList } = useQuery(stageGraph.mediaList);
-    const { loading: saving, mutation } = useMutation(
-      stageGraph.saveStageMedia
-    );
+    const { loading: saving, save } = useMutation(stageGraph.saveStageMedia);
 
     watchEffect(() => {
       const savedMedia = useAttribute(stage, "media", true);
@@ -53,19 +49,14 @@ export default {
     });
 
     const saveMedia = async () => {
-      try {
-        const payload = JSON.stringify(
-          selectedMedia.value.map((media) => ({
-            name: media.name,
-            type: media.assetType.name,
-            src: media.fileLocation,
-          }))
-        );
-        await mutation(id.value, payload);
-        notification.success("Media saved successfully!");
-      } catch (error) {
-        notification.error(error);
-      }
+      const payload = JSON.stringify(
+        selectedMedia.value.map((media) => ({
+          name: media.name,
+          type: media.assetType.name,
+          src: media.fileLocation,
+        }))
+      );
+      await save("Media saved successfully!", stage.value.id, payload);
     };
 
     return { loading, mediaList, selectedMedia, saveMedia, saving };

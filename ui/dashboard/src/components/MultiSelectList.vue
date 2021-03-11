@@ -5,25 +5,16 @@
         <p v-if="titles" class="title is-5">{{ titles[0] }}</p>
         <Skeleton v-if="loading" />
         <div v-else class="columns is-multiline">
-          <div
-            class="column item"
-            :class="{ selected: modelValue.includes(item) }"
-            v-for="item in data"
-            :key="item"
-            @click="select(item)"
-          >
-            <slot name="render" :item="item">
-              {{ item.name }}
-            </slot>
-            <div class="overlay">
-              <div class="icon">
-                <i
-                  :class="`fas ${
-                    modelValue.includes(item) ? 'fa-check' : 'fa-plus'
-                  }`"
-                ></i>
-              </div>
-            </div>
+          <div class="column item" v-for="item in data" :key="item">
+            <Selectable
+              multiple
+              :selected="modelValue.includes(item)"
+              @select="select(item)"
+            >
+              <slot name="render" :item="item">
+                {{ item.name }}
+              </slot>
+            </Selectable>
           </div>
         </div>
       </div>
@@ -49,14 +40,11 @@
             :key="item"
             @click="remove(item)"
           >
-            <slot name="render" :item="item">
-              {{ item.name }}
-            </slot>
-            <div class="overlay danger">
-              <div class="icon">
-                <i class="fas fa-minus"></i>
-              </div>
-            </div>
+            <Selectable revert @select="remove(item)">
+              <slot name="render" :item="item">
+                {{ item.name }}
+              </slot>
+            </Selectable>
           </div>
         </div>
       </div>
@@ -66,6 +54,7 @@
 
 <script>
 import Skeleton from "@/components/Skeleton";
+import Selectable from "@/components/Selectable";
 
 export default {
   props: {
@@ -78,7 +67,7 @@ export default {
     loading: Boolean,
   },
   emits: ["update:modelValue"],
-  components: { Skeleton },
+  components: { Skeleton, Selectable },
   setup: (props, { emit }) => {
     const remove = (item) => {
       emit(
@@ -109,39 +98,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/bulma";
-
 .item {
-  position: relative;
   height: fit-content;
-  cursor: pointer;
-
-  .overlay {
-    display: none;
-    position: absolute;
-    width: calc(100% - 20px);
-    height: calc(100% - 20px);
-    top: 10px;
-    left: 10px;
-    background-color: rgba($color: $primary, $alpha: 0.5);
-
-    &.danger {
-      background-color: rgba($color: $danger, $alpha: 0.5);
-    }
-
-    .icon {
-      display: flex;
-      width: 100%;
-      height: 100%;
-      color: white;
-      font-size: 50px;
-    }
-  }
-  &:hover,
-  &.selected {
-    .overlay {
-      display: block;
-    }
-  }
 }
 </style>

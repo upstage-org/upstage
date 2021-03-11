@@ -71,3 +71,13 @@ export function titleCase(str) {
 export function absolutePath(path) {
   return `${config.STATIC_ASSETS_ENDPOINT}${path}`
 }
+
+export function debounce(callback, delay) {
+  let timeout;
+  return () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(callback, delay)
+  }
+}

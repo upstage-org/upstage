@@ -17,9 +17,20 @@
           placeholder="Short Name"
           v-model="form.fileLocation"
           requiredMessage="Short name is required"
-          right="fas fa-check"
-          help="From which the stage URL is created"
           expanded
+          @keyup="shortNameValid = null"
+          @input="checkShortName"
+          :right="
+            validatingShortName
+              ? 'fas fa-circle-notch fa-spin'
+              : shortNameValid === true
+              ? 'fas fa-check'
+              : shortNameValid === false
+              ? 'fas fa-times'
+              : 'fas'
+          "
+          :help="!form.fileLocation && `From which the stage URL is created`"
+          :error="!shortNameValid && 'This short name already existed!'"
         />
       </div>
     </div>
@@ -60,7 +71,7 @@
       </div>
     </div>
 
-    <div class="field is-horizontal" v-if="id">
+    <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
         <label class="label">Stage Status</label>
       </div>
@@ -90,11 +101,12 @@
       <div class="field-body">
         <div class="field">
           <div class="control">
-            <template v-if="id">
+            <template v-if="stage">
               <button
                 class="button mr-2 mt-2 is-primary"
                 :class="{ 'is-loading': loading }"
                 @click="updateStage"
+                :disabled="!shortNameValid"
               >
                 Save Stage
               </button>
@@ -110,6 +122,7 @@
                 class="button mr-2 mt-2 is-primary"
                 :class="{ 'is-loading': loading }"
                 @click="createStage"
+                :disabled="!shortNameValid"
               >
                 Create Stage
               </button>
@@ -122,24 +135,27 @@
 </template>
 
 <script>
-import { useMutation, useQuery } from "@/services/graphql/composable";
+import {
+  useMutation,
+  useQuery,
+  useRequest,
+} from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { inject, reactive } from "vue";
+import { inject, reactive, ref } from "vue";
 import Field from "@/components/form/Field";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
 import { displayName } from "@/utils/auth";
+import { debounce } from "@/utils/common";
 
 export default {
   components: { Field },
   setup: () => {
     const router = useRouter();
     const stage = inject("stage");
-    const id = inject("id");
 
     const form = reactive({
       ...stage.value,
-      id: id.value,
       ownerId: stage.value.owner?.id,
       status: stage.value.attributes?.find((a) => a.name === "status")
         ?.description,
@@ -147,12 +163,13 @@ export default {
 
     const { nodes: users } = useQuery(userGraph.userList);
     const { loading, mutation, data } = useMutation(
-      id.value ? stageGraph.updateStage : stageGraph.createStage,
+      stage.value.id ? stageGraph.updateStage : stageGraph.createStage,
       form
     );
     const createStage = async () => {
       try {
-        await mutation();
+        const response = await mutation();
+        console.log(response, "<======");
         notification.success(
           "Stage created successfully! ID: " + data.value.createStage.stage.id
         );
@@ -160,6 +177,7 @@ export default {
           `/dashboard/stage-management/${data.value.createStage.stage.id}/`
         );
       } catch (error) {
+        console.log(error);
         notification.error(error);
       }
     };
@@ -172,7 +190,35 @@ export default {
       }
     };
 
-    return { id, form, createStage, updateStage, loading, users, displayName };
+    const shortNameValid = ref(!!stage.value.id);
+    const { loading: validatingShortName, fetch } = useRequest(
+      stageGraph.stageList
+    );
+    const checkShortName = debounce(async () => {
+      const response = await fetch({
+        fileLocation: form.fileLocation,
+      });
+      shortNameValid.value = true;
+      if (response.stageList.edges.length) {
+        const existingStage = response.stageList.edges[0].node;
+        if (existingStage.fileLocation !== stage.value.fileLocation) {
+          shortNameValid.value = false;
+        }
+      }
+    }, 500);
+
+    return {
+      form,
+      stage,
+      createStage,
+      updateStage,
+      loading,
+      users,
+      displayName,
+      checkShortName,
+      validatingShortName,
+      shortNameValid,
+    };
   },
 };
 </script>
