@@ -1,5 +1,5 @@
 # -*- coding: iso8859-15 -*-
-from stage.asset import Asset, AssetType, UploadMedia
+from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -140,6 +140,7 @@ class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
     uploadMedia = UploadMedia.Field()
+    updateMedia = UpdateMedia.Field()
 
 
 class Query(graphene.ObjectType):
