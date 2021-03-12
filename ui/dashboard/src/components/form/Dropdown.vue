@@ -63,8 +63,7 @@ export default {
       props.data?.find((item) => props.renderValue(item) === props.modelValue)
     );
     const isActive = ref();
-    const select = (item) => {
-      const value = props.renderValue(item);
+    const select = (value, item) => {
       emit("update:modelValue", value);
       emit("select", value, item);
       isActive.value = false;

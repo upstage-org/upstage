@@ -34,18 +34,19 @@
         <p v-if="titles" class="title is-5">{{ titles[1] }}</p>
         <Skeleton v-if="loading" />
         <div v-else class="columns is-multiline">
-          <div
-            class="column item"
-            v-for="item in modelValue"
-            :key="item"
-            @click="remove(item)"
-          >
-            <Selectable revert @select="remove(item)">
-              <slot name="render" :item="item">
-                {{ item.name }}
-              </slot>
-            </Selectable>
-          </div>
+          <template v-for="item in modelValue" :key="item">
+            <div
+              v-if="data.includes(item)"
+              class="column item"
+              @click="remove(item)"
+            >
+              <Selectable revert @select="remove(item)">
+                <slot name="render" :item="item">
+                  {{ item.name }}
+                </slot>
+              </Selectable>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -89,7 +90,10 @@ export default {
     };
 
     const removeAll = () => {
-      emit("update:modelValue", []);
+      emit(
+        "update:modelValue",
+        props.modelValue.filter((item) => !props.data.includes(item))
+      );
     };
 
     return { select, remove, selectAll, removeAll };
