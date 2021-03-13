@@ -117,6 +117,9 @@ export default {
                 if (media && media.length) {
                     media.forEach(item => {
                         item.src = absolutePath(item.src);
+                        if (item.multi) {
+                            item.frames = item.frames.map(src => absolutePath(src))
+                        }
                         const key = item.type + 's';
                         if (!state.tools[key]) {
                             state.tools[key] = [];
