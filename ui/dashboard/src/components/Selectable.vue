@@ -49,7 +49,7 @@ export default {
       width: 100%;
       height: 100%;
       color: white;
-      font-size: 50px;
+      font-size: 2rem;
     }
   }
   &:hover,

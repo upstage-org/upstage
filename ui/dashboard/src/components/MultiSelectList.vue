@@ -5,7 +5,12 @@
         <p v-if="titles" class="title is-5">{{ titles[0] }}</p>
         <Skeleton v-if="loading" />
         <div v-else class="columns is-multiline">
-          <div class="column item" v-for="item in data" :key="item">
+          <div
+            class="column item"
+            v-for="item in data"
+            :key="item"
+            :class="columnClass(item)"
+          >
             <Selectable
               multiple
               :selected="modelValue.includes(item)"
@@ -39,6 +44,7 @@
               v-if="data.includes(item)"
               class="column item"
               @click="remove(item)"
+              :class="columnClass(item)"
             >
               <Selectable revert @select="remove(item)">
                 <slot name="render" :item="item">
@@ -66,6 +72,10 @@ export default {
     data: Array,
     titles: Array,
     loading: Boolean,
+    columnClass: {
+      type: Function,
+      default: () => "",
+    },
   },
   emits: ["update:modelValue"],
   components: { Skeleton, Selectable },
