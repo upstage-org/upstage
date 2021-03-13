@@ -97,8 +97,10 @@ class UpdateMedia(graphene.Mutation):
             required=True, description="Name of the media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        description = graphene.String(
+            description="JSON serialized metadata of the media")
 
-    def mutate(self, info, id, name, media_type):
+    def mutate(self, info, id, name, media_type, description):
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
                 AssetTypeModel.name == media_type).first()
@@ -114,6 +116,7 @@ class UpdateMedia(graphene.Mutation):
             if asset:
                 asset.name = name
                 asset.asset_type = asset_type
+                asset.description = description
 
             local_db_session.flush()
             local_db_session.commit()
