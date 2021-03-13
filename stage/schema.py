@@ -1,5 +1,5 @@
 # -*- coding: iso8859-15 -*-
-from stage.asset import Asset, AssetType, UploadMedia
+from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -9,6 +9,7 @@ from config.settings import VERSION
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
 from graphql_relay.node.node import from_global_id
+from sqlalchemy import desc
 import graphene
 import sys
 import os
@@ -48,8 +49,12 @@ class StageConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
 
     @classmethod
-    def get_query(cls, model, info, **args):
-        query = super(StageConnectionField, cls).get_query(model, info, **args)
+    def get_query(cls, model, info, sort_by=None, sort_desc=False, **args):
+        sort = sort_by
+        if sort_desc:
+            sort = desc(sort)
+        query = super(StageConnectionField, cls).get_query(
+            model, info, **args).order_by(sort)
         for field, value in args.items():
             if field == 'id':
                 _type, _id = from_global_id(value)
@@ -140,14 +145,15 @@ class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
     uploadMedia = UploadMedia.Field()
+    updateMedia = UpdateMedia.Field()
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
-        Stage, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
+        Stage, id=graphene.ID(), sort_by=graphene.String(), sort_desc=graphene.Boolean(), name_like=graphene.String(), file_location=graphene.String())
     assetList = StageConnectionField(
-        Asset, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
+        Asset, id=graphene.ID(), sort_by=graphene.String(), sort_desc=graphene.Boolean(), name_like=graphene.String(), asset_type_id=graphene.ID())
     assetTypeList = StageConnectionField(
         AssetType, id=graphene.ID(), name_like=graphene.String())
 

@@ -122,4 +122,46 @@ export default {
     }
     ${stageFragment}
   `, { id, config }),
+  assignableMedia: () => client.request(gql`
+    query AssignableMedia {
+      avatars: assetList(assetTypeId: 2) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+      props: assetList(assetTypeId: 3) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+      backdrops: assetList(assetTypeId: 4) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+      audios: assetList(assetTypeId: 5) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+    }
+    ${assetFragment}
+  `),
+  updateMedia: (variables) => client.request(gql`
+    mutation uploadMedia($id: ID!, $name: String!, $mediaType: String) {
+      updateMedia(id: $id, name: $name, mediaType: $mediaType) {
+        asset {
+          id
+        }
+      }
+    }
+  `, variables),
 }

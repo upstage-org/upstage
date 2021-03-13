@@ -16,6 +16,9 @@
         </div>
         <header class="card-header">
           <p class="card-header-title">{{ media.name }}</p>
+          <span class="card-header-icon">
+            <EditMedia :media="media" />
+          </span>
         </header>
       </div>
     </div>
@@ -26,9 +29,10 @@
 import { inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
+import EditMedia from "./EditMedia";
 
 export default {
-  components: { Asset },
+  components: { Asset, EditMedia },
   setup: () => {
     const mediaList = inject("mediaList");
     return { mediaList, absolutePath };

@@ -4,6 +4,7 @@ import uuid
 from config.project_globals import appdir, ScopedSession
 from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
 from graphene_sqlalchemy import SQLAlchemyObjectType
+from graphql_relay.node.node import from_global_id
 import graphene
 from base64 import b64decode
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -77,6 +78,46 @@ class UploadMedia(graphene.Mutation):
                 owner_id=current_user_id
             )
             local_db_session.add(asset)
+            local_db_session.flush()
+            local_db_session.commit()
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == asset.id).first()
+            return UploadMedia(asset=asset)
+
+
+class UpdateMedia(graphene.Mutation):
+    """Mutation to upload a media."""
+    asset = graphene.Field(
+        lambda: Asset, description="Media updated by this mutation.")
+
+    class Arguments:
+        id = graphene.ID(
+            required=True, description="ID of the media")
+        name = graphene.String(
+            required=True, description="Name of the media")
+        media_type = graphene.String(
+            description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        description = graphene.String(
+            description="JSON serialized metadata of the media")
+
+    def mutate(self, info, id, name, media_type, description):
+        with ScopedSession() as local_db_session:
+            asset_type = local_db_session.query(AssetTypeModel).filter(
+                AssetTypeModel.name == media_type).first()
+            if not asset_type:
+                asset_type = AssetTypeModel(
+                    name=media_type, file_location=media_type)
+                local_db_session.add(asset_type)
+                local_db_session.flush()
+
+            id = from_global_id(id)[1]
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == id).first()
+            if asset:
+                asset.name = name
+                asset.asset_type = asset_type
+                asset.description = description
+
             local_db_session.flush()
             local_db_session.commit()
             asset = local_db_session.query(AssetModel).filter(

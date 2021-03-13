@@ -55,6 +55,7 @@ export default {
     );
     provide("mediaList", mediaList);
     provide("loading", loading);
+    provide("refresh", refresh);
     const getMediaList = (useCache) => {
       const assetTypeId =
         mediaType.value.name === "media" ? null : mediaType.value.dbId;
