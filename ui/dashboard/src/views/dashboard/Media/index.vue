@@ -42,6 +42,21 @@
               }}</a>
             </li>
           </ul>
+          <p class="menu-label">Stage</p>
+          <ul class="menu-list">
+            <li @click="filter.stage = null">
+              <a :class="{ 'is-active': filter.stage === null }">All Stages</a>
+            </li>
+            <li
+              v-for="stage in stageList"
+              :key="stage"
+              @click="filter.stage = stage"
+            >
+              <a :class="{ 'is-active': filter.stage === stage }">
+                {{ stage.name }}
+              </a>
+            </li>
+          </ul>
         </template>
       </aside>
     </div>
@@ -63,6 +78,7 @@ import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
+import { getStageMedia } from "@/utils/stage";
 
 export default {
   components: { MediaList, MediaUpload, Skeleton, Field },
@@ -85,6 +101,8 @@ export default {
       return list;
     });
 
+    const { nodes: stageList } = useQuery(stageGraph.stageList);
+
     const mediaList = computed(() => {
       let list = nodes.value;
       if (filter.name) {
@@ -105,6 +123,20 @@ export default {
         list = list.filter(
           (media) => media.owner.username === filter.owner.username
         );
+      }
+      list.forEach((media) => (media.stages = []));
+      if (stageList.value) {
+        stageList.value.forEach((stage) => {
+          const assignedMedia = getStageMedia(stage);
+          list.forEach((media) => {
+            if (assignedMedia.some((m) => m.src === media.fileLocation)) {
+              media.stages.push(stage);
+            }
+          });
+        });
+      }
+      if (filter.stage) {
+        list = list.filter((media) => media.stages.includes(filter.stage));
       }
       return list;
     });
@@ -127,6 +159,7 @@ export default {
       refresh,
       users,
       displayName,
+      stageList,
     };
   },
 };

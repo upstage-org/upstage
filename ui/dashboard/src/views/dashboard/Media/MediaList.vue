@@ -3,6 +3,14 @@
     <template #preview="{ item }">
       <Asset :asset="item" />
     </template>
+    <template #stage="{ item }">
+      <span v-for="(stage, index) in item.stages" :key="stage">
+        <router-link :to="`/dashboard/stage-management/${stage.id}/`">
+          {{ stage.name }}
+        </router-link>
+        <span v-if="index < item.stages.length - 1">, </span>
+      </span>
+    </template>
     <template #date="{ item, header }">
       <span :title="header.render(item)">
         {{ header.render(item).fromNow() }}
@@ -46,6 +54,10 @@ export default {
       {
         title: "Owner",
         render: (item) => displayName(item.owner),
+      },
+      {
+        title: "Stage",
+        slot: "stage",
       },
       {
         title: "Date",
