@@ -18,19 +18,21 @@
       </tr>
     </tfoot>
     <tbody>
-      <tr v-for="(item, index) in nodes" :key="item">
-        <td v-if="numbered">{{ index + 1 }}</td>
-        <td
-          v-for="header in headers"
-          :key="header"
-          :style="{ 'text-align': header.align }"
-          :class="header.slot"
-        >
-          <slot :name="header.slot" :item="item" :header="header">
-            {{ header.render ? header.render(item) : item[header.key] }}
-          </slot>
-        </td>
-      </tr>
+      <transition-group :css="false" @enter="enter" @leave="leave">
+        <tr v-for="(item, index) in nodes" :key="item">
+          <td v-if="numbered">{{ index + 1 }}</td>
+          <td
+            v-for="header in headers"
+            :key="header"
+            :style="{ 'text-align': header.align }"
+            :class="header.slot"
+          >
+            <slot :name="header.slot" :item="item" :header="header">
+              {{ header.render ? header.render(item) : item[header.key] }}
+            </slot>
+          </td>
+        </tr>
+      </transition-group>
     </tbody>
   </table>
 </template>
@@ -39,6 +41,7 @@
 import { useQuery } from "@/services/graphql/composable";
 import Skeleton from "@/components/Skeleton";
 import { computed } from "@vue/runtime-core";
+import anime from "animejs";
 
 export default {
   props: {
@@ -63,7 +66,17 @@ export default {
       return { nodes: computed(() => props.data) };
     }
     const { nodes, loading } = useQuery(props.query);
+
     return { loading, nodes };
+  },
+  methods: {
+    enter(el, complete) {
+      anime({
+        targets: el,
+        translateX: [100, 0],
+        complete,
+      });
+    },
   },
 };
 </script>
