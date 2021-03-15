@@ -4,7 +4,7 @@
   </span>
   <div class="modal" :class="{ 'is-active': isActive }">
     <div class="modal-background" @click="closeModal"></div>
-    <div class="modal-card" style="width: 80%">
+    <div class="modal-card" :style="{ width }">
       <header class="modal-card-head">
         <p class="modal-card-title"><slot name="header" /></p>
         <button class="delete" aria-label="close" @click="closeModal"></button>
@@ -20,7 +20,13 @@
 <script>
 import { ref, watchEffect } from "vue";
 export default {
-  props: ["modelValue"],
+  props: {
+    modelValue: Boolean,
+    width: {
+      type: String,
+      default: "80%",
+    },
+  },
   emits: ["update:modelValue"],
   setup: (props, { emit }) => {
     const isActive = ref(props.modelValue);

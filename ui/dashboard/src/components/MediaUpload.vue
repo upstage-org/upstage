@@ -82,9 +82,7 @@ export default {
   emits: ["complete"],
   setup: (props, { emit }) => {
     const active = ref();
-    const data = reactive({
-      mediaType: "avatar",
-    });
+    const data = reactive({});
 
     const isImage = computed(() => data.file?.type?.startsWith("image"));
 

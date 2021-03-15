@@ -90,4 +90,9 @@ emoji-picker {
     0 0px 0 1px rgba(10, 10, 10, 0.02);
   transform-origin: bottom right;
 }
+input.is-rounded {
+  border: 1px solid black;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
 </style>

@@ -77,6 +77,7 @@ export default {
           name: media.name,
           type: media.assetType.name,
           src: media.fileLocation,
+          ...(media.description ? JSON.parse(media.description) : {}),
         }))
       );
       await save("Media saved successfully!", stage.value.id, payload);
