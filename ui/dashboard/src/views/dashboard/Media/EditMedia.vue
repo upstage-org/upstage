@@ -41,7 +41,7 @@
               :loading="loadingAllMedia"
               :data="
                 allMedia
-                  .filter((item) => item.assetType.name !== 'audio')
+                  ?.filter((item) => item.assetType.name !== 'audio')
                   .map((media) => media.fileLocation)
               "
               v-model="data.frames"

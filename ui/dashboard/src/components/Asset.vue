@@ -17,5 +17,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+audio,
+img {
+  max-width: 100%;
+  max-height: 100%;
+}
 </style>

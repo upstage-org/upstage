@@ -31,6 +31,12 @@ export const assetFragment = gql`
       id
       name
     }
+    owner {
+      id
+      username
+      displayName
+    }
+    createdOn
     fileLocation
     dbId
   }
