@@ -50,7 +50,12 @@ export default {
         },
         hosts: [],
         reactions: [],
-        viewport: getViewport()
+        viewport: getViewport(),
+        counter: {
+            ready: false,
+            clients: [],
+        },
+        session: uuidv4()
     },
     getters: {
         url(state) {
@@ -265,6 +270,10 @@ export default {
                 object.h = object.h * ratio;
                 recalcFontSize(object, s => s * ratio)
             })
+        },
+        UPDATE_COUNTER(state, counter) {
+            state.counter = counter;
+            state.counter.ready = true;
         }
     },
     actions: {
@@ -285,20 +294,23 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit }) {
+        subscribe({ commit, dispatch }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
-                [TOPICS.REACTION]: { qos: 2 }
+                [TOPICS.REACTION]: { qos: 2 },
+                [TOPICS.COUNTER]: { qos: 2 }
             }
             mqtt.subscribe(topics).then(res => {
-                commit('SET_SUBSCRIBE_STATUS', true)
+                commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
+                dispatch('sendConnectionsCounter', +1);
             })
         },
-        disconnect() {
+        async disconnect({ dispatch }) {
+            await dispatch('sendConnectionsCounter', -1);
             mqtt.disconnect();
         },
         handleMessage({ dispatch }, { topic, message }) {
@@ -317,6 +329,9 @@ export default {
                     break;
                 case TOPICS.REACTION:
                     dispatch('handleReactionMessage', { message });
+                    break;
+                case TOPICS.COUNTER:
+                    dispatch('handleCounterMessage', { message });
                     break;
                 default:
                     break;
@@ -509,6 +524,26 @@ export default {
             } else {
                 commit('SET_PRELOADING_STATUS', false);
             }
-        }
+        },
+        handleCounterMessage({ commit }, { message }) {
+            commit('UPDATE_COUNTER', message)
+        },
+        async sendConnectionsCounter({ rootGetters, rootState, state }, increment /* +1: join stage, -1: leave stage */) {
+            while (!state.counter.ready) {
+                await new Promise(resolve => setTimeout(resolve, 100))
+            }
+            const id = state.session
+            const user = rootState.user.user;
+            const nickname = rootGetters['user/nickname'];
+            const counter = state.counter
+            if (increment > 0) {
+                if (!counter.clients.some(client => client.id === id)) {
+                    counter.clients.push({ id, user, nickname })
+                }
+            } else {
+                counter.clients = counter.clients.filter(client => client.id !== id)
+            }
+            mqtt.sendMessage(TOPICS.COUNTER, counter);
+        },
     },
 };

@@ -39,6 +39,10 @@ export default {
       store.dispatch("stage/disconnect");
     });
 
+    window.addEventListener("beforeunload", () => {
+      store.dispatch("stage/disconnect");
+    });
+
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     return { loggedIn };

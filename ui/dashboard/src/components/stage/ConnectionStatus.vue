@@ -15,6 +15,7 @@
       </span>
       <span class="status-text">{{ status }}</span>
     </span>
+    <span>{{ counter.clients.length }}</span>
   </div>
 </template>
 
@@ -27,6 +28,7 @@ export default {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
+    const counter = computed(() => store.state.stage.counter);
 
     onMounted(() => {
       anime({
@@ -40,6 +42,7 @@ export default {
     return {
       status,
       dot,
+      counter,
     };
   },
 };
