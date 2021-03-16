@@ -121,3 +121,17 @@ nav {
         }
     }
 }
+@media screen and (max-width: 1280px) {
+    .navbar-brand {
+        .navbar-item {
+            margin-right: 0;
+        }
+    }
+    .navbar-item {
+        margin: 8px;
+        padding: 0 10px !important;
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}
