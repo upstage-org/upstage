@@ -1,4 +1,5 @@
 import os
+from utils.graphql_utils import CountableConnection
 import uuid
 
 from config.project_globals import appdir, ScopedSession
@@ -19,6 +20,7 @@ class Asset(SQLAlchemyObjectType):
         model = AssetModel
         model.db_id = model.id
         interfaces = (graphene.relay.Node,)
+        connection_class = CountableConnection
 
 
 class AssetType(SQLAlchemyObjectType):

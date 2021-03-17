@@ -68,7 +68,7 @@ export default {
   `),
   userList: () => client.request(gql`
     {
-      userList {
+      userList(sort: CREATED_ON_DESC) {
         edges {
           node {
             ...userFragment

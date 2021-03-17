@@ -28,7 +28,15 @@
             :class="header.slot"
           >
             <slot :name="header.slot" :item="item" :header="header">
-              {{ header.render ? header.render(item) : item[header.key] }}
+              <template v-if="header.render">
+                {{ header.render(item) }}
+              </template>
+              <template v-else-if="header.type === 'date'">
+                <span :title="moment(item[header.key])">
+                  {{ moment(item[header.key]).fromNow() }}
+                </span>
+              </template>
+              <template v-else>{{ item[header.key] }}</template>
             </slot>
           </td>
         </tr>
@@ -42,6 +50,7 @@ import { useQuery } from "@/services/graphql/composable";
 import Skeleton from "@/components/Skeleton";
 import { computed } from "@vue/runtime-core";
 import anime from "animejs";
+import moment from "moment";
 
 export default {
   props: {
@@ -70,6 +79,7 @@ export default {
     return { loading, nodes };
   },
   methods: {
+    moment,
     enter(el, complete) {
       anime({
         targets: el,
@@ -84,5 +94,8 @@ export default {
 <style scoped>
 i.fas {
   cursor: pointer;
+}
+table {
+  width: 100%;
 }
 </style>
