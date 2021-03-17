@@ -43,6 +43,7 @@ class Stage(SQLAlchemyObjectType):
         model = StageModel
         model.db_id = model.id
         interfaces = (relay.Node,)
+        connection_class = graphql_utils.CountableConnection
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
