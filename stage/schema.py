@@ -50,12 +50,9 @@ class StageConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
 
     @classmethod
-    def get_query(cls, model, info, sort_by=None, sort_desc=False, **args):
-        sort = sort_by
-        if sort_desc:
-            sort = desc(sort)
+    def get_query(cls, model, info, sort=None, **args):
         query = super(StageConnectionField, cls).get_query(
-            model, info, **args).order_by(sort)
+            model, info, sort, **args)
         for field, value in args.items():
             if field == 'id':
                 _type, _id = from_global_id(value)
@@ -152,11 +149,11 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
-        Stage, id=graphene.ID(), sort_by=graphene.String(), sort_desc=graphene.Boolean(), name_like=graphene.String(), file_location=graphene.String())
+        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
     assetList = StageConnectionField(
-        Asset, id=graphene.ID(), sort_by=graphene.String(), sort_desc=graphene.Boolean(), name_like=graphene.String(), asset_type_id=graphene.ID())
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
     assetTypeList = StageConnectionField(
-        AssetType, id=graphene.ID(), name_like=graphene.String())
+        AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

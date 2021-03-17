@@ -38,6 +38,11 @@ export default {
         key: "email",
       },
       {
+        title: "Registration Date",
+        type: "date",
+        key: "createdOn",
+      },
+      {
         title: "Role",
         render: (item) => (item.role > 0 ? "Admin" : "Player"),
       },
