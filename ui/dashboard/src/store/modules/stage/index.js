@@ -20,6 +20,7 @@ export default {
         chat: {
             messages: [],
             color: randomMessageColor(),
+            opacity: 0.9
         },
         board: {
             objects: [],
@@ -284,6 +285,9 @@ export default {
                 object.h = object.h * ratio;
                 recalcFontSize(object, s => s * ratio)
             })
+        },
+        SET_CHAT_OPACITY(state, opacity) {
+            state.chat.opacity = opacity;
         }
     },
     actions: {

@@ -1,10 +1,25 @@
 <template>
   <header class="card-header">
-    <p class="card-header-title">Change your nickname</p>
+    <div class="tabs card-header-title p-0">
+      <ul>
+        <li
+          :class="{ 'is-active': currentTab === 'nickname' }"
+          @click="currentTab = 'nickname'"
+        >
+          <a>Change your nickname</a>
+        </li>
+        <li
+          :class="{ 'is-active': currentTab === 'params' }"
+          @click="currentTab = 'params'"
+        >
+          <a>Parameters</a>
+        </li>
+      </ul>
+    </div>
   </header>
   <div class="card-content">
-    <div class="content">
-      <horizontal-field title="Nickname">
+    <div class="content" v-if="currentTab === 'nickname'">
+      <HorizontalField title="Nickname">
         <input
           class="input"
           type="text"
@@ -12,14 +27,27 @@
           v-model="form.nickname"
           @keyup.enter="saveNickname"
         />
-      </horizontal-field>
-      <save-button @click="saveNickname" />
+      </HorizontalField>
+      <SaveButton @click="saveNickname" :loading="loading" />
+    </div>
+    <div class="content" v-else>
+      <HorizontalField title="Chat transparency">
+        <input
+          v-model="parameters.opacity"
+          type="range"
+          class="slider is-fullwidth is-primary"
+          step="0.01"
+          min="0"
+          max="1"
+        />
+      </HorizontalField>
+      <save-button @click="saveParameters" />
     </div>
   </div>
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import HorizontalField from "@/components/form/HorizontalField.vue";
 import SaveButton from "@/components/form/SaveButton.vue";
@@ -29,13 +57,36 @@ export default {
   setup: (props, { emit }) => {
     const form = reactive({});
     const store = useStore();
+    const loading = ref(false);
     const nickname = computed(() => store.getters["user/nickname"]);
-    const saveNickname = () =>
+    const saveNickname = () => {
+      loading.value = true;
       store.dispatch("user/saveNickname", form).then((nickname) => {
         emit("close");
         notification.success("You new nickname is: " + nickname);
+        loading.value = false;
       });
-    return { nickname, saveNickname, form };
+    };
+
+    const currentTab = ref("nickname");
+    const parameters = reactive({
+      opacity: store.state.stage.chat.opacity,
+    });
+    const saveParameters = () => {
+      store.commit("stage/SET_CHAT_OPACITY", parameters.opacity);
+      emit("close");
+      notification.success("Chat parameters saved successfully!");
+    };
+
+    return {
+      nickname,
+      saveNickname,
+      loading,
+      form,
+      currentTab,
+      parameters,
+      saveParameters,
+    };
   },
 };
 </script>
