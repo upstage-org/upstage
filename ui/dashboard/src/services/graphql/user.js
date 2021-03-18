@@ -67,8 +67,9 @@ export default {
     ${userFragment}
   `),
   userList: () => client.request(gql`
-    {
-      userList(sort: CREATED_ON_DESC) {
+    query UserList($first: Int, $after: String) {
+      userList(sort: CREATED_ON_DESC, first: $first, after: $after) {
+        totalCount
         edges {
           node {
             ...userFragment

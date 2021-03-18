@@ -11,6 +11,11 @@ export const useRequest = (service, ...params) => {
         const key = Object.keys(data.value)[0];
         return data.value[key].edges.map((edge) => edge.node)
     });
+    const totalCount = computed(() => {
+        if (!data.value) return 0;
+        const key = Object.keys(data.value)[0];
+        return data.value[key].totalCount
+    });
     const cacheKeys = reactive([]);
 
     const fetch = async (...newParams) => {
@@ -46,7 +51,7 @@ export const useRequest = (service, ...params) => {
         return fetch(...params);
     }
 
-    return { loading, data, nodes, fetch, clearCache, refresh }
+    return { loading, data, nodes, totalCount, fetch, clearCache, refresh }
 }
 
 export const useMutation = (...params) => {

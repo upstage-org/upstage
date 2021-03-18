@@ -1,12 +1,13 @@
 <template>
   <div
     class="dropdown"
-    :class="{ 'is-active': isActive }"
+    :class="{ 'is-active': isActive, 'is-right': isRight, 'is-up': isUp }"
     v-click-outside="() => (isActive = false)"
   >
     <div class="dropdown-trigger">
       <button
         class="button"
+        :class="{ 'is-rounded': isRounded }"
         aria-haspopup="true"
         aria-controls="dropdown-menu"
         @click="isActive = !isActive"
@@ -56,6 +57,9 @@ export default {
       default: (item) => item,
     },
     placeholder: String,
+    isRight: Boolean,
+    isUp: Boolean,
+    isRounded: Boolean,
   },
   emits: ["update:modelValue", "select"],
   setup: (props, { emit }) => {
