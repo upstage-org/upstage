@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/DataTable/index";
 import Switch from "@/components/form/Switch";
 import { userGraph } from "@/services/graphql";
 import { displayName } from "@/utils/auth";
