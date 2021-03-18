@@ -9,7 +9,7 @@
       :disabled="modelValue === 1"
       @click="goToPage(modelValue - 1)"
     >
-      Previous
+      Previous page
     </button>
     <button
       class="button pagination-next"
