@@ -66,6 +66,7 @@ export default {
   stageList: (variables) => client.request(gql`
     query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
       stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {
+        totalCount
         edges {
           node {
             ...stageFragment

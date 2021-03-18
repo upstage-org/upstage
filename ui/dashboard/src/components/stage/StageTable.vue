@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/DataTable/index";
 import Modal from "../Modal";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";

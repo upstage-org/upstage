@@ -21,7 +21,7 @@
 import { inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
-import DataTable from "@/components/DataTable";
+import DataTable from "@/components/DataTable/index";
 import EditMedia from "./EditMedia";
 import { displayName } from "@/utils/auth";
 
