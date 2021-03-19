@@ -7,8 +7,8 @@ import { isJson } from '@/utils/common';
 const mqttService = {
   client: null,
   connect() {
-    const { host, port, endpoint, ...options } = config.MQTT_CONNECTION;
-    const connectUrl = `ws://${host}:${port}${endpoint}`;
+    const { url, ...options } = config.MQTT_CONNECTION;
+    const connectUrl = url;
     const clientId = uuidv4();
     this.client = mqtt.connect(connectUrl, {
       ...options,
