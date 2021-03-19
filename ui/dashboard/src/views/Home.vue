@@ -1,38 +1,32 @@
 <template>
-  <section class="hero is-medium is-primary is-bold">
+  <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">WHAT’S ON</h1>
+        <h1 class="title">CYBERFORMANCE PLATFORM</h1>
         <h2 class="subtitle">
-          <ul>
-            <li>List of live & soon-live public performances</li>
-            <li>Title, thumbnail image, brief description, more info link</li>
-            <li>Live link at show-time</li>
-          </ul>
+          UpStage is an online venue for live performance: remote performers
+          collaborate in real time using digital media, and online audiences
+          anywhere in the world join events by going to a web page, without
+          having to download and install any additional software. UpStage is
+          available free to anyone who would like to use it.
         </h2>
-        <h2 class="subtitle">
-          <router-link
-            to="/live"
-            class="button is-large is-rounded is-outlined is-white"
-          >
-            <span class="icon is-medium">
-              <i class="fas fa-play"></i>
-            </span>
-            <span>Demo Stage</span>
-          </router-link>
-        </h2>
-      </div>
-    </div>
-  </section>
-  <section class="hero is-medium is-dark is-bold">
-    <div class="hero-body">
-      <div class="container">
-        <h1 class="title">BOX OFFICE</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>Buy tickets – link to 3rd party platform eg Eventbrite etc.</li>
-          </ul>
-        </h2>
+        <div class="links columns is-vcentered my-4">
+          <div class="column">
+            <router-link to="/live" class="link">
+              <span>Live Stage</span>
+            </router-link>
+          </div>
+          <div class="column">
+            <router-link to="/live" class="link">
+              <span> Upcoming Performance </span>
+            </router-link>
+          </div>
+          <div class="column">
+            <router-link to="/live" class="link">
+              <span>Ticketing</span>
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -44,3 +38,43 @@ export default {
   components: {},
 };
 </script>
+
+<style scoped lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
+#welcome {
+  text-align: center;
+  .title {
+    @include textShadow;
+    font-size: 50px;
+  }
+  .subtitle {
+    background: white;
+    border: 1px solid $black;
+    padding: 0.5em;
+    max-width: 800px;
+    margin: auto;
+    box-shadow: 10px 10px 0 0 $primary;
+  }
+  .column {
+    padding: 2rem;
+  }
+  .link {
+    @include textShadow;
+    font-weight: bold;
+    font-size: 25px;
+    border: 1px solid $black;
+    border-top: 10px solid $primary;
+    display: table;
+    width: 100%;
+    height: 300px;
+    box-shadow: 10px 5px 0 0 $black;
+    background: white;
+    span {
+      display: table-cell;
+      vertical-align: middle;
+    }
+  }
+}
+</style>

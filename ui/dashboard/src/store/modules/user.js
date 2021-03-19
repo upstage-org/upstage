@@ -1,4 +1,7 @@
-import { userService } from "@/services";
+import router from '@/router';
+import { userGraph } from '@/services/graphql';
+import { displayName, logout } from '@/utils/auth';
+import { notification } from '@/utils/notification';
 
 export default {
   namespaced: true,
@@ -23,35 +26,48 @@ export default {
     },
   },
   actions: {
-    fetchCurrent({ commit }) {
-      return new Promise((resolve) => {
-        commit("SET_LOADING_USER", true);
-        userService
-          .getCurrent()
-          .then((data) => {
-            commit("SET_USER_DATA", data);
-            resolve();
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-          .finally(() => {
-            commit("SET_LOADING_USER", false);
-          });
-      });
+    async fetchCurrent({ commit }) {
+      commit("SET_LOADING_USER", true);
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        commit("SET_USER_DATA", currentUser);
+        return currentUser;
+      } catch (error) {
+        if (['Missing X-Access-Token Header', 'Signature verification failed'].some(message => error.message?.includes(message))) {
+          logout();
+
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            notification.warning('You have been logged out of this session!');
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
-    saveNickname({ commit }, { nickname }) {
+    async saveNickname({ commit, state }, { nickname }) {
       commit('SET_NICK_NAME', nickname);
-      return nickname;
+      try {
+        const response = await userGraph.saveNickname({
+          id: state.user.id,
+          displayName: nickname
+        });
+        return response.updateUser.user.displayName;
+      } catch (error) {
+        return nickname;
+      }
     },
     setAvatarId({ commit }, { name, id }) {
       commit('SET_NICK_NAME', name);
       commit('SET_AVATAR_ID', id);
-    }
+    },
   },
   getters: {
     nickname(state) {
-      return state.nickname ?? (state.user ? (state.user.firstname ?? state.user.username) : "Guest");
+      return state.nickname ?? (state.user ? displayName(state.user) : "Guest");
+    },
+    isAdmin(state) {
+      return state.user?.role > 0;
     },
   },
 };

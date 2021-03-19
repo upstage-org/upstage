@@ -4,6 +4,9 @@
     tabindex="0"
     @keyup.delete="deleteObject"
     @dblclick="setAsPrimaryAvatar"
+    :style="{
+      ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
+    }"
   >
     <OpacitySlider
       :position="position"
@@ -11,7 +14,11 @@
       :object="object"
     />
     <Topping :position="position" :object="object" />
-    <ContextMenu>
+    <ContextMenu
+      :pad-left="-stageSize.left"
+      :pad-top="-stageSize.top"
+      :pad-right="250"
+    >
       <template #trigger>
         <DragResize
           v-if="loggedIn"
@@ -29,33 +36,39 @@
           @drag-end="dragEnd"
           @resize-end="resizeEnd"
         >
-          <Image
-            class="the-object"
-            :src="src"
-            :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
-            :rotate="object.rotate"
-          />
+          <div
+            :style="{
+              width: '100%',
+              height: '100%',
+              opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+            }"
+          >
+            <slot name="render">
+              <Image class="the-object" :src="src" />
+            </slot>
+          </div>
         </DragResize>
-        <Image
-          :src="src"
-          v-if="isDragging || !loggedIn"
-          :style="{
-            width: position.w + 'px',
-            height: position.h + 'px',
-            position: 'fixed',
-            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
-            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
-          }"
-          :opacity="object.opacity"
-          :rotate="object.rotate"
-        />
+        <template v-if="isDragging || !loggedIn">
+          <div
+            :style="{
+              position: 'fixed',
+              left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+              top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
+              width: position.w + 'px',
+              height: position.h + 'px',
+              opacity: object.opacity,
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+            }"
+          >
+            <slot name="render">
+              <Image :src="src" />
+            </slot>
+          </div>
+        </template>
       </template>
       <template #context="slotProps" v-if="loggedIn">
-        <MenuContent
-          :object="object"
-          :closeMenu="slotProps.closeMenu"
-          v-model:active="active"
-        />
+        <slot name="menu" v-bind="slotProps" />
       </template>
     </ContextMenu>
   </div>
@@ -68,7 +81,6 @@ import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
-import MenuContent from "./ContextMenu";
 import OpacitySlider from "./OpacitySlider";
 import Topping from "./Topping.vue";
 
@@ -78,7 +90,6 @@ export default {
     DragResize,
     Image,
     ContextMenu,
-    MenuContent,
     OpacitySlider,
     Topping,
   },
@@ -89,6 +100,7 @@ export default {
     // Vuex store
     const store = useStore();
     const config = store.getters["stage/config"];
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
@@ -101,7 +113,10 @@ export default {
     watch(
       props.object,
       () => {
-        const { x, y, h, w, moveSpeed } = props.object;
+        const { x, y, h, w, moveSpeed, type, isPlaying } = props.object;
+        if (type === "stream" && isPlaying && isDragging.value) {
+          return;
+        }
         animation.value?.pause(true);
         animation.value = anime({
           targets: position,
@@ -126,12 +141,17 @@ export default {
     };
 
     const dragEnd = (e) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        ...e,
-      });
-      position.x = beforeDragPosition.value.x;
-      position.y = beforeDragPosition.value.y;
+      if (
+        e.x !== beforeDragPosition.value.x &&
+        e.y !== beforeDragPosition.value.y
+      ) {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          ...e,
+        });
+        position.x = beforeDragPosition.value.x;
+        position.y = beforeDragPosition.value.y;
+      }
       isDragging.value = false;
     };
 
@@ -203,12 +223,16 @@ export default {
       deleteObject,
       setAsPrimaryAvatar,
       src,
+      stageSize,
     };
   },
 };
 </script>
 
-<style scoped lang="scss">
+<style lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
 div[tabindex] {
   outline: none;
 }

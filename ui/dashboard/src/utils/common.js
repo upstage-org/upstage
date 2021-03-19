@@ -1,3 +1,5 @@
+import config from '@/config';
+
 export const isJson = (d) => {
   try {
     JSON.parse(d);
@@ -6,6 +8,8 @@ export const isJson = (d) => {
   }
   return true;
 };
+
+export const randomRange = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
 
 export const randomColor = () => {
   var letters = "0123456789ABCDEF";
@@ -62,4 +66,18 @@ export function titleCase(str) {
     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
   }
   return splitStr.join(' ');
+}
+
+export function absolutePath(path) {
+  return `${config.STATIC_ASSETS_ENDPOINT}${path}`
+}
+
+export function debounce(callback, delay) {
+  let timeout;
+  return () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(callback, delay)
+  }
 }

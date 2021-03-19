@@ -1,25 +1,29 @@
 <template>
-  <Image
-    :src="data.src"
+  <div
+    class="is-flex is-align-items-center"
+    draggable="true"
     @dragstart="dragstart"
-    @drag="drag"
     @touchmove="touchmove"
     @touchend="touchend"
     :style="{
       position: position.isDragging ? 'fixed' : 'static',
+      width: position.isDragging ? '100px' : '100%',
+      height: position.isDragging ? '100px' : '100%',
       top: position.y - topbarPosition.top + 'px',
       left: position.x - topbarPosition.left + 'px',
-      width: '100px',
     }"
     :title="data.name"
-  />
-  <span
-    v-if="data.multi"
-    class="tag is-primary is-multi"
-    title="This is a multiframe avatar"
   >
-    <i class="fas fa-clone"></i>
-  </span>
+    <slot v-if="$slots.default" />
+    <Image v-else :src="data.src" />
+    <span
+      v-if="data.multi"
+      class="tag is-primary is-multi"
+      title="This is a multiframe avatar"
+    >
+      <i class="fas fa-clone"></i>
+    </span>
+  </div>
 </template>
 
 <script>
@@ -38,7 +42,7 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      e.dataTransfer.setData("avatar", JSON.stringify(props.data));
+      e.dataTransfer.setData("object", JSON.stringify(props.data));
     };
 
     const touchmove = (e) => {
@@ -53,7 +57,7 @@ export default {
 
     const touchend = () => {
       position.isDragging = false;
-      store.dispatch("stage/summonAvatar", {
+      store.dispatch("stage/placeObjectOnStage", {
         ...props.data,
         x: position.x,
         y: position.y,
@@ -69,5 +73,6 @@ export default {
 .is-multi {
   position: relative;
   left: -20px;
+  top: 30px;
 }
 </style>

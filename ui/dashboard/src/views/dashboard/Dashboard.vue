@@ -15,7 +15,7 @@
     <div class="container">
       <h1 class="title">
         Stages
-        <router-link to="/dashboard/stage-management" class="button mx-2">
+        <router-link to="/dashboard/new-stage" class="button mx-2">
           <span>New</span>
           <span class="icon">
             <i class="fa fa-plus"></i>
@@ -41,6 +41,7 @@
 import StageTable from "@/components/stage/StageTable";
 export default {
   components: { StageTable },
+  setup: () => {},
 };
 </script>
 

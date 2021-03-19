@@ -19,15 +19,8 @@ export default {
 html {
   overflow-y: auto !important;
 }
-nav {
-  a {
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      font-weight: bold;
-      color: #42b983;
-    }
-  }
+body.waiting * {
+  cursor: wait !important;
 }
 .is-fullwidth {
   width: 100%;
@@ -37,5 +30,12 @@ nav {
 }
 .clickable {
   pointer-events: all !important;
+}
+[contenteditable] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  * {
+    font-family: inherit;
+  }
 }
 </style>

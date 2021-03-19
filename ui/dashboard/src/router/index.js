@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import store from "@/store";
 import config from '../../vue.config';
+import PleaseRotate from '@/utils/pleaserotate';
 
 const routes = [
   {
@@ -17,6 +18,11 @@ const routes = [
         path: '/login',
         name: 'Login',
         component: () => import('../views/Login.vue')
+      },
+      {
+        path: '/register',
+        name: 'Register',
+        component: () => import('../views/Register.vue')
       },
       {
         path: '/stage',
@@ -36,11 +42,6 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
       },
       {
-        path: '/dashboard/media',
-        name: 'Media',
-        component: () => import('../views/dashboard/Media.vue'),
-      },
-      {
         path: '/dashboard/my-stages',
         name: 'My Stages',
         component: () => import('../views/dashboard/MyStages.vue'),
@@ -51,27 +52,80 @@ const routes = [
         component: () => import('../views/dashboard/Workshop.vue'),
       },
       {
-        path: '/dashboard/profile',
-        name: 'Player Profile',
-        component: () => import('../views/dashboard/Profile.vue'),
+        path: '/dashboard/media',
+        name: 'Media',
+        component: () => import('../views/dashboard/Media/index.vue'),
       },
       {
-        path: '/dashboard/stage-management',
+        path: '/dashboard/profile',
+        component: () => import('../views/dashboard/Profile/index.vue'),
+        children: [
+          {
+            path: '',
+            name: 'Player Profile',
+            component: () => import('../views/dashboard/Profile/Information.vue'),
+          },
+          {
+            path: 'change-password',
+            name: 'Change Password',
+            component: () => import('../views/dashboard/Profile/ChangePassword.vue'),
+          },
+        ]
+      },
+      {
+        path: '/dashboard/admin',
+        component: () => import('../views/dashboard/Admin/index.vue'),
+        children: [
+          {
+            path: '',
+            redirect: '/dashboard/admin/approval',
+          },
+          {
+            path: 'approval',
+            name: 'Registration Approval',
+            component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
+          },
+        ]
+      },
+      {
+        path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         children: [
           {
+            path: '',
+            name: 'Create New Stage',
+            component: () => import('../views/dashboard/StageManagement/General.vue'),
+          },
+        ]
+      },
+      {
+        path: '/dashboard/stage-management/:id',
+        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        props: route => ({ id: route.params.id }),
+        children: [
+          {
+            path: '',
             name: 'Stage Management',
-            path: '/dashboard/stage-management',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
           {
             name: 'Stage Layout',
-            path: '/dashboard/stage-management/layout',
+            path: 'layout',
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
           },
           {
+            name: 'Stage Media',
+            path: 'media',
+            component: () => import('../views/dashboard/StageManagement/Media.vue'),
+          },
+          {
+            name: 'Chat',
+            path: 'chat',
+            component: () => import('../views/dashboard/StageManagement/Chat.vue'),
+          },
+          {
             name: 'Scenes',
-            path: '/dashboard/stage-management/scenes',
+            path: 'scenes',
             component: () => import('../views/dashboard/StageManagement/Scenes.vue'),
           }
         ]
@@ -80,15 +134,9 @@ const routes = [
   },
 
   {
-    path: '/live',
+    path: '/live/:url?',
+    name: 'Live',
     component: () => import('../views/live/Layout.vue'),
-    children: [
-      {
-        path: '/live',
-        name: 'Live',
-        component: () => import('../views/live/Live.vue'),
-      },
-    ]
   },
 ]
 
@@ -98,6 +146,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  document.body.classList.add('waiting');
+
   const loggedIn = store.getters["auth/loggedIn"];
 
   if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
@@ -108,11 +158,17 @@ router.beforeEach((to, from, next) => {
   }
   if (to.name === 'Live') {
     document.querySelector("meta[name=viewport]").setAttribute("content", "");
+    PleaseRotate.start();
   } else {
     document.querySelector("meta[name=viewport]").setAttribute("content", "width=device-width,initial-scale=1.0");
+    PleaseRotate.stop();
   }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;
+});
+
+router.afterEach(() => {
+  document.body.classList.remove('waiting');
 });
 
 export default router

@@ -17,18 +17,19 @@
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
-        <router-link class="navbar-item" to="/">Home</router-link>
-
         <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link"> More </a>
+          <a class="navbar-link is-arrowless"> About </a>
           <div class="navbar-dropdown">
-            <a
-              class="navbar-item"
-              href="https://github.com/upstage-org/mobilise/"
-              target="_blank"
-            >
-              GitHub
-            </a>
+            <a class="navbar-item" href="#"> FAQs </a>
+            <a class="navbar-item" href="#"> Contacts </a>
+            <a class="navbar-item" href="#"> Diversity + Inclusion </a>
+          </div>
+        </div>
+        <div class="vertical-divider" />
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link is-arrowless"> &nbsp; Learn &nbsp; </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#"> Research </a>
             <a
               class="navbar-item"
               href="https://github.com/upstage-org/documentation"
@@ -38,24 +39,45 @@
             </a>
           </div>
         </div>
+        <div class="vertical-divider" />
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link is-arrowless"> Festivals </a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="#"> 10th Birthday </a>
+            <a class="navbar-item" href="#"> 121212 </a>
+          </div>
+        </div>
+        <div class="vertical-divider" />
+        <a
+          class="navbar-item"
+          href="https://github.com/upstage-org/mobilise/"
+          target="_blank"
+        >
+          Develop
+        </a>
+        <div class="vertical-divider" />
+        <router-link class="navbar-item" to="/donate">Donate</router-link>
+        <div class="vertical-divider" />
+        <router-link class="navbar-item" to="/live">Stage</router-link>
       </div>
 
       <div class="navbar-end">
-        <div class="navbar-item">
-          <div class="buttons" v-if="loggedIn">
-            <router-link to="/dashboard" class="button is-primary">
-              <strong>Dashboard</strong>
-            </router-link>
-            <button @click="logout" class="button">
-              <strong>Logout</strong>
-            </button>
-          </div>
-          <div class="buttons" v-else>
-            <router-link to="/login" class="button is-primary">
-              <strong>Login</strong>
-            </router-link>
-          </div>
-        </div>
+        <template v-if="loggedIn">
+          <router-link to="/dashboard" class="button is-primary m-2">
+            <strong>Dashboard</strong>
+          </router-link>
+          <button @click="logout" class="button m-2 mr-6">
+            <strong>Logout</strong>
+          </button>
+        </template>
+        <template v-else>
+          <router-link to="/login" class="button is-primary m-2">
+            <strong>Login</strong>
+          </router-link>
+          <router-link to="/register" class="button is-primary m-2 mr-6">
+            <strong>Register</strong>
+          </router-link>
+        </template>
       </div>
     </div>
   </nav>

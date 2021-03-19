@@ -12,7 +12,7 @@
   <template v-if="isDrawing">
     <div class="drawing-tool">
       <div class="icon is-large">
-        <input type="color" v-model="color" />
+        <ColorPicker v-model="color" />
       </div>
       <span class="tag is-light is-block">Color</span>
     </div>
@@ -67,18 +67,24 @@
       </div>
       <span class="tag is-light is-block">Save</span>
     </div>
+    <div class="drawing-tool" @click="cancel">
+      <div class="icon is-large">
+        <i class="fas fa-times fa-2x"></i>
+      </div>
+      <span class="tag is-light is-block">Cancel</span>
+    </div>
   </template>
   <template v-else>
-    <div @click="create">
+    <div @click="create" class="is-pulled-left">
       <div class="icon is-large">
         <i class="fas fa-plus fa-2x"></i>
       </div>
       <span class="tag is-light is-block">New</span>
     </div>
+    <div v-for="drawing in drawings" :key="drawing">
+      <Skeleton :data="drawing" />
+    </div>
   </template>
-  <div v-for="drawing in drawings" :key="drawing">
-    <Skeleton :data="drawing" />
-  </div>
 </template>
 
 <script>
@@ -86,13 +92,14 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import { useDrawing } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
+import ColorPicker from "@/components/form/ColorPicker";
+
 export default {
-  components: { Skeleton },
+  components: { Skeleton, ColorPicker },
   setup: () => {
     const store = useStore();
     const drawings = computed(() => store.state.stage.board.drawings);
     const isDrawing = computed(() => {
-      console.log(store.state.stage.board.drawings);
       return store.state.stage.preferences.isDrawing;
     });
     const color = ref("#000");
@@ -105,6 +112,9 @@ export default {
     );
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
+    };
+    const cancel = () => {
+      store.commit("stage/UPDATE_IS_DRAWING", false);
     };
     const save = () => {
       const drawing = cropImageFromCanvas();
@@ -127,6 +137,7 @@ export default {
       size,
       create,
       save,
+      cancel,
       el,
       clearCanvas,
       undo,
@@ -162,11 +173,6 @@ export default {
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
   }
-}
-input[type="color"] {
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
 }
 .size-preview {
   display: flex;

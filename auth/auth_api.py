@@ -29,7 +29,7 @@ from flask import jsonify,url_for
 from flask_restx import Resource, abort
 from flask import  request, redirect, render_template, make_response
 from flask_jwt_extended import (jwt_required,get_jwt_identity,
-    jwt_refresh_token_required,create_access_token,create_refresh_token,
+    create_access_token,create_refresh_token,
     verify_jwt_in_request,JWTManager)
 from flask_jwt_extended import utils as jwt_utils
 
@@ -60,7 +60,7 @@ class ProfileError(Exception):
 
 class TokenNoList(object):
 
-    def check(self,token):
+    def check(self,header,token):
         # Check if token has already been no-listed.
         origtoken = token
         if 'jti' not in token and 'token' not in token:
@@ -93,7 +93,7 @@ class TokenNoList(object):
             token_type=decoded_token['type']
             token=decoded_token['jti']
 
-        if self.check(decoded_token):
+        if self.check('x',decoded_token):
             return
 
         # Already restricted.
@@ -120,7 +120,7 @@ class TokenNoList(object):
                 JWTNoList.remove_after < datetime.utcnow()).delete()
 
 TNL=TokenNoList()
-jwt.token_in_blacklist_loader(TNL.check)
+jwt.token_in_blocklist_loader(TNL.check)
 
 @app.route('/{0}'.format(URL_PREFIX),defaults={'path': ''})
 def catch_all(path):
@@ -271,6 +271,8 @@ def call_login_logout(app_entry=True,num_value=None):
             # if we are down here.
             if not decrypt(user.password) == password:
                 return make_response(jsonify({"error": "Bad email or password (17)"}), 401)
+            else:
+                return make_response(jsonify({"error": "Your account is not activated, please wait for approval or contact UpStage Admin for support!"}), 401)
 
             # Re-send their signup code.
             existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
@@ -296,11 +298,6 @@ def call_login_logout(app_entry=True,num_value=None):
         if user.role in (SUPER_ADMIN,):
             if not verify_user_totp(user,num_value):
                 return make_response(jsonify({"error": "Invalid code."}), 401)
-            else:
-                with ScopedSession() as local_db_session:
-                    local_db_session.query(User).filter(
-                        User.id==user.id).update(
-                        {User.validated_via_portal:True},synchronize_session=False)
 
         elif user.role in (PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR) and not app_entry: 
             pass # password checked-out, that's all we need.
@@ -602,7 +599,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
 
 @app.route('{0}refresh/'.format(BASE_URL), methods=['POST'])
-@jwt_refresh_token_required
+@jwt_required(refresh=True)
 def refresh():
     current_user_id = get_jwt_identity()
     refresh_token = request.headers[app.config['JWT_HEADER_NAME']]
@@ -772,8 +769,6 @@ def admin_jwt_required(fn):
             user = DBSession.query(User).options(FromCache("default")).filter(
                 User.id==current_user_id).filter(
                 User.active==True).first()
-            if ENV_TYPE == 'Production' and (not user or not user.validated_via_portal):
-                abort(403,'Invalid validation.')
 
             #print(request.referrer)
             if ENV_TYPE == 'Production' and '/vue_admin/' not in request.referrer:

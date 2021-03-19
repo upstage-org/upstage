@@ -1,12 +1,17 @@
 arrow
+blinker
+cryptography
 flask
 flask-caching
 flask-cors
+flask-graphql
+flask-graphql-auth
 flask-jwt-extended
 flask-restx
 flask-sqlalchemy
 flask-talisman
 gevent
+graphene-sqlalchemy
 paho-mqtt
 pillow
 psycopg2-binary
@@ -14,6 +19,8 @@ pyotp
 qrcode
 requests
 sqlalchemy
+tqdm
 uwsgi
+vimeo
 websockets
 pymongo

@@ -1,4 +1,5 @@
-import { authService } from "@/services";
+import { userGraph } from "@/services/graphql";
+import { authService } from "@/services/rest";
 
 import {
   setToken,
@@ -33,7 +34,6 @@ export default {
           .then((resp) => {
             if (resp) {
               const { access_token, refresh_token } = resp;
-              console.log(refresh_token);
               setToken(access_token);
               setRefreshToken(refresh_token);
               commit("SET_TOKEN", access_token);
@@ -54,16 +54,15 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     fetchRefreshToken({ commit, state }) {
-      return new Promise((resolve, reject) => {
-        authService
-          .getRefreshToken(state.refresh_token)
-          .then((resp) => {
-            commit("SET_TOKEN", resp);
-            resolve();
-            return resp;
-          })
-          .catch((err) => reject(err));
-      });
+      return userGraph.refreshUser({
+        refreshToken: state.refresh_token
+      }, {
+        'X-Access-Token': state.refresh_token
+      }).then(response => {
+        const token = response.refreshUser.newToken
+        commit('SET_TOKEN', token)
+        return token
+      })
     },
   },
   getters: {

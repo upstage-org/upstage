@@ -1,6 +1,11 @@
 <template>
   <div id="topbar" class="card is-light" v-if="tool">
-    <div ref="bar" class="card-content" @wheel.prevent="horizontalScroll">
+    <div
+      ref="bar"
+      class="card-content"
+      :id="tool + 'tool'"
+      @wheel="horizontalScroll"
+    >
       <component :is="tool" />
     </div>
   </div>
@@ -9,14 +14,16 @@
 <script>
 import { ref } from "vue";
 import Avatars from "./tools/Avatars";
-import Backdrops from "./tools/Backdrops";
+import Backdrop from "./tools/Backdrop";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
+import Stream from "./tools/Stream";
+import Text from "./tools/Text";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrops, Props, Audio, Draw },
+  components: { Avatars, Backdrop, Props, Audio, Draw, Stream, Text },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {
@@ -29,6 +36,9 @@ export default {
 </script>
 
 <style lang="scss">
+@import "@/styles/bulma";
+@import "@/styles/mixins";
+
 #topbar {
   position: fixed;
   max-width: 80vw;
@@ -52,15 +62,21 @@ export default {
       height: 88px;
       display: inline-block;
       padding: 12px;
+      background: $light;
+
+      &:first-child {
+        float: left;
+      }
+
+      .tag {
+        height: 1.5em;
+        box-shadow: none;
+      }
 
       &:hover,
       &.active {
-        background: rgba($color: black, $alpha: 0.5);
         cursor: pointer;
-        border-radius: 5px;
-      }
-      .tag {
-        height: 1.5em;
+        background-color: $primary;
       }
     }
   }

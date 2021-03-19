@@ -1,0 +1,137 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,400;0,700;1,400&display=swap');
+@import "./mixins";
+@import "./bulma";
+
+* {
+    font-family: 'Josefin Sans', sans-serif;
+}
+$green-bar: 10px solid $primary;
+nav {
+  a {
+    color: $black;
+
+    &.router-link-exact-active {
+      font-weight: bold;
+      color: $primary;
+    }
+  }
+}
+.button {
+    &.shadow:hover {
+        @include boxShadow;
+    }
+    &:not(.is-large) .icon {
+        width: 16px !important;
+        height: 16px !important;
+    }
+}
+.card, .panel, .modal-card {
+    border-top: $green-bar
+}
+.panel-body {
+    overflow: visible !important;
+    .button{
+        text-align: left;
+        border: none;
+        &:hover {
+            border: 1px solid $border-color;
+            z-index: 100;
+        }
+    }
+}
+.panel-heading {
+    overflow: visible !important;
+}
+#board {
+    box-shadow: 0 0 1em -0.125em $dark;
+}
+#topbar {
+    border-top: none;
+}
+#Texttool {
+    overflow: visible !important;
+}
+.is-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.5;
+    &:after {
+        @include loader;
+        position: absolute;
+        top: calc(50% - 2.5em);
+        left: calc(50% - 2.5em);
+        width: 5em;
+        height: 5em;
+        border-width: 0.25em;
+    }
+}
+.foyer-background {
+  background-image: url(../assets/foyerbg.png);
+  min-height: calc(100vh - 120px);
+}
+.modal-card-foot {
+    padding: 10px;
+}
+// Desktop only css
+@media screen and (min-width: 1024px) {
+    .navbar-start {
+        flex: auto;
+        justify-content: center !important;
+    }
+    .navbar-item {
+        margin: 8px 12px;
+        padding: 0 20px !important;
+        justify-content: center;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+    }
+    .vertical-divider {
+        width: 8px;
+        height: 8px;
+        background-color: $primary;
+        border-radius: 100%;
+        margin: auto 0;
+    }
+    .navbar-menu {
+        a.navbar-item:hover, .navbar-item.is-active, .navbar-item.is-hoverable:focus, .navbar-item.is-hoverable:focus-within, .navbar-item.is-hoverable:hover {
+            &:hover {
+                @include boxShadow;
+                border: 1px solid $border-color;
+            }
+        }
+    }
+    .navbar-dropdown {
+        padding: 0 !important;
+        top: calc(100% + 1px) !important;
+        left: -1px !important;
+        width: calc(100% + 2px) !important;
+        a.navbar-item {
+            margin: 0;
+            padding: 8px 0 !important;
+            justify-content: center;
+            border-width: 0 1px 1px 1px;
+            border-style: solid;
+            border-color: $border-color;
+            white-space: normal;
+            text-align: center;
+            &:hover {
+                box-shadow: none !important;
+                border-width: 0 1px 1px 1px !important;
+            }
+        }
+    }
+}
+@media screen and (max-width: 1280px) {
+    .navbar-brand {
+        .navbar-item {
+            margin-right: 0;
+        }
+    }
+    .navbar-item {
+        margin: 8px;
+        padding: 0 10px !important;
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+}

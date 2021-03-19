@@ -1,38 +1,79 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { isJson, randomMessageColor } from '@/utils/common'
+import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar } from './reusable';
+import { attachPropToAvatar, deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
+import { getViewport } from './reactiveViewport';
+import { stageGraph } from '@/services/graphql';
+import { useAttribute } from '@/services/graphql/composable';
 
 export default {
     namespaced: true,
     state: {
         preloading: true,
+        model: null,
         background: null,
         status: 'OFFLINE',
         subscribeSuccess: false,
         chat: {
             messages: [],
             color: randomMessageColor(),
+            opacity: 0.9
         },
         board: {
-            avatars: [],
+            objects: [],
             drawings: [],
+            texts: [],
         },
-        tools: generateDemoData(),
+        tools: {
+            avatars: [],
+            props: [],
+            backdrops: [],
+            audios: [],
+            streams: [],
+            config: {
+                width: 1280,
+                height: 800,
+                animateDuration: 500,
+                reactionDuration: 5000,
+                ratio: 16 / 9,
+            }
+        },
         settingPopup: {
             isActive: false,
         },
         preferences: {
             slider: 'opacity',
             isDrawing: true,
-        }
+            text: {
+                fontSize: '20px',
+                fontFamily: 'Josefin Sans',
+            }
+        },
+        hosts: [],
+        reactions: [],
+        viewport: getViewport()
     },
     getters: {
+        url(state) {
+            return state.model ? state.model.fileLocation : 'demo';
+        },
+        objects(state) {
+            return state.board.objects;
+        },
         avatars(state) {
-            return state.board.avatars;
+            return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
+        },
+        props(state) {
+            return state.board.objects.filter(o => o.type === 'prop');
+        },
+        streams(state) {
+            return state.board.objects.filter(o => o.type === 'stream');
+        },
+        texts(state) {
+            return state.board.objects.filter(o => o.type === 'text');
         },
         config(state) {
             return state.tools.config;
@@ -50,10 +91,69 @@ export default {
         },
         currentAvatar(state, getters, rootState) {
             const id = rootState.user.avatarId;
-            return state.board.avatars.find(avatar => avatar.id === id);
+            return state.board.objects.find(o => o.id === id);
+        },
+        stageSize(state, getters) {
+            let width = state.viewport.width;
+            let height = state.viewport.height;
+            let left = 0;
+            let top = 0;
+            const ratio = getters.config.ratio;
+            if (width / height > ratio) {
+                width = height * ratio;
+                left = (window.innerWidth - width) / 2;
+            } else {
+                height = width / ratio;
+                top = (window.innerHeight - height) / 2;
+            }
+            return { width, height, left, top };
         }
     },
     mutations: {
+        SET_MODEL(state, model) {
+            state.model = model
+            if (model) {
+                console.log(model)
+                const media = useAttribute({ value: model }, 'media', true).value;
+                if (media && media.length) {
+                    media.forEach(item => {
+                        item.src = absolutePath(item.src);
+                        if (item.multi) {
+                            item.frames = item.frames.map(src => absolutePath(src))
+                        }
+                        const key = item.type + 's';
+                        if (!state.tools[key]) {
+                            state.tools[key] = [];
+                        }
+                        state.tools[key].push(item)
+                    });
+                } else {
+                    state.preloading = false;
+                }
+                const config = useAttribute({ value: model }, 'config', true).value;
+                if (config) {
+                    state.tools.config.ratio = config.ratio.width / config.ratio.height
+                }
+            }
+        },
+        CLEAN_STAGE(state) {
+            state.model = null;
+            // state.background = null;
+            state.tools.avatars = [];
+            state.tools.props = [];
+            state.tools.backdrops = []
+            state.tools.audios = []
+            state.tools.streams = [];
+            state.board.objects = [];
+            state.board.drawings = [];
+            state.board.texts = [];
+            state.chat.messages = [];
+            state.chat.color = randomColor();
+        },
+        LOAD_DEMO_STAGE(state) {
+            const demoData = generateDemoData();
+            Object.assign(state.tools, demoData);
+        },
         SET_BACKGROUND(state, background) {
             state.background = background
         },
@@ -66,25 +166,27 @@ export default {
         PUSH_CHAT_MESSAGE(state, message) {
             state.chat.messages.push(message)
         },
-        PUSH_AVATARS(state, object) {
-            state.board.avatars.push(object)
+        PUSH_OBJECT(state, object) {
+            deserializeObject(object, true);
+            state.board.objects.push(object)
             attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
-            const avatar = state.board.avatars.find(avatar => avatar.id === id);
+            deserializeObject(object);
+            const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
                 Object.assign(avatar, object);
                 attachPropToAvatar(state, object);
                 return;
             }
-            state.board.avatars.push(object)
+            state.board.objects.push(object)
         },
         MOVE_ATTACHED_PROPS(state, object) {
-            const avatar = state.board.avatars.find(avatar => avatar.id === object.id);
+            const avatar = state.board.objects.find(avatar => avatar.id === object.id);
             if (avatar) {
                 object.attachedProps.forEach(propId => {
-                    const prop = state.board.avatars.find(object => object.id === propId);
+                    const prop = state.board.objects.find(object => object.id === propId);
                     if (prop) {
                         prop.moveSpeed = object.moveSpeed;
                         prop.x = (prop.x - avatar.x) + object.x;
@@ -96,14 +198,14 @@ export default {
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
-            state.board.avatars = state.board.avatars.filter(avatar => avatar.id !== id);
+            state.board.objects = state.board.objects.filter(o => o.id !== id);
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
             const { id } = avatar;
-            let model = state.board.avatars.find(avatar => avatar.id === id);
+            let model = state.board.objects.find(o => o.id === id);
             if (!model) {
-                const length = state.board.avatars.push(avatar)
-                model = state.board.avatars[length - 1];
+                const length = state.board.objects.push(avatar)
+                model = state.board.objects[length - 1];
             }
             model.speak = speak;
             setTimeout(() => {
@@ -123,19 +225,19 @@ export default {
             state.settingPopup = setting;
         },
         BRING_TO_FRONT(state, object) {
-            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
-                state.board.avatars.push(state.board.avatars.splice(index, 1)[0]);
+                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
             } else {
-                state.board.avatars.push(object)
+                state.board.objects.push(object)
             }
         },
         SEND_TO_BACK(state, object) {
-            const index = state.board.avatars.findIndex(avatar => avatar.id === object.id);
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
-                state.board.avatars.unshift(state.board.avatars.splice(index, 1)[0]);
+                state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
             } else {
-                state.board.avatars.push(object)
+                state.board.objects.push(object)
             }
         },
         SET_PREFERENCES(state, preferences) {
@@ -144,9 +246,49 @@ export default {
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
         },
+        PUSH_TEXT(state, text) {
+            state.board.texts.push(text);
+        },
+        PUSH_STREAM_TOOL(state, stream) {
+            state.tools.streams.push(stream);
+        },
+        PUSH_STREAM_HOST(state, stream) {
+            state.hosts.push(stream);
+        },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
+        UPDATE_IS_WRITING(state, isWriting) {
+            state.preferences.isWriting = isWriting;
+        },
+        UPDATE_TEXT_OPTIONS(state, options) {
+            Object.assign(state.preferences.text, options);
+        },
+        PUSH_REACTION(state, reaction) {
+            state.reactions.push({
+                reaction,
+                x: randomRange(150, window.innerWidth) - 300,
+                y: window.innerHeight - 100,
+            });
+            setTimeout(() => {
+                state.reactions.shift();
+            }, state.tools.config.reactionDuration);
+        },
+        UPDATE_VIEWPORT(state, viewport) {
+            state.viewport = viewport;
+        },
+        RESCALE_OBJECTS(state, ratio) {
+            state.board.objects.forEach(object => {
+                object.x = object.x * ratio;
+                object.y = object.y * ratio;
+                object.w = object.w * ratio;
+                object.h = object.h * ratio;
+                recalcFontSize(object, s => s * ratio)
+            })
+        },
+        SET_CHAT_OPACITY(state, opacity) {
+            state.chat.opacity = opacity;
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -162,11 +304,9 @@ export default {
                 console.log(error);
                 commit('SET_STATUS', 'OFFLINE')
             });
-            client.on("message", (topic, rawMessage) => {
-                const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
-                const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
-                dispatch('handleMessage', { topic, message });
-            });
+            mqtt.receiveMessage((payload) => {
+                dispatch('handleMessage', payload);
+            })
         },
         subscribe({ commit }) {
             const topics = {
@@ -174,6 +314,7 @@ export default {
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
+                [TOPICS.REACTION]: { qos: 2 }
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true)
@@ -196,6 +337,9 @@ export default {
                     break;
                 case TOPICS.AUDIO:
                     dispatch('handleAudioMessage', { message });
+                    break;
+                case TOPICS.REACTION:
+                    dispatch('handleReactionMessage', { message });
                     break;
                 default:
                     break;
@@ -233,65 +377,70 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        summonAvatar(action, avatar) {
-            const payload = {
-                type: BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE,
-                avatar: {
-                    id: uuidv4(),
-                    w: 100,
-                    h: 100,
-                    ...avatar,
-                    opacity: 1,
-                }
+        placeObjectOnStage({ commit }, data) {
+            const object = {
+                id: uuidv4(),
+                w: 100,
+                h: 100,
+                ...data,
+                opacity: 1,
             }
-            mqtt.sendMessage(TOPICS.BOARD, payload)
+            const payload = {
+                type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
+                object: serializeObject(object, true)
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload);
+            if (object.type === 'stream') {
+                commit('PUSH_STREAM_HOST', object);
+            }
+            return object;
         },
         shapeObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.MOVE_TO,
-                object,
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object,
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         switchFrame(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SWITCH_FRAME,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
-                object,
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         sendToBack(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SEND_TO_BACK,
-                object,
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         toggleAutoplayFrames(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
         },
         handleBoardMessage({ commit }, { message }) {
             switch (message.type) {
-                case BOARD_ACTIONS.PLACE_AVATAR_ON_STAGE:
-                    commit('PUSH_AVATARS', message.avatar);
+                case BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE:
+                    commit('PUSH_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
                     if (message.object.attachedProps) {
@@ -349,9 +498,39 @@ export default {
             commit('SET_PREFERENCES', { slider })
         },
         addDrawing({ commit, dispatch }, drawing) {
+            drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
             commit('UPDATE_IS_DRAWING', false);
-            dispatch('summonAvatar', drawing);
+            dispatch('placeObjectOnStage', drawing);
+        },
+        addStream({ commit, dispatch }, stream) {
+            stream.type = 'stream';
+            commit('PUSH_STREAM_TOOL', stream);
+            dispatch('placeObjectOnStage', stream)
+        },
+        addText({ commit, dispatch }, text) {
+            text.type = 'text';
+            commit('PUSH_TEXT', text);
+            dispatch('placeObjectOnStage', text)
+        },
+        handleReactionMessage({ commit }, { message }) {
+            commit('PUSH_REACTION', message)
+        },
+        sendReaction(_, reaction) {
+            mqtt.sendMessage(TOPICS.REACTION, reaction);
+        },
+        async loadStage({ commit }, url) {
+            commit('CLEAN_STAGE', null);
+            commit('SET_PRELOADING_STATUS', true);
+            if (url) {
+                const response = await stageGraph.stageList({
+                    fileLocation: url
+                })
+                const model = response.stageList.edges[0]?.node;
+                commit('SET_MODEL', model);
+            } else {
+                commit('LOAD_DEMO_STAGE');
+            }
         }
     },
 };
