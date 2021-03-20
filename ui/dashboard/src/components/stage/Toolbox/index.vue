@@ -1,139 +1,36 @@
 <template>
   <TopBar :tool="tool" />
-  <nav
-    id="toolbox"
-    :class="{ collapsed }"
-    class="panel"
-    @mouseenter="expand"
-    @mouseleave="waitToCollapse"
-  >
-    <div class="panel-heading p-0 m-0 tabs is-toggle is-fullwidth">
-      <ul>
-        <li class="is-active">
-          <a>
-            <span>Stage</span>
-          </a>
-        </li>
-        <li>
-          <a class="button">
-            <span>Scene</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+  <nav id="toolbox" :class="{ collapsed }" class="panel">
     <div class="panel-body">
-      <a
-        @click="changeTool('Backdrop')"
-        :class="{ 'is-active': tool === 'Backdrop' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="backdrop.svg" />
+      <PanelItem name="Backdrop" icon="backdrop.svg" />
+      <PanelItem name="Avatars" icon="avatar.svg" />
+      <PanelItem name="Props" icon="props.svg" />
+      <PanelItem name="Audio" icon="audio.svg" />
+      <PanelItem name="Stream" icon="stream.svg" />
+      <PanelItem name="Draw" icon="draw.svg" />
+      <PanelItem name="Text" icon="text.svg" />
+      <a class="panel-block stage-scene-toggle">
+        <span>
+          <Switch
+            v-model="isStage"
+            checked-label="St"
+            unchecked-label="Sc"
+            className="is-rounded is-success"
+          />
         </span>
-        Backdrop
       </a>
-      <a
-        @click="changeTool('Avatars')"
-        :class="{ 'is-active': tool === 'Avatars' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="avatar.svg" />
-        </span>
-        Avatars
-      </a>
-      <a
-        @click="changeTool('Props')"
-        :class="{ 'is-active': tool === 'Props' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="props.svg" />
-        </span>
-        Props
-      </a>
-      <a
-        @click="changeTool('Audio')"
-        :class="{ 'is-active': tool === 'Audio' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="audio.svg" />
-        </span>
-        Audio
-      </a>
-      <div class="dropdown is-hoverable is-fullwidth">
-        <div class="dropdown-trigger is-fullwidth">
-          <a
-            @click="changeTool('Stream')"
-            :class="{ 'is-active': tool === 'Stream' }"
-            class="panel-block button"
-          >
-            <span class="panel-icon">
-              <Icon src="stream.svg" />
-            </span>
-            <span class="is-fullwidth">Streams</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </span>
-          </a>
-          <span />
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a href="#" class="dropdown-item button" @click="createStream()">
-              Add New
-            </a>
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="changeTool('Stream')"
-            >
-              Manage
-            </a>
-          </div>
-        </div>
-      </div>
-      <a
-        @click="changeTool('Draw')"
-        :class="{ 'is-active': tool === 'Draw' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="draw.svg" />
-        </span>
-        <span class="is-fullwidth">Draw</span>
-      </a>
-      <a
-        @click="changeTool('Text')"
-        :class="{ 'is-active': tool === 'Text' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="text.svg" />
-        </span>
-        Text
-      </a>
-    </div>
-    <div class="panel-block">
-      <button class="button is-fullwidth is-block">
-        <span class="icon">
-          <Icon src="savescene.svg" />
-        </span>
-        <span>Save Scene</span>
-      </button>
     </div>
   </nav>
 </template>
 
 <script>
-import { ref } from "vue";
+import { provide, ref } from "vue";
 import TopBar from "./TopBar";
-import { useStore } from "vuex";
-import Icon from "@/components/Icon";
+import PanelItem from "./PanelItem";
+import Switch from "@/components/form/Switch";
 
 export default {
-  components: { TopBar, Icon },
+  components: { TopBar, PanelItem, Switch },
   setup: () => {
     const tool = ref();
     const changeTool = (newTool) => {
@@ -143,7 +40,10 @@ export default {
         tool.value = newTool;
       }
     };
-    const collapsed = ref(false);
+    provide("tool", tool);
+    provide("changeTool", changeTool);
+
+    const collapsed = ref(true);
     const timer = ref();
     const expand = () => {
       collapsed.value = false;
@@ -155,14 +55,7 @@ export default {
 
     waitToCollapse();
 
-    const store = useStore();
-
-    const createStream = () => {
-      changeTool("Stream");
-      store.dispatch("stage/openSettingPopup", {
-        type: "CreateStream",
-      });
-    };
+    const isStage = ref(true);
 
     return {
       tool,
@@ -170,7 +63,7 @@ export default {
       collapsed,
       expand,
       waitToCollapse,
-      createStream,
+      isStage,
     };
   },
 };
@@ -190,6 +83,24 @@ export default {
 
   .panel-icon {
     width: 1.5em;
+    filter: grayscale(100%);
+  }
+  .panel-block.is-active,
+  .panel-block:hover {
+    border: none;
+    .panel-icon {
+      filter: none;
+      transform: scale(1.5);
+    }
+  }
+  .stage-scene-toggle {
+    height: 64px;
+    > span {
+      transform: rotate(90deg);
+      position: absolute;
+      right: -10px;
+      bottom: 16px;
+    }
   }
 
   &.collapsed {
@@ -210,10 +121,6 @@ export default {
     z-index: 100;
   }
 
-  .panel-block button.is-active {
-    border-left-width: 2px;
-    border-left-style: solid;
-  }
   .panel-body {
     max-height: calc(100vh - 230px);
     overflow-y: auto;
