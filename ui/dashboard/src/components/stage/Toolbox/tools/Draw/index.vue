@@ -77,7 +77,7 @@
   <template v-else>
     <div @click="create" class="is-pulled-left">
       <div class="icon is-large">
-        <i class="fas fa-plus fa-2x"></i>
+        <Icon src="new.svg" size="36" />
       </div>
       <span class="tag is-light is-block">New</span>
     </div>
@@ -93,9 +93,10 @@ import { useStore } from "vuex";
 import { useDrawing } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { Skeleton, ColorPicker },
+  components: { Skeleton, ColorPicker, Icon },
   setup: () => {
     const store = useStore();
     const drawings = computed(() => store.state.stage.board.drawings);

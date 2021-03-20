@@ -12,13 +12,13 @@
     </a>
     <a class="panel-block has-text-info" @click="bringToFront">
       <span class="panel-icon">
-        <i class="fas fa-angle-double-up has-text-info"></i>
+        <Icon src="bring-to-front.svg" />
       </span>
       <span>Bring to front</span>
     </a>
     <a class="panel-block has-text-info" @click="sendToBack">
       <span class="panel-icon">
-        <i class="fas fa-angle-double-down has-text-info"></i>
+        <Icon src="send-to-back.svg" />
       </span>
       <span>Send to back</span>
     </a>
@@ -28,21 +28,21 @@
       @click="changeNickname"
     >
       <span class="panel-icon">
-        <i class="fas fa-comment-alt has-text-info"></i>
+        <Icon src="change-nickname.svg" />
       </span>
       <span>Change your nickname</span>
     </a>
     <div class="field has-addons menu-group">
       <p class="control menu-group-title">
         <span class="panel-icon pt-1">
-          <i class="fas fa-sliders-h has-text-info"></i>
+          <Icon src="rotation-slider.svg" />
         </span>
         <span class="has-text-info">Rotation</span>
       </p>
       <p class="control menu-group-item">
         <button class="button is-light" @click="rotate(+45)">
           <span class="panel-icon">
-            <i class="fas fa-redo"></i>
+            <Icon src="45degpositive.svg" />
           </span>
           <span>+ 45deg</span>
         </button>
@@ -50,7 +50,7 @@
       <p class="control menu-group-item">
         <button class="button is-light" @click="rotate(-45)">
           <span class="panel-icon">
-            <i class="fas fa-undo"></i>
+            <Icon src="45degnegative.svg" />
           </span>
           <span>- 45deg</span>
         </button>
@@ -59,7 +59,7 @@
     <div class="field has-addons menu-group">
       <p class="control menu-group-title">
         <span class="panel-icon pt-1">
-          <i class="fas fa-sliders-h has-text-info"></i>
+          <Icon src="rotation-slider.svg" />
         </span>
         <span class="has-text-info">Slider</span>
       </p>
@@ -99,20 +99,15 @@
     </div>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
-        <i class="fas fa-trash has-text-danger"></i>
+        <Icon src="delete.svg" />
       </span>
       <span>Delete</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
         <button class="button is-light">
-          <i
-            class="fas fa-3x"
-            :class="{
-              'fa-play': !object.autoplayFrames,
-              'fa-pause': object.autoplayFrames,
-            }"
-          ></i>
+          <i v-if="object.autoplayFrames" class="fas fa-3x fa-pause"></i>
+          <Icon v-else src="play.svg" />
         </button>
       </p>
       <p
@@ -132,10 +127,12 @@
 <script>
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Icon from "@/components/Icon";
 
 export default {
   props: ["object", "closeMenu", "active"],
   emits: ["update:active"],
+  components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
 

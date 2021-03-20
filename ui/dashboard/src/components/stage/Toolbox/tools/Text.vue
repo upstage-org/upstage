@@ -7,7 +7,7 @@
   <template v-if="!isWriting">
     <div @click="createText" class="text-tool">
       <div class="icon is-large">
-        <i class="fas fa-plus fa-2x"></i>
+        <Icon src="new.svg" size="36" />
       </div>
       <span class="tag is-light is-block">New</span>
     </div>
@@ -95,11 +95,12 @@ import Dropdown from "@/components/form/Dropdown";
 import Field from "@/components/form/Field";
 import ColorPicker from "@/components/form/ColorPicker";
 import Skeleton from "@/components/objects/Skeleton";
+import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";
 
 export default {
-  components: { Dropdown, Field, ColorPicker, Skeleton },
+  components: { Dropdown, Field, ColorPicker, Skeleton, Icon },
   setup: () => {
     const store = useStore();
     const isWriting = computed(() => store.state.stage.preferences.isWriting);

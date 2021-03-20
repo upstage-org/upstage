@@ -7,9 +7,7 @@ let configs = {
     AXIOS_TIMEOUT: 10000,
     ACCESS_TOKEN_KEY: 'access_token',
     MQTT_CONNECTION: {
-        host: '128.199.117.17',
-        port: 9001,
-        endpoint: '/mqtt',
+        url: 'wss://svc.upstage.org.nz:9001/mqtt',
         username: 'performance',
         password: 'z48FCTsJVEUkYmtUw5S9',
         clean: true, // Reserved session
