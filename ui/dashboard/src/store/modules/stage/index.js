@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
 import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, deserializeObject, recalcFontSize, serializeObject } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -168,7 +168,6 @@ export default {
         PUSH_OBJECT(state, object) {
             deserializeObject(object, true);
             state.board.objects.push(object)
-            attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
@@ -176,24 +175,9 @@ export default {
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
                 Object.assign(avatar, object);
-                attachPropToAvatar(state, object);
                 return;
             }
             state.board.objects.push(object)
-        },
-        MOVE_ATTACHED_PROPS(state, object) {
-            const avatar = state.board.objects.find(avatar => avatar.id === object.id);
-            if (avatar) {
-                object.attachedProps.forEach(propId => {
-                    const prop = state.board.objects.find(object => object.id === propId);
-                    if (prop) {
-                        prop.moveSpeed = object.moveSpeed;
-                        prop.x = (prop.x - avatar.x) + object.x;
-                        prop.y = (prop.y - avatar.y) + object.y;
-                        attachPropToAvatar(state, prop);
-                    }
-                })
-            }
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
@@ -439,9 +423,6 @@ export default {
                     commit('PUSH_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
-                    if (message.object.attachedProps) {
-                        commit('MOVE_ATTACHED_PROPS', message.object);
-                    }
                     commit('UPDATE_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.DESTROY:
