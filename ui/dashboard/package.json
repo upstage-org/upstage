@@ -16,6 +16,7 @@
     "bulma-slider": "^2.0.4",
     "bulma-switch": "^2.0.0",
     "bulma-toast": "^2.2.0",
+    "bulma-tooltip": "^3.0.2",
     "core-js": "^3.6.5",
     "emoji-picker-element": "^1.4.0",
     "graphql": "^15.5.0",

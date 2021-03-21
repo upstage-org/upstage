@@ -59,21 +59,21 @@
     <g
        transform="matrix(0.26458333,0,0,0.26458333,155.10567,-5.5736825)"
        id="g606">
-      <rect
+      <rect fill="#f14668"
          height="2.8"
          width="11.4"
          class="st9"
          y="503.39999"
          x="-66"
          id="rect598" />
-      <rect
+      <rect fill="#f14668"
          height="12.3"
          width="2.5"
          class="st9"
          y="491.10001"
          x="-54.799999"
          id="rect600" />
-      <rect
+      <rect fill="#f14668"
          height="12.3"
          width="2.5"
          class="st9"
@@ -81,6 +81,7 @@
          x="-68.400002"
          id="rect602" />
       <polygon
+         fill="#f14668"
          points="-52.3,489.3 -52.3,486.5 -58.5,486.5 -58.5,483.1 -62.2,483.1 -62.2,486.5 -68.4,486.5 -68.4,489.3 "
          class="st9"
          id="polygon604" />
