@@ -8,7 +8,10 @@
     @click="setBackground(background)"
   >
     <Image v-if="background.src" :src="background.src" />
-    <Image v-else :src="dragghost" />
+    <div v-else>
+      <div class="icon is-large"><i class="fas fa-ban fa-2x"></i></div>
+      <span class="tag is-light is-block">Clear</span>
+    </div>
   </div>
 </template>
 
@@ -16,7 +19,6 @@
 import Image from "@/components/Image";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import dragghost from "@/assets/dragghost.png";
 
 export default {
   components: { Image },
@@ -36,7 +38,6 @@ export default {
       backgrounds,
       setBackground,
       currentBackground,
-      dragghost,
     };
   },
 };

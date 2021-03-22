@@ -55,8 +55,8 @@ export default {
       if (e.clientX > 0 && e.clientY > 0) {
         store.dispatch("stage/placeObjectOnStage", {
           ...avatar,
-          x: e.clientX - 50,
-          y: e.clientY - 50,
+          x: e.clientX - 50 - stageSize.value.left,
+          y: e.clientY - 50 - stageSize.value.top,
         });
       }
     };
@@ -84,7 +84,7 @@ export default {
 
     watch(background, () => {
       anime({
-        targets: "#live-stage",
+        targets: "#board",
         opacity: [0, 1],
         duration: 5000,
       });
