@@ -49,8 +49,8 @@ export default {
   margin: auto;
   text-align: center;
   width: fit-content;
-  background-color: rgba($color: white, $alpha: 0.5);
   overflow: visible;
+  z-index: 2;
   .card-content {
     padding: 0;
     padding-top: 12px;
@@ -76,7 +76,11 @@ export default {
       &:hover,
       &.active {
         cursor: pointer;
-        background-color: $primary;
+        transform: scale(1.2);
+        img {
+          -webkit-filter: drop-shadow(5px 5px 5px $dark);
+          filter: drop-shadow(5px 5px 5px $dark);
+        }
       }
     }
   }

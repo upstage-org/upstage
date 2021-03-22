@@ -94,7 +94,7 @@ export default {
     }
   }
   .stage-scene-toggle {
-    height: 64px;
+    height: 62px;
     > span {
       transform: rotate(90deg);
       position: absolute;
