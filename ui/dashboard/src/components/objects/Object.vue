@@ -13,7 +13,7 @@
       v-model:active="active"
       :object="object"
     />
-    <Topping :position="position" :object="object" />
+    <Topping :position="position" :object="object" v-model:active="active" />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"

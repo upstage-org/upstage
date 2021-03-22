@@ -6,8 +6,33 @@
       left: position.x + position.w / 2 + 'px',
     }"
   >
-    <i
+    <div
       v-show="active"
+      :style="{
+        position: 'absolute',
+        width: '100px',
+        left: position.w / 2 - 96 + 'px',
+      }"
+      @mousedown.stop="keepActive"
+      @mouseover.stop="keepActive"
+      @mouseup.stop="keepActive"
+    >
+      <button class="button is-rounded is-small">
+        <i class="fas fa-border-none"></i>
+      </button>
+      <button
+        class="button is-rounded is-small"
+        :class="{ 'is-primary': object.liveAction }"
+        @click="toggleLiveAction"
+      >
+        <i class="fas fa-lightbulb"></i>
+      </button>
+      <button class="button is-rounded is-small" @click="deleteObject">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <i
+      v-show="chosen"
       class="marker fas fa-map-marker-alt fa-lg has-text-warning"
     ></i>
     <transition @enter="enter" @leave="leave" :css="false" appear>
@@ -33,10 +58,11 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 export default {
-  props: ["position", "object"],
-  setup: (props) => {
+  props: ["position", "object", "active"],
+  emits: ["update:active"],
+  setup: (props, { emit }) => {
     const store = useStore();
-    const active = computed(
+    const chosen = computed(
       () => props.object.id === store.state.user.avatarId
     );
 
@@ -60,7 +86,22 @@ export default {
       });
     };
 
-    return { active, enter, leave };
+    const keepActive = () => {
+      emit("update:active", true);
+    };
+
+    const toggleLiveAction = () => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        liveAction: !props.object.liveAction,
+      });
+    };
+
+    const deleteObject = () => {
+      store.dispatch("stage/deleteObject", props.object);
+    };
+
+    return { chosen, enter, leave, deleteObject, keepActive, toggleLiveAction };
   },
 };
 </script>

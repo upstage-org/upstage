@@ -1,6 +1,6 @@
 <template>
   <button
-    class="button no-shadow is-light is-small is-rounded reaction"
+    class="button is-small is-rounded reaction mx-1"
     v-for="react in reactions"
     :key="react"
     @click="sendReaction(react)"
@@ -11,7 +11,7 @@
     <emoji-input
       :picker-only="true"
       :style="{ height: '30px' }"
-      className="no-shadow is-white"
+      className="is-white"
       @update:model-value="sendCustomReaction"
     >
       <template #icon>
@@ -93,10 +93,5 @@ export default {
 <style lang="scss" scoped>
 .flying-reactions {
   position: fixed;
-}
-.reaction {
-  width: 16px;
-  margin-left: 4px;
-  margin-right: 4px;
 }
 </style>
