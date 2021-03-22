@@ -13,7 +13,7 @@
       v-model:active="active"
       :object="object"
     />
-    <Topping :position="position" :object="object" />
+    <Topping :position="position" :object="object" v-model:active="active" />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -32,8 +32,11 @@
           v-model:active="active"
           :draggable="true"
           :resizable="true"
+          @dragging="dragging"
           @drag-start="dragStart"
           @drag-end="dragEnd"
+          @resizing="resizing"
+          @resize-start="resizeStart"
           @resize-end="resizeEnd"
         >
           <div
@@ -114,7 +117,7 @@ export default {
       props.object,
       () => {
         const { x, y, h, w, moveSpeed, type, isPlaying } = props.object;
-        if (type === "stream" && isPlaying && isDragging.value) {
+        if ((type === "stream" && isPlaying) || isDragging.value) {
           return;
         }
         animation.value?.pause(true);
@@ -142,6 +145,7 @@ export default {
 
     const dragEnd = (e) => {
       if (
+        !props.object.liveAction &&
         e.x !== beforeDragPosition.value.x &&
         e.y !== beforeDragPosition.value.y
       ) {
@@ -154,12 +158,36 @@ export default {
       }
       isDragging.value = false;
     };
+    const dragging = (e) => {
+      if (props.object.liveAction) {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          ...e,
+        });
+        beforeDragPosition.value = {
+          x: position.x,
+          y: position.y,
+        };
+      }
+    };
 
+    const resizeStart = () => {
+      isDragging.value = true;
+    };
     const resizeEnd = (e) => {
       store.dispatch("stage/shapeObject", {
         ...props.object,
         ...e,
       });
+      isDragging.value = false;
+    };
+    const resizing = (e) => {
+      if (props.object.liveAction) {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          ...e,
+        });
+      }
     };
 
     const deleteObject = () => {
@@ -213,8 +241,11 @@ export default {
       el,
       loggedIn,
       print,
+      dragging,
       dragStart,
       dragEnd,
+      resizing,
+      resizeStart,
       resizeEnd,
       active,
       position,

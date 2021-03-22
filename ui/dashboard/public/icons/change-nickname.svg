@@ -59,21 +59,21 @@
     <g
        transform="matrix(0.26458333,0,0,0.26458333,132.90742,40.990288)"
        id="g690">
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="1.3"
          class="st11"
          y="265.60001"
          x="-43.5"
          id="rect670" />
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="1.3"
          class="st11"
          y="265.60001"
          x="-78.5"
          id="rect672" />
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="1.3"
          class="st11"
@@ -81,38 +81,39 @@
          x="-43.5"
          id="rect674" />
       <polygon
+         fill="#3099da"
          points="-56.5,284.1 -55.2,284.1 -55.2,282.7 -56.5,282.7 -56.5,281.3 -57.9,281.3 -57.9,279.1 -57.9,277.6 -59.2,277.6 -77.2,277.6 -77.2,279.1 -59.2,279.1 -59.2,281.3 -57.9,281.3 -57.9,282.7 -56.5,282.7 "
          class="st11"
          id="polygon676" />
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="1.3"
          class="st11"
          y="285.5"
          x="-51.099998"
          id="rect678" />
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="1.3"
          class="st11"
          y="276.20001"
          x="-78.5"
          id="rect680" />
-      <rect
+      <rect fill="#3099da"
          height="9.1000004"
          width="1.3"
          class="st11"
          y="267"
          x="-79.900002"
          id="rect682" />
-      <rect
+      <rect fill="#3099da"
          height="9.1000004"
          width="1.3"
          class="st11"
          y="267"
          x="-42.099998"
          id="rect684" />
-      <rect
+      <rect fill="#3099da"
          height="1.4"
          width="33.799999"
          class="st11"
@@ -120,6 +121,7 @@
          x="-77.199997"
          id="rect686" />
       <polygon
+         fill="#3099da"
          points="-52.5,279 -43.5,279 -43.5,277.6 -53.8,277.6 -53.8,281.3 -52.5,281.3 -52.5,284.1 -55.2,284.1 -55.2,285.5 -52.5,285.5 -51.3,285.5 -51.1,285.5 -51.1,281.3 -52.5,281.3 "
          class="st11"
          id="polygon688" />
