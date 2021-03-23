@@ -2,10 +2,10 @@
   <canvas
     v-show="isDrawing"
     ref="el"
-    width="3840"
-    height="2160"
+    :width="stageSize.width"
+    :height="stageSize.height"
     class="drawing"
-    :style="{ cursor }"
+    :style="{ cursor, top: stageSize.top + 'px', left: stageSize.left + 'px' }"
   >
     Your browser does not support the HTML5 canvas tag.
   </canvas>
@@ -99,6 +99,7 @@ export default {
   components: { Skeleton, ColorPicker, Icon },
   setup: () => {
     const store = useStore();
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const drawings = computed(() => store.state.stage.board.drawings);
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
@@ -145,6 +146,7 @@ export default {
       toggleErase,
       mode,
       cursor,
+      stageSize,
     };
   },
 };
@@ -155,14 +157,10 @@ export default {
 
 .drawing {
   position: fixed;
-  top: 0;
-  left: 0vh;
   z-index: 1000;
-  background-color: rgba($color: white, $alpha: 0.5);
-  backdrop-filter: blur(5px);
+  background-color: rgba($color: white, $alpha: 0.8);
 }
 .drawing-tool {
-  background-color: rgba($color: white, $alpha: 0.5);
   z-index: 1001;
   position: relative;
   vertical-align: top;
