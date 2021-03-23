@@ -1,10 +1,10 @@
 <template>
   <canvas
-    v-show="isDrawing"
     ref="el"
+    v-show="isDrawing"
+    class="drawing"
     :width="stageSize.width"
     :height="stageSize.height"
-    class="drawing"
     :style="{ cursor, top: stageSize.top + 'px', left: stageSize.left + 'px' }"
   >
     Your browser does not support the HTML5 canvas tag.
@@ -55,7 +55,7 @@
       </div>
       <span class="tag is-light is-block">Undo</span>
     </div>
-    <div class="drawing-tool" @click="clearCanvas">
+    <div class="drawing-tool" @click="clearCanvas(true)">
       <div class="icon is-large">
         <i class="fas fa-broom fa-2x"></i>
       </div>
@@ -88,9 +88,9 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
-import { useDrawing } from "./composable";
+import useDrawing from "./useDrawing";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
@@ -104,14 +104,17 @@ export default {
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
     });
-    const color = ref("#000");
-    const size = ref(10);
-    const mode = ref("draw");
-    const { el, cursor, cropImageFromCanvas, clearCanvas, undo } = useDrawing(
+    const {
+      el,
+      cursor,
+      cropImageFromCanvas,
+      clearCanvas,
+      undo,
+      toggleErase,
       color,
       size,
-      mode
-    );
+      mode,
+    } = useDrawing();
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
     };
@@ -122,13 +125,6 @@ export default {
       const drawing = cropImageFromCanvas();
       if (drawing) {
         store.dispatch("stage/addDrawing", drawing);
-      }
-    };
-    const toggleErase = () => {
-      if (mode.value === "erase") {
-        mode.value = "draw";
-      } else {
-        mode.value = "erase";
       }
     };
 
