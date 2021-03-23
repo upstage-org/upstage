@@ -106,5 +106,6 @@ export default {
   position: fixed;
   transform: rotate(270deg) translateX(-100%);
   transform-origin: left;
+  z-index: 20;
 }
 </style>
