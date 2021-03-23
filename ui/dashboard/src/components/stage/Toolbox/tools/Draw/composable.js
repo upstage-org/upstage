@@ -1,4 +1,4 @@
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import * as canvasUtil from '@/utils/canvas';
 
 const eraseDot = (ctx, { x, y, size }) => {
@@ -49,7 +49,7 @@ const execute = (ctx, command) => {
     }
 }
 
-export default () => {
+export const useDrawable = () => {
     const color = ref("#000");
     const size = ref(10);
     const mode = ref("draw");
@@ -87,11 +87,9 @@ export default () => {
             }
             execute(ctx, command)
         }
-        if (res == "up" || res == "out") {
-            data.flag = false;
-        }
         if (res == "up") {
-            data.history.push({
+            data.flag = false;
+            data.history = data.history.concat({
                 type: mode.value,
                 size: size.value,
                 color: color.value,
@@ -175,7 +173,6 @@ export default () => {
         const ctx = clearCanvas();
         data.history.pop();
         data.history.forEach(command => execute(ctx, command))
-        console.log(data.history)
         return ctx;
     }
 
@@ -210,5 +207,20 @@ export default () => {
         }
     };
 
-    return { el, cursor, color, size, mode, cropImageFromCanvas, clearCanvas, undo, toggleErase }
+    return { el, cursor, color, size, mode, cropImageFromCanvas, clearCanvas, undo, toggleErase, data }
+}
+
+export const useDrawing = (commands) => {
+    const el = ref(null);
+
+    watch(commands, () => {
+        if (!el.value) return;
+        const { value: canvas } = el;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        commands.value.forEach(command => execute(ctx, command))
+        return ctx;
+    })
+
+    return { el }
 }
