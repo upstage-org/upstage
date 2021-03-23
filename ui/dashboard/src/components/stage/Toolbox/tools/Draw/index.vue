@@ -90,7 +90,7 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import useDrawing from "./useDrawing";
+import { useDrawable } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
@@ -114,7 +114,7 @@ export default {
       color,
       size,
       mode,
-    } = useDrawing();
+    } = useDrawable();
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
     };
