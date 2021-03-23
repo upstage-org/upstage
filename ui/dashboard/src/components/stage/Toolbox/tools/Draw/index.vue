@@ -1,11 +1,11 @@
 <template>
   <canvas
-    v-show="isDrawing"
     ref="el"
-    width="3840"
-    height="2160"
+    v-show="isDrawing"
     class="drawing"
-    :style="{ cursor }"
+    :width="stageSize.width"
+    :height="stageSize.height"
+    :style="{ cursor, top: stageSize.top + 'px', left: stageSize.left + 'px' }"
   >
     Your browser does not support the HTML5 canvas tag.
   </canvas>
@@ -55,7 +55,7 @@
       </div>
       <span class="tag is-light is-block">Undo</span>
     </div>
-    <div class="drawing-tool" @click="clearCanvas">
+    <div class="drawing-tool" @click="clearCanvas(true)">
       <div class="icon is-large">
         <i class="fas fa-broom fa-2x"></i>
       </div>
@@ -88,9 +88,9 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
-import { useDrawing } from "./composable";
+import useDrawing from "./useDrawing";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
@@ -99,18 +99,22 @@ export default {
   components: { Skeleton, ColorPicker, Icon },
   setup: () => {
     const store = useStore();
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const drawings = computed(() => store.state.stage.board.drawings);
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
     });
-    const color = ref("#000");
-    const size = ref(10);
-    const mode = ref("draw");
-    const { el, cursor, cropImageFromCanvas, clearCanvas, undo } = useDrawing(
+    const {
+      el,
+      cursor,
+      cropImageFromCanvas,
+      clearCanvas,
+      undo,
+      toggleErase,
       color,
       size,
-      mode
-    );
+      mode,
+    } = useDrawing();
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
     };
@@ -121,13 +125,6 @@ export default {
       const drawing = cropImageFromCanvas();
       if (drawing) {
         store.dispatch("stage/addDrawing", drawing);
-      }
-    };
-    const toggleErase = () => {
-      if (mode.value === "erase") {
-        mode.value = "draw";
-      } else {
-        mode.value = "erase";
       }
     };
 
@@ -145,6 +142,7 @@ export default {
       toggleErase,
       mode,
       cursor,
+      stageSize,
     };
   },
 };
@@ -155,14 +153,10 @@ export default {
 
 .drawing {
   position: fixed;
-  top: 0;
-  left: 0vh;
   z-index: 1000;
-  background-color: rgba($color: white, $alpha: 0.5);
-  backdrop-filter: blur(5px);
+  background-color: rgba($color: white, $alpha: 0.8);
 }
 .drawing-tool {
-  background-color: rgba($color: white, $alpha: 0.5);
   z-index: 1001;
   position: relative;
   vertical-align: top;

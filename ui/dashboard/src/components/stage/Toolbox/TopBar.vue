@@ -76,7 +76,6 @@ export default {
       &:hover,
       &.active {
         cursor: pointer;
-        transform: scale(1.2);
         img {
           -webkit-filter: drop-shadow(5px 5px 5px $dark);
           filter: drop-shadow(5px 5px 5px $dark);
