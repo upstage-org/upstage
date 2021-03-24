@@ -6,7 +6,7 @@
         <div class="card">
           <a href="#" class="card-header-icon" @click="close">
             <span class="icon">
-              <i class="fas fa-times" aria-hidden="true"></i>
+              <Icon src="close.svg" />
             </span>
           </a>
           <component :is="type" @close="close" />
@@ -21,9 +21,10 @@ import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import Chat from "./settings/Chat";
 import CreateStream from "./settings/CreateStream";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { Chat, CreateStream },
+  components: { Chat, CreateStream, Icon },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);

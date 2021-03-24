@@ -7,13 +7,7 @@
         @click="collapsed = !collapsed"
       >
         <span class="icon">
-          <i
-            class="fas"
-            :class="{
-              'fa-window-minimize': !collapsed,
-              'fa-window-maximize': collapsed,
-            }"
-          ></i>
+          <Icon src="minimize.svg" size="32" class="mt-4" />
         </span>
       </button>
       <button
@@ -21,7 +15,7 @@
         @click="openChatSetting"
       >
         <span class="icon">
-          <i class="fas fa-cog"></i>
+          <Icon src="setting.svg" size="32" />
         </span>
       </button>
     </div>
@@ -75,10 +69,11 @@ import { computed, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 import EmojiInput from "@/components/form/EmojiInput";
+import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
 
 export default {
-  components: { EmojiInput, Reaction },
+  components: { EmojiInput, Reaction, Icon },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -151,9 +146,9 @@ export default {
         display: none;
       }
     }
-  .card-footer-item {
-    padding-top: 6px;
-  }
+    .card-footer-item {
+      padding-top: 6px;
+    }
   }
 
   .message {

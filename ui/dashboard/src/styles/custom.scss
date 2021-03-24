@@ -20,10 +20,6 @@ nav {
     &.shadow:hover {
         @include boxShadow;
     }
-    &:not(.is-large) .icon {
-        width: 16px !important;
-        height: 16px !important;
-    }
 }
 .card, .panel, .modal-card {
     border-top: $green-bar

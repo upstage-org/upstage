@@ -76,9 +76,13 @@ export default {
       &:hover,
       &.active {
         cursor: pointer;
+        background-color: lightgray;
         img {
           -webkit-filter: drop-shadow(5px 5px 5px $dark);
           filter: drop-shadow(5px 5px 5px $dark);
+        }
+        .tag {
+          background-color: transparent;
         }
       }
     }
