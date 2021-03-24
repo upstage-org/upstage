@@ -45,31 +45,31 @@
       }"
     >
       <div class="icon is-large">
-        <i class="fas fa-eraser fa-2x"></i>
+        <Icon size="36" src="erase.svg" />
       </div>
       <span class="tag is-light is-block">Erase</span>
     </div>
     <div class="drawing-tool" @click="undo">
       <div class="icon is-large">
-        <i class="fas fa-undo fa-2x"></i>
+        <Icon size="36" src="undo.svg" />
       </div>
       <span class="tag is-light is-block">Undo</span>
     </div>
     <div class="drawing-tool" @click="clearCanvas(true)">
       <div class="icon is-large">
-        <i class="fas fa-broom fa-2x"></i>
+        <Icon size="36" src="clear.svg" />
       </div>
       <span class="tag is-light is-block">Clear</span>
     </div>
     <div class="drawing-tool" @click="save">
       <div class="icon is-large">
-        <i class="fas fa-save fa-2x"></i>
+        <Icon size="36" src="save.svg" />
       </div>
       <span class="tag is-light is-block">Save</span>
     </div>
     <div class="drawing-tool" @click="cancel">
       <div class="icon is-large">
-        <i class="fas fa-times fa-2x"></i>
+        <Icon size="36" src="cancel.svg" />
       </div>
       <span class="tag is-light is-block">Cancel</span>
     </div>
@@ -149,8 +149,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/mixins.scss";
-
 .drawing {
   position: fixed;
   z-index: 1000;
@@ -178,20 +176,5 @@ export default {
   margin: auto;
   background-color: black;
   border-radius: 100%;
-}
-.fas.fa-eraser {
-  @include gradientText(#ffffff, #ff6b6b);
-}
-.fas.fa-undo {
-  @include gradientText(#3498db, #2c3e50);
-}
-.fas.fa-broom {
-  @include gradientText(#ffb347, #a83279);
-}
-.fas.fa-save {
-  @include gradientText(#6441a5, #2a0845);
-}
-.fas.fa-plus {
-  @include gradientText(#30ac45, #6fb1fc);
 }
 </style>

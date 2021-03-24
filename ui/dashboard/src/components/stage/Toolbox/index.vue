@@ -75,11 +75,10 @@ export default {
   width: 15%;
   min-width: 200px;
   left: 16px;
-  top: 120px;
-  max-height: calc(100% - 130px);
   background-color: white;
   opacity: 0.9;
   transition: transform 0.5s;
+  top: 120px;
 
   .panel-icon {
     width: 1.5em;
@@ -119,20 +118,6 @@ export default {
     left: 216px;
     top: initial;
     z-index: 100;
-  }
-
-  .panel-body {
-    max-height: calc(100vh - 230px);
-    overflow-y: auto;
-  }
-
-  @media screen and (max-height: 500px) {
-    height: calc(100% - 130px);
-
-    .panel-body {
-      max-height: calc(100% - 96px);
-      overflow-y: auto;
-    }
   }
 }
 </style>

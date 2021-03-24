@@ -15,7 +15,9 @@
       @update:model-value="sendCustomReaction"
     >
       <template #icon>
-        <i class="fas fa-plus"></i>
+        <span class="icon">
+          <Icon src="new.svg" />
+        </span>
       </template>
     </emoji-input>
   </span>
@@ -41,10 +43,11 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
-import EmojiInput from "@/components/form/EmojiInput.vue";
+import EmojiInput from "@/components/form/EmojiInput";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { EmojiInput },
+  components: { EmojiInput, Icon },
   props: ["customEmoji"],
   setup: () => {
     const store = useStore();

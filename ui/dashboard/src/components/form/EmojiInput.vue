@@ -21,7 +21,9 @@
       @click="isPicking = !isPicking"
     >
       <slot name="icon">
-        <i class="far fa-smile"></i>
+        <span class="icon ml-0" v-if="!loading">
+          <Icon size="48" src="emoji.svg" />
+        </span>
       </slot>
     </button>
     <transition :css="false" @enter="pickerEnter">
@@ -34,10 +36,12 @@
 import "emoji-picker-element";
 import { ref } from "vue";
 import anime from "animejs";
+import Icon from "@/components/Icon";
 
 export default {
   props: ["loading", "modelValue", "pickerOnly", "style", "className"],
   emits: ["update:modelValue"],
+  components: { Icon },
   setup: (props, { emit }) => {
     const input = ref();
     const isPicking = ref(false);
