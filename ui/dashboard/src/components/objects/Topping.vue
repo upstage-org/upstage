@@ -7,6 +7,7 @@
     }"
   >
     <div
+      class="quick-action"
       v-show="active"
       :style="{
         position: 'absolute',
@@ -137,6 +138,9 @@ export default {
   -webkit-animation: spin 2s linear infinite;
   -moz-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
+}
+.quick-action button {
+  width: 16px;
 }
 @-moz-keyframes spin {
   100% {
