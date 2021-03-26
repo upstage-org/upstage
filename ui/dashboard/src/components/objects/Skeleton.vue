@@ -72,7 +72,7 @@ export default {
 <style>
 .is-multi {
   position: relative;
-  left: -20px;
+  left: -10px;
   top: 30px;
 }
 </style>

@@ -1,36 +1,69 @@
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import * as canvasUtil from '@/utils/canvas';
 
-export const useDrawing = (color, size, mode) => {
+const eraseDot = (ctx, { x, y, size }) => {
+    ctx.clearRect(x, y, size, size);
+}
+
+const drawDot = (ctx, { x, y, size, color }) => {
+    ctx.beginPath();
+    ctx.arc(x, y, size / 2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+};
+
+const draw = (ctx, { fromX, fromY, x, y, size, color }) => {
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(x, y);
+    ctx.strokeStyle = color;
+    ctx.lineWidth = size;
+    ctx.stroke();
+    ctx.closePath();
+    drawDot(ctx, { x: fromX, y: fromY, size, color });
+};
+
+const execute = (ctx, command) => {
+    const { type, size, color, lines } = command;
+    if (lines && lines.length) {
+        if (type === 'draw') {
+            lines.forEach(({ fromX, fromY, x, y }) => draw(ctx, {
+                fromX, fromY, x, y, size, color
+            }))
+        } else {
+            lines.forEach(({ x, y }) => eraseDot(ctx, {
+                x, y, size
+            }))
+        }
+    } else {
+        if (type === 'draw') {
+            if (command.fromX && command.fromY) {
+                draw(ctx, command)
+            } else {
+                drawDot(ctx, command)
+            }
+        } else {
+            eraseDot(ctx, command);
+        }
+    }
+}
+
+export const useDrawable = () => {
+    const color = ref("#000");
+    const size = ref(10);
+    const mode = ref("draw");
     const el = ref(null);
+
     const data = reactive({
-        history: []
+        history: [],
+        lines: []
     });
 
     const cropImageFromCanvas = () => {
         return canvasUtil.cropImageFromCanvas(el.value);
     };
 
-    const eraseDot = (ctx) => {
-        ctx.clearRect(data.currX, data.currY, size.value, size.value);
-    }
-    const drawDot = (ctx) => {
-        ctx.beginPath();
-        ctx.arc(data.currX, data.currY, size.value / 2, 0, Math.PI * 2, true);
-        ctx.closePath();
-        ctx.fillStyle = color.value;
-        ctx.fill();
-    };
-    const draw = (ctx) => {
-        ctx.beginPath();
-        ctx.moveTo(data.prevX, data.prevY);
-        ctx.lineTo(data.currX, data.currY);
-        ctx.strokeStyle = color.value;
-        ctx.lineWidth = size.value;
-        ctx.stroke();
-        ctx.closePath();
-        drawDot(ctx);
-    };
     const findxy = (res, e) => {
         const { value: canvas } = el;
         const ctx = canvas.getContext("2d");
@@ -41,23 +74,29 @@ export const useDrawing = (color, size, mode) => {
             data.currX = e.clientX - left;
             data.currY = e.clientY - top;
 
+            data.lines = []
             data.flag = true;
             data.dot_flag = true;
-            if (data.dot_flag) {
-                if (mode.value === 'draw') {
-                    drawDot(ctx);
-                }
-                if (mode.value === 'erase') {
-                    eraseDot(ctx);
-                }
+
+            let command = {
+                type: mode.value,
+                x: data.currX,
+                y: data.currY,
+                size: size.value,
+                color: color.value
             }
-        }
-        if (res == "up" || res == "out") {
-            data.flag = false;
+            execute(ctx, command)
         }
         if (res == "up") {
-            data.history.push(cropImageFromCanvas());
-            data.dirty = true;
+            data.flag = false;
+            data.history = data.history.concat({
+                type: mode.value,
+                size: size.value,
+                color: color.value,
+                lines: data.lines,
+                x: data.currX,
+                y: data.currY,
+            })
         }
         if (res == "move") {
             if (data.flag) {
@@ -65,12 +104,20 @@ export const useDrawing = (color, size, mode) => {
                 data.prevY = data.currY;
                 data.currX = e.clientX - left;
                 data.currY = e.clientY - top;
-                if (mode.value === 'draw') {
-                    draw(ctx);
+                const coords = {
+                    x: data.currX,
+                    y: data.currY,
+                    fromX: data.prevX,
+                    fromY: data.prevY,
                 }
-                if (mode.value === 'erase') {
-                    eraseDot(ctx);
+                let command = {
+                    type: mode.value,
+                    size: size.value,
+                    color: color.value,
+                    ...coords
                 }
+                execute(ctx, command)
+                data.lines.push(coords)
             }
         }
     };
@@ -112,27 +159,20 @@ export const useDrawing = (color, size, mode) => {
 
     onMounted(attachEventLinsteners)
 
-    const clearCanvas = () => {
+    const clearCanvas = (clearHistory) => {
         const { value: canvas } = el;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (clearHistory) {
+            data.history = []
+        }
         return ctx;
     }
 
     const undo = () => {
         const ctx = clearCanvas();
-        let snapshot = data.history.pop();
-        if (data.dirty) {
-            snapshot = data.history.pop();
-            data.dirty = false;
-        }
-        if (snapshot) {
-            const image = document.createElement('img');
-            image.onload = function () {
-                ctx.drawImage(image, snapshot.x, snapshot.y);
-            };
-            image.src = snapshot.src;
-        }
+        data.history.pop();
+        data.history.forEach(command => execute(ctx, command))
         return ctx;
     }
 
@@ -159,5 +199,28 @@ export const useDrawing = (color, size, mode) => {
 
     })
 
-    return { el, cursor, cropImageFromCanvas, clearCanvas, undo }
+    const toggleErase = () => {
+        if (mode.value === "erase") {
+            mode.value = "draw";
+        } else {
+            mode.value = "erase";
+        }
+    };
+
+    return { el, cursor, color, size, mode, cropImageFromCanvas, clearCanvas, undo, toggleErase, data }
+}
+
+export const useDrawing = (commands) => {
+    const el = ref(null);
+
+    watch(commands, () => {
+        if (!el.value) return;
+        const { value: canvas } = el;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        commands.value.forEach(command => execute(ctx, command))
+        return ctx;
+    })
+
+    return { el }
 }
