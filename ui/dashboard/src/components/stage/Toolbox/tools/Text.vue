@@ -7,9 +7,9 @@
   <template v-if="!isWriting">
     <div @click="createText" class="text-tool">
       <div class="icon is-large">
-        <Icon src="new.svg" size="36" />
+        <Icon size="36" src="new.svg" />
       </div>
-      <span class="tag is-light is-block">New</span>
+      <span class="tag is-block">New</span>
     </div>
     <div v-for="text in savedTexts" :key="text" class="is-pulled-left">
       <Skeleton :data="text">
@@ -25,17 +25,21 @@
     </div>
   </template>
   <template v-else>
-    <div class="text-tool" @click="saveText">
+    <div
+      class="text-tool has-tooltip-bottom"
+      @click="saveText"
+      data-tooltip="Save"
+    >
       <div class="icon is-large">
-        <i class="fas fa-check fa-2x"></i>
+        <Icon size="40" src="check.svg" />
       </div>
-      <span class="tag is-light is-block">Save</span>
+      <span class="tag is-block">Save</span>
     </div>
     <div class="text-tool" @click="cancelWriting">
       <div class="icon is-large">
-        <i class="fas fa-times fa-2x"></i>
+        <Icon size="32" src="cancel.svg" />
       </div>
-      <span class="tag is-light is-block">Cancel</span>
+      <span class="tag is-block">Cancel</span>
     </div>
     <div class="text-tool" style="width: 200px; z-index: 1005">
       <span class="tag muted is-block">Font</span>
@@ -63,9 +67,9 @@
       @click="toggleBold"
     >
       <div class="icon is-large">
-        <i class="fas fa-bold fa-2x"></i>
+        <Icon size="36" src="bold.svg" />
       </div>
-      <span class="tag is-light is-block">Bold</span>
+      <span class="tag is-block">Bold</span>
     </div>
     <div
       class="text-tool"
@@ -73,9 +77,9 @@
       @click="toggleItalic"
     >
       <div class="icon is-large">
-        <i class="fas fa-italic fa-2x"></i>
+        <Icon size="36" src="italic.svg" />
       </div>
-      <span class="tag is-light is-block">Italic</span>
+      <span class="tag is-block">Italic</span>
     </div>
     <div
       class="text-tool"
@@ -83,9 +87,9 @@
       @click="toggleUnderline"
     >
       <div class="icon is-large">
-        <i class="fas fa-underline fa-2x"></i>
+        <Icon size="36" src="underline.svg" />
       </div>
-      <span class="tag is-light is-block">Underline</span>
+      <span class="tag is-block">Underline</span>
     </div>
   </template>
 </template>
@@ -239,13 +243,6 @@ export default {
   .dropdown {
     position: absolute;
     transform: translateX(-50%);
-  }
-  &:hover,
-  &.active {
-    .tag.muted {
-      background: transparent;
-      color: white;
-    }
   }
 }
 </style>

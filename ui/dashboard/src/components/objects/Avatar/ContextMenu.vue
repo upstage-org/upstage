@@ -2,21 +2,21 @@
   <div class="avatar-context-menu card-content p-0">
     <a
       v-if="object.type !== 'prop'"
-      class="panel-block has-text-info"
+      class="panel-block"
       @click="setAsPrimaryAvatar"
     >
       <span class="panel-icon">
-        <i class="fas fa-map-marker-alt has-text-info"></i>
+        <Icon src="set-as-avatar.svg" />
       </span>
       <span>Set as your avatar</span>
     </a>
-    <a class="panel-block has-text-info" @click="bringToFront">
+    <a class="panel-block" @click="bringToFront">
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
       </span>
       <span>Bring to front</span>
     </a>
-    <a class="panel-block has-text-info" @click="sendToBack">
+    <a class="panel-block" @click="sendToBack">
       <span class="panel-icon">
         <Icon src="send-to-back.svg" />
       </span>
@@ -24,7 +24,7 @@
     </a>
     <a
       v-if="object.type !== 'prop'"
-      class="panel-block has-text-info"
+      class="panel-block"
       @click="changeNickname"
     >
       <span class="panel-icon">
@@ -37,7 +37,7 @@
         <span class="panel-icon pt-1">
           <Icon src="rotation-slider.svg" />
         </span>
-        <span class="has-text-info">Rotation</span>
+        <span>Rotation</span>
       </p>
       <p class="control menu-group-item">
         <button class="button is-light" @click="rotate(+45)">
@@ -61,7 +61,7 @@
         <span class="panel-icon pt-1">
           <Icon src="rotation-slider.svg" />
         </span>
-        <span class="has-text-info">Slider</span>
+        <span>Slider</span>
       </p>
       <p class="control menu-group-item">
         <button

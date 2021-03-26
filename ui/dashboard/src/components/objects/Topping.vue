@@ -35,6 +35,9 @@
       v-show="chosen"
       class="marker fas fa-map-marker-alt fa-lg has-text-warning"
     ></i>
+    <span v-show="active" class="icon">
+      <Icon class="marker" src="my-avatar.svg" />
+    </span>
     <transition @enter="enter" @leave="leave" :css="false" appear>
       <div
         v-if="object.speak"
@@ -57,9 +60,11 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
+import Icon from "@/components/Icon";
 export default {
   props: ["position", "object", "active"],
   emits: ["update:active"],
+  components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
     const chosen = computed(

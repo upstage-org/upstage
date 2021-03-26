@@ -34,8 +34,6 @@ export default {
             audios: [],
             streams: [],
             config: {
-                width: 1280,
-                height: 800,
                 animateDuration: 500,
                 reactionDuration: 5000,
                 ratio: 16 / 9,

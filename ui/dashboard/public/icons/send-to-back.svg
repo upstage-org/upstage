@@ -14,6 +14,9 @@
    viewBox="0 0 3.3602075 6.1383352"
    height="6.1383348mm"
    width="3.3602073mm">
+  <style type="text/css">
+     .st11{fill:#017100;}
+  </style>
   <defs
      id="defs303" />
   <sodipodi:namedview
@@ -61,21 +64,21 @@
        id="g640">
       <g
          id="g630">
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
            y="140.60001"
            x="-66.699997"
            id="rect624" />
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
            y="136"
            x="-62.400002"
            id="rect626" />
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
@@ -85,21 +88,21 @@
       </g>
       <g
          id="g638">
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
            y="154.60001"
            x="-66.699997"
            id="rect632" />
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
            y="150"
            x="-62.400002"
            id="rect634" />
-        <rect fill="#3099da"
+        <rect
            height="4.5999999"
            width="4.1999998"
            class="st11"
