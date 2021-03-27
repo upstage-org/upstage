@@ -93,7 +93,7 @@
       <span class="tag is-light is-block">New</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
-      <Skeleton :data="drawing" />
+      <SavedDrawing :drawing="drawing" />
     </div>
   </template>
 </template>
@@ -102,13 +102,13 @@
 import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useDrawable } from "./composable";
-import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
 import Switch from "@/components/form/Switch";
+import SavedDrawing from "./SavedDrawing";
 
 export default {
-  components: { Skeleton, ColorPicker, Icon, Switch },
+  components: { SavedDrawing, ColorPicker, Icon, Switch },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);
@@ -119,7 +119,7 @@ export default {
     const {
       el,
       cursor,
-      cropImageFromCanvas,
+      getDrawedArea,
       clearCanvas,
       undo,
       toggleErase,
@@ -135,9 +135,9 @@ export default {
       store.commit("stage/UPDATE_IS_DRAWING", false);
     };
     const save = () => {
-      const drawing = cropImageFromCanvas();
-      if (drawing) {
-        store.dispatch("stage/addDrawing", { ...drawing, commands: history });
+      const area = getDrawedArea();
+      if (area) {
+        store.dispatch("stage/addDrawing", { ...area, commands: history });
       }
     };
 

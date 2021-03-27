@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
+import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { generateDemoData } from './demoData'
@@ -229,7 +229,7 @@ export default {
             Object.assign(state.preferences, preferences);
         },
         PUSH_DRAWING(state, drawing) {
-            state.board.drawings.push(drawing);
+            state.board.drawings.push(cloneDeep(drawing));
         },
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);

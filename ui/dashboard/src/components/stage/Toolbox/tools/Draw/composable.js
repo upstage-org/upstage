@@ -231,6 +231,7 @@ export const useRelativeCommands = drawing => computed(() => {
     console.log(drawing.w, drawing.original.w, ratio)
     return drawing.commands.map(command => ({
         ...command,
+        size: command.size * ratio,
         x: (command.x - drawing.original.x) * ratio,
         y: (command.y - drawing.original.y) * ratio,
         lines: command.lines.map(line => ({
