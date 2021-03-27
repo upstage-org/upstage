@@ -228,7 +228,6 @@ export const useRelativeCommands = drawing => computed(() => {
         return []
     }
     const ratio = Math.min(drawing.w / drawing.original.w, drawing.h / drawing.original.h);
-    console.log(drawing.w, drawing.original.w, ratio)
     return drawing.commands.map(command => ({
         ...command,
         size: command.size * ratio,
@@ -247,7 +246,7 @@ export const useDrawing = (drawing) => {
     const el = ref(null);
     const commands = useRelativeCommands(drawing)
 
-    const draw = async () => {
+    const draw = async (newDrawing, oldDrawing) => {
         const { value: canvas } = el;
         canvas.width = drawing.w;
         canvas.height = drawing.h;
@@ -255,7 +254,13 @@ export const useDrawing = (drawing) => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < commands.value.length; i++) {
             const command = commands.value[i];
-            execute(ctx, command, true)
+            let shouldAnimate = true;
+            if (newDrawing && oldDrawing) {
+                if (i < oldDrawing.commands.length - 1) {
+                    shouldAnimate = false
+                }
+            }
+            execute(ctx, command, shouldAnimate)
         }
         return ctx;
     }

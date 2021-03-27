@@ -482,8 +482,7 @@ export default {
         addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
-            commit('UPDATE_IS_DRAWING', false);
-            dispatch('placeObjectOnStage', drawing);
+            return dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';

@@ -9,7 +9,7 @@
       cursor,
       top: stageSize.top + 'px',
       left: stageSize.left + 'px',
-      'background-color': `rgba(255, 255, 255, ${liveDrawing ? '0' : '0.8'})`,
+      'background-color': `rgba(255, 255, 255, ${liveDrawing ? '0.5' : '0.8'})`,
     }"
   >
     Your browser does not support the HTML5 canvas tag.
@@ -72,7 +72,7 @@
       </div>
       <span class="tag is-light is-block">Clear</span>
     </div>
-    <div class="drawing-tool" @click="save">
+    <div class="drawing-tool" @click="save(true)">
       <div class="icon is-large">
         <Icon size="36" src="save.svg" />
       </div>
@@ -116,6 +116,7 @@ export default {
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
     });
+    const currentDrawing = ref();
     const {
       el,
       cursor,
@@ -133,17 +134,37 @@ export default {
     };
     const cancel = () => {
       store.commit("stage/UPDATE_IS_DRAWING", false);
+      currentDrawing.value = null;
     };
-    const save = () => {
-      const area = getDrawedArea();
-      if (area) {
-        store.dispatch("stage/addDrawing", { ...area, commands: history });
+    const save = (closeAfterSaving) => {
+      if (!currentDrawing.value) {
+        const area = getDrawedArea();
+        if (area) {
+          store
+            .dispatch("stage/addDrawing", { ...area, commands: history })
+            .then((drawing) => {
+              currentDrawing.value = drawing;
+            });
+        }
+      }
+      if (closeAfterSaving) {
+        cancel();
       }
     };
 
     const liveDrawing = ref(false);
     watch(history, (value) => {
-      console.log(value);
+      if (liveDrawing.value) {
+        if (currentDrawing.value) {
+          store.dispatch("stage/shapeObject", {
+            ...currentDrawing.value,
+            ...getDrawedArea(),
+            commands: value,
+          });
+        } else {
+          save();
+        }
+      }
     });
 
     return {
