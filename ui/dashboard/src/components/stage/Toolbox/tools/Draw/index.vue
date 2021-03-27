@@ -5,7 +5,12 @@
     class="drawing"
     :width="stageSize.width"
     :height="stageSize.height"
-    :style="{ cursor, top: stageSize.top + 'px', left: stageSize.left + 'px' }"
+    :style="{
+      cursor,
+      top: stageSize.top + 'px',
+      left: stageSize.left + 'px',
+      'background-color': `rgba(255, 255, 255, ${liveDrawing ? '0' : '0.8'})`,
+    }"
   >
     Your browser does not support the HTML5 canvas tag.
   </canvas>
@@ -166,7 +171,6 @@ export default {
 .drawing {
   position: fixed;
   z-index: 1000;
-  background-color: rgba($color: white, $alpha: 0.8);
 }
 .drawing-tool {
   z-index: 1001;

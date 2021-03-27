@@ -24,13 +24,21 @@ const draw = (ctx, { fromX, fromY, x, y, size, color }) => {
     drawDot(ctx, { x: fromX, y: fromY, size, color });
 };
 
-const execute = (ctx, command) => {
+const wait = milisecond => new Promise(res => setTimeout(res, milisecond))
+
+const execute = async (ctx, command, animate) => {
     const { type, size, color, lines } = command;
     if (lines && lines.length) {
         if (type === 'draw') {
-            lines.forEach(({ fromX, fromY, x, y }) => draw(ctx, {
-                fromX, fromY, x, y, size, color
-            }))
+            for (let i = 0; i < lines.length; i++) {
+                const { fromX, fromY, x, y } = lines[i];
+                draw(ctx, {
+                    fromX, fromY, x, y, size, color
+                });
+                if (animate) {
+                    await wait(10)
+                }
+            }
         } else {
             lines.forEach(({ x, y }) => eraseDot(ctx, {
                 x, y, size
@@ -219,36 +227,35 @@ export const useRelativeCommands = drawing => computed(() => {
     if (!drawing.commands) {
         return []
     }
-
-    const ratio = drawing.x / drawing.original.x;
-    const toRelative = command => {
-        command.x = command.x * ratio - drawing.x
-        command.y = command.y * ratio - drawing.y
-        command.fromX = command.fromX * ratio - drawing.x
-        command.fromY = command.fromY * ratio - drawing.y
-    }
-
-    return drawing.commands.map(command => {
-        toRelative(command)
-        if (command.lines) {
-            command.lines.forEach(toRelative)
-        }
-        return command;
-    })
+    const ratio = Math.min(drawing.w / drawing.original.w, drawing.h / drawing.original.h);
+    console.log(drawing.w, drawing.original.w, ratio)
+    return drawing.commands.map(command => ({
+        ...command,
+        x: (command.x - drawing.original.x) * ratio,
+        y: (command.y - drawing.original.y) * ratio,
+        lines: command.lines.map(line => ({
+            x: (line.x - drawing.original.x) * ratio,
+            y: (line.y - drawing.original.y) * ratio,
+            fromX: (line.fromX - drawing.original.x) * ratio,
+            fromY: (line.fromY - drawing.original.y) * ratio,
+        }))
+    }))
 })
 
 export const useDrawing = (drawing) => {
     const el = ref(null);
     const commands = useRelativeCommands(drawing)
 
-    const draw = () => {
-        console.log(drawing)
+    const draw = async () => {
         const { value: canvas } = el;
         canvas.width = drawing.w;
         canvas.height = drawing.h;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        commands.value.forEach(command => execute(ctx, command))
+        for (let i = 0; i < commands.value.length; i++) {
+            const command = commands.value[i];
+            execute(ctx, command, true)
+        }
         return ctx;
     }
 
