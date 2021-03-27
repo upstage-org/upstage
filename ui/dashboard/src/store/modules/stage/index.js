@@ -62,13 +62,16 @@ export default {
             return state.board.objects;
         },
         avatars(state) {
-            return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
+            return state.board.objects.filter(o => o.type === 'avatar' || !o.type);
         },
         props(state) {
             return state.board.objects.filter(o => o.type === 'prop');
         },
         streams(state) {
             return state.board.objects.filter(o => o.type === 'stream');
+        },
+        drawings(state) {
+            return state.board.objects.filter(o => o.type === 'drawing');
         },
         texts(state) {
             return state.board.objects.filter(o => o.type === 'text');

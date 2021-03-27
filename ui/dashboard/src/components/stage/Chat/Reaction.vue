@@ -97,4 +97,7 @@ export default {
 .flying-reactions {
   position: fixed;
 }
+.button.is-rounded {
+  width: 16px;
+}
 </style>

@@ -56,12 +56,17 @@ export const useDrawable = () => {
     const el = ref(null);
 
     const data = reactive({
-        history: [],
         lines: []
     });
 
+    const history = reactive([])
+
     const cropImageFromCanvas = () => {
         return canvasUtil.cropImageFromCanvas(el.value);
+    };
+
+    const getDrawedArea = () => {
+        return canvasUtil.clipDrawedArea(el.value)
     };
 
     const findxy = (res, e) => {
@@ -89,7 +94,7 @@ export const useDrawable = () => {
         }
         if (res == "up") {
             data.flag = false;
-            data.history = data.history.concat({
+            history.push({
                 type: mode.value,
                 size: size.value,
                 color: color.value,
@@ -125,7 +130,7 @@ export const useDrawable = () => {
     const attachEventLinsteners = () => {
         const { value: canvas } = el;
         if (canvas) {
-            data.history = []
+            history.length = 0
             canvas.addEventListener(
                 "mousemove",
                 (e) => {
@@ -164,15 +169,15 @@ export const useDrawable = () => {
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         if (clearHistory) {
-            data.history = []
+            history.length = 0
         }
         return ctx;
     }
 
     const undo = () => {
         const ctx = clearCanvas();
-        data.history.pop();
-        data.history.forEach(command => execute(ctx, command))
+        history.pop();
+        history.forEach(command => execute(ctx, command))
         return ctx;
     }
 
@@ -207,20 +212,48 @@ export const useDrawable = () => {
         }
     };
 
-    return { el, cursor, color, size, mode, cropImageFromCanvas, clearCanvas, undo, toggleErase, data }
+    return { el, cursor, color, size, mode, history, cropImageFromCanvas, getDrawedArea, clearCanvas, undo, toggleErase }
 }
 
-export const useDrawing = (commands) => {
-    const el = ref(null);
+export const useRelativeCommands = drawing => computed(() => {
+    if (!drawing.commands) {
+        return []
+    }
 
-    watch(commands, () => {
-        if (!el.value) return;
+    const ratio = drawing.x / drawing.original.x;
+    const toRelative = command => {
+        command.x = command.x * ratio - drawing.x
+        command.y = command.y * ratio - drawing.y
+        command.fromX = command.fromX * ratio - drawing.x
+        command.fromY = command.fromY * ratio - drawing.y
+    }
+
+    return drawing.commands.map(command => {
+        toRelative(command)
+        if (command.lines) {
+            command.lines.forEach(toRelative)
+        }
+        return command;
+    })
+})
+
+export const useDrawing = (drawing) => {
+    const el = ref(null);
+    const commands = useRelativeCommands(drawing)
+
+    const draw = () => {
+        console.log(drawing)
         const { value: canvas } = el;
+        canvas.width = drawing.w;
+        canvas.height = drawing.h;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         commands.value.forEach(command => execute(ctx, command))
         return ctx;
-    })
+    }
+
+    watch(drawing, draw)
+    onMounted(draw)
 
     return { el }
 }

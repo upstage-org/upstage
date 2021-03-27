@@ -12,6 +12,12 @@
   <template v-if="isDrawing">
     <div class="drawing-tool">
       <div class="icon is-large">
+        <Switch v-model="liveDrawing" class="is-success is-rounded ml-2" />
+      </div>
+      <span class="tag is-light is-block">Live drawing</span>
+    </div>
+    <div class="drawing-tool">
+      <div class="icon is-large">
         <ColorPicker v-model="color" />
       </div>
       <span class="tag is-light is-block">Color</span>
@@ -88,15 +94,16 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useDrawable } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
+import Switch from "@/components/form/Switch";
 
 export default {
-  components: { Skeleton, ColorPicker, Icon },
+  components: { Skeleton, ColorPicker, Icon, Switch },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);
@@ -114,6 +121,7 @@ export default {
       color,
       size,
       mode,
+      history,
     } = useDrawable();
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
@@ -124,9 +132,14 @@ export default {
     const save = () => {
       const drawing = cropImageFromCanvas();
       if (drawing) {
-        store.dispatch("stage/addDrawing", drawing);
+        store.dispatch("stage/addDrawing", { ...drawing, commands: history });
       }
     };
+
+    const liveDrawing = ref(false);
+    watch(history, (value) => {
+      console.log(value);
+    });
 
     return {
       isDrawing,
@@ -143,6 +156,7 @@ export default {
       mode,
       cursor,
       stageSize,
+      liveDrawing,
     };
   },
 };
@@ -158,14 +172,6 @@ export default {
   z-index: 1001;
   position: relative;
   vertical-align: top;
-  &:first-of-type {
-    border-top-left-radius: 5px;
-    border-bottom-left-radius: 5px;
-  }
-  &:last-of-type {
-    border-top-right-radius: 5px;
-    border-bottom-right-radius: 5px;
-  }
 }
 .size-preview {
   display: flex;
