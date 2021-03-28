@@ -15,6 +15,8 @@
         contenteditable="true"
         @keyup.delete.prevent.stop
         @keyup="liveTyping"
+        @focus="isFocus = true"
+        @blur="isFocus = false"
       ></p>
     </template>
   </Object>
@@ -33,6 +35,8 @@ export default {
     const el = ref();
     const store = useStore();
 
+    const isFocus = ref(false);
+
     const liveTyping = () => {
       const content = el.value.innerHTML;
       store.dispatch("stage/shapeObject", {
@@ -41,35 +45,25 @@ export default {
       });
     };
 
-    function setCaretEnd() {
-      try {
-        const range = document.createRange();
-        const sel = window.getSelection();
-        const lastNode = el.value.childNodes[el.value.childNodes.length - 1];
-        range.setStart(lastNode, lastNode.length);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-
     onMounted(() => {
       el.value.innerHTML = props.text.content;
     });
     watch(
       () => props.text.content,
       () => {
-        el.value.innerHTML = props.text.content;
-        setCaretEnd();
+        if (!isFocus.value) {
+          el.value.innerHTML = props.text.content;
+        }
       }
     );
 
-    return { el, liveTyping };
+    return { el, liveTyping, isFocus };
   },
 };
 </script>
 
 <style>
+p[contenteditable] {
+  outline: none;
+}
 </style>

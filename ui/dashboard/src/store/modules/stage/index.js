@@ -388,9 +388,13 @@ export default {
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
+            object = serializeObject(object)
+            if (object.type === 'drawing') {
+                delete object.commands
+            }
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object: serializeObject(object)
+                object
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
