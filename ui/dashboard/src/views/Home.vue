@@ -12,17 +12,29 @@
         </h2>
         <div class="links columns is-vcentered my-4">
           <div class="column">
-            <router-link to="/live" class="link">
+            <router-link
+              to="/live"
+              class="link"
+              :style="{ 'background-image': url('live-stage.png') }"
+            >
               <span>Live Stage</span>
             </router-link>
           </div>
           <div class="column">
-            <router-link to="/live" class="link">
+            <router-link
+              to="/live"
+              class="link"
+              :style="{ 'background-image': url('upcoming-performance.png') }"
+            >
               <span> Upcoming Performance </span>
             </router-link>
           </div>
           <div class="column">
-            <router-link to="/live" class="link">
+            <router-link
+              to="/live"
+              class="link"
+              :style="{ 'background-image': url('latest-news.jpg') }"
+            >
               <span>Ticketing</span>
             </router-link>
           </div>
@@ -33,9 +45,15 @@
 </template>
 
 <script>
+import config from "@/../vue.config";
+
 export default {
   name: "Home",
   components: {},
+  setup: () => {
+    const url = (src) => `url(${config.publicPath}img/${src})`;
+    return { url };
+  },
 };
 </script>
 
@@ -70,7 +88,11 @@ export default {
     width: 100%;
     height: 300px;
     box-shadow: 10px 5px 0 0 $black;
-    background: white;
+    color: white;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: white;
     span {
       display: table-cell;
       vertical-align: middle;
