@@ -35,7 +35,7 @@
               class="link"
               :style="{ 'background-image': url('latest-news.jpg') }"
             >
-              <span>Ticketing</span>
+              <span>Latest News</span>
             </router-link>
           </div>
         </div>
