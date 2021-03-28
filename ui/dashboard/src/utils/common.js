@@ -81,3 +81,7 @@ export function debounce(callback, delay) {
     timeout = setTimeout(callback, delay)
   }
 }
+
+export function cloneDeep(object) {
+  return JSON.parse(JSON.stringify(object));
+}

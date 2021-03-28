@@ -21,7 +21,7 @@ export function serializeObject(object, keepSrc) {
     if (!keepSrc) {
         object = {
             ...object,
-            src: type === 'drawing' || type === 'stream' || type === 'text' ? null : src
+            src: type === 'stream' ? null : src
         };
     }
     object.x = toRelative(object.x)
@@ -34,7 +34,7 @@ export function serializeObject(object, keepSrc) {
 
 export function deserializeObject(object, keepSrc) {
     if (!keepSrc) {
-        if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
+        if (object.type === 'stream') {
             delete object.src;
         }
     }

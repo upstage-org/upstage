@@ -133,6 +133,7 @@ export default {
   bottom: 16px;
   right: 16px;
   overflow: visible;
+  z-index: 3;
 
   .card-content {
     height: calc(100% - 84px);
