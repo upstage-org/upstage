@@ -1,5 +1,15 @@
 <template>
-  <section v-if="isWriting" class="writing" @click="onClickWriting">
+  <section
+    v-if="isWriting"
+    class="writing"
+    @click="onClickWriting"
+    :style="{
+      width: stageSize.width + 'px',
+      height: stageSize.height + 'px',
+      top: stageSize.top + 'px',
+      left: stageSize.left + 'px',
+    }"
+  >
     <p ref="el" :style="options" contenteditable="true">
       Write or paste<br />your text here
     </p>
@@ -107,6 +117,7 @@ export default {
   components: { Dropdown, Field, ColorPicker, Skeleton, Icon },
   setup: () => {
     const store = useStore();
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const isWriting = computed(() => store.state.stage.preferences.isWriting);
     const options = store.state.stage.preferences.text;
     const fontFamilies = [
@@ -147,8 +158,8 @@ export default {
     const el = ref();
     const onClickWriting = (e) => {
       const { width, height } = el.value.getBoundingClientRect() ?? {};
-      const x = e.clientX - width / 2;
-      const y = e.clientY - height / 2;
+      const x = e.clientX - stageSize.value.left - width / 2;
+      const y = e.clientY - stageSize.value.top - height / 2;
       store.commit("stage/UPDATE_TEXT_OPTIONS", {
         left: x + "px",
         top: y + "px",
@@ -204,6 +215,7 @@ export default {
     const savedTexts = computed(() => store.state.stage.board.texts);
 
     return {
+      stageSize,
       options,
       fontFamilies,
       createText,
@@ -225,13 +237,8 @@ export default {
 <style lang="scss">
 .writing {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
   z-index: 1000;
-  background-color: rgba($color: white, $alpha: 0.5);
-  backdrop-filter: blur(5px);
+  background-color: rgba($color: white, $alpha: 0.8);
   > p {
     position: absolute;
   }
