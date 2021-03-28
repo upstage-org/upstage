@@ -11,11 +11,6 @@
         <span v-if="index < item.stages.length - 1">, </span>
       </span>
     </template>
-    <template #date="{ item, header }">
-      <span :title="header.render(item)">
-        {{ header.render(item).fromNow() }}
-      </span>
-    </template>
     <template #edit="{ item }">
       <EditMedia :media="item" />
     </template>
@@ -29,7 +24,6 @@ import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
 import EditMedia from "./EditMedia";
 import { displayName } from "@/utils/auth";
-import moment from "moment";
 
 export default {
   components: { Asset, EditMedia, DataTable },
@@ -61,8 +55,8 @@ export default {
       },
       {
         title: "Date",
-        render: (item) => moment(item.createdOn),
-        slot: "date",
+        type: "date",
+        key: "createdOn",
       },
       {
         title: "Edit",
