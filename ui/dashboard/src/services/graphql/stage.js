@@ -87,7 +87,7 @@ export default {
   `, variables),
   mediaList: (variables) => client.request(gql`
     query AssetList($id: ID, $nameLike: String, $assetTypeId: ID) {
-      assetList(id: $id, nameLike: $nameLike, assetTypeId: $assetTypeId, sortBy: "id", sortDesc: true) {
+      assetList(id: $id, nameLike: $nameLike, assetTypeId: $assetTypeId, sort: ID_DESC) {
         edges {
           node {
             ...assetFragment
