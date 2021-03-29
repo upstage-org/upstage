@@ -31,7 +31,7 @@
           </div>
           <div class="column">
             <router-link
-              to="/live"
+              to="/live/demo"
               class="link"
               :style="{ 'background-image': url('latest-news.jpg') }"
             >

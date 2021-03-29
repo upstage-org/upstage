@@ -161,6 +161,13 @@ export default {
           }
         }
       }
+      streams: assetList(assetTypeId: 6) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
     }
     ${assetFragment}
   `),

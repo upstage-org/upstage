@@ -13,26 +13,7 @@
         </div>
         <div class="column">
           <Field horizontal v-model="data.name" label="Media Name" />
-          <HorizontalField title="Type">
-            <div class="control">
-              <label class="radio">
-                <input type="radio" v-model="data.mediaType" value="avatar" />
-                Avatar
-              </label>
-              <label class="radio">
-                <input type="radio" v-model="data.mediaType" value="prop" />
-                Prop
-              </label>
-              <label class="radio">
-                <input type="radio" v-model="data.mediaType" value="backdrop" />
-                Backdrop
-              </label>
-              <label class="radio">
-                <input type="radio" v-model="data.mediaType" value="audio" />
-                Audio
-              </label>
-            </div>
-          </HorizontalField>
+          <MediaType v-model="data.mediaType" />
           <HorizontalField v-if="multiframable" title="Multiframe">
             <Switch v-model="data.multi" className="is-rounded is-success" />
           </HorizontalField>
@@ -69,6 +50,7 @@
 <script>
 import HorizontalField from "@/components/form/HorizontalField";
 import Field from "@/components/form/Field";
+import MediaType from "@/components/form/MediaType";
 import Modal from "@/components/Modal";
 import SaveButton from "@/components/form/SaveButton";
 import Switch from "@/components/form/Switch";
@@ -84,6 +66,7 @@ export default {
   components: {
     HorizontalField,
     Field,
+    MediaType,
     Modal,
     SaveButton,
     Switch,

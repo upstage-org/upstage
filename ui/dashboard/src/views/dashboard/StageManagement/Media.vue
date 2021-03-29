@@ -56,9 +56,15 @@ export default {
 
     const mediaList = computed(() => {
       if (!data.value) return [];
-      const { avatars, props, backdrops, audios } = data.value;
+      const { avatars, props, backdrops, audios, streams } = data.value;
       const mediaList = []
-        .concat(avatars.edges, props.edges, backdrops.edges, audios.edges)
+        .concat(
+          avatars.edges,
+          props.edges,
+          backdrops.edges,
+          audios.edges,
+          streams.edges
+        )
         .map((edge) => edge.node);
       return mediaList;
     });
@@ -73,12 +79,26 @@ export default {
 
     const saveMedia = async () => {
       const payload = JSON.stringify(
-        selectedMedia.value.map((media) => ({
-          name: media.name,
-          type: media.assetType.name,
-          src: media.fileLocation,
-          ...(media.description ? JSON.parse(media.description) : {}),
-        }))
+        selectedMedia.value.map((media) => {
+          const type = media.assetType.name;
+          const attributes = media.description
+            ? JSON.parse(media.description)
+            : {};
+          if (type === "stream") {
+            return {
+              name: media.name,
+              type,
+              url: media.fileLocation,
+            };
+          } else {
+            return {
+              name: media.name,
+              type,
+              src: media.fileLocation,
+              ...attributes,
+            };
+          }
+        })
       );
       await save("Media saved successfully!", stage.value.id, payload);
     };
@@ -98,6 +118,7 @@ export default {
         value: "backdrop",
       },
       { label: "Audio", value: "audio" },
+      { label: "Stream", value: "stream" },
     ];
     const filter = reactive({});
     const filteredMediaList = computed(() => {
