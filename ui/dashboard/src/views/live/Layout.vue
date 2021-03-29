@@ -1,8 +1,8 @@
 <template>
   <Logo id="live-logo" />
   <div id="main-content">
-    <PageLoader v-if="loading" />
-    <template v-else>
+    <PageLoader />
+    <template v-if="ready">
       <Live />
       <LoginPrompt />
       <SettingPopup />
@@ -23,12 +23,14 @@ export default {
   components: { Logo, PageLoader, LoginPrompt, SettingPopup, Live },
   setup: () => {
     const store = useStore();
-    const loading = computed(() => store.state.stage.preloading);
+    const ready = computed(
+      () => store.state.stage.model && !store.state.stage.preloading
+    );
 
     const route = useRoute();
     store.dispatch("stage/loadStage", route.params.url);
     return {
-      loading,
+      ready,
     };
   },
 };
