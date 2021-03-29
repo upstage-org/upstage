@@ -24,7 +24,7 @@
         </tr>
       </tfoot>
       <tbody>
-        <transition-group :css="false" @enter="enter" @leave="leave">
+        <transition-group :css="false">
           <tr v-for="(item, index) in rows" :key="item">
             <td align="right" v-if="numbered">{{ offset + index + 1 }}</td>
             <td
@@ -62,7 +62,6 @@
 import { useQuery } from "@/services/graphql/composable";
 import Skeleton from "@/components/Skeleton";
 import { computed } from "@vue/runtime-core";
-import anime from "animejs";
 import moment from "moment";
 import Pagination from "./Pagination.vue";
 
@@ -103,13 +102,6 @@ export default {
   },
   methods: {
     moment,
-    enter(el, complete) {
-      anime({
-        targets: el,
-        translateX: [100, 0],
-        complete,
-      });
-    },
   },
   computed: {
     offset() {

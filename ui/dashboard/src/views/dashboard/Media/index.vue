@@ -3,7 +3,7 @@
     <div class="hero-body">
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="refresh()" />
+      <MediaUpload @complete="uploadCompleted" />
     </div>
   </section>
   <div class="columns">
@@ -87,7 +87,9 @@ export default {
       mediaType: null,
       owner: null,
     });
-    const { loading, nodes, fetch, refresh } = useQuery(stageGraph.mediaList);
+    const { loading, nodes, fetch, refresh, pushNode } = useQuery(
+      stageGraph.mediaList
+    );
 
     const users = computed(() => {
       let list = [];
@@ -145,6 +147,10 @@ export default {
       stageGraph.assetTypeList
     );
 
+    const uploadCompleted = (result) => {
+      pushNode(result.uploadMedia.asset, true);
+    };
+
     provide("mediaList", mediaList);
     provide("loading", loading);
     provide("refresh", refresh);
@@ -160,6 +166,7 @@ export default {
       users,
       displayName,
       stageList,
+      uploadCompleted,
     };
   },
 };

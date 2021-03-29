@@ -35,6 +35,17 @@
             <input type="radio" v-model="data.mediaType" value="audio" />
             Audio
           </label>
+          <button
+            v-if="data.mediaType"
+            @click="data.mediaType = null"
+            class="button is-danger ml-2 is-small"
+            data-tooltip="Media without type cannot be attach to a stage, but can be use to compose to other media, like multiframes avatar"
+          >
+            <span class="icon">
+              <i class="fas fa-times"></i>
+            </span>
+            <span> Clear </span>
+          </button>
         </div>
       </HorizontalField>
       <HorizontalField title="Attachment">
@@ -120,7 +131,15 @@ export default {
       }
     };
 
-    return { isImage, handleInputFile, loading, upload, data, active };
+    return {
+      isImage,
+      handleInputFile,
+      loading,
+      upload,
+      data,
+      active,
+      handleBlurName,
+    };
   },
 };
 </script>
