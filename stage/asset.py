@@ -1,6 +1,8 @@
 import os
 import uuid
 
+from sqlalchemy.orm import joinedload
+
 from config.project_globals import appdir, ScopedSession
 from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
 from graphene_sqlalchemy import SQLAlchemyObjectType
@@ -80,7 +82,7 @@ class UploadMedia(graphene.Mutation):
             local_db_session.add(asset)
             local_db_session.flush()
             local_db_session.commit()
-            asset = local_db_session.query(AssetModel).filter(
+            asset = local_db_session.query(AssetModel).options(joinedload(AssetModel.asset_type), joinedload(AssetModel.owner)).filter(
                 AssetModel.id == asset.id).first()
             return UploadMedia(asset=asset)
 
