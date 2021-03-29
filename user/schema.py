@@ -44,6 +44,7 @@ class User(SQLAlchemyObjectType):
         model = UserModel
         model.db_id = model.id
         interfaces = (relay.Node,)
+        connection_class = graphql_utils.CountableConnection
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
