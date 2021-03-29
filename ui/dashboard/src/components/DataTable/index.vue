@@ -39,7 +39,7 @@
                 </template>
                 <template v-else-if="header.type === 'date'">
                   <span :title="moment(item[header.key])">
-                    {{ moment(item[header.key]).fromNow() }}
+                    {{ fromNow(item[header.key]) }}
                   </span>
                 </template>
                 <template v-else>{{ item[header.key] }}</template>
@@ -98,10 +98,16 @@ export default {
     return {
       current: 1,
       limit: 10,
+      now: new Date(),
     };
   },
   methods: {
     moment,
+    fromNow(date) {
+      return moment(date)
+        .subtract(this.now.getTimezoneOffset(), "minute")
+        .fromNow();
+    },
   },
   computed: {
     offset() {

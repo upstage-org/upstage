@@ -12,6 +12,7 @@ if projdir not in sys.path:
 
 from graphql_relay.node.node import from_global_id
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
+import graphene
 
 from config.project_globals import app,DBSession
 from user.user_utils import current_user
@@ -54,6 +55,15 @@ class FilteredConnectionField(SQLAlchemyConnectionField):
             if col:
               query = query.filter(col == val)
         return query
+
+class CountableConnection(graphene.Connection):
+    class Meta:
+        abstract = True
+
+    total_count = graphene.Int()
+
+    def resolve_total_count(self, info):
+        return self.length
 
 """
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
