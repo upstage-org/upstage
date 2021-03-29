@@ -9,8 +9,21 @@ export const useRequest = (service, ...params) => {
     const nodes = computed(() => {
         if (!data.value) return null;
         const key = Object.keys(data.value)[0];
+        console.log(data.value)
         return data.value[key].edges.map((edge) => edge.node)
     });
+    const pushNode = (node, reverse) => {
+        if (data.value) {
+            const key = Object.keys(data.value)[0];
+            let edges = data.value[key].edges
+            if (reverse) {
+                edges.unshift({ node })
+            } else {
+                edges.push({ node })
+            }
+            data.value = { [key]: { edges } }
+        }
+    };
     const totalCount = computed(() => {
         if (!data.value) return 0;
         const key = Object.keys(data.value)[0];
@@ -51,7 +64,7 @@ export const useRequest = (service, ...params) => {
         return fetch(...params);
     }
 
-    return { loading, data, nodes, totalCount, fetch, clearCache, refresh }
+    return { loading, data, nodes, totalCount, fetch, clearCache, refresh, pushNode }
 }
 
 export const useMutation = (...params) => {

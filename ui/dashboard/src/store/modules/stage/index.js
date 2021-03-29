@@ -4,7 +4,6 @@ import mqtt from '@/services/mqtt'
 import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
-import { generateDemoData } from './demoData'
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -146,10 +145,6 @@ export default {
             state.board.texts = [];
             state.chat.messages = [];
             state.chat.color = randomColor();
-        },
-        LOAD_DEMO_STAGE(state) {
-            const demoData = generateDemoData();
-            Object.assign(state.tools, demoData);
         },
         SET_BACKGROUND(state, background) {
             state.background = background
@@ -501,14 +496,14 @@ export default {
         async loadStage({ commit }, url) {
             commit('CLEAN_STAGE', null);
             commit('SET_PRELOADING_STATUS', true);
-            if (url) {
-                const response = await stageGraph.stageList({
-                    fileLocation: url
-                })
-                const model = response.stageList.edges[0]?.node;
+            const response = await stageGraph.stageList({
+                fileLocation: url
+            })
+            const model = response.stageList.edges[0]?.node;
+            if (model) {
                 commit('SET_MODEL', model);
             } else {
-                commit('LOAD_DEMO_STAGE');
+                commit('SET_PRELOADING_STATUS', false);
             }
         }
     },

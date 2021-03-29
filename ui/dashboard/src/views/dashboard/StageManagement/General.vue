@@ -168,8 +168,7 @@ export default {
     );
     const createStage = async () => {
       try {
-        const response = await mutation();
-        console.log(response, "<======");
+        await mutation();
         notification.success(
           "Stage created successfully! ID: " + data.value.createStage.stage.id
         );
@@ -177,7 +176,6 @@ export default {
           `/dashboard/stage-management/${data.value.createStage.stage.id}/`
         );
       } catch (error) {
-        console.log(error);
         notification.error(error);
       }
     };
