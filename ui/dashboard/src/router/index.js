@@ -85,6 +85,11 @@ const routes = [
             name: 'Registration Approval',
             component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
           },
+          {
+            path: 'reset-password',
+            name: 'Reset Password',
+            component: () => import('../views/dashboard/Admin/ResetPassword.vue'),
+          },
         ]
       },
       {

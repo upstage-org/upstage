@@ -11,7 +11,7 @@
       </header>
       <section class="modal-card-body"><slot name="content" /></section>
       <footer class="modal-card-foot">
-        <slot name="footer" />
+        <slot name="footer" :close-modal="closeModal" />
       </footer>
     </div>
   </div>

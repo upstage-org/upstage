@@ -30,6 +30,7 @@ body.waiting * {
 }
 .clickable {
   pointer-events: all !important;
+  cursor: pointer;
 }
 [contenteditable] {
   -webkit-user-select: text !important;

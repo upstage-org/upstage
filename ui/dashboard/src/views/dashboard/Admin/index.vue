@@ -16,6 +16,14 @@
               Registration Approval
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/reset-password"
+              exact-active-class="is-active"
+            >
+              Reset Password
+            </router-link>
+          </li>
         </ul>
       </aside>
     </div>
