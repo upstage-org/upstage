@@ -238,7 +238,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
     # Regular Upstage login, from app or portal.
     if username and password:
-        username = username.lower().strip()
+        username = username.strip()
         if '@' in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
