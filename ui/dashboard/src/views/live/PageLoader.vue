@@ -36,7 +36,7 @@
         </template>
         <template v-else>
           <h1 class="title">Stage not found!</h1>
-          <span>Are you sure the url are correct 🤔?</span>
+          <span>Are you sure the stage url is correct 🤔?</span>
         </template>
       </div>
     </div>

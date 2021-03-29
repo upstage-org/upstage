@@ -113,7 +113,11 @@ export default {
                 const media = useAttribute({ value: model }, 'media', true).value;
                 if (media && media.length) {
                     media.forEach(item => {
-                        item.src = absolutePath(item.src);
+                        if (item.type === 'stream') {
+                            item.url = absolutePath(item.url);
+                        } else {
+                            item.src = absolutePath(item.src);
+                        }
                         if (item.multi) {
                             item.frames = item.frames.map(src => absolutePath(src))
                         }
