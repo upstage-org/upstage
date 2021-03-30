@@ -13,7 +13,7 @@
         <div class="links columns is-vcentered my-4">
           <div class="column">
             <router-link
-              to="/live"
+              to="/live/demo"
               class="link"
               :style="{ 'background-image': url('live-stage.png') }"
             >
@@ -22,7 +22,7 @@
           </div>
           <div class="column">
             <router-link
-              to="/live"
+              to="/live/demo"
               class="link"
               :style="{ 'background-image': url('upcoming-performance.png') }"
             >
