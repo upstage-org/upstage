@@ -90,6 +90,11 @@ const routes = [
             name: 'Reset Password',
             component: () => import('../views/dashboard/Admin/ResetPassword.vue'),
           },
+          {
+            path: 'switch-role',
+            name: 'Switch Role',
+            component: () => import('../views/dashboard/Admin/SwitchRole.vue'),
+          },
         ]
       },
       {

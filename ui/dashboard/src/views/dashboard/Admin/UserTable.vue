@@ -9,7 +9,7 @@
 <script>
 import DataTable from "@/components/DataTable/index";
 import { userGraph } from "@/services/graphql";
-import { displayName } from "@/utils/auth";
+import { displayName, displayRole } from "@/utils/auth";
 
 export default {
   components: { DataTable },
@@ -35,7 +35,7 @@ export default {
       },
       {
         title: "Role",
-        render: (item) => (item.role > 0 ? "Admin" : "Player"),
+        render: displayRole,
         sortable: true,
       },
       {
@@ -43,6 +43,7 @@ export default {
         key: "createdOn",
         type: "date",
         sortable: true,
+        defaultSortOrder: false,
       },
       {
         title: props.actionColumn,

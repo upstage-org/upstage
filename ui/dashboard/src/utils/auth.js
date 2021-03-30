@@ -1,6 +1,8 @@
 import Cookies from "js-cookie";
 import store from "@/store";
 import { computed } from "vue";
+import { ROLES } from "./constants";
+import { titleCase } from "./common";
 
 const ACCESS_TOKEN = "access_token";
 const REFRESH_TOKEN = "refresh_token";
@@ -22,4 +24,12 @@ export function displayName(user) {
   if (user.displayName) return user.displayName
   if (user.firstName || user.lastName) return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
   return user.username
+}
+
+export function displayRole(user) {
+  for (const role in ROLES) {
+    if (ROLES[role] === user.role) {
+      return titleCase(role)
+    }
+  }
 }

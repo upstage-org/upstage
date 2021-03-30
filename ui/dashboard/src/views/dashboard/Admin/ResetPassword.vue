@@ -37,7 +37,6 @@
         </template>
       </Modal>
     </template>
-    template
   </UserTable>
 </template>
 

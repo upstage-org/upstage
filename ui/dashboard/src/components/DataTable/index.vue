@@ -10,19 +10,30 @@
             :key="header"
             align="left"
             :style="{ 'text-align': header.align }"
+            class="clickable"
+            @click="sort(header)"
           >
-            <abbr
-              :data-tooltip="header.description"
-              class="clickable"
-              @click="sort(header)"
-            >
+            <abbr :data-tooltip="header.description">
               {{ header.title }}
             </abbr>
             &nbsp;
-            <i
-              v-if="sortBy?.title === header.title"
-              :class="`fas fa-sort-${sortOrder ? 'up' : 'down'}`"
-            />
+            <template v-if="sortBy?.title === header.title">
+              <i
+                v-if="header.type === 'date'"
+                :class="`fas ${
+                  sortOrder ? 'fa-sort-amount-down' : 'fa-sort-amount-down-alt'
+                }`"
+              />
+              <i
+                v-else
+                :class="`fas ${
+                  sortOrder ? 'fa-sort-alpha-down' : 'fa-sort-alpha-down-alt'
+                }`"
+              />
+            </template>
+            <template v-else-if="header.sortable">
+              <i class="fas fa-sort" />
+            </template>
           </th>
         </tr>
       </thead>
@@ -113,6 +124,13 @@ export default {
       sortOrder: true,
       now: new Date(),
     };
+  },
+  mounted() {
+    const header = this.headers.find((h) => h.defaultSortOrder !== undefined);
+    if (header) {
+      this.sortBy = header;
+      this.sortOrder = header.defaultSortOrder;
+    }
   },
   methods: {
     moment,
