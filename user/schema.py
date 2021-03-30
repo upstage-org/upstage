@@ -15,7 +15,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
-from user.models import User as UserModel
+from user.models import ADMIN, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -59,6 +59,8 @@ class CreateUser(graphene.Mutation):
 
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
+        if not data['email']:
+            raise Exception("Email is required!")
 
         user = UserModel(**data)
         user_id = None
@@ -86,11 +88,19 @@ class UpdateUser(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
+        code,error,user,timezone = current_user()
+        if not user.role in (ADMIN,SUPER_ADMIN) :
+            if not user.id == int(data['id']):
+                raise Exception("Permission denied!")
+        
+        if not data['email']:
+            raise Exception("Email is required!")
+
         with ScopedSession() as local_db_session:
             user = local_db_session.query(UserModel)\
                 .filter(UserModel.id==data['id']).first()
             if ('password' in data):
-                del data['password'] # Password should not be updated directly using this mutation, since it require an old password to change
+                data['password'] = encrypt(data['password'])
             for key, value in data.items():
                 if hasattr(user, key):
                     setattr(user, key, value)
@@ -186,6 +196,27 @@ class ChangePassword(graphene.Mutation):
             local_db_session.commit()
         return ChangePassword(success=True)
 
+class DeleteUserInput(graphene.InputObjectType,UserAttribute):
+    """Arguments to update a user."""
+    id = graphene.ID(required=True, description="Global Id of the user.")
+
+class DeleteUser(graphene.Mutation):
+    success = graphene.Boolean(description="Password changed successful or not")
+
+    class Arguments:
+        inbound = DeleteUserInput(required=True)
+
+    @jwt_required()
+    def mutate(self, info, inbound):
+        data = graphql_utils.input_to_dictionary(inbound)
+        code,error,user,timezone = current_user()
+        if not user.role in (ADMIN,SUPER_ADMIN) :
+                raise Exception("Permission denied!")
+        with ScopedSession() as local_db_session:
+            local_db_session.query(UserModel).filter(UserModel.id==data['id']).delete()
+            local_db_session.commit()
+        return DeleteUser(success=True)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     """ Some mutations are imported from auth/ """
@@ -194,6 +225,7 @@ class Mutation(graphene.ObjectType):
     authUser = AuthMutation.Field()
     refreshUser = RefreshMutation.Field()
     changePassword = ChangePassword.Field()
+    deleteUser = DeleteUser.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()

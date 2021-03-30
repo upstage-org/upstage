@@ -20,19 +20,29 @@ export default {
       {
         title: "Username",
         key: "username",
+        sortable: true,
       },
       {
         title: "Display Name",
         description: "Name displayed in chat",
         render: (item) => displayName(item),
+        sortable: true,
       },
       {
         title: "Email",
         key: "email",
+        sortable: true,
       },
       {
         title: "Role",
         render: (item) => (item.role > 0 ? "Admin" : "Player"),
+        sortable: true,
+      },
+      {
+        title: "Date Registered",
+        key: "createdOn",
+        type: "date",
+        sortable: true,
       },
       {
         title: props.actionColumn,

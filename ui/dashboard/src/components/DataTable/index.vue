@@ -11,7 +11,18 @@
             align="left"
             :style="{ 'text-align': header.align }"
           >
-            <abbr :title="header.description">{{ header.title }}</abbr>
+            <abbr
+              :data-tooltip="header.description"
+              class="clickable"
+              @click="sort(header)"
+            >
+              {{ header.title }}
+            </abbr>
+            &nbsp;
+            <i
+              v-if="sortBy?.title === header.title"
+              :class="`fas fa-sort-${sortOrder ? 'up' : 'down'}`"
+            />
           </th>
         </tr>
       </thead>
@@ -98,6 +109,8 @@ export default {
     return {
       current: 1,
       limit: 10,
+      sortBy: null,
+      sortOrder: true,
       now: new Date(),
     };
   },
@@ -108,15 +121,44 @@ export default {
         .subtract(this.now.getTimezoneOffset(), "minute")
         .fromNow();
     },
+    sort(header) {
+      if (header.sortable) {
+        if (this.sortBy?.title === header.title) {
+          this.sortOrder = !this.sortOrder;
+        }
+        this.sortBy = header;
+      }
+    },
   },
   computed: {
     offset() {
       return this.limit * (this.current - 1);
     },
     rows() {
+      let rows = [...this.nodes];
+      if (this.sortBy) {
+        const { sortable, type, render, key } = this.sortBy;
+        rows = rows.sort((a, b) => {
+          if (typeof sortable === "function") {
+            return sortable(a, b);
+          }
+          if (type === "date") {
+            moment(a[key]).diff(b[key]);
+          }
+          if (render) {
+            return render(a).localeCompare(render(b));
+          }
+          if (key) {
+            return a[key].localeCompare(b[key]);
+          }
+        });
+      }
+      if (!this.sortOrder) {
+        rows.reverse();
+      }
       const start = this.offset;
       const end = start + this.limit;
-      return this.nodes.slice(start, end);
+      return rows.slice(start, end);
     },
   },
 };
