@@ -15,7 +15,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
-from user.models import ADMIN, SUPER_ADMIN, User as UserModel
+from user.models import ADMIN, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -66,6 +66,8 @@ class CreateUser(graphene.Mutation):
         user_id = None
         # Add validation for non-empty passwords, etc.
         user.password = encrypt(user.password)
+        if not user.role:
+            user.role = PLAYER
         with ScopedSession() as local_db_session:
             local_db_session.add(user)
             local_db_session.flush()
