@@ -68,8 +68,8 @@ export const useRequest = (service, ...params) => {
 }
 
 export const useMutation = (...params) => {
-    const { fetch, ...rest } = useRequest(...params);
-    const mutation = fetch
+    const { refresh, ...rest } = useRequest(...params);
+    const mutation = refresh
     const save = async (success, ...params) => {
         try {
             const response = await mutation(...params)

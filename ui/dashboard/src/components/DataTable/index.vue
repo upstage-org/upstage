@@ -10,8 +10,30 @@
             :key="header"
             align="left"
             :style="{ 'text-align': header.align }"
+            class="clickable"
+            @click="sort(header)"
           >
-            <abbr :title="header.description">{{ header.title }}</abbr>
+            <abbr :data-tooltip="header.description">
+              {{ header.title }}
+            </abbr>
+            &nbsp;
+            <template v-if="sortBy?.title === header.title">
+              <i
+                v-if="header.type === 'date'"
+                :class="`fas ${
+                  sortOrder ? 'fa-sort-amount-down' : 'fa-sort-amount-down-alt'
+                }`"
+              />
+              <i
+                v-else
+                :class="`fas ${
+                  sortOrder ? 'fa-sort-alpha-down' : 'fa-sort-alpha-down-alt'
+                }`"
+              />
+            </template>
+            <template v-else-if="header.sortable">
+              <i class="fas fa-sort" />
+            </template>
           </th>
         </tr>
       </thead>
@@ -33,7 +55,12 @@
               :style="{ 'text-align': header.align }"
               :class="header.slot"
             >
-              <slot :name="header.slot" :item="item" :header="header">
+              <slot
+                :name="header.slot"
+                :item="item"
+                :header="header"
+                :refresh="refresh ?? (() => {})"
+              >
                 <template v-if="header.render">
                   {{ header.render(item) }}
                 </template>
@@ -90,16 +117,25 @@ export default {
         totalCount: computed(() => props.data.length),
       };
     }
-    const { nodes, loading, totalCount } = useQuery(props.query);
+    const { nodes, loading, totalCount, refresh } = useQuery(props.query);
 
-    return { loading, nodes, totalCount };
+    return { loading, nodes, totalCount, refresh };
   },
   data: function () {
     return {
       current: 1,
       limit: 10,
+      sortBy: null,
+      sortOrder: true,
       now: new Date(),
     };
+  },
+  mounted() {
+    const header = this.headers.find((h) => h.defaultSortOrder !== undefined);
+    if (header) {
+      this.sortBy = header;
+      this.sortOrder = header.defaultSortOrder;
+    }
   },
   methods: {
     moment,
@@ -108,15 +144,44 @@ export default {
         .subtract(this.now.getTimezoneOffset(), "minute")
         .fromNow();
     },
+    sort(header) {
+      if (header.sortable) {
+        if (this.sortBy?.title === header.title) {
+          this.sortOrder = !this.sortOrder;
+        }
+        this.sortBy = header;
+      }
+    },
   },
   computed: {
     offset() {
       return this.limit * (this.current - 1);
     },
     rows() {
+      let rows = [...this.nodes];
+      if (this.sortBy) {
+        const { sortable, type, render, key } = this.sortBy;
+        rows = rows.sort((a, b) => {
+          if (typeof sortable === "function") {
+            return sortable(a, b);
+          }
+          if (type === "date") {
+            moment(a[key]).diff(b[key]);
+          }
+          if (render) {
+            return render(a).localeCompare(render(b));
+          }
+          if (key) {
+            return a[key].localeCompare(b[key]);
+          }
+        });
+      }
+      if (!this.sortOrder) {
+        rows.reverse();
+      }
       const start = this.offset;
       const end = start + this.limit;
-      return this.nodes.slice(start, end);
+      return rows.slice(start, end);
     },
   },
 };

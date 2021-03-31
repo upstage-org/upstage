@@ -4,10 +4,12 @@
     :class="{ 'is-loading': loading }"
     v-bind="$attrs"
   >
-    <span class="icon is-small">
-      <i class="fas fa-check"></i>
-    </span>
-    <span><slot>Save</slot></span>
+    <slot>
+      <span class="icon is-small">
+        <i class="fas fa-check"></i>
+      </span>
+      <span>Save</span>
+    </slot>
   </button>
 </template>
 
