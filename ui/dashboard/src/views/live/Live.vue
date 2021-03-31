@@ -48,7 +48,7 @@ export default {
 
 <style lang="scss">
 #live-stage {
-  *:not(input) {
+  *:not(input, textarea) {
     -webkit-user-select: none; /* Safari */
     user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
   }
