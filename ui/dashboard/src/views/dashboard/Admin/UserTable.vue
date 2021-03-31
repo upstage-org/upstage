@@ -1,7 +1,12 @@
 <template>
   <DataTable :query="query" :headers="headers" numbered>
-    <template #action="{ item }">
-      <slot name="action" :item="item" :display-name="displayName(item)" />
+    <template #action="{ item, refresh }">
+      <slot
+        name="action"
+        :item="item"
+        :display-name="displayName(item)"
+        :refresh="refresh"
+      />
     </template>
   </DataTable>
 </template>

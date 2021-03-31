@@ -5,7 +5,7 @@
   <div class="modal" :class="{ 'is-active': isActive }">
     <div class="modal-background" @click="closeModal"></div>
     <div class="modal-card" :style="{ width }">
-      <header class="modal-card-head">
+      <header v-if="$slots.header" class="modal-card-head">
         <p class="modal-card-title"><slot name="header" /></p>
         <button class="delete" aria-label="close" @click="closeModal"></button>
       </header>

@@ -32,6 +32,14 @@
               Switch Role
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/delete-user"
+              exact-active-class="is-active"
+            >
+              Delete User
+            </router-link>
+          </li>
         </ul>
       </aside>
     </div>

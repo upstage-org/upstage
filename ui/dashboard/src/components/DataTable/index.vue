@@ -55,7 +55,12 @@
               :style="{ 'text-align': header.align }"
               :class="header.slot"
             >
-              <slot :name="header.slot" :item="item" :header="header">
+              <slot
+                :name="header.slot"
+                :item="item"
+                :header="header"
+                :refresh="refresh ?? (() => {})"
+              >
                 <template v-if="header.render">
                   {{ header.render(item) }}
                 </template>
@@ -112,9 +117,9 @@ export default {
         totalCount: computed(() => props.data.length),
       };
     }
-    const { nodes, loading, totalCount } = useQuery(props.query);
+    const { nodes, loading, totalCount, refresh } = useQuery(props.query);
 
-    return { loading, nodes, totalCount };
+    return { loading, nodes, totalCount, refresh };
   },
   data: function () {
     return {

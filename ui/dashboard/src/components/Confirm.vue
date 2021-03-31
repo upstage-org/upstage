@@ -4,7 +4,6 @@
     <template #trigger>
       <slot name="trigger"></slot>
     </template>
-    <template #header>Confirmation</template>
     <template #content>
       <slot> Are you sure you want to do this? </slot>
     </template>

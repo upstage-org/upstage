@@ -95,6 +95,11 @@ const routes = [
             name: 'Switch Role',
             component: () => import('../views/dashboard/Admin/SwitchRole.vue'),
           },
+          {
+            path: 'delete-user',
+            name: 'Delete User',
+            component: () => import('../views/dashboard/Admin/DeleteUser.vue'),
+          },
         ]
       },
       {

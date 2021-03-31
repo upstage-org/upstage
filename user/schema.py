@@ -101,7 +101,7 @@ class UpdateUser(graphene.Mutation):
         with ScopedSession() as local_db_session:
             user = local_db_session.query(UserModel)\
                 .filter(UserModel.id==data['id']).first()
-            if ('password' in data):
+            if (data['password']):
                 data['password'] = encrypt(data['password'])
             for key, value in data.items():
                 if hasattr(user, key):

@@ -1,5 +1,5 @@
 <template>
-  <UserTable action-column="Change Password">
+  <UserTable action-column="New Role">
     <template #action="{ item }">
       <Confirm @confirm="(close) => saveRole(item, close)" :loading="loading">
         <template #render="{ confirm }">
@@ -7,8 +7,11 @@
             :data="roles"
             :render-label="(item) => item.label"
             :render-value="(item) => item.value"
-            v-model="selectedRole"
-            @update:model-value="confirm()"
+            :model-value="item.selectedRole ?? item.role"
+            @update:model-value="
+              item.selectedRole = $event;
+              confirm();
+            "
           />
         </template>
       </Confirm>
@@ -25,7 +28,6 @@ import Confirm from "@/components/Confirm";
 import { ROLES } from "@/utils/constants";
 import { titleCase } from "@/utils/common";
 import { displayName, displayRole } from "@/utils/auth";
-import { ref } from "@vue/reactivity";
 
 export default {
   components: { UserTable, Dropdown, Confirm },
@@ -37,10 +39,9 @@ export default {
         value: ROLES[role],
       });
     }
-    const selectedRole = ref();
     const { save, loading } = useMutation(userGraph.updateUser);
     const saveRole = async (user, close) => {
-      user.role = selectedRole.value;
+      user.role = user.selectedRole;
       await save(
         `Successfully switch ${displayName(user)}'s role to ${displayRole(
           user
@@ -49,7 +50,7 @@ export default {
       );
       close();
     };
-    return { roles, selectedRole, loading, saveRole };
+    return { roles, loading, saveRole };
   },
 };
 </script>
