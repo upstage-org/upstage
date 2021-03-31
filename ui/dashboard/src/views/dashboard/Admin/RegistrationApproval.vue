@@ -1,5 +1,8 @@
 <template>
-  <UserTable action-column="Status">
+  <UserTable
+    action-column="Status"
+    :action-sort="(a, b) => b.active - a.active"
+  >
     <template #action="{ item }">
       <Switch
         v-model="item.active"

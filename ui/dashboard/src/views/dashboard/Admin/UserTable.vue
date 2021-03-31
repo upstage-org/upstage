@@ -18,7 +18,7 @@ import { displayName, displayRole } from "@/utils/auth";
 
 export default {
   components: { DataTable },
-  props: ["actionColumn"],
+  props: ["actionColumn", "actionSort"],
   setup: (props) => {
     const query = userGraph.userList;
     const headers = [
@@ -54,6 +54,7 @@ export default {
         title: props.actionColumn,
         slot: "action",
         align: "center",
+        sortable: props.actionSort,
       },
     ];
     return { query, headers, displayName };
