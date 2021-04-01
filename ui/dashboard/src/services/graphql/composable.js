@@ -9,7 +9,6 @@ export const useRequest = (service, ...params) => {
     const nodes = computed(() => {
         if (!data.value) return null;
         const key = Object.keys(data.value)[0];
-        console.log(data.value)
         return data.value[key].edges.map((edge) => edge.node)
     });
     const pushNode = (node, reverse) => {
@@ -106,4 +105,18 @@ export function useAttribute(node, attributeName, isJson) {
         }
         return value;
     })
+}
+
+export function useOwners(nodes) {
+    return computed(() => {
+        let list = [];
+        if (nodes.value) {
+            nodes.value.forEach(({ owner }) => {
+                if (!list.some((user) => user.username === owner.username)) {
+                    list.push(owner);
+                }
+            });
+        }
+        return list;
+    });
 }

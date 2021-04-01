@@ -84,3 +84,7 @@ export function debounce(callback, delay) {
     timeout = setTimeout(callback, delay)
   }
 }
+
+export function includesIgnoreCase(value, keyword) {
+  return value.toLowerCase().includes(keyword.toLowerCase())
+}

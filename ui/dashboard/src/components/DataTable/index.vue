@@ -39,7 +39,10 @@
       </thead>
       <tfoot v-if="!nodes.length">
         <tr>
-          <td class="has-text-centered has-text-dark" :colspan="headers.length">
+          <td
+            class="has-text-centered has-text-dark"
+            :colspan="headers.length + numbered"
+          >
             <i class="fas fa-frown fa-4x"></i>
             <div>Sorry, no record match your criteria!</div>
           </td>

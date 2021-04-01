@@ -76,7 +76,7 @@ import Skeleton from "@/components/Skeleton";
 import Field from "@/components/form/Field";
 import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
-import { useQuery } from "@/services/graphql/composable";
+import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
 import { getStageMedia } from "@/utils/stage";
 
@@ -91,17 +91,7 @@ export default {
       stageGraph.mediaList
     );
 
-    const users = computed(() => {
-      let list = [];
-      if (nodes.value) {
-        nodes.value.forEach(({ owner }) => {
-          if (!list.some((user) => user.username === owner.username)) {
-            list.push(owner);
-          }
-        });
-      }
-      return list;
-    });
+    const users = useOwners(nodes);
 
     const { nodes: stageList } = useQuery(stageGraph.stageList);
 
