@@ -100,6 +100,11 @@ const routes = [
             name: 'Delete User',
             component: () => import('../views/dashboard/Admin/DeleteUser.vue'),
           },
+          {
+            path: 'profile-management',
+            name: 'Profile Management',
+            component: () => import('../views/dashboard/Admin/ProfileManagement.vue'),
+          },
         ]
       },
       {

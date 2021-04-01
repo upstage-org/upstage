@@ -40,6 +40,14 @@
               Delete User
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/profile-management"
+              exact-active-class="is-active"
+            >
+              Profile Management
+            </router-link>
+          </li>
         </ul>
       </aside>
     </div>

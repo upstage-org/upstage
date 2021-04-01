@@ -76,12 +76,7 @@
         </transition-group>
       </tbody>
     </table>
-    <Pagination
-      v-model="current"
-      v-model:limit="limit"
-      :total="totalCount"
-      @change="refresh"
-    />
+    <Pagination v-model="current" v-model:limit="limit" :total="totalCount" />
   </div>
 </template>
 
