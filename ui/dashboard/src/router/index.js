@@ -42,11 +42,6 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
       },
       {
-        path: '/dashboard/my-stages',
-        name: 'My Stages',
-        component: () => import('../views/dashboard/MyStages.vue'),
-      },
-      {
         path: '/dashboard/workshop',
         name: 'Workshop',
         component: () => import('../views/dashboard/Workshop.vue'),
