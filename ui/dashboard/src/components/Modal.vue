@@ -9,8 +9,10 @@
         <p class="modal-card-title"><slot name="header" /></p>
         <button class="delete" aria-label="close" @click="closeModal"></button>
       </header>
-      <section class="modal-card-body"><slot name="content" /></section>
-      <footer class="modal-card-foot">
+      <section v-if="$slots.content" class="modal-card-body">
+        <slot name="content" />
+      </section>
+      <footer v-if="$slots.footer" class="modal-card-foot">
         <slot name="footer" :close-modal="closeModal" />
       </footer>
     </div>

@@ -103,6 +103,8 @@ class UpdateUser(graphene.Mutation):
                 .filter(UserModel.id==data['id']).first()
             if (data['password']):
                 data['password'] = encrypt(data['password'])
+            else:
+                del data['password']
             for key, value in data.items():
                 if hasattr(user, key):
                     setattr(user, key, value)
