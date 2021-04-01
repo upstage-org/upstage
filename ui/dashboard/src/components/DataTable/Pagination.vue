@@ -101,7 +101,6 @@ export default {
     };
 
     const totalPages = computed(() => Math.ceil(props.total / props.limit));
-    console.log(totalPages.value);
     const visibleNavigationButtons = computed(() => {
       const buttons = [];
       let begin = Math.ceil(

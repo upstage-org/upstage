@@ -1,6 +1,7 @@
 import router from '@/router';
 import { userGraph } from '@/services/graphql';
 import { displayName, logout } from '@/utils/auth';
+import { ROLES } from '@/utils/constants';
 import { notification } from '@/utils/notification';
 
 export default {
@@ -67,7 +68,7 @@ export default {
       return state.nickname ?? (state.user ? displayName(state.user) : "Guest");
     },
     isAdmin(state) {
-      return state.user?.role > 0;
+      return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(state.user?.role);
     },
   },
 };

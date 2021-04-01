@@ -11,6 +11,18 @@ export const useRequest = (service, ...params) => {
         const key = Object.keys(data.value)[0];
         return data.value[key].edges.map((edge) => edge.node)
     });
+    const pushNode = (node, reverse) => {
+        if (data.value) {
+            const key = Object.keys(data.value)[0];
+            let edges = data.value[key].edges
+            if (reverse) {
+                edges.unshift({ node })
+            } else {
+                edges.push({ node })
+            }
+            data.value = { [key]: { edges } }
+        }
+    };
     const totalCount = computed(() => {
         if (!data.value) return 0;
         const key = Object.keys(data.value)[0];
@@ -51,12 +63,12 @@ export const useRequest = (service, ...params) => {
         return fetch(...params);
     }
 
-    return { loading, data, nodes, totalCount, fetch, clearCache, refresh }
+    return { loading, data, nodes, totalCount, fetch, clearCache, refresh, pushNode }
 }
 
 export const useMutation = (...params) => {
-    const { fetch, ...rest } = useRequest(...params);
-    const mutation = fetch
+    const { refresh, ...rest } = useRequest(...params);
+    const mutation = refresh
     const save = async (success, ...params) => {
         try {
             const response = await mutation(...params)
@@ -93,4 +105,18 @@ export function useAttribute(node, attributeName, isJson) {
         }
         return value;
     })
+}
+
+export function useOwners(nodes) {
+    return computed(() => {
+        let list = [];
+        if (nodes.value) {
+            nodes.value.forEach(({ owner }) => {
+                if (!list.some((user) => user.username === owner.username)) {
+                    list.push(owner);
+                }
+            });
+        }
+        return list;
+    });
 }

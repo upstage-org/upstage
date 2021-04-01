@@ -17,26 +17,7 @@
           @blur="handleBlurName"
         />
       </HorizontalField>
-      <HorizontalField title="Type">
-        <div class="control">
-          <label class="radio">
-            <input type="radio" v-model="data.mediaType" value="avatar" />
-            Avatar
-          </label>
-          <label class="radio">
-            <input type="radio" v-model="data.mediaType" value="prop" />
-            Prop
-          </label>
-          <label class="radio">
-            <input type="radio" v-model="data.mediaType" value="backdrop" />
-            Backdrop
-          </label>
-          <label class="radio">
-            <input type="radio" v-model="data.mediaType" value="audio" />
-            Audio
-          </label>
-        </div>
-      </HorizontalField>
+      <MediaType v-model="data.mediaType" />
       <HorizontalField title="Attachment">
         <div class="file">
           <label class="file-label">
@@ -70,6 +51,7 @@
 import Modal from "./Modal.vue";
 import SaveButton from "./form/SaveButton";
 import HorizontalField from "./form/HorizontalField";
+import MediaType from "./form/MediaType";
 import Field from "./form/Field";
 import { reactive, ref } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
@@ -78,7 +60,7 @@ import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 
 export default {
-  components: { Modal, SaveButton, HorizontalField, Field },
+  components: { Modal, SaveButton, HorizontalField, Field, MediaType },
   emits: ["complete"],
   setup: (props, { emit }) => {
     const active = ref();
@@ -120,7 +102,15 @@ export default {
       }
     };
 
-    return { isImage, handleInputFile, loading, upload, data, active };
+    return {
+      isImage,
+      handleInputFile,
+      loading,
+      upload,
+      data,
+      active,
+      handleBlurName,
+    };
   },
 };
 </script>

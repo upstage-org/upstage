@@ -16,3 +16,12 @@ export const BOARD_ACTIONS = {
   SEND_TO_BACK: 'sendToBack',
   TOGGLE_AUTOPLAY_FRAMES: 'toggleAutoplayFrames',
 }
+
+export const ROLES = {
+  PLAYER: 1,
+  MAKER: 2,
+  UNLIMITED_MAKER: 4,
+  ADMIN: 8,
+  CREATOR: 16,
+  SUPER_ADMIN: 32,
+}

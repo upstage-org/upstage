@@ -80,10 +80,11 @@ export default {
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
         asset {
-          id
+          ...assetFragment
         }
       }
     }
+    ${assetFragment}
   `, variables),
   mediaList: (variables) => client.request(gql`
     query AssetList($id: ID, $nameLike: String, $assetTypeId: ID) {
@@ -154,6 +155,13 @@ export default {
         }
       }
       audios: assetList(assetTypeId: 5) {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+      streams: assetList(assetTypeId: 6) {
         edges {
           node {
             ...assetFragment

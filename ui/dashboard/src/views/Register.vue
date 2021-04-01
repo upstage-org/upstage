@@ -49,6 +49,9 @@
                 left="fas fa-envelope"
                 placeholder="Email"
                 type="email"
+                required
+                requiredMessage="Email is required"
+                :touched="touched"
               />
             </div>
           </div>
@@ -93,7 +96,7 @@ export default {
     const touched = ref(false);
     const submit = async () => {
       touched.value = true;
-      if (!form.username || !form.password) return;
+      if (!form.username || !form.password || !form.email) return;
       if (confirmPasswordError.value) return;
       try {
         const response = await mutation();

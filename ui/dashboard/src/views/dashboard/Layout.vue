@@ -11,8 +11,8 @@
           Media
         </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/dashboard/my-stages">
-          My Stages
+        <router-link class="navbar-item" to="/dashboard/new-stage">
+          New Stage
         </router-link>
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/dashboard/profile/">

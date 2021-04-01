@@ -17,7 +17,7 @@
     <input
       :id="id"
       type="checkbox"
-      :class="`switch ${className}`"
+      :class="`switch ${className ?? 'is-rounded is-success'}`"
       v-bind="$attrs"
       :checked="modelValue"
       @input="$emit('update:modelValue', $event.target.checked)"
