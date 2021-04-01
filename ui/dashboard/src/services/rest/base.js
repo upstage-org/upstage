@@ -42,7 +42,11 @@ const responseInterceptor = axios.interceptors.response.use(
 
     const message = error?.response?.data?.error;
     if (message && !originalRequest.hideNotification) {
-      notification.error(message)
+      let level = error?.response?.data?.level
+      if (!level) {
+        level = "error"
+      }
+      notification[level](message)
     }
     const token = store.getters["auth/getToken"] || "";
 

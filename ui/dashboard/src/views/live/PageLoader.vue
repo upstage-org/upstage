@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-fullheight">
+  <section v-if="(model && preloading) || !model" class="hero is-fullheight">
     <div class="hero-body">
       <div class="container">
         <template v-if="model">
@@ -9,26 +9,35 @@
           <h2 v-if="model.description" class="subtittle">
             {{ model.description }}
           </h2>
-        </template>
-        <h1 class="title" v-else-if="preloadableAssets.length">Demo Stage</h1>
-        <h2 class="subtitle">
-          <button class="button is-primary is-loading" />
-          <span style="line-height: 2">
-            <span v-if="preloadableAssets.length">
-              Preloading avatars, props and backdrops...
-              {{ progress }}/{{ preloadableAssets.length }}
+          <h2 class="subtitle">
+            <button class="button is-primary is-loading" />
+            <span style="line-height: 2">
+              <span v-if="preloadableAssets.length">
+                Preloading avatars, props and backdrops...
+                {{ progress }}/{{ preloadableAssets.length }}
+
+                <div id="preloading-area">
+                  <img
+                    v-for="src in preloadableAssets"
+                    :key="src"
+                    :src="src"
+                    @load="increaseProgress"
+                  />
+                </div>
+              </span>
             </span>
-            <span v-else>Loading stage information...</span>
-          </span>
-        </h2>
-        <div id="preloading-area">
-          <img
-            v-for="src in preloadableAssets"
-            :key="src"
-            :src="src"
-            @load="increaseProgress"
-          />
-        </div>
+          </h2>
+        </template>
+        <template v-else-if="preloading">
+          <h2 class="subtitle">
+            <button class="button is-primary is-loading" />
+            <span style="line-height: 2">Loading stage information...</span>
+          </h2>
+        </template>
+        <template v-else>
+          <h1 class="title">Stage not found!</h1>
+          <span>Are you sure the stage url is correct 🤔?</span>
+        </template>
       </div>
     </div>
   </section>
@@ -40,6 +49,7 @@ import { useStore } from "vuex";
 export default {
   setup: () => {
     const store = useStore();
+    const preloading = computed(() => store.state.stage.preloading);
     const preloadableAssets = computed(
       () => store.getters["stage/preloadableAssets"]
     );
@@ -56,7 +66,7 @@ export default {
 
     setTimeout(stopLoading, 60000);
 
-    return { model, preloadableAssets, progress, increaseProgress };
+    return { model, preloadableAssets, progress, increaseProgress, preloading };
   },
 };
 </script>

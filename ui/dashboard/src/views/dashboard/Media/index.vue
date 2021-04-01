@@ -3,7 +3,7 @@
     <div class="hero-body">
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="refresh()" />
+      <MediaUpload @complete="uploadCompleted" />
     </div>
   </section>
   <div class="columns">
@@ -76,7 +76,7 @@ import Skeleton from "@/components/Skeleton";
 import Field from "@/components/form/Field";
 import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
-import { useQuery } from "@/services/graphql/composable";
+import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
 import { getStageMedia } from "@/utils/stage";
 
@@ -87,19 +87,11 @@ export default {
       mediaType: null,
       owner: null,
     });
-    const { loading, nodes, fetch, refresh } = useQuery(stageGraph.mediaList);
+    const { loading, nodes, fetch, refresh, pushNode } = useQuery(
+      stageGraph.mediaList
+    );
 
-    const users = computed(() => {
-      let list = [];
-      if (nodes.value) {
-        nodes.value.forEach(({ owner }) => {
-          if (!list.some((user) => user.username === owner.username)) {
-            list.push(owner);
-          }
-        });
-      }
-      return list;
-    });
+    const users = useOwners(nodes);
 
     const { nodes: stageList } = useQuery(stageGraph.stageList);
 
@@ -145,6 +137,10 @@ export default {
       stageGraph.assetTypeList
     );
 
+    const uploadCompleted = (result) => {
+      pushNode(result.uploadMedia.asset, true);
+    };
+
     provide("mediaList", mediaList);
     provide("loading", loading);
     provide("refresh", refresh);
@@ -160,6 +156,7 @@ export default {
       users,
       displayName,
       stageList,
+      uploadCompleted,
     };
   },
 };

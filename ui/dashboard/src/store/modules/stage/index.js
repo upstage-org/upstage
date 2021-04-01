@@ -4,7 +4,6 @@ import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
-import { generateDemoData } from './demoData'
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -118,7 +117,11 @@ export default {
                 const media = useAttribute({ value: model }, 'media', true).value;
                 if (media && media.length) {
                     media.forEach(item => {
-                        item.src = absolutePath(item.src);
+                        if (item.type === 'stream') {
+                            item.url = absolutePath(item.url);
+                        } else {
+                            item.src = absolutePath(item.src);
+                        }
                         if (item.multi) {
                             item.frames = item.frames.map(src => absolutePath(src))
                         }
@@ -150,10 +153,6 @@ export default {
             state.board.texts = [];
             state.chat.messages = [];
             state.chat.color = randomColor();
-        },
-        LOAD_DEMO_STAGE(state) {
-            const demoData = generateDemoData();
-            Object.assign(state.tools, demoData);
         },
         SET_BACKGROUND(state, background) {
             state.background = background
@@ -507,14 +506,14 @@ export default {
         async loadStage({ commit }, url) {
             commit('CLEAN_STAGE', null);
             commit('SET_PRELOADING_STATUS', true);
-            if (url) {
-                const response = await stageGraph.stageList({
-                    fileLocation: url
-                })
-                const model = response.stageList.edges[0]?.node;
+            const response = await stageGraph.stageList({
+                fileLocation: url
+            })
+            const model = response.stageList.edges[0]?.node;
+            if (model) {
                 commit('SET_MODEL', model);
             } else {
-                commit('LOAD_DEMO_STAGE');
+                commit('SET_PRELOADING_STATUS', false);
             }
         }
     },

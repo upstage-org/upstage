@@ -16,6 +16,38 @@
               Registration Approval
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/reset-password"
+              exact-active-class="is-active"
+            >
+              Reset Password
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/switch-role"
+              exact-active-class="is-active"
+            >
+              Switch Role
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/delete-user"
+              exact-active-class="is-active"
+            >
+              Delete User
+            </router-link>
+          </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/profile-management"
+              exact-active-class="is-active"
+            >
+              Profile Management
+            </router-link>
+          </li>
         </ul>
       </aside>
     </div>

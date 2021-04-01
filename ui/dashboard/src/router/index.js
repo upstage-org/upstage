@@ -42,11 +42,6 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
       },
       {
-        path: '/dashboard/my-stages',
-        name: 'My Stages',
-        component: () => import('../views/dashboard/MyStages.vue'),
-      },
-      {
         path: '/dashboard/workshop',
         name: 'Workshop',
         component: () => import('../views/dashboard/Workshop.vue'),
@@ -84,6 +79,26 @@ const routes = [
             path: 'approval',
             name: 'Registration Approval',
             component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
+          },
+          {
+            path: 'reset-password',
+            name: 'Reset Password',
+            component: () => import('../views/dashboard/Admin/ResetPassword.vue'),
+          },
+          {
+            path: 'switch-role',
+            name: 'Switch Role',
+            component: () => import('../views/dashboard/Admin/SwitchRole.vue'),
+          },
+          {
+            path: 'delete-user',
+            name: 'Delete User',
+            component: () => import('../views/dashboard/Admin/DeleteUser.vue'),
+          },
+          {
+            path: 'profile-management',
+            name: 'Profile Management',
+            component: () => import('../views/dashboard/Admin/ProfileManagement.vue'),
           },
         ]
       },

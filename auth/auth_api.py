@@ -238,7 +238,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
     # Regular Upstage login, from app or portal.
     if username and password:
-        username = username.lower().strip()
+        username = username.strip()
         if '@' in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
@@ -272,7 +272,7 @@ def call_login_logout(app_entry=True,num_value=None):
             if not decrypt(user.password) == password:
                 return make_response(jsonify({"error": "Bad email or password (17)"}), 401)
             else:
-                return make_response(jsonify({"error": "Your account is not activated, please wait for approval or contact UpStage Admin for support!"}), 401)
+                return make_response(jsonify({"error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!", "level": "warning"}), 401)
 
             # Re-send their signup code.
             existing_code = get_security_code(user.id,SIGNUP_VALIDATION)

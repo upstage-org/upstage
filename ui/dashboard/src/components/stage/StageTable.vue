@@ -1,5 +1,5 @@
 <template>
-  <DataTable :query="stageList" :headers="headers">
+  <DataTable :data="data" :headers="headers">
     <template #name="{ item }">
       <router-link
         :to="`/live/${item.fileLocation}`"
@@ -32,10 +32,10 @@ import Modal from "../Modal";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
-import { stageGraph } from "@/services/graphql";
 
 export default {
   components: { DataTable, Modal, ActionButtons, Detail },
+  props: { data: Array },
   setup: () => {
     const headers = [
       {
@@ -60,7 +60,8 @@ export default {
         align: "center",
       },
     ];
-    return { headers, stageList: stageGraph.stageList };
+
+    return { headers };
   },
 };
 </script>

@@ -61,7 +61,10 @@ export const randomMessageColor = () => {
 }
 
 export function titleCase(str) {
-  var splitStr = str.toLowerCase().split(' ');
+  if (!str) {
+    return ''
+  }
+  var splitStr = str.toLowerCase().replace(/_/g, ' ').split(' ');
   for (var i = 0; i < splitStr.length; i++) {
     splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
   }
@@ -84,4 +87,8 @@ export function debounce(callback, delay) {
 
 export function cloneDeep(object) {
   return JSON.parse(JSON.stringify(object));
+}
+
+export function includesIgnoreCase(value, keyword) {
+  return value.toLowerCase().includes(keyword.toLowerCase())
 }

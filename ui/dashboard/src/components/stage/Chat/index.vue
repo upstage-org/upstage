@@ -56,13 +56,12 @@
           <Reaction :custom-emoji="true" />
         </div>
         <div class="control has-icons-right is-fullwidth">
-          <form autocomplete="off" @submit.prevent="sendChat">
-            <emoji-input
-              v-model="message"
-              placeholder="Type message"
-              :loading="loadingUser"
-            />
-          </form>
+          <emoji-input
+            v-model="message"
+            placeholder="Type message"
+            :loading="loadingUser"
+            @submit="sendChat"
+          />
         </div>
       </div>
     </footer>
@@ -126,6 +125,8 @@ export default {
 
 <style lang="scss" scoped>
 #chatbox {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   width: 20%;
   min-width: 250px;
@@ -136,7 +137,7 @@ export default {
   z-index: 3;
 
   .card-content {
-    height: calc(100% - 84px);
+    flex-grow: 1;
     overflow-y: auto;
     padding-top: 36px;
   }
