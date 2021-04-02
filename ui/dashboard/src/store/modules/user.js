@@ -46,13 +46,14 @@ export default {
         commit("SET_LOADING_USER", false);
       }
     },
-    async saveNickname({ commit, state }, { nickname }) {
+    async saveNickname({ commit, state, dispatch }, { nickname }) {
       commit('SET_NICK_NAME', nickname);
       try {
-        const response = await userGraph.saveNickname({
-          id: state.user.id,
+        const response = await userGraph.updateUser({
+          ...state.user,
           displayName: nickname
         });
+        dispatch('stage/joinStage', null, { root: true });
         return response.updateUser.user.displayName;
       } catch (error) {
         return nickname;

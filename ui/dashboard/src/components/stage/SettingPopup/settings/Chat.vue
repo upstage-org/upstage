@@ -13,13 +13,13 @@
           @keyup.enter="saveNickname"
         />
       </horizontal-field>
-      <save-button @click="saveNickname" />
+      <save-button @click="saveNickname" :loading="loading" />
     </div>
   </div>
 </template>
 
 <script>
-import { computed, reactive } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import HorizontalField from "@/components/form/HorizontalField.vue";
 import SaveButton from "@/components/form/SaveButton.vue";
@@ -28,14 +28,18 @@ export default {
   components: { HorizontalField, SaveButton },
   setup: (props, { emit }) => {
     const form = reactive({});
+    const loading = ref(false);
     const store = useStore();
     const nickname = computed(() => store.getters["user/nickname"]);
-    const saveNickname = () =>
+    const saveNickname = () => {
+      loading.value = true;
       store.dispatch("user/saveNickname", form).then((nickname) => {
         emit("close");
+        loading.value = false;
         notification.success("You new nickname is: " + nickname);
       });
-    return { nickname, saveNickname, form };
+    };
+    return { nickname, saveNickname, form, loading };
   },
 };
 </script>

@@ -52,10 +52,9 @@ export default {
         reactions: [],
         viewport: getViewport(),
         counter: {
-            ready: false,
-            clients: [],
+            sessions: [],
         },
-        session: uuidv4()
+        session: null
     },
     getters: {
         url(state) {
@@ -272,8 +271,9 @@ export default {
             })
         },
         UPDATE_COUNTER(state, counter) {
-            state.counter = counter;
-            state.counter.ready = true;
+            if (counter) {
+                state.counter = counter;
+            }
         }
     },
     actions: {
@@ -306,11 +306,13 @@ export default {
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
-                dispatch('sendConnectionsCounter', +1);
+                setTimeout(() => {
+                    dispatch('handleCounterMessage', {})
+                }, 5000)
             })
         },
         async disconnect({ dispatch }) {
-            await dispatch('sendConnectionsCounter', -1);
+            await dispatch('leaveStage', true);
             mqtt.disconnect();
         },
         handleMessage({ dispatch }, { topic, message }) {
@@ -525,25 +527,33 @@ export default {
                 commit('SET_PRELOADING_STATUS', false);
             }
         },
-        handleCounterMessage({ commit }, { message }) {
+        handleCounterMessage({ commit, dispatch, state }, { message }) {
             commit('UPDATE_COUNTER', message)
-        },
-        async sendConnectionsCounter({ rootGetters, rootState, state }, increment /* +1: join stage, -1: leave stage */) {
-            while (!state.counter.ready) {
-                await new Promise(resolve => setTimeout(resolve, 100))
+            if (!state.session) {
+                state.session = uuidv4()
+                dispatch('joinStage')
             }
+        },
+        joinStage({ rootGetters, state }) {
+            console.log('ahaaksjdflakj====')
             const id = state.session
-            const user = rootState.user.user;
+            const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
+            console.log(nickname)
             const counter = state.counter
-            if (increment > 0) {
-                if (!counter.clients.some(client => client.id === id)) {
-                    counter.clients.push({ id, user, nickname })
-                }
+            const session = counter.sessions.find(s => s.id === id)
+            if (session) {
+                Object.assign(session, { isPlayer, nickname })
             } else {
-                counter.clients = counter.clients.filter(client => client.id !== id)
+                counter.sessions.push({ id, isPlayer, nickname })
             }
             mqtt.sendMessage(TOPICS.COUNTER, counter);
         },
+        leaveStage({ state }) {
+            const id = state.session
+            const counter = state.counter
+            counter.sessions = counter.sessions.filter(s => s.id !== id)
+            mqtt.sendMessage(TOPICS.COUNTER, counter);
+        }
     },
 };

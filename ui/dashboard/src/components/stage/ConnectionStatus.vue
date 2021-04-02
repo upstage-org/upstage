@@ -15,7 +15,33 @@
       </span>
       <span class="status-text">{{ status }}</span>
     </span>
-    <span>{{ counter.clients.length }}</span>
+
+    <Popover>
+      <template #trigger>
+        <span class="tag is-dark is-small">
+          <span class="icon">
+            <i class="far fa-user"></i>
+          </span>
+          <span>{{ players.length }}</span>
+          <span class="icon">
+            <i class="far fa-desktop"></i>
+          </span>
+          <span>{{ audiences.length }}</span>
+        </span>
+      </template>
+      <div v-for="player in players" :key="player">
+        <span class="icon">
+          <i class="far fa-user"></i>
+        </span>
+        {{ player.nickname }}
+      </div>
+      <div v-for="audience in audiences" :key="audience">
+        <span class="icon">
+          <i class="far fa-desktop"></i>
+        </span>
+        {{ audience.nickname }}
+      </div>
+    </Popover>
   </div>
 </template>
 
@@ -23,12 +49,23 @@
 import { useStore } from "vuex";
 import anime from "animejs";
 import { ref, computed, onMounted } from "vue";
+import Popover from "../Popover";
+
 export default {
+  components: { Popover },
   setup: () => {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
-    const counter = computed(() => store.state.stage.counter);
+    const counter = computed(
+      () => store.state.stage.counter ?? { sessions: [] }
+    );
+    const players = computed(() =>
+      counter.value.sessions.filter((s) => s.isPlayer)
+    );
+    const audiences = computed(() =>
+      counter.value.sessions.filter((s) => !s.isPlayer)
+    );
 
     onMounted(() => {
       anime({
@@ -42,7 +79,8 @@ export default {
     return {
       status,
       dot,
-      counter,
+      players,
+      audiences,
     };
   },
 };
@@ -55,6 +93,7 @@ export default {
   top: 50px;
   width: 150px;
   text-align: center;
+  z-index: 2;
 
   @media screen and (max-width: 767px) {
     right: unset;
