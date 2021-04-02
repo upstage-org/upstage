@@ -26,7 +26,7 @@ class StageLicense(Base,db.Model):
     __tablename__ = "stage_license"
     id = Column(BigInteger, primary_key=True)
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=True)
     access_path = Column(String, nullable=False, unique=True)
     grant_recursively = Column(Boolean, nullable=False, default=False)
@@ -36,7 +36,7 @@ class AssetLicense(Base,db.Model):
     __tablename__ = "asset_license"
     id = Column(BigInteger, primary_key=True)
     asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=True)
     access_path = Column(String, nullable=False, unique=True)
     grant_recursively = Column(Boolean, nullable=False, default=False)
