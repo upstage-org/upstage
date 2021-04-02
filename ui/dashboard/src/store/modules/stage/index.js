@@ -537,6 +537,7 @@ export default {
         async leaveStage({ state }) {
             const id = state.session
             state.sessions = state.sessions.filter(s => s.id !== id)
+            state.session = null
             await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         }
     },
