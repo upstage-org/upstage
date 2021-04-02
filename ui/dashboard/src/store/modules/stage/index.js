@@ -59,18 +59,6 @@ export default {
         objects(state) {
             return state.board.objects;
         },
-        avatars(state) {
-            return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
-        },
-        props(state) {
-            return state.board.objects.filter(o => o.type === 'prop');
-        },
-        streams(state) {
-            return state.board.objects.filter(o => o.type === 'stream');
-        },
-        texts(state) {
-            return state.board.objects.filter(o => o.type === 'text');
-        },
         config(state) {
             return state.tools.config;
         },
