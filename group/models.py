@@ -34,7 +34,7 @@ class Group(Base,db.Model):
     __tablename__ = 'upstage_group'
     id = Column(BigInteger, primary_key=True)
     description = Column(Text)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 class AssetGroup(Base,db.Model):
     __tablename__ = 'asset_group'
@@ -42,7 +42,7 @@ class AssetGroup(Base,db.Model):
     description = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     asset_id = Column(Integer,ForeignKey(Asset.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     group = relationship(Group, foreign_keys=[group_id])
     asset = relationship(Asset, foreign_keys=[asset_id])
 
@@ -52,7 +52,7 @@ class StageGroup(Base,db.Model):
     description = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     stage_id = Column(Integer,ForeignKey(Stage.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     group = relationship(Group, foreign_keys=[group_id])
     stage = relationship(Stage, foreign_keys=[stage_id])
 
@@ -62,7 +62,7 @@ class UserGroup(Base,db.Model):
     notes = Column(Text)
     group_id = Column(Integer,ForeignKey(Group.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     group = relationship(Group, foreign_keys=[group_id])
     user = relationship(User, foreign_keys=[user_id])
 
@@ -72,7 +72,7 @@ class UserAsset(Base,db.Model):
     notes = Column(Text)
     asset_id = Column(Integer,ForeignKey(Asset.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset = relationship(Asset, foreign_keys=[asset_id])
     user = relationship(User, foreign_keys=[user_id])
 
@@ -82,7 +82,7 @@ class UserStage(Base,db.Model):
     notes = Column(Text)
     stage_id = Column(Integer,ForeignKey(Stage.id), nullable=False, default=0)
     user_id = Column(Integer,ForeignKey(User.id), nullable=False, default=0)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     stage = relationship(Stage, foreign_keys=[stage_id])
     user = relationship(User, foreign_keys=[user_id])
 
