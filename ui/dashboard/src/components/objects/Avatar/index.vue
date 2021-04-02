@@ -1,8 +1,8 @@
 <template>
-  <Object :object="avatar">
+  <Object :object="object">
     <template #menu="slotProps">
       <MenuContent
-        :object="avatar"
+        :object="object"
         :closeMenu="slotProps.closeMenu"
         v-model:active="active"
       />
@@ -15,7 +15,7 @@ import Object from "../Object.vue";
 import MenuContent from "./ContextMenu";
 
 export default {
-  props: ["avatar"],
+  props: ["object"],
   components: { Object, MenuContent },
 };
 </script>

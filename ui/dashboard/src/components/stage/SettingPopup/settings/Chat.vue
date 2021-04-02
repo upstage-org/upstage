@@ -56,6 +56,7 @@ export default {
   components: { HorizontalField, SaveButton },
   setup: (props, { emit }) => {
     const form = reactive({});
+    const loading = ref(false);
     const store = useStore();
     const loading = ref(false);
     const nickname = computed(() => store.getters["user/nickname"]);
@@ -63,6 +64,7 @@ export default {
       loading.value = true;
       store.dispatch("user/saveNickname", form).then((nickname) => {
         emit("close");
+        loading.value = false;
         notification.success("You new nickname is: " + nickname);
         loading.value = false;
       });

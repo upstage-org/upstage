@@ -26,7 +26,7 @@ class AssetType(Base,db.Model):
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
     file_location = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 class Asset(Base,db.Model):
     __tablename__ = "asset"
@@ -36,7 +36,7 @@ class Asset(Base,db.Model):
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=True)
     file_location = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
     owner = relationship(User, foreign_keys=[owner_id])
 
@@ -51,7 +51,7 @@ class Stage(Base,db.Model):
     description = Column(Text, nullable=True)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     file_location = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     owner = relationship(User, foreign_keys=[owner_id])
     attributes = relationship(lambda: StageAttribute, lazy='dynamic')
 
@@ -67,7 +67,7 @@ class AssetAttribute(Base,db.Model):
     asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset = relationship(Asset, foreign_keys=[asset_id])
 
 class StageAttribute(Base,db.Model):
@@ -76,5 +76,5 @@ class StageAttribute(Base,db.Model):
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     stage = relationship(Stage, foreign_keys=[stage_id])
