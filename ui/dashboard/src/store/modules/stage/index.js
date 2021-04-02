@@ -51,9 +51,7 @@ export default {
         hosts: [],
         reactions: [],
         viewport: getViewport(),
-        counter: {
-            sessions: [],
-        },
+        sessions: [],
         session: null
     },
     getters: {
@@ -270,9 +268,10 @@ export default {
                 recalcFontSize(object, s => s * ratio)
             })
         },
-        UPDATE_COUNTER(state, counter) {
-            if (counter) {
-                state.counter = counter;
+        UPDATE_SESSIONS_COUNTER(state, sessions) {
+            if (sessions && sessions.length) {
+                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'hours') < 12);
+                state.sessions.sort((a, b) => b.at - a.at);
             }
         }
     },
@@ -528,32 +527,29 @@ export default {
             }
         },
         handleCounterMessage({ commit, dispatch, state }, { message }) {
-            commit('UPDATE_COUNTER', message)
+            commit('UPDATE_SESSIONS_COUNTER', message)
             if (!state.session) {
                 state.session = uuidv4()
                 dispatch('joinStage')
             }
         },
-        joinStage({ rootGetters, state }) {
-            console.log('ahaaksjdflakj====')
+        async joinStage({ rootGetters, state }) {
             const id = state.session
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
-            console.log(nickname)
-            const counter = state.counter
-            const session = counter.sessions.find(s => s.id === id)
+            const session = state.sessions.find(s => s.id === id)
+            const at = +new Date()
             if (session) {
-                Object.assign(session, { isPlayer, nickname })
+                Object.assign(session, { isPlayer, nickname, at })
             } else {
-                counter.sessions.push({ id, isPlayer, nickname })
+                state.sessions.push({ id, isPlayer, nickname, at })
             }
-            mqtt.sendMessage(TOPICS.COUNTER, counter);
+            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         },
-        leaveStage({ state }) {
+        async leaveStage({ state }) {
             const id = state.session
-            const counter = state.counter
-            counter.sessions = counter.sessions.filter(s => s.id !== id)
-            mqtt.sendMessage(TOPICS.COUNTER, counter);
+            state.sessions = state.sessions.filter(s => s.id !== id)
+            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         }
     },
 };

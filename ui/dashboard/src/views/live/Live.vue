@@ -14,9 +14,9 @@
 <script>
 import Chat from "@/components/stage/Chat/index";
 import Toolbox from "@/components/stage/Toolbox";
-import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
+import ConnectionStatus from "./ConnectionStatus";
 import { useStore } from "vuex";
 import { computed, onMounted, onUnmounted } from "vue";
 

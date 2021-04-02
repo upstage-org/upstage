@@ -20,27 +20,21 @@
       <template #trigger>
         <span class="tag is-dark is-small">
           <span class="icon">
-            <i class="far fa-user"></i>
+            <i class="fas fa-user"></i>
           </span>
           <span>{{ players.length }}</span>
           <span class="icon">
-            <i class="far fa-desktop"></i>
+            <i class="fas fa-desktop"></i>
           </span>
           <span>{{ audiences.length }}</span>
         </span>
       </template>
-      <div v-for="player in players" :key="player">
-        <span class="icon">
-          <i class="far fa-user"></i>
-        </span>
-        {{ player.nickname }}
-      </div>
-      <div v-for="audience in audiences" :key="audience">
-        <span class="icon">
-          <i class="far fa-desktop"></i>
-        </span>
-        {{ audience.nickname }}
-      </div>
+      <Session v-for="player in players" :key="player" :session="player" />
+      <Session
+        v-for="audience in audiences"
+        :key="audience"
+        :session="audience"
+      />
     </Popover>
   </div>
 </template>
@@ -49,22 +43,20 @@
 import { useStore } from "vuex";
 import anime from "animejs";
 import { ref, computed, onMounted } from "vue";
-import Popover from "../Popover";
+import Popover from "@/components/Popover";
+import Session from "./Session";
 
 export default {
-  components: { Popover },
+  components: { Popover, Session },
   setup: () => {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
-    const counter = computed(
-      () => store.state.stage.counter ?? { sessions: [] }
-    );
     const players = computed(() =>
-      counter.value.sessions.filter((s) => s.isPlayer)
+      store.state.stage.sessions.filter((s) => s.isPlayer)
     );
     const audiences = computed(() =>
-      counter.value.sessions.filter((s) => !s.isPlayer)
+      store.state.stage.sessions.filter((s) => !s.isPlayer)
     );
 
     onMounted(() => {
