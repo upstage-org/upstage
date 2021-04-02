@@ -1,8 +1,8 @@
 <template>
-  <Object :object="text">
+  <Object :object="object">
     <template #menu="slotProps">
       <MenuContent
-        :object="text"
+        :object="object"
         :closeMenu="slotProps.closeMenu"
         v-model:active="active"
       />
@@ -10,7 +10,7 @@
     <template #render>
       <p
         ref="el"
-        :style="text"
+        :style="object"
         class="has-text-centered"
         contenteditable="true"
         @keyup.delete.prevent.stop
@@ -29,7 +29,7 @@ import { useStore } from "vuex";
 import { onMounted, ref, watch } from "vue";
 
 export default {
-  props: ["text"],
+  props: ["object"],
   components: { Object, MenuContent },
   setup: (props) => {
     const el = ref();
@@ -40,19 +40,19 @@ export default {
     const liveTyping = () => {
       const content = el.value.innerHTML;
       store.dispatch("stage/shapeObject", {
-        ...props.text,
+        ...props.object,
         content,
       });
     };
 
     onMounted(() => {
-      el.value.innerHTML = props.text.content;
+      el.value.innerHTML = props.object.content;
     });
     watch(
-      () => props.text.content,
+      () => props.object.content,
       () => {
         if (!isFocus.value) {
-          el.value.innerHTML = props.text.content;
+          el.value.innerHTML = props.object.content;
         }
       }
     );
