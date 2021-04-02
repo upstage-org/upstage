@@ -41,16 +41,6 @@ export default {
     }
     ${userFragment}
   `, variables),
-  saveNickname: (variables) => client.request(gql`
-    mutation UpdateUser($id: ID!, $displayName: String) {
-      updateUser(inbound: {id: $id, displayName: $displayName}) {
-        user {
-          ...userFragment
-        }
-      }
-    }
-    ${userFragment}
-  `, variables),
   refreshUser: (variables, headers) => client.request(gql`
     mutation RefreshToken($refreshToken: String) {
       refreshUser(refreshToken: $refreshToken) {

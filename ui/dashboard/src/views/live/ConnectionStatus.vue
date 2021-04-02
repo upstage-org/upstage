@@ -15,6 +15,27 @@
       </span>
       <span class="status-text">{{ status }}</span>
     </span>
+
+    <Popover>
+      <template #trigger>
+        <span class="tag is-dark is-small">
+          <span class="icon">
+            <i class="fas fa-user"></i>
+          </span>
+          <span>{{ players.length }}</span>
+          <span class="icon">
+            <i class="fas fa-desktop"></i>
+          </span>
+          <span>{{ audiences.length }}</span>
+        </span>
+      </template>
+      <Session v-for="player in players" :key="player" :session="player" />
+      <Session
+        v-for="audience in audiences"
+        :key="audience"
+        :session="audience"
+      />
+    </Popover>
   </div>
 </template>
 
@@ -22,11 +43,21 @@
 import { useStore } from "vuex";
 import anime from "animejs";
 import { ref, computed, onMounted } from "vue";
+import Popover from "@/components/Popover";
+import Session from "./Session";
+
 export default {
+  components: { Popover, Session },
   setup: () => {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
+    const players = computed(() =>
+      store.state.stage.sessions.filter((s) => s.isPlayer)
+    );
+    const audiences = computed(() =>
+      store.state.stage.sessions.filter((s) => !s.isPlayer)
+    );
 
     onMounted(() => {
       anime({
@@ -40,6 +71,8 @@ export default {
     return {
       status,
       dot,
+      players,
+      audiences,
     };
   },
 };
@@ -52,6 +85,7 @@ export default {
   top: 50px;
   width: 150px;
   text-align: center;
+  z-index: 2;
 
   @media screen and (max-width: 767px) {
     right: unset;
