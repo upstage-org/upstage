@@ -3,16 +3,12 @@
     ref="el"
     tabindex="0"
     @keyup.delete="deleteObject"
-    @dblclick="setAsPrimaryAvatar"
+    @click="$emit('hold')"
     :style="{
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
   >
-    <OpacitySlider
-      :position="position"
-      v-model:active="active"
-      :object="object"
-    />
+    <OpacitySlider :position="position" :active="active" :object="object" />
     <Topping :position="position" :object="object" />
     <ContextMenu
       :pad-left="-stageSize.left"
@@ -21,7 +17,7 @@
     >
       <template #trigger>
         <DragResize
-          v-if="loggedIn"
+          v-if="controlable"
           class="object"
           :initW="100"
           :initH="100"
@@ -42,6 +38,7 @@
               height: '100%',
               opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
               transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: 'grab',
             }"
           >
             <slot name="render">
@@ -49,7 +46,7 @@
             </slot>
           </div>
         </DragResize>
-        <template v-if="isDragging || !loggedIn">
+        <template v-if="isDragging || !controlable">
           <div
             :style="{
               position: 'fixed',
@@ -59,7 +56,9 @@
               height: position.h + 'px',
               opacity: object.opacity,
               transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: holder ? 'not-allowed' : 'pointer',
             }"
+            @mousedown.prevent
           >
             <slot name="render">
               <Image :src="src" />
@@ -67,7 +66,7 @@
           </div>
         </template>
       </template>
-      <template #context="slotProps" v-if="loggedIn">
+      <template #context="slotProps" v-if="controlable">
         <slot name="menu" v-bind="slotProps" />
       </template>
     </ContextMenu>
@@ -76,7 +75,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, inject, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -86,6 +85,7 @@ import Topping from "./Topping.vue";
 
 export default {
   props: ["object"],
+  emits: ["dblclick"],
   components: {
     DragResize,
     Image,
@@ -101,7 +101,6 @@ export default {
     const store = useStore();
     const config = store.getters["stage/config"];
     const stageSize = computed(() => store.getters["stage/stageSize"]);
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
     const active = ref(false);
@@ -109,6 +108,12 @@ export default {
     const isDragging = ref(false);
     const beforeDragPosition = ref();
     const animation = ref();
+    const holder = inject("holder");
+    const controlable = computed(() => {
+      return props.object.type === "prop"
+        ? store.getters["auth/loggedIn"]
+        : !holder.value || holder.value.id === store.state.stage.session;
+    });
 
     watch(
       props.object,
@@ -163,15 +168,8 @@ export default {
     };
 
     const deleteObject = () => {
-      if (loggedIn.value) {
+      if (controlable.value) {
         store.dispatch("stage/deleteObject", props.object);
-      }
-    };
-
-    const setAsPrimaryAvatar = () => {
-      if (loggedIn.value && props.object.type !== "prop") {
-        const { name, id } = props.object;
-        store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
       }
     };
 
@@ -211,7 +209,6 @@ export default {
 
     return {
       el,
-      loggedIn,
       print,
       dragStart,
       dragEnd,
@@ -221,9 +218,10 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
-      setAsPrimaryAvatar,
       src,
       stageSize,
+      holder,
+      controlable,
     };
   },
 };

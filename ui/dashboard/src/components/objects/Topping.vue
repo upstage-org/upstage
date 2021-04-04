@@ -6,8 +6,15 @@
       left: position.x + position.w / 2 + 'px',
     }"
   >
-    <span v-show="active" class="icon">
-      <Icon class="marker" src="my-avatar.svg" />
+    <span
+      v-if="holder"
+      class="icon marker"
+      :class="{ inactive: !active }"
+      :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
+        holder.nickname
+      }`"
+    >
+      <Icon src="my-avatar.svg" />
     </span>
     <transition @enter="enter" @leave="leave" :css="false" appear>
       <div
@@ -28,7 +35,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
@@ -37,6 +44,7 @@ export default {
   components: { Icon },
   setup: (props) => {
     const store = useStore();
+    const holder = inject("holder");
     const active = computed(
       () => props.object.id === store.state.user.avatarId
     );
@@ -61,7 +69,7 @@ export default {
       });
     };
 
-    return { active, enter, leave };
+    return { active, enter, leave, holder };
   },
 };
 </script>
@@ -88,7 +96,7 @@ export default {
 }
 .marker {
   position: absolute;
-  left: -8px;
+  left: -10px;
   -webkit-animation: spin 2s linear infinite;
   -moz-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
@@ -108,5 +116,8 @@ export default {
     -webkit-transform: rotate3d(0, 1, 0, 360deg);
     transform: rotate3d(0, 1, 0, 360deg);
   }
+}
+.inactive {
+  filter: grayscale(1);
 }
 </style>

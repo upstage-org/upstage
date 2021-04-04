@@ -328,9 +328,9 @@ export default {
         },
         sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
-            const nickname = rootGetters["user/nickname"];
+            const user = rootGetters["user/chatname"];
             const payload = {
-                user: nickname,
+                user,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
@@ -358,7 +358,7 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        placeObjectOnStage({ commit }, data) {
+        placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
                 id: uuidv4(),
                 w: 100,
@@ -374,6 +374,7 @@ export default {
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
             }
+            dispatch("user/setAvatarId", object.id, { root: true });
             return object;
         },
         shapeObject(action, object) {
@@ -525,12 +526,13 @@ export default {
             const id = state.session
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
+            const avatarId = rootGetters['user/avatarId'];
             const session = state.sessions.find(s => s.id === id)
             const at = +new Date()
             if (session) {
-                Object.assign(session, { isPlayer, nickname, at })
+                Object.assign(session, { isPlayer, nickname, at, avatarId })
             } else {
-                state.sessions.push({ id, isPlayer, nickname, at })
+                state.sessions.push({ id, isPlayer, nickname, at, avatarId })
             }
             await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         },

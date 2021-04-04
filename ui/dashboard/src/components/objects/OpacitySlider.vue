@@ -18,9 +18,6 @@
     }"
     v-show="active"
     @change="handleChange"
-    @mousedown.stop="keepActive"
-    @mouseover.stop="keepActive"
-    @mouseup.stop="keepActive"
   />
 </template>
 
@@ -29,8 +26,7 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
   props: ["position", "active", "object"],
-  emits: ["update:active"],
-  setup: (props, { emit }) => {
+  setup: (props) => {
     const store = useStore();
     const sliderMode = computed(() => store.state.stage.preferences.slider);
     const maxFrameSpeed = 50;
@@ -77,12 +73,7 @@ export default {
       });
     };
 
-    const keepActive = () => {
-      emit("update:active", true);
-    };
-
     const handleChange = (e) => {
-      keepActive();
       switch (sliderMode.value) {
         case "opacity":
           sendChangeOpacity(e);
@@ -96,7 +87,7 @@ export default {
       }
     };
 
-    return { keepActive, handleChange, value, sliderMode };
+    return { handleChange, value, sliderMode };
   },
 };
 </script>

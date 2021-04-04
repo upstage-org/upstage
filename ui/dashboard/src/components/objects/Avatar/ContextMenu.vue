@@ -131,14 +131,13 @@ import Icon from "@/components/Icon";
 
 export default {
   props: ["object", "closeMenu", "active"],
-  emits: ["update:active"],
+  emits: ["update:active", "hold"],
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
 
     const setAsPrimaryAvatar = () => {
-      const { name, id } = props.object;
-      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+      emit("hold");
     };
 
     const deleteObject = () => {

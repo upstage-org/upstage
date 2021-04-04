@@ -46,30 +46,54 @@ export default {
         commit("SET_LOADING_USER", false);
       }
     },
-    async saveNickname({ commit, state, dispatch }, { nickname }) {
-      commit('SET_NICK_NAME', nickname);
-      dispatch('stage/joinStage', null, { root: true });
-      if (state.user && state.user.id) {
-        const response = await userGraph.updateUser({
-          ...state.user,
-          displayName: nickname
-        });
-        return response.updateUser.user.displayName;
+    async saveNickname({ commit, state, dispatch, getters }, { nickname }) {
+      const avatar = getters.avatar
+      if (avatar) {
+        dispatch("stage/shapeObject", {
+          ...avatar,
+          name: nickname,
+        }, { root: true });
       } else {
-        return nickname;
+        commit('SET_NICK_NAME', nickname);
+        dispatch('stage/joinStage', null, { root: true });
+        if (state.user && state.user.id) {
+          const response = await userGraph.updateUser({
+            ...state.user,
+            displayName: nickname
+          });
+          return response.updateUser.user.displayName;
+        }
       }
+      return nickname;
     },
-    setAvatarId({ commit }, { name, id }) {
-      commit('SET_NICK_NAME', name);
+    setAvatarId({ commit, dispatch }, id) {
       commit('SET_AVATAR_ID', id);
+      dispatch('stage/joinStage', null, { root: true });
     },
   },
   getters: {
     nickname(state) {
       return state.nickname ?? (state.user ? displayName(state.user) : "Guest");
     },
+    chatname(state, getters) {
+      let name = getters.nickname;
+      const avatar = getters.avatar
+      if (avatar && avatar.name) {
+        name = avatar.name
+      }
+      return name;
+    },
     isAdmin(state) {
       return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(state.user?.role);
     },
+    avatarId(state) {
+      return state.avatarId;
+    },
+    avatar(state, getters, rootState) {
+      if (state.avatarId) {
+        const avatar = rootState.stage.board.objects.find(o => o.id === state.avatarId);
+        return avatar;
+      }
+    }
   },
 };
