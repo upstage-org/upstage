@@ -32,6 +32,7 @@ export default {
 
     const headers = [
       {
+        title: "Preview",
         slot: "preview",
         align: "center",
       },

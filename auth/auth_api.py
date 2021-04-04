@@ -509,13 +509,6 @@ def call_login_logout(app_entry=True,num_value=None):
                                     "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
                                     )
                                 '''
-        
-                            if not send_acct_verification_code(user.phone,existing_code): # always sms
-                                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-                
-                            email_verification_code(user.email,existing_code)
-                            return make_response(jsonify({"user_id":user.id,
-                                "message": "User needs to verify account"}), 409)
                         else:
                             return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
     
@@ -588,14 +581,17 @@ def call_login_logout(app_entry=True,num_value=None):
 
     print("title:{}".format(title))
 
-    return make_response(jsonify({'user_id':user.id,'access_token':access_token,'refresh_token':refresh_token,
-        'phone':user.phone,
+    return make_response(jsonify({
+        'user_id':user.id,
+        'access_token':access_token,
+        'refresh_token':refresh_token,
         #'access_bitmask':user.access_bitmask,
         'role':user.role, 'first_name':user.first_name,
         #'groups':[to_dict(g) for g in groups],
         'groups':groups,
         'username':user.username,
-        'title':title}), 200)
+        'title':title
+    }), 200)
 
 
 @app.route('{0}refresh/'.format(BASE_URL), methods=['POST'])
