@@ -48,6 +48,14 @@
               Profile Management
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/dashboard/admin/upload-limit"
+              exact-active-class="is-active"
+            >
+              Upload Limit
+            </router-link>
+          </li>
         </ul>
       </aside>
     </div>

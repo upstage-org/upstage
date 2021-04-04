@@ -32,11 +32,10 @@ class UserAttribute:
     first_name = graphene.String(description="First Name")
     last_name = graphene.String(description="Last Name")
     display_name = graphene.String(description="Display Name")
-    phone = graphene.String(description="Phone")
     active =  graphene.Boolean(description="Active record or not")
-    ok_to_sms = graphene.Boolean(description="Okay to sms?")
     agreed_to_terms = graphene.Boolean(description="Agreed to terms")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
+    upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")

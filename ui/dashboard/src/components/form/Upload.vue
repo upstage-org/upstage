@@ -30,12 +30,16 @@
 import { ref } from "@vue/reactivity";
 import { computed } from "@vue/runtime-core";
 import { humanFileSize } from "@/utils/common";
+import { useStore } from "vuex";
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue", "change"],
   setup: (props, { emit }) => {
+    const store = useStore();
+    const mediaLimit = computed(
+      () => store.state.user.user?.uploadLimit ?? 1024 * 1024
+    );
     const file = ref();
-    const mediaLimit = 1024 * 1024;
     const handleInputFile = (e) => {
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
@@ -43,7 +47,7 @@ export default {
         emit("update:modelValue", reader.result);
       };
       file.value = e.target.files[0];
-      if (file.value.size <= mediaLimit) {
+      if (file.value.size <= mediaLimit.value) {
         emit("change", file.value);
       } else {
         emit("change", null);

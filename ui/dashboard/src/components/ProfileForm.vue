@@ -23,7 +23,6 @@
       placeholder="Email"
       v-model="form.email"
     />
-    <Field horizontal label="Phone" placeholder="Phone" v-model="form.phone" />
     <div class="field is-horizontal">
       <div class="field-label"><label class="label">Status</label></div>
       <div class="field-body">
@@ -40,12 +39,6 @@
               v-model="form.agreedToTerms"
               className="is-rounded is-success"
               label="Agreed to terms"
-            />
-            &nbsp;
-            <Switch
-              v-model="form.okToSms"
-              className="is-rounded is-success"
-              label="OK to SMS"
             />
           </div>
         </div>
