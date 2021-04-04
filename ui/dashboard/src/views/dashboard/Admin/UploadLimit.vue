@@ -1,7 +1,7 @@
 <template>
   <UserTable action-column="Upload Limit">
     <template #action="{ item, displayName }">
-      <Confirm @confirm="(close) => saveUploadLimit(item, close)">
+      <Confirm @confirm="(close) => saveUploadLimit(item, close)" :loading="loading">
         <template #render="{ confirm }">
           <input
             class="slider is-fullwidth"
