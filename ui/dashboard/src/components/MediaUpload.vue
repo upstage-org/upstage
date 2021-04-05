@@ -19,26 +19,13 @@
       </HorizontalField>
       <MediaType v-model="data.mediaType" />
       <HorizontalField title="Attachment">
-        <div class="file">
-          <label class="file-label">
-            <input
-              class="file-input"
-              type="file"
-              name="resume"
-              @input="handleInputFile"
-            />
-            <span class="file-cta">
-              <span class="file-icon">
-                <i class="fas fa-upload"></i>
-              </span>
-              <span class="file-label"> Choose a file… </span>
-            </span>
-          </label>
-        </div>
-        <p class="help">
-          <img v-if="isImage" :src="data.base64" alt="Preview" />
-          <b v-else>{{ data.file?.name }}</b>
-        </p>
+        <Upload
+          v-model="data.base64"
+          @change="
+            data.file = $event;
+            handleBlurName();
+          "
+        />
       </HorizontalField>
     </template>
     <template #footer>
@@ -53,35 +40,23 @@ import SaveButton from "./form/SaveButton";
 import HorizontalField from "./form/HorizontalField";
 import MediaType from "./form/MediaType";
 import Field from "./form/Field";
+import Upload from "./form/Upload";
 import { reactive, ref } from "@vue/reactivity";
-import { computed } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 
 export default {
-  components: { Modal, SaveButton, HorizontalField, Field, MediaType },
+  components: { Modal, SaveButton, HorizontalField, Field, Upload, MediaType },
   emits: ["complete"],
   setup: (props, { emit }) => {
     const active = ref();
     const data = reactive({});
 
-    const isImage = computed(() => data.file?.type?.startsWith("image"));
-
     const handleBlurName = () => {
       if (!data.name) {
         data.name = data.file?.name;
       }
-    };
-
-    const handleInputFile = (e) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
-      reader.onload = () => {
-        data.base64 = reader.result;
-      };
-      data.file = e.target.files[0];
-      handleBlurName();
     };
 
     const { loading, mutation } = useMutation(stageGraph.uploadMedia);
@@ -103,8 +78,6 @@ export default {
     };
 
     return {
-      isImage,
-      handleInputFile,
       loading,
       upload,
       data,
