@@ -1,11 +1,10 @@
 <template>
-  <Object :object="object" @hold="setAsPrimaryAvatar">
+  <Object :object="object">
     <template #menu="slotProps">
       <MenuContent
         :object="object"
         :closeMenu="slotProps.closeMenu"
         v-model:active="active"
-        @hold="setAsPrimaryAvatar"
       />
     </template>
   </Object>
@@ -22,21 +21,12 @@ export default {
   components: { Object, MenuContent },
   setup: (props) => {
     const store = useStore();
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
     const holder = computed(() =>
       store.state.stage.sessions.find((s) => s.avatarId === props.object.id)
     );
     provide("holder", holder);
 
-    const setAsPrimaryAvatar = () => {
-      if (loggedIn.value && !holder.value && props.object.type !== "prop") {
-        store
-          .dispatch("user/setAvatarId", props.object.id)
-          .then(props.closeMenu);
-      }
-    };
-
-    return { setAsPrimaryAvatar, holder };
+    return { holder };
   },
 };
 </script>

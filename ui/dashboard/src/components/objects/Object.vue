@@ -3,7 +3,7 @@
     ref="el"
     tabindex="0"
     @keyup.delete="deleteObject"
-    @click="$emit('hold')"
+    @click="hold"
     :style="{
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
@@ -19,8 +19,8 @@
         <DragResize
           v-if="controlable"
           class="object"
-          :initW="100"
-          :initH="100"
+          :initW="position.w"
+          :initH="position.h"
           v-model:x="position.x"
           v-model:y="position.y"
           v-model:w="position.w"
@@ -207,6 +207,12 @@ export default {
       }
     });
 
+    const hold = () => {
+      if (controlable.value && props.object.type !== "prop") {
+        store.dispatch("user/setAvatarId", props.object.id);
+      }
+    };
+
     return {
       el,
       print,
@@ -220,6 +226,7 @@ export default {
       deleteObject,
       src,
       stageSize,
+      hold,
       holder,
       controlable,
     };
