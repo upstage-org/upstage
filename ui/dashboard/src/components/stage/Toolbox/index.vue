@@ -15,9 +15,9 @@
             v-if="isStage"
             size="36"
             @click="isStage = false"
-            src="scene.svg"
+            src="stage.svg"
           />
-          <Icon v-else size="36" @click="isStage = true" src="stage.svg" />
+          <Icon v-else size="36" @click="isStage = true" src="scene.svg" />
         </span>
       </a>
     </div>
