@@ -78,6 +78,7 @@ export default {
         active.value = false;
         notification.success("Media uploaded successfully!");
         emit("complete", response);
+        data.name = data.base64 = data.mediaType = data.filename = data.file = null;
       } catch (error) {
         notification.error(error);
       }

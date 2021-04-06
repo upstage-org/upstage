@@ -96,6 +96,14 @@ export default {
         emit("change", null);
       }
     );
+    watch(
+      () => props.modelValue,
+      (value) => {
+        if (!value) {
+          file.value = null;
+        }
+      }
+    );
 
     const isImage = computed(() => file.value?.type?.startsWith("image"));
 

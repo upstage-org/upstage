@@ -11,12 +11,13 @@
       <PanelItem name="Text" icon="text.svg" />
       <a class="panel-block stage-scene-toggle">
         <span>
-          <Switch
-            v-model="isStage"
-            checked-label="St"
-            unchecked-label="Sc"
-            className="is-rounded is-success"
+          <Icon
+            v-if="isStage"
+            size="36"
+            @click="isStage = false"
+            src="scene.svg"
           />
+          <Icon v-else size="36" @click="isStage = true" src="stage.svg" />
         </span>
       </a>
     </div>
@@ -27,10 +28,10 @@
 import { provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
-import Switch from "@/components/form/Switch";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { TopBar, PanelItem, Switch },
+  components: { TopBar, PanelItem, Icon },
   setup: () => {
     const tool = ref();
     const changeTool = (newTool) => {
@@ -95,10 +96,9 @@ export default {
   .stage-scene-toggle {
     height: 62px;
     > span {
-      transform: rotate(90deg);
       position: absolute;
-      right: -10px;
-      bottom: 16px;
+      right: 0px;
+      bottom: 8px;
     }
   }
 
