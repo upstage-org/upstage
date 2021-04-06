@@ -25,6 +25,12 @@
             data.file = $event;
             handleBlurName();
           "
+          :unlimit="data.mediaType === 'stream'"
+          :accept-image="
+            ['avatar', 'prop', 'backdrop', null].includes(data.mediaType)
+          "
+          :accept-audio="['audio', null].includes(data.mediaType)"
+          :accept-video="['stream', null].includes(data.mediaType)"
         />
       </HorizontalField>
     </template>
@@ -72,6 +78,7 @@ export default {
         active.value = false;
         notification.success("Media uploaded successfully!");
         emit("complete", response);
+        data.name = data.base64 = data.mediaType = data.filename = data.file = null;
       } catch (error) {
         notification.error(error);
       }
