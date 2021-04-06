@@ -25,6 +25,12 @@
             data.file = $event;
             handleBlurName();
           "
+          :unlimit="data.mediaType === 'stream'"
+          :accept-image="
+            ['avatar', 'prop', 'backdrop', null].includes(data.mediaType)
+          "
+          :accept-audio="['audio', null].includes(data.mediaType)"
+          :accept-video="['stream', null].includes(data.mediaType)"
         />
       </HorizontalField>
     </template>
