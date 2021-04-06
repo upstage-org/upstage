@@ -1,15 +1,19 @@
 <template>
   <div class="avatar-context-menu card-content p-0">
-    <a
-      v-if="object.type !== 'prop'"
-      class="panel-block"
-      @click="setAsPrimaryAvatar"
-    >
-      <span class="panel-icon">
-        <Icon src="set-as-avatar.svg" />
-      </span>
-      <span>Set as your avatar</span>
-    </a>
+    <template v-if="object.type !== 'prop'">
+      <a v-if="isHolding" class="panel-block" @click.stop="releaseAvatar">
+        <span class="panel-icon">
+          <Icon src="clear.svg" />
+        </span>
+        <span>Release this avatar</span>
+      </a>
+      <a v-else class="panel-block" @click="holdAvatar">
+        <span class="panel-icon">
+          <Icon src="set-as-avatar.svg" />
+        </span>
+        <span>Hold this avatar</span>
+      </a>
+    </template>
     <a class="panel-block" @click="bringToFront">
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
@@ -126,19 +130,22 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import Icon from "@/components/Icon";
 
 export default {
   props: ["object", "closeMenu", "active"],
-  emits: ["update:active"],
+  emits: ["update:active", "hold"],
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
 
-    const setAsPrimaryAvatar = () => {
-      const { name, id } = props.object;
-      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+    const holdAvatar = () => {
+      store.dispatch("user/setAvatarId", props.object.id).then(props.closeMenu);
+    };
+
+    const releaseAvatar = () => {
+      store.dispatch("user/setAvatarId", null).then(props.closeMenu);
     };
 
     const deleteObject = () => {
@@ -190,9 +197,15 @@ export default {
       });
     };
 
+    const holder = inject("holder");
+    const isHolding = computed(
+      () => holder.value && holder.value.id === store.state.stage.session
+    );
+
     return {
       switchFrame,
-      setAsPrimaryAvatar,
+      holdAvatar,
+      releaseAvatar,
       deleteObject,
       changeNickname,
       bringToFront,
@@ -201,6 +214,7 @@ export default {
       sliderMode,
       changeSliderMode,
       rotate,
+      isHolding,
     };
   },
 };
