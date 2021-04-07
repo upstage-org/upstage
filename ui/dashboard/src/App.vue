@@ -10,6 +10,7 @@ export default {
     onMounted(() => {
       const store = useStore();
       store.dispatch("user/fetchCurrent");
+      store.dispatch("config/fetchConfig");
     });
   },
 };
