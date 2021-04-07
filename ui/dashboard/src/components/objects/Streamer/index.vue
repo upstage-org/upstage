@@ -1,10 +1,10 @@
 <template>
   <div>
-    <Object :object="object">
+    <Object :object="stream">
       <template #menu="slotProps">
         <div class="avatar-context-menu card-content p-0">
           <a
-            v-if="object.isPlaying"
+            v-if="stream.isPlaying"
             class="panel-block has-text-info"
             @click="pauseStream(slotProps)"
           >
@@ -55,11 +55,11 @@
     </Object>
     <video
       ref="video"
-      :src="stream.url"
+      :src="object.url"
       preload="auto"
       :muted="!isHost"
       @loadeddata="loadeddata"
-      @ended="object.isPlaying = false"
+      @ended="stream.isPlaying = false"
       style="display: none"
     ></video>
   </div>
@@ -75,27 +75,27 @@ import dog from "@/assets/dog.png";
 
 export default {
   components: { Object },
-  props: ["stream"],
+  props: ["object"],
   setup: (props) => {
     const store = useStore();
-    const object = reactive({ ...props.stream, isPlaying: true });
+    const stream = reactive({ ...props.object, isPlaying: true });
     const video = ref();
 
     const isHost = computed(() =>
-      store.state.stage.hosts.some((stream) => stream.id === props.stream.id)
+      store.state.stage.hosts.some((object) => object.id === props.object.id)
     );
 
     const synchronize = () => {
-      if (object.isPlaying) {
+      if (stream.isPlaying) {
         video.value.play();
       } else {
         video.value.pause();
       }
     };
 
-    watch(props.stream, () => {
-      delete props.stream.src;
-      window.Object.assign(object, props.stream);
+    watch(props.object, () => {
+      delete props.object.src;
+      window.Object.assign(stream, props.object);
       synchronize();
     });
 
@@ -103,13 +103,13 @@ export default {
       synchronize();
     };
 
-    const { src } = useShape(video, object);
-    watch(src, () => (object.src = src.value));
+    const { src } = useShape(video, stream);
+    watch(src, () => (stream.src = src.value));
 
     const playStream = ({ closeMenu }) => {
       store
         .dispatch("stage/shapeObject", {
-          ...object,
+          ...stream,
           isPlaying: true,
         })
         .then(closeMenu);
@@ -118,7 +118,7 @@ export default {
     const pauseStream = ({ closeMenu }) => {
       store
         .dispatch("stage/shapeObject", {
-          ...object,
+          ...stream,
           isPlaying: false,
         })
         .then(closeMenu);
@@ -126,14 +126,14 @@ export default {
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
-        ...object,
+        ...stream,
         shape,
       });
     };
 
     return {
       video,
-      object,
+      stream,
       isHost,
       loadeddata,
       playStream,

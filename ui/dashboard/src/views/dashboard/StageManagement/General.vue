@@ -17,9 +17,20 @@
           placeholder="Short Name"
           v-model="form.fileLocation"
           requiredMessage="Short name is required"
-          right="fas fa-check"
-          help="From which the stage URL is created"
           expanded
+          @keyup="shortNameValid = null"
+          @input="checkShortName"
+          :right="
+            validatingShortName
+              ? 'fas fa-circle-notch fa-spin'
+              : shortNameValid === true
+              ? 'fas fa-check'
+              : shortNameValid === false
+              ? 'fas fa-times'
+              : 'fas'
+          "
+          :help="!form.fileLocation && `From which the stage URL is created`"
+          :error="!shortNameValid && 'This short name already existed!'"
         />
       </div>
     </div>
@@ -41,25 +52,6 @@
       </div>
     </div>
 
-    <!-- <div class="field is-horizontal">
-      <div class="field-label is-normal">
-        <label class="label">Media</label>
-      </div>
-      <div class="field-body">
-        <div class="field is-narrow">
-          <div class="control">
-            <div class="select is-fullwidth">
-              <select>
-                <option>Media 1</option>
-                <option>Media 2</option>
-                <option>Media 3</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div> -->
-
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Users</label>
@@ -79,7 +71,7 @@
       </div>
     </div>
 
-    <div class="field is-horizontal">
+    <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
         <label class="label">Stage Status</label>
       </div>
@@ -87,15 +79,15 @@
         <div class="field is-narrow">
           <div class="control">
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="live" />
               Live
             </label>
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="upcoming" />
               Upcoming
             </label>
             <label class="radio">
-              <input type="radio" name="status" />
+              <input type="radio" v-model="form.status" value="rehearsal" />
               Rehearsal
             </label>
           </div>
@@ -109,19 +101,32 @@
       <div class="field-body">
         <div class="field">
           <div class="control">
-            <button
-              class="button mr-2 mt-2 is-primary"
-              :class="{ 'is-loading': loading }"
-              @click="createStage"
-            >
-              Save Stage
-            </button>
-            <button class="button mr-2 mt-2 is-warning">Clear Chat</button>
-            <button class="button mr-2 mt-2 is-warning">Sweep Stage</button>
-            <button class="button mr-2 mt-2 is-dark">
-              Hide From Stage List
-            </button>
-            <button class="button mr-2 mt-2 is-danger">Delete Stage</button>
+            <template v-if="stage">
+              <button
+                class="button mr-2 mt-2 is-primary"
+                :class="{ 'is-loading': loading }"
+                @click="updateStage"
+                :disabled="!shortNameValid"
+              >
+                Save Stage
+              </button>
+              <button class="button mr-2 mt-2 is-warning">Clear Chat</button>
+              <button class="button mr-2 mt-2 is-warning">Sweep Stage</button>
+              <button class="button mr-2 mt-2 is-dark">
+                Hide From Stage List
+              </button>
+              <button class="button mr-2 mt-2 is-danger">Delete Stage</button>
+            </template>
+            <template v-else>
+              <button
+                class="button mr-2 mt-2 is-primary"
+                :class="{ 'is-loading': loading }"
+                @click="createStage"
+                :disabled="!shortNameValid"
+              >
+                Create Stage
+              </button>
+            </template>
           </div>
         </div>
       </div>
@@ -130,13 +135,18 @@
 </template>
 
 <script>
-import { useMutation, useQuery } from "@/services/graphql/composable";
+import {
+  useMutation,
+  useQuery,
+  useRequest,
+} from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { inject, reactive, watchEffect } from "vue";
+import { inject, reactive, ref } from "vue";
 import Field from "@/components/form/Field";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
 import { displayName } from "@/utils/auth";
+import { debounce } from "@/utils/common";
 
 export default {
   components: { Field },
@@ -144,14 +154,16 @@ export default {
     const router = useRouter();
     const stage = inject("stage");
 
-    const form = reactive({ ...stage.value, ownerId: stage.value.owner?.id });
-    watchEffect(() => {
-      console.log(form);
+    const form = reactive({
+      ...stage.value,
+      ownerId: stage.value.owner?.id,
+      status: stage.value.attributes?.find((a) => a.name === "status")
+        ?.description,
     });
 
-    const { nodes: users } = useQuery(userGraph.oneUser);
+    const { nodes: users } = useQuery(userGraph.userList);
     const { loading, mutation, data } = useMutation(
-      stageGraph.createStage,
+      stage.value.id ? stageGraph.updateStage : stageGraph.createStage,
       form
     );
     const createStage = async () => {
@@ -167,8 +179,44 @@ export default {
         notification.error(error);
       }
     };
+    const updateStage = async () => {
+      try {
+        await mutation();
+        notification.success("Stage updated successfully!");
+      } catch (error) {
+        notification.error(error);
+      }
+    };
 
-    return { form, createStage, loading, users, displayName };
+    const shortNameValid = ref(!!stage.value.id);
+    const { loading: validatingShortName, fetch } = useRequest(
+      stageGraph.stageList
+    );
+    const checkShortName = debounce(async () => {
+      const response = await fetch({
+        fileLocation: form.fileLocation,
+      });
+      shortNameValid.value = true;
+      if (response.stageList.edges.length) {
+        const existingStage = response.stageList.edges[0].node;
+        if (existingStage.fileLocation !== stage.value.fileLocation) {
+          shortNameValid.value = false;
+        }
+      }
+    }, 500);
+
+    return {
+      form,
+      stage,
+      createStage,
+      updateStage,
+      loading,
+      users,
+      displayName,
+      checkShortName,
+      validatingShortName,
+      shortNameValid,
+    };
   },
 };
 </script>

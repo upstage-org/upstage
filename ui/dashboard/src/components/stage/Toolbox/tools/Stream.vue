@@ -1,7 +1,7 @@
 <template>
   <div @click="newStream">
     <div class="icon is-large">
-      <i class="fas fa-plus fa-2x"></i>
+      <Icon src="new.svg" size="36" />
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
@@ -16,9 +16,10 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "@/components/objects/Skeleton";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { Skeleton },
+  components: { Skeleton, Icon },
   setup: () => {
     const store = useStore();
     const newStream = () => {

@@ -40,6 +40,7 @@ export default {
 
     watch(loggedIn, () => {
       if (loggedIn.value) {
+        store.dispatch("stage/joinStage");
         close();
       }
     });

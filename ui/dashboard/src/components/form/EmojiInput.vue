@@ -1,11 +1,16 @@
 <template>
-  <input
+  <ElasticInput
     v-if="!pickerOnly"
-    ref="input"
-    class="input is-rounded"
     v-bind="$attrs"
-    :value="modelValue"
-    @input="$emit('update:modelValue', $event.target.value)"
+    :model-value="modelValue"
+    @update:model-value="$emit('update:modelValue', $event)"
+    @ref="(el) => (input = el)"
+    @submit="$emit('submit')"
+    :style="{
+      'border-top-right-radius': '20px',
+      'border-bottom-right-radius': '20px',
+      'padding-right': '40px',
+    }"
   />
   <div v-click-outside="() => (isPicking = false)" style="display: inline">
     <button
@@ -21,7 +26,9 @@
       @click="isPicking = !isPicking"
     >
       <slot name="icon">
-        <i class="far fa-smile"></i>
+        <span class="icon ml-0" v-if="!loading">
+          <Icon size="48" src="emoji.svg" />
+        </span>
       </slot>
     </button>
     <transition :css="false" @enter="pickerEnter">
@@ -34,10 +41,13 @@
 import "emoji-picker-element";
 import { ref } from "vue";
 import anime from "animejs";
+import Icon from "@/components/Icon";
+import ElasticInput from "@/components/form/ElasticInput";
 
 export default {
   props: ["loading", "modelValue", "pickerOnly", "style", "className"],
   emits: ["update:modelValue"],
+  components: { Icon, ElasticInput },
   setup: (props, { emit }) => {
     const input = ref();
     const isPicking = ref(false);
@@ -46,6 +56,7 @@ export default {
       if (props.pickerOnly) {
         emit("update:modelValue", unicode);
       } else {
+        console.log(input.value);
         const start = input.value.selectionStart;
         const end = input.value.selectionEnd;
         const value = props.modelValue ?? "";
@@ -68,7 +79,7 @@ export default {
         complete,
       });
     };
-    return { input, isPicking, pickerEnter };
+    return { input, isPicking, pickerEnter, log: console.log };
   },
 };
 </script>

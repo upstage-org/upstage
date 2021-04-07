@@ -1,6 +1,11 @@
 <template>
+  <section class="hero is-small is-primary is-bold">
+    <div class="hero-body">
+      <h1 class="title">Stage Management</h1>
+    </div>
+  </section>
   <div class="columns">
-    <div class="column is-4">
+    <div class="column is-narrow">
       <aside class="menu box has-background-light mx-4">
         <p class="menu-label">
           <span v-if="id">{{ stage.name }}</span>
@@ -25,15 +30,19 @@
               >
             </li>
             <li>
-              <router-link to="chat" exact-active-class="is-active"
-                >Chat</router-link
-              >
+              <router-link to="media" exact-active-class="is-active">
+                Media
+              </router-link>
             </li>
-            <li><a>Record</a></li>
             <li>
-              <router-link to="scenes" exact-active-class="is-active"
-                >Scenes</router-link
-              >
+              <router-link to="chat" exact-active-class="is-active">
+                Chat
+              </router-link>
+            </li>
+            <li>
+              <router-link to="scenes" exact-active-class="is-active">
+                Scenes
+              </router-link>
               <ul>
                 <li><a>Avatar</a></li>
                 <li><a>Props</a></li>
@@ -47,9 +56,9 @@
         </ul>
       </aside>
     </div>
-    <div class="column is-8">
+    <div class="column">
       <div class="pt-4 pr-4 pb-4">
-        <button class="is-loading" v-if="!!id && loading"></button>
+        <Skeleton v-if="!!id && loading" />
         <router-view v-else />
       </div>
     </div>
@@ -60,10 +69,11 @@
 import { provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
+import Skeleton from "@/components/Skeleton";
 export default {
   props: ["id"],
+  components: { Skeleton },
   setup: (props) => {
-    provide("id", props.id);
     const { nodes, loading, fetch } = useRequest(stageGraph.stageList);
     const stage = useFirst(nodes);
     provide("stage", stage);

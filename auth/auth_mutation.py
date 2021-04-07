@@ -29,10 +29,10 @@ class AuthMutation(graphene.Mutation):
         password = graphene.String()
     
     def mutate(self, info , username, password) :
-        user = User.query.filter_by(username=username.lower()).first()
+        user = User.query.filter_by(username=username).first()
         if not user:
             raise Exception('Authenication Failure : User is not registered')
-        if decrypt(password.lower()) != user.password:
+        if decrypt(password) != user.password:
             raise Exception('Authenication Failure : Bad Password')
         return AuthMutation(
             access_token = create_access_token(username),

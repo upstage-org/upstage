@@ -8,18 +8,21 @@
     @click="setBackground(background)"
   >
     <Image v-if="background.src" :src="background.src" />
-    <Image v-else :src="dragghost" />
+    <div v-else>
+      <div class="icon is-large"><Icon size="36" src="clear.svg" /></div>
+      <span class="tag is-light is-block">Clear</span>
+    </div>
   </div>
 </template>
 
 <script>
-import Image from "@/components/Image";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import dragghost from "@/assets/dragghost.png";
+import Image from "@/components/Image";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { Image },
+  components: { Image, Icon },
   setup: () => {
     const store = useStore();
     const currentBackground = computed(() => store.state.stage.background);
@@ -32,13 +35,10 @@ export default {
       store.dispatch("stage/setBackground", background.src);
     };
 
-    console.log(currentBackground.value);
-
     return {
       backgrounds,
       setBackground,
       currentBackground,
-      dragghost,
     };
   },
 };

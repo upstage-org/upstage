@@ -6,10 +6,10 @@
     @click="toggleAudio(audio)"
   >
     <div class="icon is-large" v-if="audio.isPlaying">
-      <i class="fas fa-pause fa-2x"></i>
+      <Icon size="36" src="pause.svg" />
     </div>
     <div class="icon is-large" v-else>
-      <i class="fas fa-play fa-2x"></i>
+      <Icon size="36" src="play.svg" />
     </div>
     <div class="audio-name tag is-light is-block" :title="audio.file">
       {{ audio.name }}
@@ -19,8 +19,10 @@
 
 <script>
 import { useStore } from "vuex";
+import Icon from "@/components/Icon";
 
 export default {
+  components: { Icon },
   setup: () => {
     const store = useStore();
     const audios = store.getters["stage/audios"];

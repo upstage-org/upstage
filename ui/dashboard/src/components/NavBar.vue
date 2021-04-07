@@ -58,7 +58,7 @@
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/donate">Donate</router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/live">Stage</router-link>
+        <router-link class="navbar-item" to="/live/demo">Stage</router-link>
       </div>
 
       <div class="navbar-end">

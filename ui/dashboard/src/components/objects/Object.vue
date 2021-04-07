@@ -3,7 +3,7 @@
     ref="el"
     tabindex="0"
     @keyup.delete="deleteObject"
-    @dblclick="setAsPrimaryAvatar"
+    @dblclick="hold"
     :style="{
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
@@ -14,13 +14,17 @@
       :object="object"
     />
     <Topping :position="position" :object="object" />
-    <ContextMenu>
+    <ContextMenu
+      :pad-left="-stageSize.left"
+      :pad-top="-stageSize.top"
+      :pad-right="250"
+    >
       <template #trigger>
         <DragResize
-          v-if="loggedIn"
+          v-if="controlable"
           class="object"
-          :initW="100"
-          :initH="100"
+          :initW="position.w"
+          :initH="position.h"
           v-model:x="position.x"
           v-model:y="position.y"
           v-model:w="position.w"
@@ -32,28 +36,41 @@
           @drag-end="dragEnd"
           @resize-end="resizeEnd"
         >
-          <Image
-            class="the-object"
-            :src="src"
-            :opacity="(object.opacity ?? 1) * (isDragging ? 0.5 : 1)"
-            :rotate="object.rotate"
-          />
+          <div
+            :style="{
+              width: '100%',
+              height: '100%',
+              opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: 'grab',
+            }"
+          >
+            <slot name="render">
+              <Image class="the-object" :src="src" />
+            </slot>
+          </div>
         </DragResize>
-        <Image
-          :src="src"
-          v-if="isDragging || !loggedIn"
-          :style="{
-            width: position.w + 'px',
-            height: position.h + 'px',
-            position: 'fixed',
-            left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
-            top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
-          }"
-          :opacity="object.opacity"
-          :rotate="object.rotate"
-        />
+        <template v-if="isDragging || !controlable">
+          <div
+            :style="{
+              position: 'fixed',
+              left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
+              top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
+              width: position.w + 'px',
+              height: position.h + 'px',
+              opacity: object.opacity,
+              transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: holder ? 'not-allowed' : 'pointer',
+            }"
+            @mousedown.prevent
+          >
+            <slot name="render">
+              <Image :src="src" />
+            </slot>
+          </div>
+        </template>
       </template>
-      <template #context="slotProps" v-if="loggedIn">
+      <template #context="slotProps" v-if="controlable">
         <slot name="menu" v-bind="slotProps" />
       </template>
     </ContextMenu>
@@ -62,7 +79,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, inject, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -72,6 +89,7 @@ import Topping from "./Topping.vue";
 
 export default {
   props: ["object"],
+  emits: ["dblclick"],
   components: {
     DragResize,
     Image,
@@ -86,7 +104,7 @@ export default {
     // Vuex store
     const store = useStore();
     const config = store.getters["stage/config"];
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     // Local state
     const active = ref(false);
@@ -94,6 +112,16 @@ export default {
     const isDragging = ref(false);
     const beforeDragPosition = ref();
     const animation = ref();
+    const holder = inject("holder") ?? ref();
+    const isHolding = computed(
+      () => holder.value?.id === store.state.stage.session
+    );
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const controlable = computed(() => {
+      return holdable.value ? isHolding.value : store.getters["auth/loggedIn"];
+    });
 
     watch(
       props.object,
@@ -136,8 +164,8 @@ export default {
         });
         position.x = beforeDragPosition.value.x;
         position.y = beforeDragPosition.value.y;
-        isDragging.value = false;
       }
+      isDragging.value = false;
     };
 
     const resizeEnd = (e) => {
@@ -148,15 +176,8 @@ export default {
     };
 
     const deleteObject = () => {
-      if (loggedIn.value) {
+      if (controlable.value) {
         store.dispatch("stage/deleteObject", props.object);
-      }
-    };
-
-    const setAsPrimaryAvatar = () => {
-      if (loggedIn.value && props.object.type !== "prop") {
-        const { name, id } = props.object;
-        store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
       }
     };
 
@@ -194,11 +215,14 @@ export default {
       }
     });
 
-    console.log(position)
+    const hold = () => {
+      if (holdable.value && !holder.value) {
+        store.dispatch("user/setAvatarId", props.object.id);
+      }
+    };
 
     return {
       el,
-      loggedIn,
       print,
       dragStart,
       dragEnd,
@@ -208,8 +232,13 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
-      setAsPrimaryAvatar,
       src,
+      stageSize,
+      hold,
+      holder,
+      isHolding,
+      holdable,
+      controlable,
     };
   },
 };

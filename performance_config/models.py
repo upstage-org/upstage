@@ -60,7 +60,7 @@ class PerformanceConfig(Base,db.Model):
     splash_screen_text = Column(Text, nullable=True, default=None)
     # comma-separated list of animation URLs
     splash_screen_animation_urls = Column(Text, nullable=True, default=None)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=False, default=None)
 
     def get_animation_urls(self):
@@ -73,7 +73,7 @@ class Scene(Base,db.Model):
     scene_order = Column(Integer, index=True, nullable=False, default=0)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=False, default=None)
     parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
     # A scene can only belong to one performance. They shouldn't be reused, although
@@ -101,7 +101,7 @@ class PerformanceMQTTConfig(Base,db.Model):
     topic_name = Column(Text, unique=True, nullable=False)
     username = Column(Text, nullable=False)
     password = Column(Text, nullable=False)
-    created_on = Column(DateTime, nullable=False, default=datetime.utcnow())
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=False, default=None)
     performance_config_id = Column(Integer, ForeignKey(PerformanceConfig.id), nullable=False, default=0)
     owner = relationship(User, foreign_keys=[owner_id])

@@ -1,15 +1,18 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import mqtt from '@/services/mqtt'
-import { isJson, randomMessageColor, randomRange } from '@/utils/common'
+import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
-import { attachPropToAvatar, normalizeObject } from './reusable';
-import { generateDemoData } from './demoData'
+import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
+import { getViewport } from './reactiveViewport';
+import { stageGraph } from '@/services/graphql';
+import { useAttribute } from '@/services/graphql/composable';
 
 export default {
     namespaced: true,
     state: {
         preloading: true,
+        model: null,
         background: null,
         status: 'OFFLINE',
         subscribeSuccess: false,
@@ -20,8 +23,20 @@ export default {
         board: {
             objects: [],
             drawings: [],
+            texts: [],
         },
-        tools: generateDemoData(),
+        tools: {
+            avatars: [],
+            props: [],
+            backdrops: [],
+            audios: [],
+            streams: [],
+            config: {
+                animateDuration: 500,
+                reactionDuration: 5000,
+                ratio: 16 / 9,
+            }
+        },
         settingPopup: {
             isActive: false,
         },
@@ -34,20 +49,17 @@ export default {
             }
         },
         hosts: [],
-        reactions: []
+        reactions: [],
+        viewport: getViewport(),
+        sessions: [],
+        session: null
     },
     getters: {
+        url(state) {
+            return state.model ? state.model.fileLocation : 'demo';
+        },
         objects(state) {
             return state.board.objects;
-        },
-        avatars(state) {
-            return state.board.objects.filter(o => o.type === 'avatar' || o.type === 'drawing' || !o.type);
-        },
-        props(state) {
-            return state.board.objects.filter(o => o.type === 'prop' || o.type === 'text');
-        },
-        streams(state) {
-            return state.board.objects.filter(o => o.type === 'stream');
         },
         config(state) {
             return state.tools.config;
@@ -66,9 +78,68 @@ export default {
         currentAvatar(state, getters, rootState) {
             const id = rootState.user.avatarId;
             return state.board.objects.find(o => o.id === id);
+        },
+        stageSize(state, getters) {
+            let width = state.viewport.width;
+            let height = state.viewport.height;
+            let left = 0;
+            let top = 0;
+            const ratio = getters.config.ratio;
+            if (width / height > ratio) {
+                width = height * ratio;
+                left = (window.innerWidth - width) / 2;
+            } else {
+                height = width / ratio;
+                top = (window.innerHeight - height) / 2;
+            }
+            return { width, height, left, top };
         }
     },
     mutations: {
+        SET_MODEL(state, model) {
+            state.model = model
+            if (model) {
+                console.log(model)
+                const media = useAttribute({ value: model }, 'media', true).value;
+                if (media && media.length) {
+                    media.forEach(item => {
+                        if (item.type === 'stream') {
+                            item.url = absolutePath(item.url);
+                        } else {
+                            item.src = absolutePath(item.src);
+                        }
+                        if (item.multi) {
+                            item.frames = item.frames.map(src => absolutePath(src))
+                        }
+                        const key = item.type + 's';
+                        if (!state.tools[key]) {
+                            state.tools[key] = [];
+                        }
+                        state.tools[key].push(item)
+                    });
+                } else {
+                    state.preloading = false;
+                }
+                const config = useAttribute({ value: model }, 'config', true).value;
+                if (config) {
+                    state.tools.config.ratio = config.ratio.width / config.ratio.height
+                }
+            }
+        },
+        CLEAN_STAGE(state) {
+            state.model = null;
+            // state.background = null;
+            state.tools.avatars = [];
+            state.tools.props = [];
+            state.tools.backdrops = []
+            state.tools.audios = []
+            state.tools.streams = [];
+            state.board.objects = [];
+            state.board.drawings = [];
+            state.board.texts = [];
+            state.chat.messages = [];
+            state.chat.color = randomColor();
+        },
         SET_BACKGROUND(state, background) {
             state.background = background
         },
@@ -82,35 +153,18 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
+            deserializeObject(object, true);
             state.board.objects.push(object)
-            attachPropToAvatar(state, object);
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
+            deserializeObject(object);
             const avatar = state.board.objects.find(o => o.id === id);
             if (avatar) { // Object an is avatar
-                if (object.type === 'drawing' || object.type === 'stream' || object.type === 'text') {
-                    delete object.src;
-                }
                 Object.assign(avatar, object);
-                attachPropToAvatar(state, object);
                 return;
             }
             state.board.objects.push(object)
-        },
-        MOVE_ATTACHED_PROPS(state, object) {
-            const avatar = state.board.objects.find(avatar => avatar.id === object.id);
-            if (avatar) {
-                object.attachedProps.forEach(propId => {
-                    const prop = state.board.objects.find(object => object.id === propId);
-                    if (prop) {
-                        prop.moveSpeed = object.moveSpeed;
-                        prop.x = (prop.x - avatar.x) + object.x;
-                        prop.y = (prop.y - avatar.y) + object.y;
-                        attachPropToAvatar(state, prop);
-                    }
-                })
-            }
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
@@ -162,6 +216,9 @@ export default {
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(drawing);
         },
+        PUSH_TEXT(state, text) {
+            state.board.texts.push(text);
+        },
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
         },
@@ -187,6 +244,24 @@ export default {
                 state.reactions.shift();
             }, state.tools.config.reactionDuration);
         },
+        UPDATE_VIEWPORT(state, viewport) {
+            state.viewport = viewport;
+        },
+        RESCALE_OBJECTS(state, ratio) {
+            state.board.objects.forEach(object => {
+                object.x = object.x * ratio;
+                object.y = object.y * ratio;
+                object.w = object.w * ratio;
+                object.h = object.h * ratio;
+                recalcFontSize(object, s => s * ratio)
+            })
+        },
+        UPDATE_SESSIONS_COUNTER(state, sessions) {
+            if (sessions && sessions.length) {
+                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
+                state.sessions.sort((a, b) => b.at - a.at);
+            }
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -202,26 +277,29 @@ export default {
                 console.log(error);
                 commit('SET_STATUS', 'OFFLINE')
             });
-            client.on("message", (topic, rawMessage) => {
-                const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
-                const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
-                dispatch('handleMessage', { topic, message });
-            });
+            mqtt.receiveMessage((payload) => {
+                dispatch('handleMessage', payload);
+            })
         },
-        subscribe({ commit }) {
+        subscribe({ commit, dispatch }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
-                [TOPICS.REACTION]: { qos: 2 }
+                [TOPICS.REACTION]: { qos: 2 },
+                [TOPICS.COUNTER]: { qos: 2 }
             }
             mqtt.subscribe(topics).then(res => {
-                commit('SET_SUBSCRIBE_STATUS', true)
+                commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
+                setTimeout(() => {
+                    dispatch('handleCounterMessage', {})
+                }, 5000)
             })
         },
-        disconnect() {
+        async disconnect({ dispatch }) {
+            await dispatch('leaveStage', true);
             mqtt.disconnect();
         },
         handleMessage({ dispatch }, { topic, message }) {
@@ -241,15 +319,18 @@ export default {
                 case TOPICS.REACTION:
                     dispatch('handleReactionMessage', { message });
                     break;
+                case TOPICS.COUNTER:
+                    dispatch('handleCounterMessage', { message });
+                    break;
                 default:
                     break;
             }
         },
         sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
-            const nickname = rootGetters["user/nickname"];
+            const user = rootGetters["user/chatname"];
             const payload = {
-                user: nickname,
+                user,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
@@ -277,7 +358,7 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        placeObjectOnStage({ commit }, data) {
+        placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
                 id: uuidv4(),
                 w: 100,
@@ -287,53 +368,60 @@ export default {
             }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object
+                object: serializeObject(object, true)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
+            }
+            if (data.type === 'avatar' || data.type === 'drawing') {
+                dispatch("user/setAvatarId", object.id, { root: true });
             }
             return object;
         },
         shapeObject(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.MOVE_TO,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
+            object = serializeObject(object)
+            if (object.type === 'drawing') {
+                delete object.commands
+            }
             const payload = {
                 type: BOARD_ACTIONS.DESTROY,
-                object: normalizeObject(object)
+                object
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         switchFrame(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SWITCH_FRAME,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         sendToBack(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: normalizeObject(object)
+                object: serializeObject(object)
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         toggleAutoplayFrames(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES,
-                object,
+                object: serializeObject(object),
             }
             mqtt.sendMessage(TOPICS.BOARD, payload);
         },
@@ -343,9 +431,6 @@ export default {
                     commit('PUSH_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.MOVE_TO:
-                    if (message.object.attachedProps) {
-                        commit('MOVE_ATTACHED_PROPS', message.object);
-                    }
                     commit('UPDATE_OBJECT', message.object);
                     break;
                 case BOARD_ACTIONS.DESTROY:
@@ -408,8 +493,9 @@ export default {
             commit('PUSH_STREAM_TOOL', stream);
             dispatch('placeObjectOnStage', stream)
         },
-        addText({ dispatch }, text) {
+        addText({ commit, dispatch }, text) {
             text.type = 'text';
+            commit('PUSH_TEXT', text);
             dispatch('placeObjectOnStage', text)
         },
         handleReactionMessage({ commit }, { message }) {
@@ -417,6 +503,46 @@ export default {
         },
         sendReaction(_, reaction) {
             mqtt.sendMessage(TOPICS.REACTION, reaction);
+        },
+        async loadStage({ commit }, url) {
+            commit('CLEAN_STAGE', null);
+            commit('SET_PRELOADING_STATUS', true);
+            const response = await stageGraph.stageList({
+                fileLocation: url
+            })
+            const model = response.stageList.edges[0]?.node;
+            if (model) {
+                commit('SET_MODEL', model);
+            } else {
+                commit('SET_PRELOADING_STATUS', false);
+            }
+        },
+        handleCounterMessage({ commit, dispatch, state }, { message }) {
+            commit('UPDATE_SESSIONS_COUNTER', message)
+            if (!state.session) {
+                state.session = uuidv4()
+                dispatch('joinStage')
+            }
+        },
+        async joinStage({ rootGetters, state }) {
+            const id = state.session
+            const isPlayer = rootGetters['auth/loggedIn'];
+            const nickname = rootGetters['user/nickname'];
+            const avatarId = rootGetters['user/avatarId'];
+            const session = state.sessions.find(s => s.id === id)
+            const at = +new Date()
+            if (session) {
+                Object.assign(session, { isPlayer, nickname, at, avatarId })
+            } else {
+                state.sessions.push({ id, isPlayer, nickname, at, avatarId })
+            }
+            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
+        },
+        async leaveStage({ state }) {
+            const id = state.session
+            state.sessions = state.sessions.filter(s => s.id !== id)
+            state.session = null
+            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         }
     },
 };

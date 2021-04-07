@@ -19,12 +19,13 @@ from config.project_globals import Base,metadata,engine,app,DBSession
 from config.settings import FLASK_HOST,FLASK_PORT, RUNFROM_PORT, ENV_TYPE
 from config.signals import add_signals
 
-from auth import auth,auth_api
-from user import user,user_api,schema
+from auth import auth
+from user import user,schema
 from asset import asset
 from asset.views import assets
 from license.views import licenses
 from stage import schema
+from config import schema
 
 # Below, duplicate names are actually app names.
 # See __init__.py in each directory to verify app name.

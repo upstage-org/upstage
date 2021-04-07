@@ -1,15 +1,21 @@
 <template>
-  <button class="button is-primary" @click="$emit('click')">
-    <span class="icon is-small">
-      <i class="fas fa-check"></i>
-    </span>
-    <span><slot>Save</slot></span>
+  <button
+    class="button is-primary"
+    :class="{ 'is-loading': loading }"
+    v-bind="$attrs"
+  >
+    <slot>
+      <span class="icon is-small">
+        <i class="fas fa-check"></i>
+      </span>
+      <span>Save</span>
+    </slot>
   </button>
 </template>
 
 <script>
 export default {
-  emits: ["click"],
+  props: ["loading"],
 };
 </script>
 

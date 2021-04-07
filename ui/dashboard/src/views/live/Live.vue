@@ -2,7 +2,6 @@
   <section
     id="live-stage"
     class="hero bg-cover has-background-primary-light is-fullheight"
-    :style="'background-image: url(' + background + ')'"
   >
     <Board />
     <ConnectionStatus />
@@ -15,12 +14,11 @@
 <script>
 import Chat from "@/components/stage/Chat/index";
 import Toolbox from "@/components/stage/Toolbox";
-import ConnectionStatus from "@/components/stage/ConnectionStatus";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
+import ConnectionStatus from "./ConnectionStatus";
 import { useStore } from "vuex";
-import { computed, onMounted, onUnmounted, watch } from "vue";
-import anime from "animejs";
+import { computed, onMounted, onUnmounted } from "vue";
 
 export default {
   components: {
@@ -32,7 +30,6 @@ export default {
   },
   setup: () => {
     const store = useStore();
-    const background = computed(() => store.state.stage.background);
 
     onMounted(() => {
       store.dispatch("stage/connect");
@@ -42,25 +39,20 @@ export default {
       store.dispatch("stage/disconnect");
     });
 
-    watch(background, () => {
-      anime({
-        targets: "#live-stage",
-        opacity: [0, 1],
-        duration: 5000,
-      });
+    window.addEventListener("beforeunload", () => {
+      store.dispatch("stage/disconnect");
     });
 
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
-    return { background, loggedIn };
+    return { loggedIn };
   },
 };
 </script>
 
 <style lang="scss">
 #live-stage {
-  background-size: cover;
-  *:not(input) {
+  *:not(input, textarea) {
     -webkit-user-select: none; /* Safari */
     user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
   }

@@ -4,7 +4,7 @@
       <article class="tile is-child notification is-white">
         <div class="content">
           <img class="stage-image" src="@/assets/upstage.png" />
-          <p class="title">{{ name }}</p>
+          <p class="title">{{ stage.name }}</p>
           <p class="subtitle">
             Statistique max
             <span>
@@ -31,7 +31,7 @@
       <article class="tile is-child notification is-white">
         <div class="content">
           <div class="content">
-            <strong>Description of the Stage</strong>
+            <strong v-if="stage.description">{{ stage.description }}</strong>
             <span v-for="i in [1, 2, 3, 4, 5]" :key="i">
               <br />
               <span class="icon has-text-dark">
@@ -56,7 +56,7 @@
 
 <script>
 export default {
-  props: ["name"],
+  props: ["stage"],
 };
 </script>
 

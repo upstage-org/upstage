@@ -1,165 +1,37 @@
 <template>
   <TopBar :tool="tool" />
-  <nav
-    id="toolbox"
-    :class="{ collapsed }"
-    class="panel"
-    @mouseenter="expand"
-    @mouseleave="waitToCollapse"
-  >
-    <div class="panel-heading p-0 m-0 tabs is-toggle is-fullwidth">
-      <ul>
-        <li class="is-active">
-          <a>
-            <span>Stage</span>
-          </a>
-        </li>
-        <li>
-          <a class="button">
-            <span>Scene</span>
-          </a>
-        </li>
-      </ul>
-    </div>
+  <nav id="toolbox" :class="{ collapsed }" class="panel">
     <div class="panel-body">
-      <a
-        @click="changeTool('Backdrop')"
-        :class="{ 'is-active': tool === 'Backdrop' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="backdrop.svg" />
+      <PanelItem name="Backdrop" icon="backdrop.svg" />
+      <PanelItem name="Avatars" icon="avatar.svg" />
+      <PanelItem name="Props" icon="props.svg" />
+      <PanelItem name="Audio" icon="audio.svg" />
+      <PanelItem name="Stream" icon="stream.svg" />
+      <PanelItem name="Draw" icon="draw.svg" />
+      <PanelItem name="Text" icon="text.svg" />
+      <a class="panel-block stage-scene-toggle">
+        <span>
+          <Icon
+            v-if="isStage"
+            size="36"
+            @click="isStage = false"
+            src="stage.svg"
+          />
+          <Icon v-else size="36" @click="isStage = true" src="scene.svg" />
         </span>
-        Backdrop
       </a>
-      <a
-        @click="changeTool('Avatars')"
-        :class="{ 'is-active': tool === 'Avatars' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="avatar.svg" />
-        </span>
-        Avatars
-      </a>
-      <a
-        @click="changeTool('Props')"
-        :class="{ 'is-active': tool === 'Props' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="props.svg" />
-        </span>
-        Props
-      </a>
-      <a
-        @click="changeTool('Audio')"
-        :class="{ 'is-active': tool === 'Audio' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="audio.svg" />
-        </span>
-        Audio
-      </a>
-      <div class="dropdown is-hoverable is-fullwidth">
-        <div class="dropdown-trigger is-fullwidth">
-          <a
-            @click="changeTool('Stream')"
-            :class="{ 'is-active': tool === 'Stream' }"
-            class="panel-block button"
-          >
-            <span class="panel-icon">
-              <Icon src="stream.svg" />
-            </span>
-            <span class="is-fullwidth">Streams</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </span>
-          </a>
-          <span />
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a href="#" class="dropdown-item button" @click="createStream()">
-              Add New
-            </a>
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="changeTool('Stream')"
-            >
-              Manage
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="dropdown is-hoverable is-fullwidth">
-        <div class="dropdown-trigger is-fullwidth">
-          <a
-            @click="changeTool('Draw')"
-            :class="{ 'is-active': tool === 'Draw' }"
-            class="panel-block button"
-          >
-            <span class="panel-icon">
-              <Icon src="draw.svg" />
-            </span>
-            <span class="is-fullwidth">Draw</span>
-            <span class="icon is-small">
-              <i class="fas fa-angle-right" aria-hidden="true"></i>
-            </span>
-          </a>
-          <span />
-        </div>
-        <div class="dropdown-menu" id="dropdown-menu4" role="menu">
-          <div class="dropdown-content">
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="openDrawTool(true)"
-            >
-              Add New
-            </a>
-            <a
-              href="#"
-              class="dropdown-item button"
-              @click="openDrawTool(false)"
-            >
-              Manage
-            </a>
-          </div>
-        </div>
-      </div>
-      <a
-        @click="createText"
-        :class="{ 'is-active': tool === 'Text' }"
-        class="panel-block button"
-      >
-        <span class="panel-icon">
-          <Icon src="text.svg" />
-        </span>
-        Text
-      </a>
-    </div>
-    <div class="panel-block">
-      <button class="button is-fullwidth is-block">
-        <span class="icon">
-          <Icon src="savescene.svg" />
-        </span>
-        <span>Save Scene</span>
-      </button>
     </div>
   </nav>
 </template>
 
 <script>
-import { ref } from "vue";
+import { provide, ref } from "vue";
 import TopBar from "./TopBar";
-import { useStore } from "vuex";
+import PanelItem from "./PanelItem";
 import Icon from "@/components/Icon";
 
 export default {
-  components: { TopBar, Icon },
+  components: { TopBar, PanelItem, Icon },
   setup: () => {
     const tool = ref();
     const changeTool = (newTool) => {
@@ -169,7 +41,10 @@ export default {
         tool.value = newTool;
       }
     };
-    const collapsed = ref(false);
+    provide("tool", tool);
+    provide("changeTool", changeTool);
+
+    const collapsed = ref(true);
     const timer = ref();
     const expand = () => {
       collapsed.value = false;
@@ -181,23 +56,7 @@ export default {
 
     waitToCollapse();
 
-    const store = useStore();
-    const openDrawTool = (isDrawing) => {
-      tool.value = "Draw";
-      store.commit("stage/UPDATE_IS_DRAWING", isDrawing);
-    };
-
-    const createStream = () => {
-      changeTool("Stream");
-      store.dispatch("stage/openSettingPopup", {
-        type: "CreateStream",
-      });
-    };
-
-    const createText = () => {
-      changeTool("Text");
-      store.commit("stage/UPDATE_IS_WRITING", true);
-    };
+    const isStage = ref(true);
 
     return {
       tool,
@@ -205,9 +64,7 @@ export default {
       collapsed,
       expand,
       waitToCollapse,
-      openDrawTool,
-      createStream,
-      createText,
+      isStage,
     };
   },
 };
@@ -219,21 +76,37 @@ export default {
   width: 15%;
   min-width: 200px;
   left: 16px;
-  top: 120px;
-  max-height: calc(100% - 130px);
   background-color: white;
   opacity: 0.9;
   transition: transform 0.5s;
+  top: 120px;
 
   .panel-icon {
     width: 1.5em;
+    filter: grayscale(100%);
+  }
+  .panel-block.is-active,
+  .panel-block:hover {
+    border: none;
+    .panel-icon {
+      filter: none;
+      transform: scale(1.5);
+    }
+  }
+  .stage-scene-toggle {
+    height: 62px;
+    > span {
+      position: absolute;
+      right: 0px;
+      bottom: 8px;
+    }
   }
 
   &.collapsed {
-    transform: translateX(-85%);
+    transform: translateX(-90%);
     .panel-icon {
-      position: relative;
-      left: 150px;
+      position: absolute;
+      right: 0;
     }
     .fa-angle-right {
       display: none;
@@ -245,24 +118,6 @@ export default {
     left: 216px;
     top: initial;
     z-index: 100;
-  }
-
-  .panel-block button.is-active {
-    border-left-width: 2px;
-    border-left-style: solid;
-  }
-  .panel-body {
-    max-height: calc(100vh - 230px);
-    overflow-y: auto;
-  }
-
-  @media screen and (max-height: 500px) {
-    height: calc(100% - 130px);
-
-    .panel-body {
-      max-height: calc(100% - 96px);
-      overflow-y: auto;
-    }
   }
 }
 </style>

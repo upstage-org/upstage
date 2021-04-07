@@ -20,24 +20,9 @@ nav {
     &.shadow:hover {
         @include boxShadow;
     }
-    &:not(.is-large) .icon {
-        width: 16px !important;
-        height: 16px !important;
-    }
 }
-.card, .panel {
+.card, .panel, .modal-card {
     border-top: $green-bar
-}
-.dropdown.is-active {
-    .dropdown-trigger .button {
-        @include boxShadow;
-    }
-    .dropdown-menu {
-        margin-left: -4px;
-    }
-} 
-.dropdown-trigger .button {
-    border: 1px solid $border-color;
 }
 .panel-body {
     overflow: visible !important;
@@ -52,6 +37,9 @@ nav {
 }
 .panel-heading {
     overflow: visible !important;
+}
+#board {
+    box-shadow: 0 0 1em -0.125em $dark;
 }
 #topbar {
     border-top: none;
@@ -76,6 +64,9 @@ nav {
 .foyer-background {
   background-image: url(../assets/foyerbg.png);
   min-height: calc(100vh - 120px);
+}
+.modal-card-foot {
+    padding: 10px;
 }
 // Desktop only css
 @media screen and (min-width: 1024px) {
@@ -123,6 +114,20 @@ nav {
                 box-shadow: none !important;
                 border-width: 0 1px 1px 1px !important;
             }
+        }
+    }
+}
+@media screen and (max-width: 1280px) {
+    .navbar-brand {
+        .navbar-item {
+            margin-right: 0;
+        }
+    }
+    .navbar-item {
+        margin: 8px;
+        padding: 0 10px !important;
+        &:first-child {
+            margin-left: 0;
         }
     }
 }

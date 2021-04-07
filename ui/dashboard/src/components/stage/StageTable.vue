@@ -1,61 +1,67 @@
 <template>
-  <table class="table" :class="{ 'is-loading': loading }">
-    <thead>
-      <tr>
-        <th><abbr title="Name (url)">Stage name</abbr></th>
-        <th><abbr title="Creator of the stage">Owner</abbr></th>
-        <th><abbr title="Duplicate/Manage stage">Actions</abbr></th>
-        <th><abbr title="Chat log">Chat log</abbr></th>
-        <th><abbr title="Screen recordings">Screen recordings</abbr></th>
-      </tr>
-    </thead>
-    <tfoot>
-      <tr></tr>
-    </tfoot>
-    <tbody>
-      <tr v-for="stage in stages" :key="stage">
-        <td>
-          <router-link to="/live" class="has-text-primary has-text-weight-bold">
-            {{ stage.name }}
-          </router-link>
-        </td>
-        <td>
-          {{ displayName(stage.owner) }}
-        </td>
-        <td class="has-text-centered">
-          <Modal>
-            <template #trigger>
-              <i class="fas fa-lg fa-cog" />
-            </template>
-            <template #header>Stage Detail</template>
-            <template #content><Detail :name="stage.name" /></template>
-            <template #footer><ActionButtons :stage="stage" /></template>
-          </Modal>
-        </td>
-        <td class="has-text-centered">
-          <i class="fas fa-lg fa-comments" />
-        </td>
-        <td class="has-text-centered">
-          <i class="fas fa-lg fa-video" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <DataTable :data="data" :headers="headers">
+    <template #name="{ item }">
+      <router-link
+        :to="`/live/${item.fileLocation}`"
+        class="has-text-primary has-text-weight-bold"
+      >
+        {{ item.name }}
+      </router-link>
+    </template>
+    <template #detail="{ item }">
+      <Modal>
+        <template #trigger>
+          <i class="fas fa-lg fa-eye" />
+        </template>
+        <template #header>Stage Detail</template>
+        <template #content><Detail :stage="item" /></template>
+        <template #footer><ActionButtons :stage="item" /></template>
+      </Modal>
+    </template>
+    <template #edit="{ item }">
+      <router-link :to="`/dashboard/stage-management/${item.id}/`">
+        <i class="fa fa-lg fa-pen has-text-black"></i>
+      </router-link>
+    </template>
+  </DataTable>
 </template>
 
 <script>
-import { useQuery } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
+import DataTable from "@/components/DataTable/index";
 import Modal from "../Modal";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
 
 export default {
-  components: { Modal, ActionButtons, Detail },
+  components: { DataTable, Modal, ActionButtons, Detail },
+  props: { data: Array },
   setup: () => {
-    const { nodes: stages, loading } = useQuery(stageGraph.stageList);
-    return { loading, stages, displayName };
+    const headers = [
+      {
+        title: "Stage name",
+        description: "Name (url)",
+        slot: "name",
+      },
+      {
+        title: "Owner",
+        description: "Creator of the stage",
+        render: (item) => displayName(item.owner),
+      },
+      {
+        title: "Detail",
+        description: "Duplicate/Manage stage",
+        slot: "detail",
+        align: "center",
+      },
+      {
+        title: "Edit Stage",
+        slot: "edit",
+        align: "center",
+      },
+    ];
+
+    return { headers };
   },
 };
 </script>

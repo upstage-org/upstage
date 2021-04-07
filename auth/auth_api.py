@@ -238,7 +238,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
     # Regular Upstage login, from app or portal.
     if username and password:
-        username = username.lower().strip()
+        username = username.strip()
         if '@' in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
@@ -271,6 +271,8 @@ def call_login_logout(app_entry=True,num_value=None):
             # if we are down here.
             if not decrypt(user.password) == password:
                 return make_response(jsonify({"error": "Bad email or password (17)"}), 401)
+            else:
+                return make_response(jsonify({"error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!", "level": "warning"}), 401)
 
             # Re-send their signup code.
             existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
@@ -296,11 +298,6 @@ def call_login_logout(app_entry=True,num_value=None):
         if user.role in (SUPER_ADMIN,):
             if not verify_user_totp(user,num_value):
                 return make_response(jsonify({"error": "Invalid code."}), 401)
-            else:
-                with ScopedSession() as local_db_session:
-                    local_db_session.query(User).filter(
-                        User.id==user.id).update(
-                        {User.validated_via_portal:True},synchronize_session=False)
 
         elif user.role in (PLAYER,MAKER,UNLIMITED_MAKER,ADMIN,CREATOR) and not app_entry: 
             pass # password checked-out, that's all we need.
@@ -512,13 +509,6 @@ def call_login_logout(app_entry=True,num_value=None):
                                     "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
                                     )
                                 '''
-        
-                            if not send_acct_verification_code(user.phone,existing_code): # always sms
-                                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-                
-                            email_verification_code(user.email,existing_code)
-                            return make_response(jsonify({"user_id":user.id,
-                                "message": "User needs to verify account"}), 409)
                         else:
                             return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
     
@@ -591,14 +581,17 @@ def call_login_logout(app_entry=True,num_value=None):
 
     print("title:{}".format(title))
 
-    return make_response(jsonify({'user_id':user.id,'access_token':access_token,'refresh_token':refresh_token,
-        'phone':user.phone,
+    return make_response(jsonify({
+        'user_id':user.id,
+        'access_token':access_token,
+        'refresh_token':refresh_token,
         #'access_bitmask':user.access_bitmask,
         'role':user.role, 'first_name':user.first_name,
         #'groups':[to_dict(g) for g in groups],
         'groups':groups,
         'username':user.username,
-        'title':title}), 200)
+        'title':title
+    }), 200)
 
 
 @app.route('{0}refresh/'.format(BASE_URL), methods=['POST'])
@@ -772,8 +765,6 @@ def admin_jwt_required(fn):
             user = DBSession.query(User).options(FromCache("default")).filter(
                 User.id==current_user_id).filter(
                 User.active==True).first()
-            if ENV_TYPE == 'Production' and (not user or not user.validated_via_portal):
-                abort(403,'Invalid validation.')
 
             #print(request.referrer)
             if ENV_TYPE == 'Production' and '/vue_admin/' not in request.referrer:

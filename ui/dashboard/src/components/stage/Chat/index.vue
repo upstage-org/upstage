@@ -7,13 +7,8 @@
         @click="collapsed = !collapsed"
       >
         <span class="icon">
-          <i
-            class="fas"
-            :class="{
-              'fa-window-minimize': !collapsed,
-              'fa-window-maximize': collapsed,
-            }"
-          ></i>
+          <Icon v-if="collapsed" src="maximize.svg" size="20" />
+          <Icon v-else src="minimize.svg" size="24" class="mt-4" />
         </span>
       </button>
       <button
@@ -21,7 +16,7 @@
         @click="openChatSetting"
       >
         <span class="icon">
-          <i class="fas fa-cog"></i>
+          <Icon src="setting.svg" size="32" />
         </span>
       </button>
     </div>
@@ -53,17 +48,16 @@
     </div>
     <footer class="card-footer">
       <div class="card-footer-item">
-        <div class="is-fullwidth my-1">
-          <Reaction v-if="!collapsed" :custom-emoji="true" />
+        <div v-if="!collapsed" class="is-fullwidth my-1" style="height: 30px">
+          <Reaction :custom-emoji="true" />
         </div>
         <div class="control has-icons-right is-fullwidth">
-          <form autocomplete="off" @submit.prevent="sendChat">
-            <emoji-input
-              v-model="message"
-              placeholder="Type message"
-              :loading="loadingUser"
-            />
-          </form>
+          <emoji-input
+            v-model="message"
+            placeholder="Type message"
+            :loading="loadingUser"
+            @submit="sendChat"
+          />
         </div>
       </div>
     </footer>
@@ -75,10 +69,11 @@ import { computed, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 import EmojiInput from "@/components/form/EmojiInput";
+import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
 
 export default {
-  components: { EmojiInput, Reaction },
+  components: { EmojiInput, Reaction, Icon },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -123,9 +118,11 @@ export default {
 
 <style lang="scss" scoped>
 #chatbox {
+  display: flex;
+  flex-direction: column;
   position: fixed;
   width: 20%;
-  min-width: 200px;
+  min-width: 250px;
   height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
@@ -133,7 +130,7 @@ export default {
   overflow: visible;
 
   .card-content {
-    height: calc(100% - 84px);
+    flex-grow: 1;
     overflow-y: auto;
     padding-top: 36px;
   }
@@ -150,6 +147,9 @@ export default {
       > div {
         display: none;
       }
+    }
+    .card-footer-item {
+      padding-top: 6px;
     }
   }
 

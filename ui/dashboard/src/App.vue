@@ -10,6 +10,7 @@ export default {
     onMounted(() => {
       const store = useStore();
       store.dispatch("user/fetchCurrent");
+      store.dispatch("config/fetchConfig");
     });
   },
 };
@@ -19,6 +20,9 @@ export default {
 html {
   overflow-y: auto !important;
 }
+body.waiting * {
+  cursor: wait !important;
+}
 .is-fullwidth {
   width: 100%;
 }
@@ -27,5 +31,13 @@ html {
 }
 .clickable {
   pointer-events: all !important;
+  cursor: pointer;
+}
+[contenteditable] {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  * {
+    font-family: inherit;
+  }
 }
 </style>

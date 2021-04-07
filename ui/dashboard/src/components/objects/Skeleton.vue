@@ -1,5 +1,6 @@
 <template>
   <div
+    class="is-flex is-align-items-center"
     draggable="true"
     @dragstart="dragstart"
     @touchmove="touchmove"
@@ -15,24 +16,24 @@
   >
     <slot v-if="$slots.default" />
     <Image v-else :src="data.src" />
-    <span
+    <Icon
       v-if="data.multi"
-      class="tag is-primary is-multi"
+      class="is-multi"
       title="This is a multiframe avatar"
-    >
-      <i class="fas fa-clone"></i>
-    </span>
+      src="multi-frame.svg"
+    />
   </div>
 </template>
 
 <script>
 import { reactive, ref } from "vue";
 import Image from "@/components/Image";
+import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 
 export default {
   props: ["data", "type"],
-  components: { Image },
+  components: { Image, Icon },
   setup: (props) => {
     const store = useStore();
     const position = reactive({
@@ -41,7 +42,6 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      console.log(e);
       e.dataTransfer.setData("object", JSON.stringify(props.data));
     };
 
@@ -72,6 +72,7 @@ export default {
 <style>
 .is-multi {
   position: relative;
-  left: -20px;
+  left: -10px;
+  top: 30px;
 }
 </style>

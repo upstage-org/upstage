@@ -1,12 +1,13 @@
 <template>
   <div
     class="dropdown"
-    :class="{ 'is-active': isActive }"
+    :class="{ 'is-active': isActive, 'is-right': isRight, 'is-up': isUp }"
     v-click-outside="() => (isActive = false)"
   >
     <div class="dropdown-trigger">
       <button
         class="button"
+        :class="{ 'is-rounded': isRounded }"
         aria-haspopup="true"
         aria-controls="dropdown-menu"
         @click="isActive = !isActive"
@@ -28,7 +29,9 @@
             class="dropdown-item"
             :class="{ 'is-active': modelValue === renderValue(item) }"
           >
-            {{ renderLabel(item) }}
+            <slot name="option" :label="renderLabel(item)" :item="item">
+              {{ renderLabel(item) }}
+            </slot>
           </a>
         </template>
         <div v-else class="dropdown-item">
@@ -54,6 +57,9 @@ export default {
       default: (item) => item,
     },
     placeholder: String,
+    isRight: Boolean,
+    isUp: Boolean,
+    isRounded: Boolean,
   },
   emits: ["update:modelValue", "select"],
   setup: (props, { emit }) => {
@@ -61,8 +67,7 @@ export default {
       props.data?.find((item) => props.renderValue(item) === props.modelValue)
     );
     const isActive = ref();
-    const select = (item) => {
-      const value = props.renderValue(item);
+    const select = (value, item) => {
       emit("update:modelValue", value);
       emit("select", value, item);
       isActive.value = false;

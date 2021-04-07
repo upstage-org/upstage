@@ -42,19 +42,14 @@ const routes = [
         component: () => import('../views/dashboard/Dashboard.vue'),
       },
       {
-        path: '/dashboard/media',
-        name: 'Media',
-        component: () => import('../views/dashboard/Media.vue'),
-      },
-      {
-        path: '/dashboard/my-stages',
-        name: 'My Stages',
-        component: () => import('../views/dashboard/MyStages.vue'),
-      },
-      {
         path: '/dashboard/workshop',
         name: 'Workshop',
         component: () => import('../views/dashboard/Workshop.vue'),
+      },
+      {
+        path: '/dashboard/media',
+        name: 'Media',
+        component: () => import('../views/dashboard/Media/index.vue'),
       },
       {
         path: '/dashboard/profile',
@@ -73,30 +68,75 @@ const routes = [
         ]
       },
       {
-        name: 'Create New Stage',
+        path: '/dashboard/admin',
+        component: () => import('../views/dashboard/Admin/index.vue'),
+        children: [
+          {
+            path: '',
+            redirect: '/dashboard/admin/approval',
+          },
+          {
+            path: 'approval',
+            name: 'Registration Approval',
+            component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
+          },
+          {
+            path: 'reset-password',
+            name: 'Reset Password',
+            component: () => import('../views/dashboard/Admin/ResetPassword.vue'),
+          },
+          {
+            path: 'switch-role',
+            name: 'Switch Role',
+            component: () => import('../views/dashboard/Admin/SwitchRole.vue'),
+          },
+          {
+            path: 'delete-user',
+            name: 'Delete User',
+            component: () => import('../views/dashboard/Admin/DeleteUser.vue'),
+          },
+          {
+            path: 'profile-management',
+            name: 'Profile Management',
+            component: () => import('../views/dashboard/Admin/ProfileManagement.vue'),
+          },
+          {
+            path: 'upload-limit',
+            name: 'Upload Limit',
+            component: () => import('../views/dashboard/Admin/UploadLimit.vue'),
+          },
+        ]
+      },
+      {
         path: '/dashboard/new-stage',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         children: [
           {
             path: '',
+            name: 'Create New Stage',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
         ]
       },
       {
-        name: 'Stage Management',
         path: '/dashboard/stage-management/:id',
         component: () => import('../views/dashboard/StageManagement/index.vue'),
         props: route => ({ id: route.params.id }),
         children: [
           {
             path: '',
+            name: 'Stage Management',
             component: () => import('../views/dashboard/StageManagement/General.vue'),
           },
           {
             name: 'Stage Layout',
             path: 'layout',
             component: () => import('../views/dashboard/StageManagement/Layout.vue'),
+          },
+          {
+            name: 'Stage Media',
+            path: 'media',
+            component: () => import('../views/dashboard/StageManagement/Media.vue'),
           },
           {
             name: 'Chat',
@@ -114,15 +154,9 @@ const routes = [
   },
 
   {
-    path: '/live',
+    path: '/live/:url?',
+    name: 'Live',
     component: () => import('../views/live/Layout.vue'),
-    children: [
-      {
-        path: '/live',
-        name: 'Live',
-        component: () => import('../views/live/Live.vue'),
-      },
-    ]
   },
 ]
 
@@ -132,6 +166,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  document.body.classList.add('waiting');
+
   const loggedIn = store.getters["auth/loggedIn"];
 
   if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
@@ -149,6 +185,10 @@ router.beforeEach((to, from, next) => {
   }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;
+});
+
+router.afterEach(() => {
+  document.body.classList.remove('waiting');
 });
 
 export default router

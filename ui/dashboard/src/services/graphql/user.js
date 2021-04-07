@@ -11,19 +11,18 @@ export const userFragment = gql`
     lastName
     displayName
     email
-    phone
     active
     createdOn
     agreedToTerms
-    okToSms
-    validatedViaPortal
+    role
+    uploadLimit
   }
 `
 
 export default {
   createUser: (variables) => client.request(gql`
     mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String) {
-      createUser(input: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, active: true}) {
+      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName}) {
         user {
           ...userFragment
         }
@@ -32,18 +31,8 @@ export default {
     ${userFragment}
   `, variables),
   updateUser: (variables) => client.request(gql`
-    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $phone: String, $agreedToTerms: Boolean, $okToSms: Boolean, $validatedViaPortal: Boolean) {
-      updateUser(input: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, agreedToTerms: $agreedToTerms, okToSms: $okToSms, validatedViaPortal: $validatedViaPortal}) {
-        user {
-          ...userFragment
-        }
-      }
-    }
-    ${userFragment}
-  `, variables),
-  saveNickname: (variables) => client.request(gql`
-    mutation UpdateUser($id: ID!, $displayName: String) {
-      updateUser(input: {id: $id, displayName: $displayName}) {
+    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $password: String, $agreedToTerms: Boolean, $active: Boolean, $role: Int, $uploadLimit: Int) {
+      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, password: $password, agreedToTerms: $agreedToTerms, active: $active, role: $role, uploadLimit: $uploadLimit}) {
         user {
           ...userFragment
         }
@@ -66,11 +55,31 @@ export default {
     }
     ${userFragment}
   `),
+  userList: () => client.request(gql`
+    query UserList($first: Int, $after: String) {
+      userList(sort: CREATED_ON_DESC, first: $first, after: $after) {
+        totalCount
+        edges {
+          node {
+            ...userFragment
+          }
+        }
+      }
+    }
+    ${userFragment}
+  `),
   changePassword: (variables) => client.request(gql`
     mutation ChangePassword($id: ID!, $oldPassword: String!, $newPassword: String!) {
-      changePassword(input: {id: $id, oldPassword: $oldPassword, newPassword: $newPassword}) {
+      changePassword(inbound: {id: $id, oldPassword: $oldPassword, newPassword: $newPassword}) {
+        success
+      }
+    }
+  `, variables),
+  deleteUser: variables => client.request(gql`
+    mutation DeleteUser($id: ID!) {
+      deleteUser(inbound: {id: $id}) {
         success
       }
     }
   `, variables)
-} 
+}

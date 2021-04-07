@@ -4,6 +4,7 @@ export const TOPICS = {
   BACKGROUND: "topic/background",
   AUDIO: "topic/audio",
   REACTION: "topic/reaction",
+  COUNTER: "topic/counter",
 }
 
 export const BOARD_ACTIONS = {
@@ -15,4 +16,13 @@ export const BOARD_ACTIONS = {
   BRING_TO_FRONT: 'bringToFront',
   SEND_TO_BACK: 'sendToBack',
   TOGGLE_AUTOPLAY_FRAMES: 'toggleAutoplayFrames',
+}
+
+export const ROLES = {
+  PLAYER: 1,
+  MAKER: 2,
+  UNLIMITED_MAKER: 4,
+  ADMIN: 8,
+  CREATOR: 16,
+  SUPER_ADMIN: 32,
 }

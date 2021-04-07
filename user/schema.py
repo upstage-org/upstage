@@ -15,7 +15,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
-from user.models import User as UserModel
+from user.models import ADMIN, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -32,14 +32,10 @@ class UserAttribute:
     first_name = graphene.String(description="First Name")
     last_name = graphene.String(description="Last Name")
     display_name = graphene.String(description="Display Name")
-    apartment = graphene.String(description="Apartment")
-    phone = graphene.String(description="Phone")
     active =  graphene.Boolean(description="Active record or not")
-    ok_to_sms = graphene.Boolean(description="Okay to sms?")
-    validated_via_portal = graphene.Boolean(description="Validated")
     agreed_to_terms = graphene.Boolean(description="Agreed to terms")
-    accept_rent_payment = graphene.Boolean(description="Accept rent payment")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
+    upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
@@ -47,6 +43,7 @@ class User(SQLAlchemyObjectType):
         model = UserModel
         model.db_id = model.id
         interfaces = (relay.Node,)
+        connection_class = graphql_utils.CountableConnection
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
@@ -61,12 +58,16 @@ class CreateUser(graphene.Mutation):
 
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
+        if not data['email']:
+            raise Exception("Email is required!")
 
         user = UserModel(**data)
         user_id = None
         # Add validation for non-empty passwords, etc.
         user.password = encrypt(user.password)
-        with ScopedSession as local_db_session:
+        if not user.role:
+            user.role = PLAYER
+        with ScopedSession() as local_db_session:
             local_db_session.add(user)
             local_db_session.flush()
             user_id = user.id
@@ -85,14 +86,24 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         inbound = UpdateUserInput(required=True)
 
-    @jwt_required
+    @jwt_required()
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
-        with ScopedSession as local_db_session:
+        code,error,user,timezone = current_user()
+        if not user.role in (ADMIN,SUPER_ADMIN) :
+            if not user.id == int(data['id']):
+                raise Exception("Permission denied!")
+        
+        if not data['email']:
+            raise Exception("Email is required!")
+
+        with ScopedSession() as local_db_session:
             user = local_db_session.query(UserModel)\
                 .filter(UserModel.id==data['id']).first()
-            if ('password' in data):
-                del data['password'] # Password should not be updated directly using this mutation, since it require an old password to change
+            if (data['password']):
+                data['password'] = encrypt(data['password'])
+            else:
+                del data['password']
             for key, value in data.items():
                 if hasattr(user, key):
                     setattr(user, key, value)
@@ -120,7 +131,7 @@ class OneUser(graphene.ObjectType):
         """ Looking up current user requires no arguments. """
         inbound = OneUserInput(required=False)
 
-    @jwt_required
+    @jwt_required()
     def resolve_search(self, info, inbound):
         """ Get user from JWT token. """
         code,error,this_user,timezone = current_user()
@@ -132,11 +143,7 @@ class OneUser(graphene.ObjectType):
         """
         if inbound:
             data = graphql_utils.input_to_dictionary(inbound)
-            lookup_user = DBSession.query(UserModel)
-            if 'id' in data and data['id']:
-                lookup_user = lookup_user.filter(UserModel.id==data['id'])
-            if 'id' in data and data['id']:
-                lookup_user = lookup_user.filter(UserModel.id==data['id'])
+            lookup_user = DBSession.query(UserModel).filter_by(data).first()
 
         access_token = request.headers.get(app.config['JWT_HEADER_NAME'],None)
         #app.logger.info("access token:{0}".format(access_token))
@@ -178,19 +185,40 @@ class ChangePassword(graphene.Mutation):
     success = graphene.Boolean(description="Password changed successful or not")
 
     class Arguments:
-        input = ChangePasswordInput(required=True)
+        inbound = ChangePasswordInput(required=True)
 
-    # decorate this with jwt login decorator.
-    def mutate(self, info, input):
-        data = graphql_utils.input_to_dictionary(input)
-        local_db_session = get_scoped_session()
-        user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
-        if decrypt(user.password) != data['oldPassword']:
-            raise Exception('Old password incorrect')
-        else:
-            user.password = encrypt(data['newPassword'])
-        local_db_session.commit()
+    @jwt_required()
+    def mutate(self, info, inbound):
+        data = graphql_utils.input_to_dictionary(inbound)
+        with ScopedSession() as local_db_session:
+            user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
+            if decrypt(user.password) != data['oldPassword']:
+                raise Exception('Old password incorrect')
+            else:
+                user.password = encrypt(data['newPassword'])
+            local_db_session.commit()
         return ChangePassword(success=True)
+
+class DeleteUserInput(graphene.InputObjectType,UserAttribute):
+    """Arguments to update a user."""
+    id = graphene.ID(required=True, description="Global Id of the user.")
+
+class DeleteUser(graphene.Mutation):
+    success = graphene.Boolean(description="Password changed successful or not")
+
+    class Arguments:
+        inbound = DeleteUserInput(required=True)
+
+    @jwt_required()
+    def mutate(self, info, inbound):
+        data = graphql_utils.input_to_dictionary(inbound)
+        code,error,user,timezone = current_user()
+        if not user.role in (ADMIN,SUPER_ADMIN) :
+                raise Exception("Permission denied!")
+        with ScopedSession() as local_db_session:
+            local_db_session.query(UserModel).filter(UserModel.id==data['id']).delete()
+            local_db_session.commit()
+        return DeleteUser(success=True)
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
@@ -200,6 +228,7 @@ class Mutation(graphene.ObjectType):
     authUser = AuthMutation.Field()
     refreshUser = RefreshMutation.Field()
     changePassword = ChangePassword.Field()
+    deleteUser = DeleteUser.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
@@ -211,11 +240,9 @@ class Query(graphene.ObjectType):
 
     @jwt_required()
     def resolve_currentUser(self, info):
-        current_user_id = get_jwt_identity()
-        if not current_user_id:
-            raise Exception("Your session expired. Please log in again.")
-        query = User.get_query(info)
-        user = query.get(current_user_id)
+        code,error,user,timezone = current_user()
+        if error:
+            raise Exception(error)
         return user
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -17,19 +17,26 @@
     <input
       :id="id"
       type="checkbox"
-      :class="`switch ${className}`"
+      :class="`switch ${className ?? 'is-rounded is-success'}`"
       v-bind="$attrs"
       :checked="modelValue"
       @input="$emit('update:modelValue', $event.target.checked)"
     />
-    <label :for="id">{{ label }}</label>
+    <label :for="id" :class="{ 'is-loading': loading }">{{ label }}</label>
   </div>
 </template>
 
 <script>
 import { v4 as uuidv4 } from "uuid";
 export default {
-  props: ["className", "modelValue", "label", "checkedLabel", "uncheckedLabel"],
+  props: [
+    "className",
+    "modelValue",
+    "label",
+    "checkedLabel",
+    "uncheckedLabel",
+    "loading",
+  ],
   emits: ["update:modelValue"],
   setup: () => {
     const id = uuidv4();

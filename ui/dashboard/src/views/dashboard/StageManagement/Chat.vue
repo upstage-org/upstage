@@ -1,9 +1,12 @@
 <template>
-  <div>Chat page</div>
+  <UnderConstruction />
 </template>
 
 <script>
-export default {};
+import UnderConstruction from "@/components/UnderConstruction";
+export default {
+  components: { UnderConstruction },
+};
 </script>
 
 <style>

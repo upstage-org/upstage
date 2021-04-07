@@ -1,11 +1,11 @@
 <template>
   <canvas
-    v-show="isDrawing"
     ref="el"
-    width="3840"
-    height="2160"
+    v-show="isDrawing"
     class="drawing"
-    :style="{ cursor }"
+    :width="stageSize.width"
+    :height="stageSize.height"
+    :style="{ cursor, top: stageSize.top + 'px', left: stageSize.left + 'px' }"
   >
     Your browser does not support the HTML5 canvas tag.
   </canvas>
@@ -45,80 +45,86 @@
       }"
     >
       <div class="icon is-large">
-        <i class="fas fa-eraser fa-2x"></i>
+        <Icon size="36" src="erase.svg" />
       </div>
       <span class="tag is-light is-block">Erase</span>
     </div>
     <div class="drawing-tool" @click="undo">
       <div class="icon is-large">
-        <i class="fas fa-undo fa-2x"></i>
+        <Icon size="36" src="undo.svg" />
       </div>
       <span class="tag is-light is-block">Undo</span>
     </div>
-    <div class="drawing-tool" @click="clearCanvas">
+    <div class="drawing-tool" @click="clearCanvas(true)">
       <div class="icon is-large">
-        <i class="fas fa-broom fa-2x"></i>
+        <Icon size="36" src="clear.svg" />
       </div>
       <span class="tag is-light is-block">Clear</span>
     </div>
     <div class="drawing-tool" @click="save">
       <div class="icon is-large">
-        <i class="fas fa-save fa-2x"></i>
+        <Icon size="36" src="save.svg" />
       </div>
       <span class="tag is-light is-block">Save</span>
     </div>
+    <div class="drawing-tool" @click="cancel">
+      <div class="icon is-large">
+        <Icon size="36" src="cancel.svg" />
+      </div>
+      <span class="tag is-light is-block">Cancel</span>
+    </div>
   </template>
   <template v-else>
-    <div @click="create">
+    <div @click="create" class="is-pulled-left">
       <div class="icon is-large">
-        <i class="fas fa-plus fa-2x"></i>
+        <Icon src="new.svg" size="36" />
       </div>
       <span class="tag is-light is-block">New</span>
     </div>
+    <div v-for="drawing in drawings" :key="drawing">
+      <Skeleton :data="drawing" />
+    </div>
   </template>
-  <div v-for="drawing in drawings" :key="drawing">
-    <Skeleton :data="drawing" />
-  </div>
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
-import { useDrawing } from "./composable";
+import { useDrawable } from "./composable";
 import Skeleton from "@/components/objects/Skeleton";
 import ColorPicker from "@/components/form/ColorPicker";
+import Icon from "@/components/Icon";
 
 export default {
-  components: { Skeleton, ColorPicker },
+  components: { Skeleton, ColorPicker, Icon },
   setup: () => {
     const store = useStore();
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
     const drawings = computed(() => store.state.stage.board.drawings);
     const isDrawing = computed(() => {
-      console.log(store.state.stage.board.drawings);
       return store.state.stage.preferences.isDrawing;
     });
-    const color = ref("#000");
-    const size = ref(10);
-    const mode = ref("draw");
-    const { el, cursor, cropImageFromCanvas, clearCanvas, undo } = useDrawing(
+    const {
+      el,
+      cursor,
+      cropImageFromCanvas,
+      clearCanvas,
+      undo,
+      toggleErase,
       color,
       size,
-      mode
-    );
+      mode,
+    } = useDrawable();
     const create = () => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
+    };
+    const cancel = () => {
+      store.commit("stage/UPDATE_IS_DRAWING", false);
     };
     const save = () => {
       const drawing = cropImageFromCanvas();
       if (drawing) {
         store.dispatch("stage/addDrawing", drawing);
-      }
-    };
-    const toggleErase = () => {
-      if (mode.value === "erase") {
-        mode.value = "draw";
-      } else {
-        mode.value = "erase";
       }
     };
 
@@ -129,30 +135,26 @@ export default {
       size,
       create,
       save,
+      cancel,
       el,
       clearCanvas,
       undo,
       toggleErase,
       mode,
       cursor,
+      stageSize,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-@import "@/styles/mixins.scss";
-
 .drawing {
   position: fixed;
-  top: 0;
-  left: 0vh;
   z-index: 1000;
-  background-color: rgba($color: white, $alpha: 0.5);
-  backdrop-filter: blur(5px);
+  background-color: rgba($color: white, $alpha: 0.8);
 }
 .drawing-tool {
-  background-color: rgba($color: white, $alpha: 0.5);
   z-index: 1001;
   position: relative;
   vertical-align: top;
@@ -174,20 +176,5 @@ export default {
   margin: auto;
   background-color: black;
   border-radius: 100%;
-}
-.fas.fa-eraser {
-  @include gradientText(#ffffff, #ff6b6b);
-}
-.fas.fa-undo {
-  @include gradientText(#3498db, #2c3e50);
-}
-.fas.fa-broom {
-  @include gradientText(#ffb347, #a83279);
-}
-.fas.fa-save {
-  @include gradientText(#6441a5, #2a0845);
-}
-.fas.fa-plus {
-  @include gradientText(#30ac45, #6fb1fc);
 }
 </style>
