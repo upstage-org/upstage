@@ -12,6 +12,9 @@ uploads/
 node_modules
 /dist
 
+# reStructuredText
+docs/_build
+
 
 # local env files
 .env.local
