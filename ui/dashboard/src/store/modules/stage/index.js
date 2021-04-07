@@ -374,7 +374,9 @@ export default {
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
             }
-            dispatch("user/setAvatarId", object.id, { root: true });
+            if (data.type === 'avatar' || data.type === 'drawing') {
+                dispatch("user/setAvatarId", object.id, { root: true });
+            }
             return object;
         },
         shapeObject(action, object) {

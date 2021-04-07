@@ -3,12 +3,16 @@
     ref="el"
     tabindex="0"
     @keyup.delete="deleteObject"
-    @click="hold"
+    @dblclick="hold"
     :style="{
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
   >
-    <OpacitySlider :position="position" :active="active" :object="object" />
+    <OpacitySlider
+      :position="position"
+      v-model:active="active"
+      :object="object"
+    />
     <Topping :position="position" :object="object" />
     <ContextMenu
       :pad-left="-stageSize.left"
@@ -108,11 +112,15 @@ export default {
     const isDragging = ref(false);
     const beforeDragPosition = ref();
     const animation = ref();
-    const holder = inject("holder");
+    const holder = inject("holder") ?? ref();
+    const isHolding = computed(
+      () => holder.value?.id === store.state.stage.session
+    );
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
     const controlable = computed(() => {
-      return props.object.type === "prop"
-        ? store.getters["auth/loggedIn"]
-        : !holder.value || holder.value.id === store.state.stage.session;
+      return holdable.value ? isHolding.value : store.getters["auth/loggedIn"];
     });
 
     watch(
@@ -208,7 +216,7 @@ export default {
     });
 
     const hold = () => {
-      if (controlable.value && props.object.type !== "prop") {
+      if (holdable.value && !holder.value) {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };
@@ -228,6 +236,8 @@ export default {
       stageSize,
       hold,
       holder,
+      isHolding,
+      holdable,
       controlable,
     };
   },
