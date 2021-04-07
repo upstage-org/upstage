@@ -25,7 +25,6 @@
             data.file = $event;
             handleBlurName();
           "
-          :unlimit="data.mediaType === 'stream'"
           :accept-image="
             ['avatar', 'prop', 'backdrop', null].includes(data.mediaType)
           "
