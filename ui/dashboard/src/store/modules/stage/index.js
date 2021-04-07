@@ -258,7 +258,7 @@ export default {
         },
         UPDATE_SESSIONS_COUNTER(state, sessions) {
             if (sessions && sessions.length) {
-                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'hours') < 12);
+                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
                 state.sessions.sort((a, b) => b.at - a.at);
             }
         }

@@ -14,23 +14,27 @@
         </span>
         <span class="file-label"> Choose a file… </span>
       </span>
-      <div class="mt-2 mx-2">
-        <div v-if="unlimit">No size limit</div>
-        <div v-else :class="{ 'has-text-danger': file?.size > mediaLimit }">
-          <span>Maximum file size: {{ humanFileSize(mediaLimit) }}&nbsp;</span>
-          <span v-if="file">
-            <i class="fas fa-times" v-if="file.size > mediaLimit"></i>
-            <i class="fas fa-check" v-else></i>
-            (current size: {{ humanFileSize(file.size) }})
-          </span>
-        </div>
+      <div v-if="!valid" class="mt-2 mx-2 has-text-danger">
+        <span>Maximum file size: {{ humanFileSize(mediaLimit) }}&nbsp;</span>
+        <i class="fas fa-times"></i>
+        (current size: {{ humanFileSize(file.size) }})
       </div>
     </label>
   </div>
   <p class="help">
-    <img v-if="isImage" :src="modelValue" alt="Preview" />
-    <b v-else>{{ file?.name }}</b>
+    Use this field to upload media on Stage. File allowed are:
+    <span v-if="accept">{{ accept }}</span>
+    <span v-else>all extensions</span>. Limit ok:
+    {{ humanFileSize(mediaLimit) }}
   </p>
+
+  <template v-if="file">
+    <img v-if="isImage" :src="modelValue" alt="Preview" />
+    <div v-else class="box has-text-centered">
+      <i class="fas fa-file"></i>
+      <b>{{ file.name }} ({{ humanFileSize(file.size) }})</b>
+    </div>
+  </template>
 </template>
 
 <script>
@@ -41,7 +45,6 @@ import { useStore } from "vuex";
 export default {
   props: {
     modelValue: String,
-    unlimit: Boolean,
     acceptImage: {
       type: Boolean,
       default: true,
@@ -58,44 +61,35 @@ export default {
   emits: ["update:modelValue", "change"],
   setup: (props, { emit }) => {
     const store = useStore();
-    const mediaLimit = computed(
-      () => store.state.user.user?.uploadLimit ?? 1024 * 1024
-    );
-    const file = ref();
-    const handleInputFile = (e) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(e.target.files[0]);
-      reader.onload = () => {
-        emit("update:modelValue", reader.result);
-      };
-      file.value = e.target.files[0];
-      if (file.value.size <= mediaLimit.value || props.unlimit) {
-        emit("change", file.value);
-      } else {
-        emit("change", null);
+    const nginxLimit = computed(() => store.getters["config/uploadLimit"]);
+    const mediaLimit = computed(() => {
+      let limit = store.state.user.user?.uploadLimit;
+      if (!limit || props.acceptVideo) {
+        limit = nginxLimit.value;
       }
-    };
+      return limit;
+    });
+    const file = ref();
     const accept = computed(() => {
       let extensions = [];
       if (props.acceptImage) {
-        extensions.push("image/*");
+        extensions.push(".bmp,.svg,.jpg,.png,.gif");
       }
       if (props.acceptAudio) {
-        extensions.push("audio/mp3,audio/*");
+        extensions.push(".wav,.mpeg,.mp4,.aac,.aacp,.ogg,.webm,.flac");
       }
       if (props.acceptVideo) {
-        extensions.push("video/mp4,video/x-m4v,video/*");
+        extensions.push(".mp4,.webm,.opgg,.3gp,.flv");
       }
       return extensions.join(",");
     });
-
-    watch(
-      () => props.unlimit,
-      () => {
-        file.value = null;
-        emit("change", null);
+    const valid = computed(() => {
+      if (file.value) {
+        return file.value.size <= mediaLimit.value;
       }
-    );
+      return true;
+    });
+
     watch(
       () => props.modelValue,
       (value) => {
@@ -104,6 +98,26 @@ export default {
         }
       }
     );
+
+    watch(mediaLimit, () => {
+      if (!valid.value) {
+        emit("change", null);
+      }
+    });
+
+    const handleInputFile = (e) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(e.target.files[0]);
+      reader.onload = () => {
+        emit("update:modelValue", reader.result);
+      };
+      file.value = e.target.files[0];
+      if (valid.value) {
+        emit("change", file.value);
+      } else {
+        emit("change", null);
+      }
+    };
 
     const isImage = computed(() => file.value?.type?.startsWith("image"));
 
@@ -114,6 +128,7 @@ export default {
       mediaLimit,
       humanFileSize,
       accept,
+      valid,
     };
   },
 };
