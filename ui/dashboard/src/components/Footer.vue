@@ -1,13 +1,19 @@
 <template>
   <footer class="footer">
     <div class="content has-text-centered">
-      {{ new Date().getFullYear() }} — <strong>Stage Dashboard</strong>
+      UpStage v4 -
+      <span v-if="release">{{ release }}</span>
+      <span v-else>Under construction</span>
     </div>
   </footer>
 </template>
 
 <script>
-export default {};
+export default {
+  setup: () => {
+    return { release: process.env.VUE_APP_GIT_BRANCH };
+  },
+};
 </script>
 
 <style>
