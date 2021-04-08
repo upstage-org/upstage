@@ -1,6 +1,6 @@
 <template>
   <div class="avatar-context-menu card-content p-0">
-    <template v-if="object.type !== 'prop'">
+    <template v-if="holdable">
       <a v-if="isHolding" class="panel-block" @click.stop="releaseAvatar">
         <span class="panel-icon">
           <Icon src="clear.svg" />
@@ -27,7 +27,7 @@
       <span>Send to back</span>
     </a>
     <a
-      v-if="object.type !== 'prop'"
+      v-if="holdable"
       class="panel-block"
       @click="changeNickname"
     >
@@ -130,7 +130,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject } from "vue";
+import { computed, inject, ref } from "vue";
 import Icon from "@/components/Icon";
 
 export default {
@@ -197,7 +197,8 @@ export default {
       });
     };
 
-    const holder = inject("holder");
+    const holder = inject("holder") ?? ref();
+    const holdable = inject("holdable") ?? ref();
     const isHolding = computed(
       () => holder.value && holder.value.id === store.state.stage.session
     );
@@ -215,6 +216,7 @@ export default {
       changeSliderMode,
       rotate,
       isHolding,
+      holdable
     };
   },
 };
