@@ -35,22 +35,6 @@
     </div>
   </template>
   <template v-else>
-    <div
-      class="text-tool has-tooltip-bottom"
-      @click="saveText"
-      data-tooltip="Save"
-    >
-      <div class="icon is-large">
-        <Icon size="40" src="check.svg" />
-      </div>
-      <span class="tag is-block">Save</span>
-    </div>
-    <div class="text-tool" @click="cancelWriting">
-      <div class="icon is-large">
-        <Icon size="32" src="cancel.svg" />
-      </div>
-      <span class="tag is-block">Cancel</span>
-    </div>
     <div class="text-tool" style="width: 200px; z-index: 1005">
       <span class="tag muted is-block">Font</span>
       <Dropdown v-model="options.fontFamily" :data="fontFamilies">
@@ -100,6 +84,18 @@
         <Icon size="36" src="underline.svg" />
       </div>
       <span class="tag is-block">Underline</span>
+    </div>
+    <div class="text-tool has-tooltip-bottom" @click="saveText">
+      <div class="icon is-large">
+        <Icon size="40" src="check.svg" />
+      </div>
+      <span class="tag is-block">Save</span>
+    </div>
+    <div class="text-tool" @click="cancelWriting">
+      <div class="icon is-large">
+        <Icon size="32" src="cancel.svg" />
+      </div>
+      <span class="tag is-block">Cancel</span>
     </div>
   </template>
 </template>

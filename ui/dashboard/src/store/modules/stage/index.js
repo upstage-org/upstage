@@ -517,21 +517,25 @@ export default {
                 commit('SET_PRELOADING_STATUS', false);
             }
         },
-        handleCounterMessage({ commit, dispatch, state }, { message }) {
+        handleCounterMessage({ commit, dispatch, state, rootState }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
             if (!state.session) {
-                state.session = uuidv4()
+                state.session = rootState.user.user?.id ?? uuidv4()
                 dispatch('joinStage')
             }
         },
-        async joinStage({ rootGetters, state }) {
+        async joinStage({ rootGetters, state, commit }) {
             const id = state.session
+            const session = state.sessions.find(s => s.id === id)
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
-            const avatarId = rootGetters['user/avatarId'];
-            const session = state.sessions.find(s => s.id === id)
-            const at = +new Date()
+            const at = +new Date();
+            let avatarId = rootGetters['user/avatarId'];
             if (session) {
+                if (!avatarId && session.avatarId) {
+                    avatarId = session.avatarId
+                    commit('user/SET_AVATAR_ID', avatarId, { root: true });
+                }
                 Object.assign(session, { isPlayer, nickname, at, avatarId })
             } else {
                 state.sessions.push({ id, isPlayer, nickname, at, avatarId })
