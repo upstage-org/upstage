@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
+import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
@@ -149,6 +150,11 @@ export default {
             state.subscribeSuccess = status
         },
         PUSH_CHAT_MESSAGE(state, message) {
+            message.hash = hash(message)
+            const lastMessage = state.chat.messages[state.chat.messages.length - 1]
+            if (lastMessage && (lastMessage.hash === message.hash)) {
+                return
+            }
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
@@ -333,7 +339,7 @@ export default {
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
-                at: moment().format('HH:mm')
+                at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
             const avatar = getters['currentAvatar']
