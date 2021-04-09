@@ -1,13 +1,16 @@
 <template>
   <UserTable action-column="Upload Limit">
     <template #action="{ item, displayName }">
-      <Confirm @confirm="(close) => saveUploadLimit(item, close)" :loading="loading">
+      <Confirm
+        @confirm="(close) => saveUploadLimit(item, close)"
+        :loading="loading"
+      >
         <template #render="{ confirm }">
           <input
             class="slider is-fullwidth"
             step="1"
             :min="1024 * 1024"
-            :max="1024 * 1024 * 100"
+            :max="nginxLimit"
             type="range"
             v-model="item.uploadLimit"
             :data-tooltip="humanFileSize(item.uploadLimit)"
@@ -31,10 +34,14 @@ import { userGraph } from "@/services/graphql";
 import { humanFileSize } from "@/utils/common";
 import { displayName } from "@/utils/auth";
 import Confirm from "@/components/Confirm";
+import { useStore } from "vuex";
+import { computed } from "@vue/runtime-core";
 
 export default {
   components: { UserTable, Confirm },
   setup: () => {
+    const store = useStore();
+    const nginxLimit = computed(() => store.getters["config/uploadLimit"]);
     const { save, loading } = useMutation(userGraph.updateUser);
     const saveUploadLimit = async (user, close) => {
       await save(
@@ -46,7 +53,7 @@ export default {
       close();
     };
 
-    return { loading, saveUploadLimit, humanFileSize };
+    return { loading, saveUploadLimit, humanFileSize, nginxLimit };
   },
 };
 </script>

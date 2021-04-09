@@ -96,9 +96,7 @@ export function humanFileSize(bytes, si = false, dp = 1) {
     return bytes + ' B';
   }
 
-  const units = si
-    ? ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
-    : ['KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
   let u = -1;
   const r = 10 ** dp;
 

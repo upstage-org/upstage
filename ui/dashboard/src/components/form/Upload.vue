@@ -22,10 +22,10 @@
     </label>
   </div>
   <p class="help">
-    Use this field to upload media on Stage. File allowed are:
+    Permitted file formats are
     <span v-if="accept">{{ accept }}</span>
-    <span v-else>all extensions</span>. Limit ok:
-    {{ humanFileSize(mediaLimit) }}
+    <span v-else>all extensions</span>. Maximum file size
+    {{ humanFileSize(mediaLimit) }}.
   </p>
 
   <template v-if="file">
