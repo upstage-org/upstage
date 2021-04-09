@@ -86,7 +86,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject, reactive, ref, watch } from "vue";
+import { computed, inject, provide, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -130,6 +130,7 @@ export default {
     const controlable = computed(() => {
       return holdable.value ? isHolding.value : store.getters["auth/loggedIn"];
     });
+    provide("holdable", holdable);
 
     watch(
       props.object,
