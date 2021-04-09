@@ -26,7 +26,7 @@
       @click="isPicking = !isPicking"
     >
       <slot name="icon">
-        <span class="icon ml-0" v-if="!loading">
+        <span class="icon" v-if="!loading">
           <Icon size="48" src="emoji.svg" />
         </span>
       </slot>

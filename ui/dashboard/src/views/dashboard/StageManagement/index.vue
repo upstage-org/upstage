@@ -54,6 +54,15 @@
             </li>
           </template>
         </ul>
+
+        <p v-if="id" class="menu-label">
+          <router-link
+            :to="`/live/${stage.fileLocation}`"
+            class="button is-block is-primary"
+          >
+            Enter!
+          </router-link>
+        </p>
       </aside>
     </div>
     <div class="column">
