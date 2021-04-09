@@ -41,7 +41,6 @@ export default {
             isActive: false,
         },
         preferences: {
-            slider: 'opacity',
             isDrawing: true,
             text: {
                 fontSize: '20px',
@@ -478,9 +477,6 @@ export default {
         openSettingPopup({ commit }, setting) {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
-        },
-        changeSliderMode({ commit }, slider) {
-            commit('SET_PREFERENCES', { slider })
         },
         addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';

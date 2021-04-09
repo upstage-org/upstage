@@ -28,15 +28,14 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
-  props: ["position", "active", "object"],
+  props: ["position", "active", "object", "sliderMode"],
   emits: ["update:active"],
   setup: (props, { emit }) => {
     const store = useStore();
-    const sliderMode = computed(() => store.state.stage.preferences.slider);
     const maxFrameSpeed = 50;
     const maxMoveSpeed = 500;
     const value = computed(() => {
-      switch (sliderMode.value) {
+      switch (props.sliderMode) {
         case "animation":
           return props.object.autoplayFrames == 0
             ? 0
@@ -83,7 +82,7 @@ export default {
 
     const handleChange = (e) => {
       keepActive();
-      switch (sliderMode.value) {
+      switch (props.sliderMode) {
         case "opacity":
           sendChangeOpacity(e);
           break;
@@ -96,7 +95,7 @@ export default {
       }
     };
 
-    return { keepActive, handleChange, value, sliderMode };
+    return { keepActive, handleChange, value };
   },
 };
 </script>

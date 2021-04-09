@@ -3,7 +3,7 @@
     <template #menu="slotProps">
       <MenuContent
         :object="object"
-        :closeMenu="slotProps.closeMenu"
+        v-bind="slotProps"
         v-model:active="active"
       />
     </template>

@@ -9,8 +9,9 @@
     }"
   >
     <OpacitySlider
-      :position="position"
       v-model:active="active"
+      v-model:slider-mode="sliderMode"
+      :position="position"
       :object="object"
     />
     <Topping :position="position" :object="object" />
@@ -71,7 +72,13 @@
         </template>
       </template>
       <template #context="slotProps" v-if="controlable">
-        <slot name="menu" v-bind="slotProps" />
+        <slot
+          name="menu"
+          v-bind="slotProps"
+          :slider-mode="sliderMode"
+          :set-slider-mode="(mode) => (sliderMode = mode)"
+          :keep-active="() => (active = true)"
+        />
       </template>
     </ContextMenu>
   </div>
@@ -108,6 +115,7 @@ export default {
 
     // Local state
     const active = ref(false);
+    const sliderMode = ref("opacity");
     const position = reactive({ ...props.object });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
@@ -239,6 +247,7 @@ export default {
       isHolding,
       holdable,
       controlable,
+      sliderMode,
     };
   },
 };

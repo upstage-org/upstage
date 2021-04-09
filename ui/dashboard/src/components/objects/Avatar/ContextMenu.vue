@@ -134,7 +134,14 @@ import { computed, inject } from "vue";
 import Icon from "@/components/Icon";
 
 export default {
-  props: ["object", "closeMenu", "active"],
+  props: [
+    "object",
+    "closeMenu",
+    "active",
+    "sliderMode",
+    "setSliderMode",
+    "keepActive",
+  ],
   emits: ["update:active", "hold"],
   components: { Icon },
   setup: (props, { emit }) => {
@@ -183,11 +190,10 @@ export default {
       store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
     };
 
-    const sliderMode = computed(() => store.state.stage.preferences.slider);
     const changeSliderMode = (mode) => {
-      store.dispatch("stage/changeSliderMode", mode).then(() => {
-        emit("update:active", true);
-      });
+      props.setSliderMode(mode);
+      emit("update:active", true);
+      props.keepActive(true);
     };
 
     const rotate = (deg) => {
@@ -211,7 +217,6 @@ export default {
       bringToFront,
       sendToBack,
       toggleAutoplayFrames,
-      sliderMode,
       changeSliderMode,
       rotate,
       isHolding,
