@@ -30,8 +30,8 @@ jobs:
           key: ${{ secrets.APP1_KEY }}
           port: ${{ secrets.APP1_PORT }}
           script: |
-            su - upstage
             cd /home/upstage/mobilise/ui/dashboard/
             git pull
             yarn
             yarn build
+            chown upstage:upstage -R /home/upstage/mobilise
