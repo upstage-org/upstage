@@ -34,7 +34,7 @@ export default {
         commit("SET_USER_DATA", currentUser);
         return currentUser;
       } catch (error) {
-        if (['Missing X-Access-Token Header', 'Signature verification failed'].some(message => error.message?.includes(message))) {
+        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
           logout();
 
           if (router.currentRoute.value.meta.requireAuth) {
