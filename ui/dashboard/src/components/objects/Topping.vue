@@ -7,7 +7,7 @@
     }"
   >
     <span
-      v-if="holder"
+      v-if="holder && isPlayer"
       class="icon marker"
       :class="{ inactive: !active }"
       :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
@@ -48,6 +48,7 @@ export default {
     const active = computed(
       () => props.object.id === store.state.user.avatarId
     );
+    const isPlayer = computed(() => store.getters["auth/loggedIn"]);
 
     const enter = (el, complete) => {
       anime({
@@ -69,7 +70,7 @@ export default {
       });
     };
 
-    return { active, enter, leave, holder };
+    return { active, enter, leave, holder, isPlayer };
   },
 };
 </script>

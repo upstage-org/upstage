@@ -523,21 +523,21 @@ export default {
             commit('UPDATE_SESSIONS_COUNTER', message)
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
+                const session = state.sessions.find(s => s.id === state.session)
+                if (session?.avatarId) {
+                    commit('user/SET_AVATAR_ID', session.avatarId, { root: true });
+                }
                 dispatch('joinStage')
             }
         },
-        async joinStage({ rootGetters, state, commit }) {
+        async joinStage({ rootGetters, state }) {
             const id = state.session
             const session = state.sessions.find(s => s.id === id)
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
+            const avatarId = rootGetters['user/avatarId'];
             const at = +new Date();
-            let avatarId = rootGetters['user/avatarId'];
             if (session) {
-                if (!avatarId && session.avatarId) {
-                    avatarId = session.avatarId
-                    commit('user/SET_AVATAR_ID', avatarId, { root: true });
-                }
                 Object.assign(session, { isPlayer, nickname, at, avatarId })
             } else {
                 state.sessions.push({ id, isPlayer, nickname, at, avatarId })

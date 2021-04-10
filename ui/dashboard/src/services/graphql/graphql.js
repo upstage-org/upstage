@@ -18,8 +18,9 @@ export const createClient = namespace => ({
         try {
             response = await client.request(...params);
         } catch (error) {
+            const isRefresh = error.request.query.trim().startsWith('mutation RefreshToken');
             const refreshToken = store.getters["auth/getRefreshToken"]
-            if (refreshToken && error.response.errors[0].message === 'Signature has expired') {
+            if (!isRefresh && refreshToken && error.response.errors[0].message === 'Signature has expired') {
                 const newToken = await store.dispatch("auth/fetchRefreshToken");
                 client.setHeader('X-Access-Token', newToken);
                 response = await client.request(...params);
