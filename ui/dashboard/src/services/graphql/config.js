@@ -8,7 +8,17 @@ export default {
     query {
       nginx {
         uploadLimit
-      } 
+      }
+      system {
+        termsOfService
+      }
     }
   `),
+  updateTermsOfService: (variables) => client.request(gql`
+    mutation UpdateTermsOfService($url: String!) {
+      updateTermsOfService(url: $url) {
+        url
+      }
+    }
+  `, variables)
 }
