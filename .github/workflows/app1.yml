@@ -34,3 +34,5 @@ jobs:
             git pull
             yarn
             yarn build
+            systemctl restart upstage.service
+            chown -R upstage:upstage /home/upstage/mobilise
