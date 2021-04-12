@@ -4,15 +4,18 @@ export default {
     namespaced: true,
     state: {
         nginx: {},
+        system: {}
     },
     getters: {
         uploadLimit(state) {
             return state.nginx.uploadLimit ?? 1024 * 1024
+        },
+        termsOfService(state) {
+            return state.system.termsOfService
         }
     },
     mutations: {
         STORE_CONFIG(state, configs) {
-            console.log
             Object.assign(state, configs)
         },
     },

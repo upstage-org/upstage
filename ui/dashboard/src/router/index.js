@@ -105,6 +105,11 @@ const routes = [
             name: 'Upload Limit',
             component: () => import('../views/dashboard/Admin/UploadLimit.vue'),
           },
+          {
+            path: 'system-configurations',
+            name: 'System Configurations',
+            component: () => import('../views/dashboard/Admin/SystemConfigurations.vue'),
+          },
         ]
       },
       {

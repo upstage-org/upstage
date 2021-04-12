@@ -7,6 +7,7 @@
   <div class="columns" :class="{ 'is-loading': !user }">
     <div class="column is-narrow">
       <aside class="menu box has-background-light mx-4">
+        <p class="menu-label">Users</p>
         <ul class="menu-list">
           <li>
             <router-link
@@ -54,6 +55,17 @@
               exact-active-class="is-active"
             >
               Upload Limit
+            </router-link>
+          </li>
+        </ul>
+        <p class="menu-label">System</p>
+        <ul class="menu-list">
+          <li>
+            <router-link
+              to="/dashboard/admin/system-configurations"
+              exact-active-class="is-active"
+            >
+              System Configurations
             </router-link>
           </li>
         </ul>
