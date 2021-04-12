@@ -32,12 +32,15 @@
         <i class="fas fa-times"></i>
       </button>
     </div>
-    <i
-      v-show="chosen"
-      class="marker fas fa-map-marker-alt fa-lg has-text-warning"
-    ></i>
-    <span v-show="active" class="icon">
-      <Icon class="marker" src="my-avatar.svg" />
+    <span
+      v-if="holder && isPlayer"
+      class="icon marker"
+      :class="{ inactive: !isHolding }"
+      :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
+        holder.nickname
+      }`"
+    >
+      <Icon src="my-avatar.svg" />
     </span>
     <transition @enter="enter" @leave="leave" :css="false" appear>
       <div
@@ -58,7 +61,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, inject } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
@@ -68,9 +71,11 @@ export default {
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
-    const chosen = computed(
+    const holder = inject("holder");
+    const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
+    const isPlayer = computed(() => store.getters["auth/loggedIn"]);
 
     const enter = (el, complete) => {
       anime({
@@ -107,7 +112,7 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
-    return { chosen, enter, leave, deleteObject, keepActive, toggleLiveAction };
+    return { enter, leave, deleteObject, keepActive, toggleLiveAction, holder, isHolding, isPlayer };
   },
 };
 </script>
@@ -134,7 +139,7 @@ export default {
 }
 .marker {
   position: absolute;
-  left: -8px;
+  left: -10px;
   -webkit-animation: spin 2s linear infinite;
   -moz-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
@@ -157,5 +162,8 @@ export default {
     -webkit-transform: rotate3d(0, 1, 0, 360deg);
     transform: rotate3d(0, 1, 0, 360deg);
   }
+}
+.inactive {
+  filter: grayscale(1);
 }
 </style>

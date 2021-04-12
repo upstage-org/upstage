@@ -38,6 +38,7 @@
               <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
             </a>
           </p>
+          <p>By logging in, you are agreeing to our <TermsOfService /></p>
         </div>
       </div>
     </div>
@@ -57,8 +58,11 @@
 </template>
 
 <script>
+import TermsOfService from "@/components/TermsOfService.vue";
+
 export default {
   emits: ["success"],
+  components: { TermsOfService },
   data() {
     return {
       showPassword: false,

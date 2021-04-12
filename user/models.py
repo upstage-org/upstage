@@ -59,13 +59,12 @@ class User(Base,db.Model):
     first_name = Column(Text, default='')
     last_name = Column(Text, default='')
     display_name = Column(Text, default='')
-    phone = Column(Text, default='')
     active = Column(Boolean, nullable=False, default=False)
-    ok_to_sms = Column(Boolean, nullable=False, default=True)
     agreed_to_terms = Column(Boolean, nullable=False, default=False)
     created_on = Column(DateTime, default=datetime.utcnow)
     firebase_pushnot_id = Column(Text, default=None)
     deactivated_on = Column(DateTime)
+    upload_limit = Column(Integer, default=1024*1024)
 
 class UserPushnot(Base,db.Model):
     __tablename__ = 'user_pushnot'

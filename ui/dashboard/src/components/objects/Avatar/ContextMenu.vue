@@ -1,15 +1,19 @@
 <template>
   <div class="avatar-context-menu card-content p-0">
-    <a
-      v-if="object.type !== 'prop'"
-      class="panel-block"
-      @click="setAsPrimaryAvatar"
-    >
-      <span class="panel-icon">
-        <Icon src="set-as-avatar.svg" />
-      </span>
-      <span>Set as your avatar</span>
-    </a>
+    <template v-if="holdable">
+      <a v-if="isHolding" class="panel-block" @click.stop="releaseAvatar">
+        <span class="panel-icon">
+          <Icon src="clear.svg" />
+        </span>
+        <span>Release this avatar</span>
+      </a>
+      <a v-else class="panel-block" @click="holdAvatar">
+        <span class="panel-icon">
+          <Icon src="set-as-avatar.svg" />
+        </span>
+        <span>Hold this avatar</span>
+      </a>
+    </template>
     <a class="panel-block" @click="bringToFront">
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
@@ -23,7 +27,7 @@
       <span>Send to back</span>
     </a>
     <a
-      v-if="object.type !== 'prop'"
+      v-if="holdable"
       class="panel-block"
       @click="changeNickname"
     >
@@ -126,19 +130,29 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, inject, ref } from "vue";
 import Icon from "@/components/Icon";
 
 export default {
-  props: ["object", "closeMenu", "active"],
-  emits: ["update:active"],
+  props: [
+    "object",
+    "closeMenu",
+    "active",
+    "sliderMode",
+    "setSliderMode",
+    "keepActive",
+  ],
+  emits: ["update:active", "hold"],
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
 
-    const setAsPrimaryAvatar = () => {
-      const { name, id } = props.object;
-      store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
+    const holdAvatar = () => {
+      store.dispatch("user/setAvatarId", props.object.id).then(props.closeMenu);
+    };
+
+    const releaseAvatar = () => {
+      store.dispatch("user/setAvatarId", null).then(props.closeMenu);
     };
 
     const deleteObject = () => {
@@ -176,11 +190,10 @@ export default {
       store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
     };
 
-    const sliderMode = computed(() => store.state.stage.preferences.slider);
     const changeSliderMode = (mode) => {
-      store.dispatch("stage/changeSliderMode", mode).then(() => {
-        emit("update:active", true);
-      });
+      props.setSliderMode(mode);
+      emit("update:active", true);
+      props.keepActive(true);
     };
 
     const rotate = (deg) => {
@@ -190,17 +203,25 @@ export default {
       });
     };
 
+    const holder = inject("holder") ?? ref();
+    const holdable = inject("holdable") ?? ref();
+    const isHolding = computed(
+      () => holder.value && holder.value.id === store.state.stage.session
+    );
+
     return {
       switchFrame,
-      setAsPrimaryAvatar,
+      holdAvatar,
+      releaseAvatar,
       deleteObject,
       changeNickname,
       bringToFront,
       sendToBack,
       toggleAutoplayFrames,
-      sliderMode,
       changeSliderMode,
       rotate,
+      isHolding,
+      holdable
     };
   },
 };

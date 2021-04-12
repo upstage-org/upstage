@@ -12,7 +12,8 @@
         @click="collapsed = !collapsed"
       >
         <span class="icon">
-          <Icon src="minimize.svg" size="32" class="mt-4" />
+          <Icon v-if="collapsed" src="maximize.svg" size="20" />
+          <Icon v-else src="minimize.svg" size="24" class="mt-4" />
         </span>
       </button>
       <button

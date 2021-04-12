@@ -1,5 +1,6 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
+import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
@@ -42,7 +43,6 @@ export default {
             isActive: false,
         },
         preferences: {
-            slider: 'opacity',
             isDrawing: true,
             text: {
                 fontSize: '20px',
@@ -151,6 +151,11 @@ export default {
             state.subscribeSuccess = status
         },
         PUSH_CHAT_MESSAGE(state, message) {
+            message.hash = hash(message)
+            const lastMessage = state.chat.messages[state.chat.messages.length - 1]
+            if (lastMessage && (lastMessage.hash === message.hash)) {
+                return
+            }
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
@@ -262,7 +267,7 @@ export default {
         },
         UPDATE_SESSIONS_COUNTER(state, sessions) {
             if (sessions && sessions.length) {
-                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'hours') < 12);
+                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
                 state.sessions.sort((a, b) => b.at - a.at);
             }
         }
@@ -332,13 +337,13 @@ export default {
         },
         sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
-            const nickname = rootGetters["user/nickname"];
+            const user = rootGetters["user/chatname"];
             const payload = {
-                user: nickname,
+                user,
                 message: message,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
-                at: moment().format('HH:mm')
+                at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
             const avatar = getters['currentAvatar']
@@ -362,7 +367,7 @@ export default {
             }
             commit('PUSH_CHAT_MESSAGE', model)
         },
-        placeObjectOnStage({ commit }, data) {
+        placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
                 id: uuidv4(),
                 w: 100,
@@ -377,6 +382,9 @@ export default {
             mqtt.sendMessage(TOPICS.BOARD, payload);
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
+            }
+            if (data.type === 'avatar' || data.type === 'drawing') {
+                dispatch("user/setAvatarId", object.id, { root: true });
             }
             return object;
         },
@@ -480,9 +488,6 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        changeSliderMode({ commit }, slider) {
-            commit('SET_PREFERENCES', { slider })
-        },
         addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
@@ -517,23 +522,28 @@ export default {
                 commit('SET_PRELOADING_STATUS', false);
             }
         },
-        handleCounterMessage({ commit, dispatch, state }, { message }) {
+        handleCounterMessage({ commit, dispatch, state, rootState }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
             if (!state.session) {
-                state.session = uuidv4()
+                state.session = rootState.user.user?.id ?? uuidv4()
+                const session = state.sessions.find(s => s.id === state.session)
+                if (session?.avatarId) {
+                    commit('user/SET_AVATAR_ID', session.avatarId, { root: true });
+                }
                 dispatch('joinStage')
             }
         },
         async joinStage({ rootGetters, state }) {
             const id = state.session
+            const session = state.sessions.find(s => s.id === id)
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
-            const session = state.sessions.find(s => s.id === id)
-            const at = +new Date()
+            const avatarId = rootGetters['user/avatarId'];
+            const at = +new Date();
             if (session) {
-                Object.assign(session, { isPlayer, nickname, at })
+                Object.assign(session, { isPlayer, nickname, at, avatarId })
             } else {
-                state.sessions.push({ id, isPlayer, nickname, at })
+                state.sessions.push({ id, isPlayer, nickname, at, avatarId })
             }
             await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
         },

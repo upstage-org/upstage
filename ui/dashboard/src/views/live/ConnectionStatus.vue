@@ -83,7 +83,7 @@ export default {
   position: fixed;
   right: 12px;
   top: 50px;
-  width: 150px;
+  width: 250px;
   text-align: center;
   z-index: 2;
 

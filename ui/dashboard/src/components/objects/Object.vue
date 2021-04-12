@@ -3,14 +3,15 @@
     ref="el"
     tabindex="0"
     @keyup.delete="deleteObject"
-    @dblclick="setAsPrimaryAvatar"
+    @dblclick="hold"
     :style="{
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
   >
     <OpacitySlider
-      :position="position"
       v-model:active="active"
+      v-model:slider-mode="sliderMode"
+      :position="position"
       :object="object"
     />
     <Topping :position="position" :object="object" v-model:active="active" />
@@ -21,10 +22,10 @@
     >
       <template #trigger>
         <DragResize
-          v-if="loggedIn"
+          v-if="controlable"
           class="object"
-          :initW="100"
-          :initH="100"
+          :initW="position.w"
+          :initH="position.h"
           v-model:x="position.x"
           v-model:y="position.y"
           v-model:w="position.w"
@@ -45,6 +46,7 @@
               height: '100%',
               opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
               transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: 'grab',
             }"
           >
             <slot name="render">
@@ -52,7 +54,7 @@
             </slot>
           </div>
         </DragResize>
-        <template v-if="isDragging || !loggedIn">
+        <template v-if="isDragging || !controlable">
           <div
             :style="{
               position: 'fixed',
@@ -62,7 +64,9 @@
               height: position.h + 'px',
               opacity: object.opacity,
               transform: `rotate(${object.rotate ?? 0}deg)`,
+              cursor: holder ? 'not-allowed' : 'pointer',
             }"
+            @mousedown.prevent
           >
             <slot name="render">
               <Image :src="src" />
@@ -70,8 +74,14 @@
           </div>
         </template>
       </template>
-      <template #context="slotProps" v-if="loggedIn">
-        <slot name="menu" v-bind="slotProps" />
+      <template #context="slotProps" v-if="controlable">
+        <slot
+          name="menu"
+          v-bind="slotProps"
+          :slider-mode="sliderMode"
+          :set-slider-mode="(mode) => (sliderMode = mode)"
+          :keep-active="() => (active = true)"
+        />
       </template>
     </ContextMenu>
   </div>
@@ -79,7 +89,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, inject, provide, reactive, ref, watch } from "vue";
 import anime from "animejs";
 import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
@@ -89,6 +99,7 @@ import Topping from "./Topping.vue";
 
 export default {
   props: ["object"],
+  emits: ["dblclick"],
   components: {
     DragResize,
     Image,
@@ -104,14 +115,25 @@ export default {
     const store = useStore();
     const config = store.getters["stage/config"];
     const stageSize = computed(() => store.getters["stage/stageSize"]);
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 
     // Local state
     const active = ref(false);
+    const sliderMode = ref("opacity");
     const position = reactive({ ...props.object });
     const isDragging = ref(false);
     const beforeDragPosition = ref();
     const animation = ref();
+    const holder = inject("holder") ?? ref();
+    const isHolding = computed(
+      () => holder.value?.id === store.state.stage.session
+    );
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const controlable = computed(() => {
+      return holdable.value ? isHolding.value : store.getters["auth/loggedIn"];
+    });
+    provide("holdable", holdable);
 
     watch(
       props.object,
@@ -191,15 +213,8 @@ export default {
     };
 
     const deleteObject = () => {
-      if (loggedIn.value) {
+      if (controlable.value) {
         store.dispatch("stage/deleteObject", props.object);
-      }
-    };
-
-    const setAsPrimaryAvatar = () => {
-      if (loggedIn.value && props.object.type !== "prop") {
-        const { name, id } = props.object;
-        store.dispatch("user/setAvatarId", { id, name }).then(props.closeMenu);
       }
     };
 
@@ -237,9 +252,14 @@ export default {
       }
     });
 
+    const hold = () => {
+      if (holdable.value && !holder.value) {
+        store.dispatch("user/setAvatarId", props.object.id);
+      }
+    };
+
     return {
       el,
-      loggedIn,
       print,
       dragging,
       dragStart,
@@ -252,9 +272,14 @@ export default {
       beforeDragPosition,
       isDragging,
       deleteObject,
-      setAsPrimaryAvatar,
       src,
       stageSize,
+      hold,
+      holder,
+      isHolding,
+      holdable,
+      controlable,
+      sliderMode,
     };
   },
 };

@@ -74,7 +74,7 @@
     </div>
     <div class="drawing-tool" @click="save(true)">
       <div class="icon is-large">
-        <Icon size="36" src="save.svg" />
+        <Icon size="36" src="check.svg" />
       </div>
       <span class="tag is-light is-block">Save</span>
     </div>

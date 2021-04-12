@@ -58,8 +58,7 @@ export default {
     const form = reactive({});
     const loading = ref(false);
     const store = useStore();
-    const loading = ref(false);
-    const nickname = computed(() => store.getters["user/nickname"]);
+    const nickname = computed(() => store.getters["user/chatname"]);
     const saveNickname = () => {
       loading.value = true;
       store.dispatch("user/saveNickname", form).then((nickname) => {
