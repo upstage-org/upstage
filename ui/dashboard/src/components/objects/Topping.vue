@@ -2,8 +2,8 @@
   <div
     class="avatar-topping"
     :style="{
-      top: position.y - 26 + 'px',
-      left: position.x + position.w / 2 + 'px',
+      top: object.y - 26 + 'px',
+      left: object.x + object.w / 2 + 'px',
     }"
   >
     <div
@@ -12,7 +12,7 @@
       :style="{
         position: 'absolute',
         width: '100px',
-        left: position.w / 2 - 96 + 'px',
+        left: object.w / 2 - 96 + 'px',
       }"
       @mousedown.stop="keepActive"
       @mouseover.stop="keepActive"
@@ -49,8 +49,8 @@
         tabindex="-1"
         :key="object.speak"
         :style="{
-          'max-width': position.w + 'px',
-          'min-width': position.w < 100 ? '100px' : 'unset',
+          'max-width': object.w + 'px',
+          'min-width': object.w < 100 ? '100px' : 'unset',
         }"
       >
         <span>{{ object.speak.message }}</span>
@@ -66,7 +66,7 @@ import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
 export default {
-  props: ["position", "object", "active"],
+  props: ["object", "active"],
   emits: ["update:active"],
   components: { Icon },
   setup: (props, { emit }) => {
@@ -112,7 +112,16 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
-    return { enter, leave, deleteObject, keepActive, toggleLiveAction, holder, isHolding, isPlayer };
+    return {
+      enter,
+      leave,
+      deleteObject,
+      keepActive,
+      toggleLiveAction,
+      holder,
+      isHolding,
+      isPlayer,
+    };
   },
 };
 </script>

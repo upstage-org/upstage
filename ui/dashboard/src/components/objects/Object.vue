@@ -11,41 +11,22 @@
     <OpacitySlider
       v-model:active="active"
       v-model:slider-mode="sliderMode"
-      :position="position"
       :object="object"
     />
-    <Topping :position="position" :object="object" v-model:active="active" />
+    <Topping :object="object" v-model:active="active" />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
       :pad-right="250"
     >
       <template #trigger>
-        <DragResize
-          v-if="controlable"
-          class="object"
-          :initW="position.w"
-          :initH="position.h"
-          v-model:x="position.x"
-          v-model:y="position.y"
-          v-model:w="position.w"
-          v-model:h="position.h"
-          v-model:active="active"
-          :draggable="true"
-          :resizable="true"
-          @dragging="dragging"
-          @drag-start="dragStart"
-          @drag-end="dragEnd"
-          @resizing="resizing"
-          @resize-start="resizeStart"
-          @resize-end="resizeEnd"
-        >
+        <Moveable :controlable="controlable" :object="object">
           <div
+            class="object"
             :style="{
               width: '100%',
               height: '100%',
-              opacity: (object.opacity ?? 1) * (isDragging ? 0.5 : 1),
-              transform: `rotate(${object.rotate ?? 0}deg)`,
+              opacity: object.opacity ?? 1,
               cursor: 'grab',
             }"
           >
@@ -53,26 +34,7 @@
               <Image class="the-object" :src="src" />
             </slot>
           </div>
-        </DragResize>
-        <template v-if="isDragging || !controlable">
-          <div
-            :style="{
-              position: 'fixed',
-              left: (isDragging ? beforeDragPosition.x : position.x) + 'px',
-              top: (isDragging ? beforeDragPosition.y : position.y) + 'px',
-              width: position.w + 'px',
-              height: position.h + 'px',
-              opacity: object.opacity,
-              transform: `rotate(${object.rotate ?? 0}deg)`,
-              cursor: holder ? 'not-allowed' : 'pointer',
-            }"
-            @mousedown.prevent
-          >
-            <slot name="render">
-              <Image :src="src" />
-            </slot>
-          </div>
-        </template>
+        </Moveable>
       </template>
       <template #context="slotProps" v-if="controlable">
         <slot
@@ -90,22 +52,21 @@
 <script>
 import { useStore } from "vuex";
 import { computed, inject, provide, reactive, ref, watch } from "vue";
-import anime from "animejs";
-import DragResize from "vue3-draggable-resizable";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
 import OpacitySlider from "./OpacitySlider";
 import Topping from "./Topping.vue";
+import Moveable from "./Moveable";
 
 export default {
   props: ["object"],
   emits: ["dblclick"],
   components: {
-    DragResize,
     Image,
     ContextMenu,
     OpacitySlider,
     Topping,
+    Moveable,
   },
   setup(props) {
     // Dom refs
@@ -113,16 +74,12 @@ export default {
 
     // Vuex store
     const store = useStore();
-    const config = store.getters["stage/config"];
     const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     // Local state
     const active = ref(false);
     const sliderMode = ref("opacity");
-    const position = reactive({ ...props.object });
-    const isDragging = ref(false);
     const beforeDragPosition = ref();
-    const animation = ref();
     const holder = inject("holder") ?? ref();
     const isHolding = computed(
       () => holder.value?.id === store.state.stage.session
@@ -134,83 +91,6 @@ export default {
       return holdable.value ? isHolding.value : store.getters["auth/loggedIn"];
     });
     provide("holdable", holdable);
-
-    watch(
-      props.object,
-      () => {
-        const { x, y, h, w, moveSpeed, type, isPlaying } = props.object;
-        if ((type === "stream" && isPlaying) || isDragging.value) {
-          return;
-        }
-        animation.value?.pause(true);
-        animation.value = anime({
-          targets: position,
-          x,
-          y,
-          h,
-          w,
-          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
-          duration: moveSpeed ?? config.animateDuration,
-        });
-      },
-      { immediate: true }
-    );
-
-    const dragStart = () => {
-      animation.value?.pause(true);
-      isDragging.value = true;
-      beforeDragPosition.value = {
-        x: position.x,
-        y: position.y,
-      };
-    };
-
-    const dragEnd = (e) => {
-      if (
-        !props.object.liveAction &&
-        e.x !== beforeDragPosition.value.x &&
-        e.y !== beforeDragPosition.value.y
-      ) {
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          ...e,
-        });
-        position.x = beforeDragPosition.value.x;
-        position.y = beforeDragPosition.value.y;
-      }
-      isDragging.value = false;
-    };
-    const dragging = (e) => {
-      if (props.object.liveAction) {
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          ...e,
-        });
-        beforeDragPosition.value = {
-          x: position.x,
-          y: position.y,
-        };
-      }
-    };
-
-    const resizeStart = () => {
-      isDragging.value = true;
-    };
-    const resizeEnd = (e) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        ...e,
-      });
-      isDragging.value = false;
-    };
-    const resizing = (e) => {
-      if (props.object.liveAction) {
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          ...e,
-        });
-      }
-    };
 
     const deleteObject = () => {
       if (controlable.value) {
@@ -261,16 +141,8 @@ export default {
     return {
       el,
       print,
-      dragging,
-      dragStart,
-      dragEnd,
-      resizing,
-      resizeStart,
-      resizeEnd,
       active,
-      position,
       beforeDragPosition,
-      isDragging,
       deleteObject,
       src,
       stageSize,
