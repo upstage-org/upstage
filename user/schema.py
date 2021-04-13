@@ -1,4 +1,6 @@
 # -*- coding: iso8859-15 -*-
+from auth.models import UserSession
+from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
 import sys,os
 import json
 
@@ -216,6 +218,15 @@ class DeleteUser(graphene.Mutation):
         if not user.role in (ADMIN,SUPER_ADMIN) :
                 raise Exception("Permission denied!")
         with ScopedSession() as local_db_session:
+            # Delete all existed user's sessions
+            local_db_session.query(UserSession).filter(UserSession.user_id==data['id']).delete()
+            # Delete all stages created by this user
+            local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
+            local_db_session.query(StageModel).filter(StageModel.owner_id==data['id']).delete()
+            # Change the owner of media uploaded by this user to the one who process the delete
+            # Because delete the media would cause impact to other stage, this would be a workaround for now
+            local_db_session.query(AssetModel).filter(AssetModel.owner_id==data['id']).update({AssetModel.owner_id: user.id})
+            # Delete the actual user
             local_db_session.query(UserModel).filter(UserModel.id==data['id']).delete()
             local_db_session.commit()
         return DeleteUser(success=True)
