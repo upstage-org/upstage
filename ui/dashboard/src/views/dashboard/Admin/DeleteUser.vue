@@ -8,13 +8,16 @@
         <template #trigger>
           <i class="fas fa-times has-text-danger clickable"></i>
         </template>
-        Are you sure you want to delete
-        <span class="has-text-danger">
-          {{ displayName }}
-        </span>
-        ?
-        <br />
-        This cannot be undo!
+        <div class="has-text-centered">
+          Deleting user
+          <span class="has-text-danger">
+            {{ displayName }}
+          </span>
+          will also delete all of {{ displayName }}'s stages. This cannot be
+          undo!
+          <br />
+          <strong>Are you sure you want to continue?</strong>
+        </div>
       </Confirm>
     </template>
   </UserTable>
