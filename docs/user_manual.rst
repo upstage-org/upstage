@@ -160,7 +160,7 @@ To "delete" it from your stage, go to the Dashboard :
 This media is not more available for your stage.
 (screenshot)
 
-Performing
+Performing (as an artist player)
 *******************************************************
 A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media will play.
 
@@ -168,7 +168,7 @@ A performance involves several types of media uploads: avatars, props, and backg
 
 Avatars
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+introduction : what is avatar for UpStage. Difference between holding an avatar or not. You can't hold an avatar holding by another player. 
 
 .. _avatars-selecting:
 
@@ -235,19 +235,60 @@ You can temove the avatar from your stage by right click to display the context 
 
 Audio
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+introduce : context use for a player an audio... what consequence for audience
+
+Run an audio
+=============
+Click on the audio tool. The differents audio appear on an overlay. Click on the one you want to run the sound, it's a play button.
+
+Pause an audio
+==============
+Re-clicking on the play button of the sound you make it pause. 
 
 .. _props:
 
 Props
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+introduction : why artist need prop. Difference between prop and avatar. consequence for audience
+
+Place a prop
+============
+Click on the Prop tool. An overlay appear on the top of the Stage showing all the props available for the Stage. To place one on the Stage, drag'n'drop from the overlay to the Stage.
+
+Resize
+======
+One click on it show a box around it. Drag the white square handle to resize it propally.
+
+Bring to front or Send to back
+===============================
+If you want to change his plan, right click on it to display the context menu and hit bring to front or send to back. Several times if needed.
+
+Change opacity
+==============
+One click on it show a box around it and on his left a green slider. Drag the handle of the slider to change his opacity. If the slider is not green, then right click to display the context menu and hit the opacity slider.
+
+Run animated prop
+=================
+If your prop contains several frames, click right on it and hit the play button.
+
+Slow or speed frame animation
+=============================
+To change the velocity of the frames animation of your prop, right click on it to display the context menu and hit the Frame Animation slider. Now you can directly change the speedness frame with the left slider.
+
+Make the prop faster or slower
+==============================
+To change the velocity of the movement of the prop, right click on it and on the context menu hit the Move Speed slider. Then a pink slider appear on the left of the prop to change dynamically his velocity. Cute no ?
+
+Delete prop for the Stage
+=========================
+To take of the prop of your page, right click on it and hit the delete button visible on the context menu. The prop now is waiting on the overlay.
 
 .. _backdrops:
 
 Backdrops
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+introduction : context use for a player, consequence for audience
+
 
 Place a backdrop
 ================
