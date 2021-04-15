@@ -151,8 +151,14 @@ You can change a media file's type by finding it under the "media" listing and c
 
 Deleting Media
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
-
+Actually, you can delete a media from a stage but not delete it from the server. It's a security because this media can be use by another artist in another stage.
+To "delete" it from your stage, go to the Dashboard :
+1 - Go on Media
+2 - Found your media
+3 - Clic on edit
+4 - On the modal clic on the red Clear button
+This media is not more available for your stage.
+(screenshot)
 
 Performing
 *******************************************************
@@ -165,6 +171,10 @@ Avatars
 Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
 
 .. _avatars-selecting:
+
+Place avatar on Stage
+=======================================================
+qsdfqsdf
 
 Selecting (Holding)
 =======================================================
