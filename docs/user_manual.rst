@@ -156,7 +156,7 @@ Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egesta
 
 Performing
 *******************************************************
-A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, they will play as well.
+A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media will play.
 
 .. _avatars:
 
