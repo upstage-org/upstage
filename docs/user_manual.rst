@@ -139,13 +139,13 @@ Media
 
 Creating Media
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+To upload new media for use in your performances, navigate to  Dashboard > Media and then click "New +" located in the upper left. You will be prompted to title the new media, define the type, and upload the desired file. Press save. You should now see it listed. 
 
 .. _modify-media:
 
 Modifying Media
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+You can change a media file's type by finding it under the "media" listing and clicking the pencil icon to the left of it under the "edit" column.
 
 .. _delete-media:
 
