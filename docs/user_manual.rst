@@ -334,3 +334,49 @@ By default the video file are rectangle. If you want to make it circle, right cl
 Delete the video from the stage
 ===============================
 Right click on the video on the Stage and hit the clear button to make it disappear. The video is now gently waiting on the overlay
+
+
+Draw
+-------------------------------------------------------
+introduction : you can also draw in live ! With your mouse or a graphic tablet, whatever. It's only in live !
+
+How to prepare in live your drawing
+===================================
+Click the draw tool. A black overlay appear on top of the stage to let you prepare your drawing. An overlay show you your new fun tool. Pick up the color, choose the size of your brush and go drawing on the canvas. If you are happy with it, hit save. If not use the erase or clear even the cancel button. And retry ! It's funny !
+
+How to put the drawing on the stage
+===================================
+Now when you click on the draw tool you see the available drawing. drag'n'drop on the stage to place it.
+
+Resize the drawing
+===================
+Double click on it to hold it. And drag the white handle around the box to resize your drawing.
+
+Change opacity of the drawing
+==============================
+Double click on it to display the green slider on the left. Move the slider to change his opacity. If the slider is not green but yellow or pink, right click to select the good one on the context menu.
+
+Make the drawing speach
+=======================
+Holding it and write on the chat. Bubbles on top of the drawing appear to show his thinking...
+
+Change the nickname of the drawing
+==================================
+It's fun but the drawing have a nickname on the chat ! You can change it right clicking on it to make the context menu appear and choose the option : change nickname.
+
+Bring to front or Send to back
+===============================
+To adjust the level of your drawing secund the other media already Stage, right click on it to display the context menu and choose Bring to front or Send to back. Hit several times if needed.
+
+Rotate your drawing
+===================
+Right click on it and in the context menu and choose the good rotation.
+
+Change speedness
+================
+Right click on it and in the context menu select the move speed slider to directly drag the value in Stage.
+
+Delete drawing
+==============
+Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear). Be
+
