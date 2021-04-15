@@ -134,7 +134,6 @@ Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egesta
 
 Media
 *******************************************************
-
 .. _create-media:
 
 Creating Media
@@ -297,3 +296,16 @@ Click on the backdrop tool, an overlay appear on the top of the Stage. Select th
 Remove a backdrop
 =================
 Click on the backdrop tool, an overlay appear on the top of the Stage. Click on Clear button. No more backdrop appear on Stage.
+
+.._stream:
+
+Stream
+----------------------------------------------------------
+introduction : 3 kinds of stream: a video file, an url, your webcam. Context explaination, difference between this for player and for audience.
+Prerequisite : put available media on management dashboard
+limitation : blabla
+tips : we advice
+
+Run a video file on stage
+=========================
+
