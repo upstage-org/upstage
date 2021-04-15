@@ -313,4 +313,24 @@ tips : we advice
 
 Run a video file on stage
 =========================
+Click on the stream tool. The videos available appear on the overlay. Drag'n'drop the video file on your Stage. This automatically run the video.
 
+Resize the video on the Stage
+=============================
+Click on it and a box around the video appear. Drag the white handle to resize the video.
+
+Change the opacity of the video
+===============================
+Click on it and a green slider appear on the left. Move the handle to change the opacity.
+
+Re-run the video
+================
+Right click to display the context menu and click to run, to allow the video play again.
+
+Change the form of the video
+=============================
+By default the video file are rectangle. If you want to make it circle, right click on it and click on the circle in the bottom of the context menu. We can also put the video into a V or a Dog silhouette.
+
+Delete the video from the stage
+===============================
+Right click on the video on the Stage and hit the clear button to make it disappear. The video is now gently waiting on the overlay
