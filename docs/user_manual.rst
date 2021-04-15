@@ -168,7 +168,7 @@ Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egesta
 
 Selecting (Holding)
 =======================================================
-When you are actively controlling an avatar, you will see a spinning red pointer above it.
+To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it.
 
 .. _avatars-movement:
 
