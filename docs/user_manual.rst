@@ -161,18 +161,18 @@ To "delete" it from your stage, go to the Dashboard :
 2 - Found your media
 3 - Clic on edit
 4 - On the modal clic on the red Clear button
-This media is not more available for your stage.
+This media is no longer available for your stage.
 (screenshot)
 
 Performing (as an artist player)
 *******************************************************
-A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media will play.
+A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media files will play.
 
 .. _avatars:
 
 Avatars
 -------------------------------------------------------
-introduction : what is avatar for UpStage. Difference between holding an avatar or not. You can't hold an avatar holding by another player. 
+introduction : what is avatar for UpStage. Difference between holding an avatar or not. You can't hold an avatar held by another player. 
 
 .. _avatars-selecting:
 
@@ -182,29 +182,29 @@ Select the Avatar tool, it's open an overlay. In this overlay you see several av
 
 Selecting (Holding)
 =======================================================
-To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The holding avatar is important, you can make a lot of things with him like : make him speach, moove him, resize him, bring him to front or back, rotate it, chance his opacity, speedness and animated. And of course you can also delete from the Stage.
+To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The holding avatar is important. You can do a lot of things with it like : make it speak, move it, resize it, bring it to the front or back, rotate it, as well as change its opacity, speed and animation. And of course, you can also delete it from the stage.
 
 .. _avatars-movement:
 
 Movement
 =======================================================
-You want to place the avatar in another corner of the Stage. Just drag'n'drop in his new place.
+You want to place the avatar in another corner of the stage? Just drag'n'drop it to its new location.
 
 .. _avatars-scaling:
 
 Resizing
 =======================================================
-When the avatar is holding, a box with with handles around the avatar. If you drag'n'drop the handle, this automatically resize the avatar.
+When you select an avatar, a box with with handles around the avatar appears. If you drag'n'drop the handle, this automatically resizes the avatar. Doing this will preserve the original proportions.
 
 .. _avatars-rotation:
 
 Rotating
 =======================================================
-When you see the box around the avatar, clic right with the mouse. A context menu appear; Select rotation +45deg or -45deg to rotate the avatar.
+When you see the box around the avatar, right click with the mouse. A context menu will appear; Select rotation +45deg or -45deg to rotate the avatar.
 
 Change opacity
 =======================================================
-By default the avatar appear with full opacity. The greend slider at the left side of the avatar allow to decrease or after increase his opacity.
+By default the avatar will appear with full opacity. The greend slider at the left side of the avatar allows you to decrease or increase the opacity.
 
 Bring to front or Send to back
 =======================================================
@@ -213,15 +213,15 @@ If you want other media be above the avatar you can send to back your avatar in 
 
 Make avatar visual speach
 =======================================================
-The selection allow you to make it speach. If you write on the chat, a bubble speech appear above the avatar. 
+This selection allows you to make the avatar speak. If you write on the chat, a bubble speech appear above the avatar. 
 
 Change name of avatar on the chat
 =======================================================
-When you use the chat holding an avatar, the nickname of the avatar appear. To change his nickname, use the right click to display the context menu and hit Change your nickname. A new window appear to let you choose the new nickname, confirm in Saving.
+When you use the chat holding an avatar, the nickname of the avatar appears. To change his nickname, use the right click to display the context menu and hit Change your nickname. A new window appear to let you choose the new nickname. Press "Save" to confirm.
 
 Run avatar animation
 =======================================================
-If your avatar have several frame, you can run his animation. Go to the context menu in right click. The frames appear on the bottom of this context menu. Hit the play button to run the animation. 
+If your avatar has several frames, you can cycle through thses as an animation. Go to the context menu in right click. The frames appear on the bottom of this context menu. Hit "play" button to run the animation. 
 
 Change speedness of the animation
 =======================================================
@@ -233,7 +233,7 @@ Right click on the avatar, and choose the slider Move Speed. The slider on the l
 
 Delete
 =======================================================
-You can temove the avatar from your stage by right click to display the context menu and click on delete button.
+You can temove the avatar from your stage by right click to display the context menu and click on delete button. Alternatively, select and hot backspace.
 
 .. _audio:
 
