@@ -92,7 +92,7 @@ Creating a Stage
 
 Once you have logged in, navigate to the dashboard, located in the upper right, where you can create and manage stages.[screenshot]
 
-Once there, press “new Stage” to create a stage. You must add a name (both the full version and a short version for the URL). You can designate specific users. You must set the stage to either  live, upcoming, or rehearsal. 
+Once there, press “new Stage” to create a stage. You must add a name (both the full version and a short version for the URL). You can designate specific users. You must set the stage to either live, upcoming, or rehearsal. 
 
 Now you can select media to use in your performance. Return on the list of available stages on the Dashboard page. If the toggle button is green, you only see your stage on the page. To see all stages available, toggle this button. [screenshot]. Click "Edit your Stage".. [screenshot] 
 
