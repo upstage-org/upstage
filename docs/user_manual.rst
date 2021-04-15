@@ -384,3 +384,35 @@ Make several drawing
 ====================
 Ugh you really an illustrate artist ! Then after click on the tool, hit the big + button on the overaly. It allow you to draw another drawing. Make it better this time please !
 
+Text
+------------------------------------------------
+introduction : during the live you can write above the Stage and not in the chat.
+limitation : the text is not resizable after his creation.
+
+Creat a new text
+================
+Click on the text tool. A white overlay is covering the Stage yo help you in creating the text. The top overlay allow you to choose the font, the size, the color of the font and the style (bold, italic, uderline). In the place of the default text "Write or paste your text here" write or paste your own text. Save to keep it or cancel if youw ant to remade one.
+
+Place the text on the Stage
+============================
+Autmatically the text is placed on the Stage after save it. It's present too on the top overlay. To place a duplicate text you can drag'n'drop the text to the good place.
+
+Change opacity
+==============
+Click on it to display the green slider who can change his opacity by draggin his handle.
+
+Bring to front or Send to back
+==============================
+right click on it to show the context menu. This option are available on it.
+
+Rotate your text
+================
+Are you sure to rotate your text ? It's increase his illisibility ! But ok, right click on it and choose the bad rotation you really want ! And think in the usability of this idea...
+
+Change the speed
+================
+Right click on it to show the context menu and select Move speed to change the left slider. Now the slider allow you to control his velocity.
+
+Delete text
+===========
+Text on Stage is not more useful ? Ok right click on it and click on the delete button on the context menu. This take of the text but it still waiting on the overlay. After the stage finished, the text will disappear for ever. At the beguining there is the verb, but at the end there is emptyness.
