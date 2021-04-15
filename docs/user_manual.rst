@@ -378,5 +378,9 @@ Right click on it and in the context menu select the move speed slider to direct
 
 Delete drawing
 ==============
-Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear). Be
+Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear). Be awar that your drawing still available on the overlay of the draw tool but disappear for ever since your Stage finised.
+
+Make several drawing
+====================
+Ugh you really an illustrate artist ! Then after click on the tool, hit the big + button on the overaly. It allow you to draw another drawing. Make it better this time please !
 
