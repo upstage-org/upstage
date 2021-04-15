@@ -134,6 +134,11 @@ Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egesta
 
 Media
 *******************************************************
+introduction : what is a media for upStage
+Kinds of media
+limitation :
+tips :
+
 .. _create-media:
 
 Creating Media
