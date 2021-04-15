@@ -174,11 +174,11 @@ Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egesta
 
 Place avatar on Stage
 =======================================================
-qsdfqsdf
+Select the Avatar tool, it's open an overlay. In this overlay you see several avatar. Drag'n'drop one avatar to the Stage. The avatar appear on the Stage.
 
 Selecting (Holding)
 =======================================================
-To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it.
+To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The selection allow you to make it speach. If you write on the chat, a bubble speech appear 
 
 .. _avatars-movement:
 
