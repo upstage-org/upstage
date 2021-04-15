@@ -178,29 +178,58 @@ Select the Avatar tool, it's open an overlay. In this overlay you see several av
 
 Selecting (Holding)
 =======================================================
-To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The selection allow you to make it speach. If you write on the chat, a bubble speech appear 
+To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The holding avatar is important, you can make a lot of things with him like : make him speach, moove him, resize him, bring him to front or back, rotate it, chance his opacity, speedness and animated. And of course you can also delete from the Stage.
 
 .. _avatars-movement:
 
 Movement
 =======================================================
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+You want to place the avatar in another corner of the Stage. Just drag'n'drop in his new place.
 
 .. _avatars-scaling:
 
-Scaling
+Resizing
 =======================================================
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+When the avatar is holding, a box with with handles around the avatar. If you drag'n'drop the handle, this automatically resize the avatar.
 
 .. _avatars-rotation:
 
 Rotating
 =======================================================
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+When you see the box around the avatar, clic right with the mouse. A context menu appear; Select rotation +45deg or -45deg to rotate the avatar.
 
-Fading
+Change opacity
 =======================================================
-You can make you avatar fade in and out by adjusting the slider to the left of the image.
+By default the avatar appear with full opacity. The greend slider at the left side of the avatar allow to decrease or after increase his opacity.
+
+Bring to front or Send to back
+=======================================================
+If you put other media on the Stage, it could hide your avatar. To put the avatar on top of other media, the click right on it display the context menu to allow you bring it to front.
+If you want other media be above the avatar you can send to back your avatar in the same way.
+
+Make avatar visual speach
+=======================================================
+The selection allow you to make it speach. If you write on the chat, a bubble speech appear above the avatar. 
+
+Change name of avatar on the chat
+=======================================================
+When you use the chat holding an avatar, the nickname of the avatar appear. To change his nickname, use the right click to display the context menu and hit Change your nickname. A new window appear to let you choose the new nickname, confirm in Saving.
+
+Run avatar animation
+=======================================================
+If your avatar have several frame, you can run his animation. Go to the context menu in right click. The frames appear on the bottom of this context menu. Hit the play button to run the animation. 
+
+Change speedness of the animation
+=======================================================
+Right click on the avatar, and choose the slider Frame Animation. The slider on the left ot the avatar is now yellow. This slider control the velocity of the animation.
+
+Change velocity movement avatar
+=======================================================
+Right click on the avatar, and choose the slider Move Speed. The slider on the left of the avatar is now pink. This slider control the velocity of his movement on the Stage.
+
+Delete
+=======================================================
+You can temove the avatar from your stage by right click to display the context menu and click on delete button.
 
 .. _audio:
 
