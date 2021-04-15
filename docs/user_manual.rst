@@ -94,8 +94,9 @@ Once you have logged in, navigate to the dashboard, located in the upper right, 
 
 Once there, press “new Stage” to create a stage. You must add a name (both the full version and a short version for the URL). You can designate specific users. You must set the stage to either  live, upcoming, or rehearsal. 
 
-Now you can select media to use in your performance. Return on the list of available Stage on the Dashboard page. If the toggle button is green, you only see your stage see on the page. To see all stages available, toggle this button. [screenshot]. Click "Edit your Stage".. [screenshot] 
-In the left-hand column, you will see the available media. [screenshot]  Clicking a media item shows a green overlay with a white +. This action will add it to the right-hand column entitled “selected media” [gif]. You can filter for specific categories with the drop-down menu. For example, if you want to view only the backgrounds available and which you have selected, select “backdrop”. All other selections you have made in other categories will persist and can be seen by selecting another category from the drop-down. You can select several media. After all the selections made, hit the Save button to put them into your Stage. [screenshot]
+Now you can select media to use in your performance. Return on the list of available stages on the Dashboard page. If the toggle button is green, you only see your stage on the page. To see all stages available, toggle this button. [screenshot]. Click "Edit your Stage".. [screenshot] 
+
+In the left-hand column, you will see the available media. [screenshot]  Clicking a media item shows a green overlay with a white +. This action will add it to the right-hand column entitled “selected media” [gif]. You can filter for specific categories with the drop-down menu. For example, if you want to view only the backgrounds available and which you have selected, select “backdrop”. All other selections you have made in other categories will persist, and you can see them by selecting another category from the drop-down. You can select several media. After all the selections made, hit the Save button to put them into your Stage. [screenshot]
 
 If you would like to add media, this manual covers that in later sections.
 
