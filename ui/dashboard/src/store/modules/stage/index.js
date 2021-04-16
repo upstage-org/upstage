@@ -2,7 +2,7 @@ import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
-import { absolutePath, randomColor, randomMessageColor, randomRange } from '@/utils/common'
+import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { getViewport } from './reactiveViewport';
@@ -20,6 +20,7 @@ export default {
         chat: {
             messages: [],
             color: randomMessageColor(),
+            opacity: 0.9
         },
         board: {
             objects: [],
@@ -219,7 +220,7 @@ export default {
             Object.assign(state.preferences, preferences);
         },
         PUSH_DRAWING(state, drawing) {
-            state.board.drawings.push(drawing);
+            state.board.drawings.push(cloneDeep(drawing));
         },
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);
@@ -260,6 +261,9 @@ export default {
                 object.h = object.h * ratio;
                 recalcFontSize(object, s => s * ratio)
             })
+        },
+        SET_CHAT_OPACITY(state, opacity) {
+            state.chat.opacity = opacity;
         },
         UPDATE_SESSIONS_COUNTER(state, sessions) {
             if (sessions && sessions.length) {
@@ -487,8 +491,7 @@ export default {
         addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
-            commit('UPDATE_IS_DRAWING', false);
-            dispatch('placeObjectOnStage', drawing);
+            return dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';

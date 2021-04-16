@@ -36,12 +36,13 @@
 import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import Avatar from "@/components/objects/Avatar/index";
+import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
 import Text from "@/components/objects/Text";
 import anime from "animejs";
 
 export default {
-  components: { Avatar, Prop: Avatar, Drawing: Avatar, Stream, Text },
+  components: { Avatar, Prop: Avatar, Stream, Drawing, Text },
   setup: () => {
     const store = useStore();
     const background = computed(() => store.state.stage.background);

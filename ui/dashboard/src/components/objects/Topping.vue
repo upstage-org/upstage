@@ -2,14 +2,40 @@
   <div
     class="avatar-topping"
     :style="{
-      top: position.y - 26 + 'px',
-      left: position.x + position.w / 2 + 'px',
+      top: object.y - 26 + 'px',
+      left: object.x + object.w / 2 + 'px',
     }"
   >
+    <div
+      class="quick-action"
+      v-show="active"
+      :style="{
+        position: 'absolute',
+        width: '100px',
+        left: object.w / 2 - 96 + 'px',
+      }"
+      @mousedown.stop="keepActive"
+      @mouseover.stop="keepActive"
+      @mouseup.stop="keepActive"
+    >
+      <button class="button is-rounded is-small">
+        <i class="fas fa-border-none"></i>
+      </button>
+      <button
+        class="button is-rounded is-small"
+        :class="{ 'is-primary': object.liveAction }"
+        @click="toggleLiveAction"
+      >
+        <i class="fas fa-lightbulb"></i>
+      </button>
+      <button class="button is-rounded is-small" @click="deleteObject">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
     <span
       v-if="holder && isPlayer"
       class="icon marker"
-      :class="{ inactive: !active }"
+      :class="{ inactive: !isHolding }"
       :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
         holder.nickname
       }`"
@@ -23,8 +49,8 @@
         tabindex="-1"
         :key="object.speak"
         :style="{
-          'max-width': position.w + 'px',
-          'min-width': position.w < 100 ? '100px' : 'unset',
+          'max-width': object.w + 'px',
+          'min-width': object.w < 100 ? '100px' : 'unset',
         }"
       >
         <span>{{ object.speak.message }}</span>
@@ -40,12 +66,13 @@ import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
 export default {
-  props: ["position", "object"],
+  props: ["object", "active"],
+  emits: ["update:active"],
   components: { Icon },
-  setup: (props) => {
+  setup: (props, { emit }) => {
     const store = useStore();
     const holder = inject("holder");
-    const active = computed(
+    const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
     const isPlayer = computed(() => store.getters["auth/loggedIn"]);
@@ -70,7 +97,31 @@ export default {
       });
     };
 
-    return { active, enter, leave, holder, isPlayer };
+    const keepActive = () => {
+      emit("update:active", true);
+    };
+
+    const toggleLiveAction = () => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        liveAction: !props.object.liveAction,
+      });
+    };
+
+    const deleteObject = () => {
+      store.dispatch("stage/deleteObject", props.object);
+    };
+
+    return {
+      enter,
+      leave,
+      deleteObject,
+      keepActive,
+      toggleLiveAction,
+      holder,
+      isHolding,
+      isPlayer,
+    };
   },
 };
 </script>
@@ -101,6 +152,9 @@ export default {
   -webkit-animation: spin 2s linear infinite;
   -moz-animation: spin 2s linear infinite;
   animation: spin 2s linear infinite;
+}
+.quick-action button {
+  width: 16px;
 }
 @-moz-keyframes spin {
   100% {

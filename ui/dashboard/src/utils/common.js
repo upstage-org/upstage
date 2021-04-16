@@ -85,6 +85,10 @@ export function debounce(callback, delay) {
   }
 }
 
+export function cloneDeep(object) {
+  return JSON.parse(JSON.stringify(object));
+}
+
 export function includesIgnoreCase(value, keyword) {
   return value.toLowerCase().includes(keyword.toLowerCase())
 }

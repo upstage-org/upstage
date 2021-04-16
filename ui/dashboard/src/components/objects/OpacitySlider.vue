@@ -12,9 +12,9 @@
     :value="value"
     type="range"
     :style="{
-      top: position.y - 26 + 'px',
-      left: position.x - 10 + 'px',
-      width: position.h + 'px',
+      top: object.y - 26 + 'px',
+      left: object.x - 10 + 'px',
+      width: object.h + 'px',
     }"
     v-show="active"
     @change="handleChange"
@@ -28,7 +28,7 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
-  props: ["position", "active", "object", "sliderMode"],
+  props: ["active", "object", "sliderMode"],
   emits: ["update:active"],
   setup: (props, { emit }) => {
     const store = useStore();

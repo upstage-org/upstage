@@ -1,5 +1,10 @@
 <template>
-  <div id="chatbox" class="card is-light" :class="{ collapsed }">
+  <div
+    id="chatbox"
+    class="card is-light"
+    :class="{ collapsed }"
+    :style="{ opacity }"
+  >
     <div class="actions">
       <Reaction v-if="collapsed" />
       <button
@@ -103,6 +108,8 @@ export default {
         type: "Chat",
       });
 
+    const opacity = computed(() => store.state.stage.chat.opacity);
+
     return {
       messages,
       message,
@@ -111,6 +118,7 @@ export default {
       loadingUser,
       openChatSetting,
       collapsed,
+      opacity,
     };
   },
 };
@@ -126,8 +134,8 @@ export default {
   height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
-  opacity: 0.9;
   overflow: visible;
+  z-index: 3;
 
   .card-content {
     flex-grow: 1;
