@@ -20,7 +20,11 @@
       :pad-right="250"
     >
       <template #trigger>
-        <Moveable :controlable="controlable" :object="object">
+        <Moveable
+          v-model:active="active"
+          :controlable="controlable"
+          :object="object"
+        >
           <div
             class="object"
             :style="{

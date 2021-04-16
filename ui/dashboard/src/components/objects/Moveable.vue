@@ -4,8 +4,8 @@
     :style="{
       position: 'absolute',
     }"
-    @mousedown="showControls($event)"
-    v-click-outside="() => showControls(false)"
+    @mousedown="showControls(true, $event)"
+    v-click-outside="(e) => showControls(false, e)"
   >
     <slot />
   </div>
@@ -21,8 +21,9 @@ import { useStore } from "vuex";
 import anime from "animejs";
 
 export default {
-  props: ["object", "controlable"],
-  setup: (props) => {
+  props: ["object", "controlable", "active"],
+  emits: ["update:active"],
+  setup: (props, { emit }) => {
     const el = ref();
     const isDragging = ref(false);
     const animation = ref();
@@ -129,10 +130,9 @@ export default {
       el.value.style.top = `${y}px`;
     });
 
-    const showControls = (e) => {
-      console.log(props.controlable);
+    const showControls = (iShowing, e) => {
       if (moveable) {
-        if (props.controlable && !!e) {
+        if (props.controlable && iShowing) {
           moveable.setState(
             {
               target: el.value,
@@ -141,10 +141,18 @@ export default {
               moveable.dragStart(e);
             }
           );
+          emit("update:active", true);
         } else {
-          moveable.setState({
-            target: null,
-          });
+          if (e.target.id === "board") {
+            moveable.setState(
+              {
+                target: null,
+              },
+              () => {
+                emit("update:active", false);
+              }
+            );
+          }
         }
       }
     };
