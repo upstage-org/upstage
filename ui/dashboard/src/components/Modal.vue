@@ -3,7 +3,7 @@
     <slot name="trigger" />
   </span>
   <teleport to="body">
-    <div class="modal" :class="{ 'is-active': isActive }">
+    <div v-if="isActive" class="modal is-active">
       <div class="modal-background" @click="closeModal"></div>
       <div class="modal-card" :style="{ width }">
         <header v-if="$slots.header" class="modal-card-head">
