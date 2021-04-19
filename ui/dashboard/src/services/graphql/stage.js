@@ -63,6 +63,14 @@ export default {
     }
     ${stageFragment}
   `, variables),
+  sweepStage: (variables) => client.request(gql`
+    mutation SweepStage($id: ID!) {
+      sweepStage(input: {id: $id}) {
+        success
+        performanceId
+      }
+    }
+  `, variables),
   stageList: (variables) => client.request(gql`
     query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
       stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {

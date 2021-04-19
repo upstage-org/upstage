@@ -1,4 +1,5 @@
 # -*- coding: iso8859-15 -*-
+from performance_config.models import Performance as PerformanceModel
 from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
@@ -152,11 +153,51 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class SweepStageInput(graphene.InputObjectType, StageAttribute):
+    id = graphene.ID(required=True, description="Global Id of the stage.")
+
+
+class SweepStage(graphene.Mutation):
+    """Mutation to sweep a stage."""
+    success = graphene.Boolean()
+    performance_id = graphene.Int()
+
+    class Arguments:
+        input = SweepStageInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = graphql_utils.input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            stage = local_db_session.query(StageModel)\
+                .filter(StageModel.id == data['id'])\
+                .first()
+
+            events = DBSession.query(EventModel)\
+                .filter(EventModel.performance_id == None)\
+                .filter(EventModel.topic.like("{}%".format(stage.file_location)))
+
+            if events.count() > 0:
+                performance = PerformanceModel(stage=stage)
+                local_db_session.add(performance)
+                local_db_session.flush()
+
+                events.update(
+                    {EventModel.performance_id: performance.id}, synchronize_session="fetch")
+            else:
+                raise Exception("The stage is already sweeped!")
+
+            local_db_session.commit()
+
+            return SweepStage(success=True, performance_id=performance.id)
+
+
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
+    sweepStage = SweepStage.Field()
 
 
 class Query(graphene.ObjectType):
