@@ -512,10 +512,7 @@ export default {
         async loadStage({ commit }, url) {
             commit('CLEAN_STAGE', null);
             commit('SET_PRELOADING_STATUS', true);
-            const response = await stageGraph.stageList({
-                fileLocation: url
-            })
-            const model = response.stageList.edges[0]?.node;
+            const model = await stageGraph.loadStage(url)
             if (model) {
                 commit('SET_MODEL', model);
             } else {

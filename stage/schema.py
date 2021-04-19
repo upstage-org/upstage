@@ -5,6 +5,7 @@ from config.project_globals import (DBSession, Base, metadata, engine, get_scope
 from utils import graphql_utils
 from flask_graphql import GraphQLView
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
+from event_archive.models import Event as EventModel
 from config.settings import VERSION
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
@@ -36,14 +37,26 @@ class StageAttributes(SQLAlchemyObjectType):
         model = StageAttributeModel
 
 
+class Event(SQLAlchemyObjectType):
+    class Meta:
+        model = EventModel
+
+
 class Stage(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    events = graphene.List(
+        Event, description="Archived events of this performance")
 
     class Meta:
         model = StageModel
         model.db_id = model.id
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
+
+    def resolve_events(self, info):
+        events = DBSession.query(EventModel).filter(EventModel.performance_id == None).filter(
+            EventModel.topic.like("{}%".format(self.file_location))).all()
+        return events
 
 
 class StageConnectionField(SQLAlchemyConnectionField):

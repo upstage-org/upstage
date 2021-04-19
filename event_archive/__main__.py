@@ -8,9 +8,6 @@ from mqtt import build_client
 import config as conf
 import actions
 
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG)
-
 if __name__ == "__main__":
     run()
     mqtt_client = build_client()

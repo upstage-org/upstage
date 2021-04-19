@@ -51,4 +51,4 @@ if __name__ == "__main__":
     finally:
         DBSession.close()
 
-subprocess.run(["python3", "event_archive", SQLALCHEMY_DATABASE_URI])
+event_archive = subprocess.Popen(["python3", "event_archive", SQLALCHEMY_DATABASE_URI])
