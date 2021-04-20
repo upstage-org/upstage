@@ -59,7 +59,16 @@ You can log in with your credentials using the log in box which is accessible vi
 
 The Dashboard
 -------------------------------------------------------
-Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
+The dashboard represents the backstage of your productions, where you make important decisions and pull all the strings from behind the scenes. Here you can view and manage all your stages, as well as the stages of others. By default, you will only see your own stages listed. To view the stages of others, toggle the green switch at the top left. Each stage listed has its number, name, and owner displayed. To the right of that, you will find a “detail” button and an “edit” button.
+
+**Detail**
+The detail button displays more information about the stage when clicked, such as the assigned “players” and media files in a pop-up menu. This menu also contains options to manage, duplicate, and delete the stage at the bottom.
+
+If you press the “manage button”, you will redirect to the same stage management page as when you created the stage. 
+
+**Edit**
+When you click the “edit” button, you will redirect to the stage management page.
+
 
 .. image:: /dashboard.png
     :alt: Dashboard
