@@ -84,6 +84,22 @@ export default {
     }
     ${stageFragment}
   `, variables),
+  getStage: (id) => client.request(gql`
+    query ListStage($id: ID) {
+      stageList(id: $id) {
+        edges {
+          node {
+            ...stageFragment
+            chats {
+              payload
+              created
+            }
+          }
+        }
+      }
+    }
+    ${stageFragment}
+  `, { id }),
   loadStage: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {

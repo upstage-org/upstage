@@ -43,10 +43,19 @@ class Event(SQLAlchemyObjectType):
         model = EventModel
 
 
+class Performance(SQLAlchemyObjectType):
+    class Meta:
+        model = PerformanceModel
+
+
 class Stage(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     events = graphene.List(
         Event, description="Archived events of this performance")
+    performances = graphene.List(
+        Performance, description="Recorded performances")
+    chats = graphene.List(
+        Event, description="All chat sent by players and audiences")
 
     class Meta:
         model = StageModel
@@ -57,6 +66,16 @@ class Stage(SQLAlchemyObjectType):
     def resolve_events(self, info):
         events = DBSession.query(EventModel).filter(EventModel.performance_id == None).filter(
             EventModel.topic.like("{}%".format(self.file_location))).all()
+        return events
+
+    def resolve_performances(self, info):
+        performances = DBSession.query(PerformanceModel).filter(
+            PerformanceModel.stage_id == self.db_id).all()
+        return performances
+
+    def resolve_chats(self, info):
+        events = DBSession.query(EventModel).filter(
+            EventModel.topic.like("{}/chat".format(self.file_location))).all()
         return events
 
 
