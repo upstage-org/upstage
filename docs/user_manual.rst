@@ -55,12 +55,12 @@ You can log in with your credentials using the log in box which is accessible vi
 
 .. _dashboard:
 
-The Dashboard
+The Backstage
 -------------------------------------------------------
 Mauris non faucibus ipsum. Donec in nisl et nisi egestas venenatis. Fusce egestas, quam non iaculis vulputate, erat lacus imperdiet risus, vitae cursus elit est vitae mi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Morbi eu ultricies sem. Aliquam id quam ante. Sed sagittis mollis vehicula. Quisque non sodales ante, nec commodo eros. Mauris mattis purus vel erat consequat, congue vestibulum erat eleifend. Ut eget quam laoreet leo placerat imperdiet. Morbi molestie sodales libero, sit amet porttitor arcu mattis fringilla. Curabitur ultrices nec tellus vitae tempus.
 
 .. image:: /dashboard.png
-    :alt: Dashboard
+    :alt: Basckstage
 
 .. _profile:
 
