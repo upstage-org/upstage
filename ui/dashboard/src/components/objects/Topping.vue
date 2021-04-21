@@ -53,7 +53,7 @@
           'min-width': object.w < 100 ? '100px' : 'unset',
         }"
       >
-        <span>{{ object.speak.message }}</span>
+        <Linkify>{{ object.speak.message }}</Linkify>
         <i class="fas fa-caret-down"></i>
       </div>
     </transition>
@@ -65,10 +65,11 @@ import { computed, inject } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
+import Linkify from "@/components/Linkify";
 export default {
   props: ["object", "active"],
   emits: ["update:active"],
-  components: { Icon },
+  components: { Icon, Linkify },
   setup: (props, { emit }) => {
     const store = useStore();
     const holder = inject("holder");
