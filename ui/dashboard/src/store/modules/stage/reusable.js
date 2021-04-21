@@ -1,3 +1,4 @@
+import configs from "@/config";
 import store from "@/store";
 
 export function toRelative(size) {
@@ -48,10 +49,12 @@ export function deserializeObject(object, keepSrc) {
 
 export function namespaceTopic(topicName) {
     const url = store.getters['stage/url'];
-    return `${url}/${topicName}`;
+    const namespace = configs.MQTT_NAMESPACE;
+    return `${namespace}/${url}/${topicName}`;
 }
 
 export function unnamespaceTopic(topicName) {
     const url = store.getters['stage/url'];
-    return topicName.substring(url.length + 1);
+    const namespace = configs.MQTT_NAMESPACE;
+    return topicName.substring(namespace.length + url.length + 1);
 }
