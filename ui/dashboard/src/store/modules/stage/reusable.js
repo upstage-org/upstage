@@ -56,5 +56,5 @@ export function namespaceTopic(topicName) {
 export function unnamespaceTopic(topicName) {
     const url = store.getters['stage/url'];
     const namespace = configs.MQTT_NAMESPACE;
-    return topicName.substring(namespace.length + url.length + 1);
+    return topicName.substring(namespace.length + url.length + 2);
 }

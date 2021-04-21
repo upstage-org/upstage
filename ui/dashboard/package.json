@@ -5,8 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
     "serve:localhost": "vue-cli-service serve --mode localhost",
-    "build": "VUE_APP_GIT_BRANCH=$(git branch --show-current) vue-cli-service build",
-    "build:dev": "VUE_APP_GIT_BRANCH=$(git branch --show-current) vue-cli-service build --mode dev",
+    "build": "VUE_APP_GIT_BRANCH=$(git branch --show-current) VUE_APP_PUBLIC_PATH=/V4.0/ui/ vue-cli-service build",
+    "build:dev": "yarn build --mode dev",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

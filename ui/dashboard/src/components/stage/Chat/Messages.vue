@@ -15,8 +15,9 @@
         :style="
           'background-color: ' + item.backgroundColor + '; color: ' + item.color
         "
-        :data-tooltip="time(item.at)"
-        >{{ item.message }}
+        :title="time(item.at)"
+      >
+        <Linkify>{{ item.message }}</Linkify>
       </span>
     </p>
   </div>
@@ -24,8 +25,10 @@
 
 <script>
 import moment from "moment";
+import Linkify from "@/components/Linkify";
 export default {
   props: ["messages"],
+  components: { Linkify },
   methods: {
     time(value) {
       return moment(value).fromNow();
