@@ -26,30 +26,7 @@
       </button>
     </div>
     <div class="card-content" ref="theContent">
-      <div v-if="!messages.length" class="columns is-vcentered is-fullheight">
-        <div class="column has-text-centered has-text-light">
-          <i class="fas fa-comments fa-4x"></i>
-          <p class="subtitle has-text-light">No messages yet!</p>
-        </div>
-      </div>
-      <div v-else>
-        <p v-for="item in messages" :key="item">
-          <small>
-            <time v-if="false">({{ item.at }}) </time>
-            <b>{{ item.user }}: </b>
-          </small>
-          <span
-            class="tag message"
-            :style="
-              'background-color: ' +
-              item.backgroundColor +
-              '; color: ' +
-              item.color
-            "
-            >{{ item.message }}</span
-          >
-        </p>
-      </div>
+      <Messages :messages="messages" />
     </div>
     <footer class="card-footer">
       <div class="card-footer-item">
@@ -76,9 +53,10 @@ import { useStore } from "vuex";
 import EmojiInput from "@/components/form/EmojiInput";
 import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
+import Messages from "./Messages";
 
 export default {
-  components: { EmojiInput, Reaction, Icon },
+  components: { EmojiInput, Reaction, Icon, Messages },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -161,11 +139,6 @@ export default {
     }
   }
 
-  .message {
-    white-space: break-spaces;
-    height: unset;
-    color: white;
-  }
   .actions {
     position: absolute;
     right: 24px;

@@ -8,6 +8,7 @@ import pdb
 import os,sys
 from gevent.pywsgi import WSGIServer
 import pprint
+import subprocess
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir,'..'))
@@ -16,7 +17,7 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 from config.project_globals import Base,metadata,engine,app,DBSession
-from config.settings import FLASK_HOST,FLASK_PORT, RUNFROM_PORT, ENV_TYPE
+from config.settings import FLASK_HOST,FLASK_PORT, RUNFROM_PORT, ENV_TYPE, SQLALCHEMY_DATABASE_URI
 from config.signals import add_signals
 
 from auth import auth
@@ -50,3 +51,4 @@ if __name__ == "__main__":
     finally:
         DBSession.close()
 
+event_archive = subprocess.Popen(["python3", "event_archive", SQLALCHEMY_DATABASE_URI])

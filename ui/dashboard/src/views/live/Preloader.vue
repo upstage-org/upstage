@@ -44,8 +44,9 @@
 </template>
 
 <script>
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useStore } from "vuex";
+import { unnamespaceTopic } from "@/store/modules/stage/reusable";
 export default {
   setup: () => {
     const store = useStore();
@@ -65,6 +66,17 @@ export default {
     };
 
     setTimeout(stopLoading, 60000);
+    watch(
+      () => model.value?.events,
+      (events) => {
+        events.forEach(({ topic, payload }) => {
+          store.dispatch("stage/handleMessage", {
+            topic: unnamespaceTopic(topic),
+            message: JSON.parse(payload),
+          });
+        });
+      }
+    );
 
     return { model, preloadableAssets, progress, increaseProgress, preloading };
   },
