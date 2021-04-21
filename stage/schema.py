@@ -65,7 +65,7 @@ class Stage(SQLAlchemyObjectType):
 
     def resolve_events(self, info):
         events = DBSession.query(EventModel).filter(EventModel.performance_id == None).filter(
-            EventModel.topic.like("{}%".format(self.file_location))).all()
+            EventModel.topic.like("%/{}/%".format(self.file_location))).all()
         return events
 
     def resolve_performances(self, info):
@@ -75,7 +75,7 @@ class Stage(SQLAlchemyObjectType):
 
     def resolve_chats(self, info):
         events = DBSession.query(EventModel).filter(
-            EventModel.topic.like("{}/chat".format(self.file_location))).all()
+            EventModel.topic.like("%/{}/chat".format(self.file_location))).all()
         return events
 
 
