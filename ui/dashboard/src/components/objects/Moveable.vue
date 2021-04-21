@@ -15,7 +15,7 @@
 /* eslint-disable vue/no-mutating-props */
 
 import { ref } from "@vue/reactivity";
-import { onMounted, watchEffect } from "@vue/runtime-core";
+import { onMounted, onUnmounted, watchEffect } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
@@ -143,7 +143,7 @@ export default {
           );
           emit("update:active", true);
         } else {
-          if (e.target.id === "board") {
+          if (e?.target.id === "board") {
             moveable.setState(
               {
                 target: null,
@@ -160,6 +160,9 @@ export default {
       if (!props.controlable) {
         showControls(false);
       }
+    });
+    onUnmounted(() => {
+      moveable.destroy();
     });
 
     return { el, showControls };

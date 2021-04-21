@@ -149,28 +149,9 @@ export default {
 .marker {
   position: absolute;
   left: -10px;
-  -webkit-animation: spin 2s linear infinite;
-  -moz-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
 }
 .quick-action button {
   width: 16px;
-}
-@-moz-keyframes spin {
-  100% {
-    -moz-transform: rotate3d(0, 1, 0, 360deg);
-  }
-}
-@-webkit-keyframes spin {
-  100% {
-    -webkit-transform: rotate3d(0, 1, 0, 360deg);
-  }
-}
-@keyframes spin {
-  100% {
-    -webkit-transform: rotate3d(0, 1, 0, 360deg);
-    transform: rotate3d(0, 1, 0, 360deg);
-  }
 }
 .inactive {
   filter: grayscale(1);
