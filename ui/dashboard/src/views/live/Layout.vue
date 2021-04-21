@@ -1,7 +1,7 @@
 <template>
   <Logo id="live-logo" />
   <div id="main-content">
-    <PageLoader />
+    <Preloader />
     <template v-if="ready">
       <Live />
       <LoginPrompt />
@@ -13,14 +13,14 @@
 <script>
 import Logo from "@/components/Logo";
 import SettingPopup from "@/components/stage/SettingPopup";
-import PageLoader from "./PageLoader";
+import Preloader from "./Preloader";
 import LoginPrompt from "./LoginPrompt";
 import Live from "./Live";
 import { useStore } from "vuex";
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 export default {
-  components: { Logo, PageLoader, LoginPrompt, SettingPopup, Live },
+  components: { Logo, Preloader, LoginPrompt, SettingPopup, Live },
   setup: () => {
     const store = useStore();
     const ready = computed(

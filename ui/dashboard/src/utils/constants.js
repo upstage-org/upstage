@@ -1,10 +1,10 @@
 export const TOPICS = {
-  CHAT: "topic/chat",
-  BOARD: "topic/board",
-  BACKGROUND: "topic/background",
-  AUDIO: "topic/audio",
-  REACTION: "topic/reaction",
-  COUNTER: "topic/counter",
+  CHAT: "chat",
+  BOARD: "board",
+  BACKGROUND: "background",
+  AUDIO: "audio",
+  REACTION: "reaction",
+  COUNTER: "counter",
 }
 
 export const BOARD_ACTIONS = {
