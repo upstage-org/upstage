@@ -24,6 +24,7 @@
             v-model:slider-mode="sliderMode"
             :object="object"
           />
+          <QuickAction :object="object" v-model:active="active" />
           <Topping :object="object" v-model:active="active" />
           <div
             class="object"
@@ -59,6 +60,7 @@ import { computed, inject, provide, reactive, ref, watch } from "vue";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
 import OpacitySlider from "./OpacitySlider";
+import QuickAction from "./QuickAction";
 import Topping from "./Topping.vue";
 import Moveable from "./Moveable";
 
@@ -69,6 +71,7 @@ export default {
     Image,
     ContextMenu,
     OpacitySlider,
+    QuickAction,
     Topping,
     Moveable,
   },

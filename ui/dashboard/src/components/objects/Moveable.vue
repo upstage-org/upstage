@@ -191,7 +191,7 @@ export default {
           return;
         }
         animation?.pause(true);
-        showControls(false);
+        moveable?.setState({ target: null });
         animation = anime({
           targets: el.value,
           left,

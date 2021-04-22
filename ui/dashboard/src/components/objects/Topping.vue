@@ -1,31 +1,5 @@
 <template>
   <div class="avatar-topping">
-    <div
-      class="quick-action"
-      v-show="active"
-      :style="{
-        position: 'absolute',
-        width: '100px',
-        left: object.w / 2 - 96 + 'px',
-      }"
-      @mousedown.stop="keepActive"
-      @mouseover.stop="keepActive"
-      @mouseup.stop="keepActive"
-    >
-      <button class="button is-rounded is-small">
-        <i class="fas fa-border-none"></i>
-      </button>
-      <button
-        class="button is-rounded is-small"
-        :class="{ 'is-primary': object.liveAction }"
-        @click="toggleLiveAction"
-      >
-        <i class="fas fa-lightbulb"></i>
-      </button>
-      <button class="button is-rounded is-small" @click="deleteObject">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
     <span
       v-if="holder && isPlayer"
       class="icon marker"
@@ -64,9 +38,8 @@ import Icon from "@/components/Icon";
 import Linkify from "@/components/Linkify";
 export default {
   props: ["object", "active"],
-  emits: ["update:active"],
   components: { Icon, Linkify },
-  setup: (props, { emit }) => {
+  setup: (props) => {
     const store = useStore();
     const holder = inject("holder");
     const isHolding = computed(
@@ -94,27 +67,9 @@ export default {
       });
     };
 
-    const keepActive = () => {
-      emit("update:active", true);
-    };
-
-    const toggleLiveAction = () => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        liveAction: !props.object.liveAction,
-      });
-    };
-
-    const deleteObject = () => {
-      store.dispatch("stage/deleteObject", props.object);
-    };
-
     return {
       enter,
       leave,
-      deleteObject,
-      keepActive,
-      toggleLiveAction,
       holder,
       isHolding,
       isPlayer,
@@ -147,9 +102,6 @@ export default {
 .marker {
   position: absolute;
   left: -12px;
-}
-.quick-action button {
-  width: 16px;
 }
 .inactive {
   filter: grayscale(1);
