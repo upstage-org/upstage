@@ -8,11 +8,6 @@
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
   >
-    <OpacitySlider
-      v-model:active="active"
-      v-model:slider-mode="sliderMode"
-      :object="object"
-    />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -24,6 +19,11 @@
           :controlable="controlable"
           :object="object"
         >
+          <OpacitySlider
+            v-model:active="active"
+            v-model:slider-mode="sliderMode"
+            :object="object"
+          />
           <Topping :object="object" v-model:active="active" />
           <div
             class="object"

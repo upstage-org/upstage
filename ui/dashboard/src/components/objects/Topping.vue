@@ -43,11 +43,13 @@
         tabindex="-1"
         :key="object.speak"
         :style="{
-          'max-width': object.w + 'px',
-          'min-width': object.w < 100 ? '100px' : 'unset',
+          width: object.w + 'px',
+          'max-width': 'max-content',
         }"
       >
-        <span>{{ object.speak.message }}</span>
+        <div class="py-2 px-4">
+          <span>{{ object.speak.message }}</span>
+        </div>
         <i class="fas fa-caret-down"></i>
       </div>
     </transition>
@@ -127,9 +129,8 @@ export default {
   left: 50%;
 }
 .chat-bubble {
-  position: fixed;
+  position: absolute;
   border-radius: 4px;
-  padding: 0.25em 0.75em;
   text-align: center;
   line-height: 1em;
   background: white;

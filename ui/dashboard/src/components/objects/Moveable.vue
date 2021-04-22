@@ -3,6 +3,7 @@
     ref="el"
     :style="{
       position: 'absolute',
+      opacity: isDragging ? 0.5 : 1,
     }"
     @mousedown="showControls(true, $event)"
     v-click-outside="(e) => showControls(false, e)"
@@ -17,6 +18,7 @@
       top: object.y + 'px',
       width: object.w + 'px',
       height: object.h + 'px',
+      transform: `rotate(${object.rotate}deg)`,
     }"
   >
     <slot />
@@ -51,63 +53,96 @@ export default {
         origin: false,
       });
 
+      const sendMovement = (target, { left, top }) => {
+        target.style.left = `${props.object.x}px`;
+        target.style.top = `${props.object.y}px`;
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          x: left,
+          y: top,
+        });
+      };
       moveable
         .on("dragStart", () => {
           isDragging.value = true;
         })
         .on("drag", ({ target, left, top }) => {
+          emit("update:active", false);
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
+          if (props.object.liveAction) {
+            sendMovement(target, { left, top });
+          }
         })
         .on("dragEnd", ({ lastEvent, target }) => {
           if (lastEvent) {
-            target.style.left = `${props.object.x}px`;
-            target.style.top = `${props.object.y}px`;
-            store.dispatch("stage/shapeObject", {
-              ...props.object,
-              x: lastEvent.left,
-              y: lastEvent.top,
-            });
+            sendMovement(target, lastEvent);
           }
           isDragging.value = false;
         });
 
-      /* resizable */
+      const sendResize = (target, { width, height, left, top }) => {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          x: left,
+          y: top,
+          w: width,
+          h: height,
+        });
+      };
       moveable
         .on("resizeStart", () => {
           isDragging.value = true;
         })
         .on("resize", ({ target, width, height, drag: { left, top } }) => {
-          props.object.w = width;
-          props.object.h = height;
-          props.object.x = left;
-          props.object.y = top;
+          emit("update:active", false);
           target.style.width = `${width}px`;
           target.style.height = `${height}px`;
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
+          if (props.object.liveAction) {
+            sendResize(target, { left, top, width, height });
+          }
         })
-        .on("resizeEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
-          isDragging.value = false;
-        });
+        .on(
+          "resizeEnd",
+          ({
+            target,
+            lastEvent: {
+              width,
+              height,
+              drag: { left, top },
+            },
+          }) => {
+            sendResize(target, { left, top, width, height });
+            isDragging.value = false;
+            emit("update:active", true);
+          }
+        );
 
+      const sendRotation = (target, rotate) => {
+        target.style.transform = `rotate(${props.object.rotate}deg)`;
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          rotate,
+        });
+      };
       moveable
         .on("rotateStart", (e) => {
           e.set(props.object.rotate);
           isDragging.value = true;
         })
         .on("rotate", ({ target, rotate }) => {
-          props.object.rotate = rotate;
+          emit("update:active", false);
           target.style.transform = `rotate(${rotate}deg)`;
+          if (props.object.liveAction) {
+            sendRotation(target, rotate);
+          }
         })
-        .on("rotateEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
+        .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
+          sendRotation(target, rotate);
           isDragging.value = false;
+          emit("update:active", true);
         });
     });
 
@@ -155,10 +190,8 @@ export default {
         if (isDragging.value || (type === "stream" && isPlaying)) {
           return;
         }
-        console.log(left, top, width, height, animation);
         animation?.pause(true);
         showControls(false);
-        emit("update:active", false);
         animation = anime({
           targets: el.value,
           left,
@@ -174,11 +207,12 @@ export default {
     );
 
     onMounted(() => {
-      const { x, y, w, h } = props.object;
+      const { x, y, w, h, rotate } = props.object;
       el.value.style.width = `${w}px`;
       el.value.style.height = `${h}px`;
       el.value.style.left = `${x}px`;
       el.value.style.top = `${y}px`;
+      el.value.style.transform = `rotate(${rotate}deg)`;
     });
     watchEffect(() => {
       if (!props.controlable) {
