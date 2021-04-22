@@ -165,12 +165,10 @@ export default {
         UPDATE_OBJECT(state, object) {
             const { id } = object;
             deserializeObject(object);
-            const avatar = state.board.objects.find(o => o.id === id);
-            if (avatar) { // Object an is avatar
-                Object.assign(avatar, object);
-                return;
+            const model = state.board.objects.find(o => o.id === id);
+            if (model) {
+                Object.assign(model, object);
             }
-            state.board.objects.push(object)
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
@@ -179,14 +177,12 @@ export default {
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
-            if (!model) {
-                const length = state.board.objects.push(avatar)
-                model = state.board.objects[length - 1];
+            if (model) {
+                model.speak = speak;
+                setTimeout(() => {
+                    if (model.speak?.message === speak.message) { model.speak = null }
+                }, 1000 + speak.message.split(' ').length * 1000);
             }
-            model.speak = speak;
-            setTimeout(() => {
-                if (model.speak.message === speak.message) { model.speak = null }
-            }, 1000 + speak.message.split(' ').length * 1000);
         },
         SET_PRELOADING_STATUS(state, status) {
             state.preloading = status;

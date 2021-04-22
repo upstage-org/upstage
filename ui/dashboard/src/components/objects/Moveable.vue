@@ -3,9 +3,23 @@
     ref="el"
     :style="{
       position: 'absolute',
+      opacity: isDragging ? 0.5 : 1,
     }"
     @mousedown="showControls(true, $event)"
     v-click-outside="(e) => showControls(false, e)"
+  >
+    <slot />
+  </div>
+  <div
+    v-if="isDragging"
+    :style="{
+      position: 'absolute',
+      left: object.x + 'px',
+      top: object.y + 'px',
+      width: object.w + 'px',
+      height: object.h + 'px',
+      transform: `rotate(${object.rotate}deg)`,
+    }"
   >
     <slot />
   </div>
@@ -15,7 +29,7 @@
 /* eslint-disable vue/no-mutating-props */
 
 import { ref } from "@vue/reactivity";
-import { onMounted, watchEffect } from "@vue/runtime-core";
+import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
@@ -26,7 +40,6 @@ export default {
   setup: (props, { emit }) => {
     const el = ref();
     const isDragging = ref(false);
-    const animation = ref();
 
     const store = useStore();
     const config = store.getters["stage/config"];
@@ -37,97 +50,100 @@ export default {
         draggable: true,
         resizable: true,
         rotatable: true,
+        origin: false,
       });
 
+      const sendMovement = (target, { left, top }) => {
+        target.style.left = `${props.object.x}px`;
+        target.style.top = `${props.object.y}px`;
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          x: left,
+          y: top,
+        });
+      };
       moveable
         .on("dragStart", () => {
           isDragging.value = true;
         })
         .on("drag", ({ target, left, top }) => {
-          props.object.x = left;
-          props.object.y = top;
+          emit("update:active", false);
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
+          if (props.object.liveAction) {
+            sendMovement(target, { left, top });
+          }
         })
-        .on("dragEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
+        .on("dragEnd", ({ lastEvent, target }) => {
+          if (lastEvent) {
+            sendMovement(target, lastEvent);
+          }
           isDragging.value = false;
         });
 
-      /* resizable */
+      const sendResize = (target, { width, height, left, top }) => {
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          x: left,
+          y: top,
+          w: width,
+          h: height,
+        });
+      };
       moveable
         .on("resizeStart", () => {
           isDragging.value = true;
         })
         .on("resize", ({ target, width, height, drag: { left, top } }) => {
-          props.object.w = width;
-          props.object.h = height;
-          props.object.x = left;
-          props.object.y = top;
+          emit("update:active", false);
           target.style.width = `${width}px`;
           target.style.height = `${height}px`;
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
+          if (props.object.liveAction) {
+            sendResize(target, { left, top, width, height });
+          }
         })
-        .on("resizeEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
-          isDragging.value = false;
-        });
+        .on(
+          "resizeEnd",
+          ({
+            target,
+            lastEvent: {
+              width,
+              height,
+              drag: { left, top },
+            },
+          }) => {
+            sendResize(target, { left, top, width, height });
+            isDragging.value = false;
+            emit("update:active", true);
+          }
+        );
 
+      const sendRotation = (target, rotate) => {
+        target.style.transform = `rotate(${props.object.rotate}deg)`;
+        store.dispatch("stage/shapeObject", {
+          ...props.object,
+          rotate,
+        });
+      };
       moveable
         .on("rotateStart", (e) => {
           e.set(props.object.rotate);
           isDragging.value = true;
         })
         .on("rotate", ({ target, rotate }) => {
-          props.object.rotate = rotate;
+          emit("update:active", false);
           target.style.transform = `rotate(${rotate}deg)`;
+          if (props.object.liveAction) {
+            sendRotation(target, rotate);
+          }
         })
-        .on("rotateEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
+        .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
+          sendRotation(target, rotate);
           isDragging.value = false;
+          emit("update:active", true);
         });
-    });
-
-    watchEffect(() => {
-      const {
-        x: left,
-        y: top,
-        w: width,
-        h: height,
-        rotate,
-        moveSpeed,
-        type,
-        isPlaying,
-      } = props.object;
-      if (isDragging.value || (type === "stream" && isPlaying)) {
-        return;
-      }
-      animation.value?.pause(true);
-      animation.value = anime({
-        targets: el.value,
-        left,
-        top,
-        width,
-        height,
-        rotate,
-        ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
-        duration: moveSpeed ?? config.animateDuration,
-      });
-    });
-
-    onMounted(() => {
-      const { x, y, w, h } = props.object;
-      el.value.style.width = `${w}px`;
-      el.value.style.height = `${h}px`;
-      el.value.style.left = `${x}px`;
-      el.value.style.top = `${y}px`;
     });
 
     const showControls = (iShowing, e) => {
@@ -143,7 +159,7 @@ export default {
           );
           emit("update:active", true);
         } else {
-          if (e.target.id === "board") {
+          if (!e || e.target.id === "board") {
             moveable.setState(
               {
                 target: null,
@@ -156,13 +172,58 @@ export default {
         }
       }
     };
+
+    let animation;
+    watch(
+      props.object,
+      () => {
+        const {
+          x: left,
+          y: top,
+          w: width,
+          h: height,
+          rotate,
+          moveSpeed,
+          type,
+          isPlaying,
+        } = props.object;
+        if (isDragging.value || (type === "stream" && isPlaying)) {
+          return;
+        }
+        animation?.pause(true);
+        moveable?.setState({ target: null });
+        animation = anime({
+          targets: el.value,
+          left,
+          top,
+          width,
+          height,
+          rotate,
+          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          duration: moveSpeed ?? config.animateDuration,
+        });
+      },
+      { deep: true }
+    );
+
+    onMounted(() => {
+      const { x, y, w, h, rotate } = props.object;
+      el.value.style.width = `${w}px`;
+      el.value.style.height = `${h}px`;
+      el.value.style.left = `${x}px`;
+      el.value.style.top = `${y}px`;
+      el.value.style.transform = `rotate(${rotate}deg)`;
+    });
     watchEffect(() => {
       if (!props.controlable) {
         showControls(false);
       }
     });
+    onUnmounted(() => {
+      moveable.destroy();
+    });
 
-    return { el, showControls };
+    return { el, showControls, isDragging };
   },
 };
 </script>

@@ -1,37 +1,5 @@
 <template>
-  <div
-    class="avatar-topping"
-    :style="{
-      top: object.y - 26 + 'px',
-      left: object.x + object.w / 2 + 'px',
-    }"
-  >
-    <div
-      class="quick-action"
-      v-show="active"
-      :style="{
-        position: 'absolute',
-        width: '100px',
-        left: object.w / 2 - 96 + 'px',
-      }"
-      @mousedown.stop="keepActive"
-      @mouseover.stop="keepActive"
-      @mouseup.stop="keepActive"
-    >
-      <button class="button is-rounded is-small">
-        <i class="fas fa-border-none"></i>
-      </button>
-      <button
-        class="button is-rounded is-small"
-        :class="{ 'is-primary': object.liveAction }"
-        @click="toggleLiveAction"
-      >
-        <i class="fas fa-lightbulb"></i>
-      </button>
-      <button class="button is-rounded is-small" @click="deleteObject">
-        <i class="fas fa-times"></i>
-      </button>
-    </div>
+  <div class="avatar-topping">
     <span
       v-if="holder && isPlayer"
       class="icon marker"
@@ -49,11 +17,13 @@
         tabindex="-1"
         :key="object.speak"
         :style="{
-          'max-width': object.w + 'px',
-          'min-width': object.w < 100 ? '100px' : 'unset',
+          width: object.w + 'px',
+          'max-width': 'max-content',
         }"
       >
-        <Linkify>{{ object.speak.message }}</Linkify>
+        <div class="py-2 px-4">
+          <Linkify>{{ object.speak.message }}</Linkify>
+        </div>
         <i class="fas fa-caret-down"></i>
       </div>
     </transition>
@@ -68,9 +38,8 @@ import Icon from "@/components/Icon";
 import Linkify from "@/components/Linkify";
 export default {
   props: ["object", "active"],
-  emits: ["update:active"],
   components: { Icon, Linkify },
-  setup: (props, { emit }) => {
+  setup: (props) => {
     const store = useStore();
     const holder = inject("holder");
     const isHolding = computed(
@@ -98,27 +67,9 @@ export default {
       });
     };
 
-    const keepActive = () => {
-      emit("update:active", true);
-    };
-
-    const toggleLiveAction = () => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        liveAction: !props.object.liveAction,
-      });
-    };
-
-    const deleteObject = () => {
-      store.dispatch("stage/deleteObject", props.object);
-    };
-
     return {
       enter,
       leave,
-      deleteObject,
-      keepActive,
-      toggleLiveAction,
       holder,
       isHolding,
       isPlayer,
@@ -129,12 +80,13 @@ export default {
 
 <style scoped lang="scss">
 .avatar-topping {
-  position: fixed;
+  position: absolute;
+  top: -36px;
+  left: 50%;
 }
 .chat-bubble {
-  position: fixed;
+  position: absolute;
   border-radius: 4px;
-  padding: 0.25em 0.75em;
   text-align: center;
   line-height: 1em;
   background: white;
@@ -149,29 +101,7 @@ export default {
 }
 .marker {
   position: absolute;
-  left: -10px;
-  -webkit-animation: spin 2s linear infinite;
-  -moz-animation: spin 2s linear infinite;
-  animation: spin 2s linear infinite;
-}
-.quick-action button {
-  width: 16px;
-}
-@-moz-keyframes spin {
-  100% {
-    -moz-transform: rotate3d(0, 1, 0, 360deg);
-  }
-}
-@-webkit-keyframes spin {
-  100% {
-    -webkit-transform: rotate3d(0, 1, 0, 360deg);
-  }
-}
-@keyframes spin {
-  100% {
-    -webkit-transform: rotate3d(0, 1, 0, 360deg);
-    transform: rotate3d(0, 1, 0, 360deg);
-  }
+  left: -12px;
 }
 .inactive {
   filter: grayscale(1);

@@ -12,8 +12,8 @@
     :value="value"
     type="range"
     :style="{
-      top: object.y - 26 + 'px',
-      left: object.x - 10 + 'px',
+      top: '-26px',
+      left: '-15px',
       width: object.h + 'px',
     }"
     v-show="active"
@@ -102,7 +102,7 @@ export default {
 
 <style>
 .opacity-slider {
-  position: fixed;
+  position: absolute;
   transform: rotate(270deg) translateX(-100%);
   transform-origin: left;
   z-index: 20;

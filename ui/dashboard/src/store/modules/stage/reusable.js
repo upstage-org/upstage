@@ -47,8 +47,8 @@ export function deserializeObject(object, keepSrc) {
     return object;
 }
 
-export function namespaceTopic(topicName) {
-    const url = store.getters['stage/url'];
+export function namespaceTopic(topicName, stageUrl) {
+    const url = stageUrl ?? store.getters['stage/url'];
     const namespace = configs.MQTT_NAMESPACE;
     return `${namespace}/${url}/${topicName}`;
 }

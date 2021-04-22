@@ -8,12 +8,6 @@
       ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
     }"
   >
-    <OpacitySlider
-      v-model:active="active"
-      v-model:slider-mode="sliderMode"
-      :object="object"
-    />
-    <Topping :object="object" v-model:active="active" />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -25,6 +19,13 @@
           :controlable="controlable"
           :object="object"
         >
+          <OpacitySlider
+            v-model:active="active"
+            v-model:slider-mode="sliderMode"
+            :object="object"
+          />
+          <QuickAction :object="object" v-model:active="active" />
+          <Topping :object="object" v-model:active="active" />
           <div
             class="object"
             :style="{
@@ -59,6 +60,7 @@ import { computed, inject, provide, reactive, ref, watch } from "vue";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
 import OpacitySlider from "./OpacitySlider";
+import QuickAction from "./QuickAction";
 import Topping from "./Topping.vue";
 import Moveable from "./Moveable";
 
@@ -69,6 +71,7 @@ export default {
     Image,
     ContextMenu,
     OpacitySlider,
+    QuickAction,
     Topping,
     Moveable,
   },

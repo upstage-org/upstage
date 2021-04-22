@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 import EmojiInput from "@/components/form/EmojiInput";
@@ -80,6 +80,7 @@ export default {
       }
     };
     watch(messages.value, scrollToEnd);
+    onMounted(scrollToEnd);
 
     const openChatSetting = () =>
       store.dispatch("stage/openSettingPopup", {
