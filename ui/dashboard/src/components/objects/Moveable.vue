@@ -9,13 +9,25 @@
   >
     <slot />
   </div>
+  <div
+    v-if="isDragging"
+    :style="{
+      position: 'absolute',
+      left: object.x + 'px',
+      top: object.y + 'px',
+      width: object.w + 'px',
+      height: object.h + 'px',
+    }"
+  >
+    <slot />
+  </div>
 </template>
 
 <script>
 /* eslint-disable vue/no-mutating-props */
 
 import { ref } from "@vue/reactivity";
-import { onMounted, onUnmounted, watchEffect } from "@vue/runtime-core";
+import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
@@ -26,7 +38,6 @@ export default {
   setup: (props, { emit }) => {
     const el = ref();
     const isDragging = ref(false);
-    const animation = ref();
 
     const store = useStore();
     const config = store.getters["stage/config"];
@@ -37,6 +48,7 @@ export default {
         draggable: true,
         resizable: true,
         rotatable: true,
+        origin: false,
       });
 
       moveable
@@ -44,15 +56,19 @@ export default {
           isDragging.value = true;
         })
         .on("drag", ({ target, left, top }) => {
-          props.object.x = left;
-          props.object.y = top;
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
         })
-        .on("dragEnd", () => {
-          store.dispatch("stage/shapeObject", {
-            ...props.object,
-          });
+        .on("dragEnd", ({ lastEvent, target }) => {
+          if (lastEvent) {
+            target.style.left = `${props.object.x}px`;
+            target.style.top = `${props.object.y}px`;
+            store.dispatch("stage/shapeObject", {
+              ...props.object,
+              x: lastEvent.left,
+              y: lastEvent.top,
+            });
+          }
           isDragging.value = false;
         });
 
@@ -95,41 +111,6 @@ export default {
         });
     });
 
-    watchEffect(() => {
-      const {
-        x: left,
-        y: top,
-        w: width,
-        h: height,
-        rotate,
-        moveSpeed,
-        type,
-        isPlaying,
-      } = props.object;
-      if (isDragging.value || (type === "stream" && isPlaying)) {
-        return;
-      }
-      animation.value?.pause(true);
-      animation.value = anime({
-        targets: el.value,
-        left,
-        top,
-        width,
-        height,
-        rotate,
-        ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
-        duration: moveSpeed ?? config.animateDuration,
-      });
-    });
-
-    onMounted(() => {
-      const { x, y, w, h } = props.object;
-      el.value.style.width = `${w}px`;
-      el.value.style.height = `${h}px`;
-      el.value.style.left = `${x}px`;
-      el.value.style.top = `${y}px`;
-    });
-
     const showControls = (iShowing, e) => {
       if (moveable) {
         if (props.controlable && iShowing) {
@@ -143,7 +124,7 @@ export default {
           );
           emit("update:active", true);
         } else {
-          if (e?.target.id === "board") {
+          if (!e || e.target.id === "board") {
             moveable.setState(
               {
                 target: null,
@@ -156,6 +137,49 @@ export default {
         }
       }
     };
+
+    let animation;
+    watch(
+      props.object,
+      () => {
+        const {
+          x: left,
+          y: top,
+          w: width,
+          h: height,
+          rotate,
+          moveSpeed,
+          type,
+          isPlaying,
+        } = props.object;
+        if (isDragging.value || (type === "stream" && isPlaying)) {
+          return;
+        }
+        console.log(left, top, width, height, animation);
+        animation?.pause(true);
+        showControls(false);
+        emit("update:active", false);
+        animation = anime({
+          targets: el.value,
+          left,
+          top,
+          width,
+          height,
+          rotate,
+          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          duration: moveSpeed ?? config.animateDuration,
+        });
+      },
+      { deep: true }
+    );
+
+    onMounted(() => {
+      const { x, y, w, h } = props.object;
+      el.value.style.width = `${w}px`;
+      el.value.style.height = `${h}px`;
+      el.value.style.left = `${x}px`;
+      el.value.style.top = `${y}px`;
+    });
     watchEffect(() => {
       if (!props.controlable) {
         showControls(false);
@@ -165,7 +189,7 @@ export default {
       moveable.destroy();
     });
 
-    return { el, showControls };
+    return { el, showControls, isDragging };
   },
 };
 </script>

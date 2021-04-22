@@ -21,7 +21,7 @@
   >
     <template #render="{ item }">
       <span class="tag is-light is-small type-tag">
-        {{ item.assetType.name }}
+        {{ item.assetType.name[0].toUpperCase() }}
       </span>
       <div class="card-image">
         <Asset :asset="item" />

@@ -165,12 +165,10 @@ export default {
         UPDATE_OBJECT(state, object) {
             const { id } = object;
             deserializeObject(object);
-            const avatar = state.board.objects.find(o => o.id === id);
-            if (avatar) { // Object an is avatar
-                Object.assign(avatar, object);
-                return;
+            const model = state.board.objects.find(o => o.id === id);
+            if (model) {
+                Object.assign(model, object);
             }
-            state.board.objects.push(object)
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;

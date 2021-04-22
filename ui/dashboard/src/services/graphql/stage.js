@@ -127,8 +127,8 @@ export default {
     ${assetFragment}
   `, variables),
   mediaList: (variables) => client.request(gql`
-    query AssetList($id: ID, $nameLike: String, $assetTypeId: ID) {
-      assetList(id: $id, nameLike: $nameLike, assetTypeId: $assetTypeId, sort: ID_DESC) {
+    query AssetList($id: ID, $nameLike: String, $assetType: String) {
+      assetList(id: $id, nameLike: $nameLike, assetType: $assetType, sort: ID_DESC) {
         edges {
           node {
             ...assetFragment
@@ -173,35 +173,35 @@ export default {
   `, { id, config }),
   assignableMedia: () => client.request(gql`
     query AssignableMedia {
-      avatars: assetList(assetTypeId: 2) {
+      avatars: assetList(assetType: "avatar") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      props: assetList(assetTypeId: 3) {
+      props: assetList(assetType: "prop") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      backdrops: assetList(assetTypeId: 4) {
+      backdrops: assetList(assetType: "backdrop") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      audios: assetList(assetTypeId: 5) {
+      audios: assetList(assetType: "audio") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      streams: assetList(assetTypeId: 6) {
+      streams: assetList(assetType: "stream") {
         edges {
           node {
             ...assetFragment

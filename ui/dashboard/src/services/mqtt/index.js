@@ -45,6 +45,7 @@ const mqttService = {
     if (typeof payload === "object") {
       message = JSON.stringify(payload);
     }
+    console.log(topic, message)
     return new Promise((resolve, reject) => {
       this.client.publish(
         topic,

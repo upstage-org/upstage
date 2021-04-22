@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="avatar-topping"
-    :style="{
-      top: object.y - 26 + 'px',
-      left: object.x + object.w / 2 + 'px',
-    }"
-  >
+  <div class="avatar-topping">
     <div
       class="quick-action"
       v-show="active"
@@ -128,7 +122,9 @@ export default {
 
 <style scoped lang="scss">
 .avatar-topping {
-  position: fixed;
+  position: absolute;
+  top: -36px;
+  left: 50%;
 }
 .chat-bubble {
   position: fixed;
@@ -148,7 +144,7 @@ export default {
 }
 .marker {
   position: absolute;
-  left: -10px;
+  left: -12px;
 }
 .quick-action button {
   width: 16px;

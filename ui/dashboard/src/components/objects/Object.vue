@@ -13,7 +13,6 @@
       v-model:slider-mode="sliderMode"
       :object="object"
     />
-    <Topping :object="object" v-model:active="active" />
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -25,6 +24,7 @@
           :controlable="controlable"
           :object="object"
         >
+          <Topping :object="object" v-model:active="active" />
           <div
             class="object"
             :style="{

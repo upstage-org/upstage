@@ -90,6 +90,8 @@ class StageConnectionField(SQLAlchemyConnectionField):
             if field == 'id':
                 _type, _id = from_global_id(value)
                 query = query.filter(getattr(model, field) == _id)
+            elif field == 'asset_type':
+                query = query.filter(getattr(model, field).has(name=value))
             elif len(field) > 5 and field[-4:] == 'like':
                 query = query.filter(
                     getattr(model, field[:-5]).ilike(f"%{value}%"))
@@ -194,7 +196,7 @@ class SweepStage(graphene.Mutation):
 
             events = DBSession.query(EventModel)\
                 .filter(EventModel.performance_id == None)\
-                .filter(EventModel.topic.like("{}%".format(stage.file_location)))
+                .filter(EventModel.topic.like("%/{}/%".format(stage.file_location)))
 
             if events.count() > 0:
                 performance = PerformanceModel(stage=stage)
@@ -224,7 +226,7 @@ class Query(graphene.ObjectType):
     stageList = StageConnectionField(
         Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
     assetList = StageConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 

@@ -1,10 +1,9 @@
 <template>
-  <button
-    class="button mr-2 mt-2 is-warning"
-    :class="{ 'is-loading': status }"
-    @click="sweep"
-  >
-    <span v-if="status">{{ status }}</span>
+  <button class="button mr-2 mt-2 is-warning" @click="sweep">
+    <template v-if="status">
+      <button class="button is-warning is-loading"></button>
+      <span>{{ status }}</span>
+    </template>
     <span v-else> Clear Chat & Sweep Stage</span>
   </button>
 </template>
@@ -16,6 +15,7 @@ import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import mqttService from "@/services/mqtt";
 import { TOPICS } from "@/utils/constants";
+import { namespaceTopic } from "@/store/modules/stage/reusable";
 export default {
   setup: () => {
     const stage = inject("stage");
@@ -25,20 +25,23 @@ export default {
     });
     const sweep = async () => {
       try {
-        status.value = "Save performance as record";
+        status.value = "Sweeping...";
         await mutation();
-        status.value = "Clear the stage";
+        status.value = "Clearing broker retained messages...";
         await new Promise((resolve) => {
           mqttService.connect().on("connect", () => {
             const promisese = Object.keys(TOPICS)
-              .map((key) => `${stage.value.fileLocation}/${TOPICS[key]}`)
+              .map((key) =>
+                namespaceTopic(TOPICS[key], stage.value.fileLocation)
+              )
               .map((topic) => mqttService.sendMessage(topic, undefined, true));
             console.log(promisese);
             Promise.all(promisese).then(resolve);
           });
         });
+        notification.success(`${stage.value.name} swept successfully!`);
       } catch (error) {
-        notification.error(error);
+        notification.warning(error);
       } finally {
         status.value = "";
       }
