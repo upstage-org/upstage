@@ -48,7 +48,7 @@
         }"
       >
         <div class="py-2 px-4">
-          <span>{{ object.speak.message }}</span>
+          <Linkify>{{ object.speak.message }}</Linkify>
         </div>
         <i class="fas fa-caret-down"></i>
       </div>
@@ -61,10 +61,11 @@ import { computed, inject } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
+import Linkify from "@/components/Linkify";
 export default {
   props: ["object", "active"],
   emits: ["update:active"],
-  components: { Icon },
+  components: { Icon, Linkify },
   setup: (props, { emit }) => {
     const store = useStore();
     const holder = inject("holder");
