@@ -1,6 +1,6 @@
 import sys
 
-MONGO_HOST = "localhost"
+MONGO_HOST = "svc.upstage.org.nz"
 MONGO_PORT = 27017
 MONGO_DB = "upstage"
 EVENT_COLLECTION = "events"
