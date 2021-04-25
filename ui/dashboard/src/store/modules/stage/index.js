@@ -15,6 +15,7 @@ export default {
         preloading: true,
         model: null,
         background: null,
+        backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
         chat: {
@@ -280,6 +281,9 @@ export default {
         },
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
+        },
+        SET_BACKDROP_COLOR(state, color) {
+            state.backdropColor = color
         }
     },
     actions: {
@@ -478,6 +482,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        setBackdropColor(action, color) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_BACKDROP_COLOR, color })
+        },
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
@@ -485,6 +492,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_BACKDROP_COLOR:
+                    commit('SET_BACKDROP_COLOR', message.color)
                     break;
                 default:
                     break;

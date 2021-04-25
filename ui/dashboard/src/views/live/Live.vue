@@ -1,7 +1,8 @@
 <template>
   <section
     id="live-stage"
-    class="hero bg-cover has-background-primary-light is-fullheight"
+    class="hero bg-cover is-fullheight"
+    :style="{ 'background-color': backdropColor }"
   >
     <Board />
     <ConnectionStatus />
@@ -44,8 +45,9 @@ export default {
     });
 
     const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+    const backdropColor = computed(() => store.state.stage.backdropColor);
 
-    return { loggedIn };
+    return { loggedIn, backdropColor };
   },
 };
 </script>

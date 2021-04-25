@@ -20,7 +20,8 @@ export const BOARD_ACTIONS = {
 
 export const BACKGROUND_ACTIONS = {
   CHANGE_BACKGROUND: 'changeBackground',
-  SET_CHAT_VISIBILITY: 'setChatVisibility'
+  SET_CHAT_VISIBILITY: 'setChatVisibility',
+  SET_BACKDROP_COLOR: 'setBackdropColor'
 }
 
 export const ROLES = {
