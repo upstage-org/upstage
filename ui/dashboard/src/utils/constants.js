@@ -18,6 +18,11 @@ export const BOARD_ACTIONS = {
   TOGGLE_AUTOPLAY_FRAMES: 'toggleAutoplayFrames',
 }
 
+export const BACKGROUND_ACTIONS = {
+  CHANGE_BACKGROUND: 'changeBackground',
+  SET_CHAT_VISIBILITY: 'setChatVisibility'
+}
+
 export const ROLES = {
   PLAYER: 1,
   MAKER: 2,

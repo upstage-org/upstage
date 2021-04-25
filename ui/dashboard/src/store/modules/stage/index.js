@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -48,6 +48,9 @@ export default {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
             }
+        },
+        settings: {
+            chatVisibility: true,
         },
         hosts: [],
         reactions: [],
@@ -274,6 +277,9 @@ export default {
             }
             state.sessions = state.sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
             state.sessions.sort((a, b) => b.at - a.at);
+        },
+        SET_CHAT_VISIBILITY(state, visible) {
+            state.settings.chatVisibility = visible
         }
     },
     actions: {
@@ -467,10 +473,22 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, background)
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
+        },
+        showChatBox(action, visible) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
         handleBackgroundMessage({ commit }, { message }) {
-            commit('SET_BACKGROUND', message);
+            switch (message.type) {
+                case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
+                    commit('SET_BACKGROUND', message.background);
+                    break;
+                case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
+                    commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                default:
+                    break;
+            }
         },
         playAudio(_, audio) {
             audio.isPlaying = true;
