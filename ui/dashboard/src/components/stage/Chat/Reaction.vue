@@ -21,22 +21,24 @@
       </template>
     </emoji-input>
   </span>
-  <div class="flying-reactions">
-    <transition-group :css="false" @enter="flyin" @leave="flyout">
-      <div
-        v-for="react in flyingReactions"
-        :key="react"
-        :style="{
-          position: 'fixed',
-          left: react.x + 'px',
-          top: react.y + 'px',
-          fontSize: '42px',
-        }"
-      >
-        {{ react.reaction }}
-      </div>
-    </transition-group>
-  </div>
+  <teleport to="body">
+    <div class="flying-reactions">
+      <transition-group :css="false" @enter="flyin" @leave="flyout">
+        <div
+          v-for="react in flyingReactions"
+          :key="react"
+          :style="{
+            position: 'fixed',
+            left: react.x + 'px',
+            top: react.y + 'px',
+            fontSize: '42px',
+          }"
+        >
+          {{ react.reaction }}
+        </div>
+      </transition-group>
+    </div>
+  </teleport>
 </template>
 
 <script>

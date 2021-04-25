@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -15,6 +15,7 @@ export default {
         preloading: true,
         model: null,
         background: null,
+        backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
         chat: {
@@ -48,6 +49,9 @@ export default {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
             }
+        },
+        settings: {
+            chatVisibility: true,
         },
         hosts: [],
         reactions: [],
@@ -261,11 +265,25 @@ export default {
         SET_CHAT_OPACITY(state, opacity) {
             state.chat.opacity = opacity;
         },
-        UPDATE_SESSIONS_COUNTER(state, sessions) {
-            if (sessions && sessions.length) {
-                state.sessions = sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
-                state.sessions.sort((a, b) => b.at - a.at);
+        UPDATE_SESSIONS_COUNTER(state, session) {
+            const index = state.sessions.findIndex(s => s.id === session.id)
+            if (index > -1) {
+                if (session.leaving) {
+                    return state.sessions.splice(index, 1)
+                } else {
+                    Object.assign(state.sessions[index], session)
+                }
+            } else {
+                state.sessions.push(session)
             }
+            state.sessions = state.sessions.filter(s => moment().diff(moment(new Date(s.at)), 'minute') < 60);
+            state.sessions.sort((a, b) => b.at - a.at);
+        },
+        SET_CHAT_VISIBILITY(state, visible) {
+            state.settings.chatVisibility = visible
+        },
+        SET_BACKDROP_COLOR(state, color) {
+            state.backdropColor = color
         }
     },
     actions: {
@@ -277,6 +295,7 @@ export default {
                 console.log("Connection succeeded!");
                 commit('SET_STATUS', 'LIVE')
                 dispatch('subscribe');
+                dispatch('joinStage');
             });
             client.on("error", (error) => {
                 console.log(error);
@@ -286,7 +305,7 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit, dispatch }) {
+        subscribe({ commit }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
@@ -298,9 +317,6 @@ export default {
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
-                setTimeout(() => {
-                    dispatch('handleCounterMessage', {})
-                }, 5000)
             })
         },
         async disconnect({ dispatch }) {
@@ -461,10 +477,28 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, background)
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
+        },
+        showChatBox(action, visible) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
+        },
+        setBackdropColor(action, color) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_BACKDROP_COLOR, color })
         },
         handleBackgroundMessage({ commit }, { message }) {
-            commit('SET_BACKGROUND', message);
+            switch (message.type) {
+                case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
+                    commit('SET_BACKGROUND', message.background);
+                    break;
+                case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
+                    commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_BACKDROP_COLOR:
+                    commit('SET_BACKDROP_COLOR', message.color)
+                    break;
+                default:
+                    break;
+            }
         },
         playAudio(_, audio) {
             audio.isPlaying = true;
@@ -515,36 +549,31 @@ export default {
                 commit('SET_PRELOADING_STATUS', false);
             }
         },
-        handleCounterMessage({ commit, dispatch, state, rootState }, { message }) {
+        handleCounterMessage({ commit, state }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
-            if (!state.session) {
-                state.session = rootState.user.user?.id ?? uuidv4()
-                const session = state.sessions.find(s => s.id === state.session)
-                if (session?.avatarId) {
-                    commit('user/SET_AVATAR_ID', session.avatarId, { root: true });
-                }
-                dispatch('joinStage')
+            if (message.id === state.session && message.avatarId) {
+                commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state }) {
+        async joinStage({ rootGetters, state, rootState }) {
+            if (!state.session) {
+                state.session = rootState.user.user?.id ?? uuidv4()
+            }
             const id = state.session
-            const session = state.sessions.find(s => s.id === id)
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
             const avatarId = rootGetters['user/avatarId'];
             const at = +new Date();
-            if (session) {
-                Object.assign(session, { isPlayer, nickname, at, avatarId })
-            } else {
-                state.sessions.push({ id, isPlayer, nickname, at, avatarId })
+            const payload = { id, isPlayer, nickname, at, avatarId }
+            if (!payload.avatarId) {
+                delete payload.avatarId
             }
-            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
+            await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
         async leaveStage({ state }) {
             const id = state.session
-            state.sessions = state.sessions.filter(s => s.id !== id)
             state.session = null
-            await mqtt.sendMessage(TOPICS.COUNTER, state.sessions);
+            await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
         }
     },
 };

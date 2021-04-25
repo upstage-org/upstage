@@ -9,6 +9,7 @@
       <PanelItem name="Stream" icon="stream.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
+      <PanelItem name="Setting" icon="rotation-slider.svg" />
       <a class="panel-block stage-scene-toggle">
         <span>
           <Icon
