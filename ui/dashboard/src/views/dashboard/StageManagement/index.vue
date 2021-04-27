@@ -29,7 +29,7 @@
                 >Layout</router-link
               >
             </li>
-            <li>
+            <li id="media-menu">
               <router-link to="media" exact-active-class="is-active">
                 Media
               </router-link>
@@ -43,14 +43,6 @@
               <router-link to="scenes" exact-active-class="is-active">
                 Scenes
               </router-link>
-              <ul>
-                <li><a>Avatar</a></li>
-                <li><a>Props</a></li>
-                <li><a>Backdrop</a></li>
-                <li><a>Sound</a></li>
-                <li><a>Videos</a></li>
-                <li><a>Loading</a></li>
-              </ul>
             </li>
           </template>
         </ul>
