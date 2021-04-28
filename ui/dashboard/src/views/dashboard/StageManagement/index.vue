@@ -1,16 +1,27 @@
 <template>
   <section class="hero is-small is-primary is-bold">
     <div class="hero-body">
-      <h1 class="title">Stage Management</h1>
+      <template v-if="id">
+        <h1 class="title" v-if="stage.name">
+          {{ stage.name }}
+          <router-link
+            :to="`/live/${stage.fileLocation}`"
+            class="button is-light"
+          >
+            <span>ENTER</span>
+            <span class="icon">
+              <i class="fas fa-chevron-right"></i>
+            </span>
+          </router-link>
+        </h1>
+        <p class="subtitle">Stage Management</p>
+      </template>
+      <h1 v-else class="title">Create new stage</h1>
     </div>
   </section>
   <div class="columns">
     <div class="column is-narrow">
       <aside class="menu box has-background-light mx-4">
-        <p class="menu-label">
-          <span v-if="id">{{ stage.name }}</span>
-          <span v-else>Create new stage</span>
-        </p>
         <ul class="menu-list">
           <li>
             <router-link
@@ -40,21 +51,17 @@
               </router-link>
             </li>
             <li>
+              <router-link to="records" exact-active-class="is-active">
+                Records
+              </router-link>
+            </li>
+            <li>
               <router-link to="scenes" exact-active-class="is-active">
                 Scenes
               </router-link>
             </li>
           </template>
         </ul>
-
-        <p v-if="id" class="menu-label">
-          <router-link
-            :to="`/live/${stage.fileLocation}`"
-            class="button is-block is-primary"
-          >
-            Enter!
-          </router-link>
-        </p>
       </aside>
     </div>
     <div class="column">

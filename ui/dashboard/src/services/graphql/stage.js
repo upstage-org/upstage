@@ -94,6 +94,10 @@ export default {
               payload
               created
             }
+            performances {
+              id
+              createdOn
+            }
           }
         }
       }
