@@ -105,12 +105,13 @@ export default {
     ${stageFragment}
   `, { id }),
   loadStage: (fileLocation, performanceId) => client.request(gql`
-    query ListStage($fileLocation: String) {
+    query ListStage($fileLocation: String, $performanceId: Int) {
       stageList(fileLocation: $fileLocation) {
         edges {
           node {
             ...stageFragment
-            events {
+            events(performanceId: $performanceId) {
+              id
               topic
               payload
               mqttTimestamp

@@ -51,7 +51,7 @@ class Performance(SQLAlchemyObjectType):
 class Stage(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     events = graphene.List(
-        Event, description="Archived events of this performance")
+        Event, description="Archived events of this performance", performance_id=graphene.Int())
     performances = graphene.List(
         Performance, description="Recorded performances")
     chats = graphene.List(
@@ -63,9 +63,12 @@ class Stage(SQLAlchemyObjectType):
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
 
-    def resolve_events(self, info):
-        events = DBSession.query(EventModel).filter(EventModel.performance_id == None).filter(
-            EventModel.topic.like("%/{}/%".format(self.file_location))).all()
+    def resolve_events(self, info, performance_id=None):
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.performance_id == performance_id)\
+            .filter(EventModel.topic.like("%/{}/%".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
+            .all()
         return events
 
     def resolve_performances(self, info):
@@ -74,8 +77,10 @@ class Stage(SQLAlchemyObjectType):
         return performances
 
     def resolve_chats(self, info):
-        events = DBSession.query(EventModel).filter(
-            EventModel.topic.like("%/{}/chat".format(self.file_location))).all()
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
+            .all()
         return events
 
 
@@ -95,7 +100,7 @@ class StageConnectionField(SQLAlchemyConnectionField):
             elif len(field) > 5 and field[-4:] == 'like':
                 query = query.filter(
                     getattr(model, field[:-5]).ilike(f"%{value}%"))
-            elif field not in cls.RELAY_ARGS:
+            elif field not in cls.RELAY_ARGS and hasattr(model, field):
                 query = query.filter(getattr(model, field) == value)
         return query
 

@@ -4,6 +4,7 @@
     <Preloader />
     <template v-if="ready">
       <Board />
+      <Controls />
       <ConnectionStatus />
       <Chat />
       <AudioPlayer />
@@ -18,6 +19,7 @@ import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
 import Preloader from "@/views/live/Preloader";
 import ConnectionStatus from "@/views/live/ConnectionStatus";
+import Controls from "./Controls";
 import { useStore } from "vuex";
 import { computed, provide } from "vue";
 import { useRoute } from "vue-router";
@@ -29,6 +31,7 @@ export default {
     Board,
     AudioPlayer,
     ConnectionStatus,
+    Controls,
   },
   setup: () => {
     const store = useStore();
