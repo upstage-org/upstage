@@ -4,7 +4,7 @@ import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -539,12 +539,19 @@ export default {
         sendReaction(_, reaction) {
             mqtt.sendMessage(TOPICS.REACTION, reaction);
         },
-        async loadStage({ commit }, url) {
+        async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', null);
             commit('SET_PRELOADING_STATUS', true);
-            const model = await stageGraph.loadStage(url)
+            const model = await stageGraph.loadStage(url, recordId)
             if (model) {
                 commit('SET_MODEL', model);
+                const beginTimestamp = model.events[0].mqttTimestamp
+                model.events.forEach(({ topic, payload, mqttTimestamp }) => {
+                    setTimeout(() => dispatch("handleMessage", {
+                        topic: unnamespaceTopic(topic),
+                        message: JSON.parse(payload),
+                    }), recordId ? mqttTimestamp - beginTimestamp : 0)
+                });
             } else {
                 commit('SET_PRELOADING_STATUS', false);
             }

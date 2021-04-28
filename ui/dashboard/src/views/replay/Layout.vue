@@ -5,36 +5,27 @@
     <template v-if="ready">
       <Board />
       <ConnectionStatus />
-      <Toolbox v-if="loggedIn" />
       <Chat />
       <AudioPlayer />
-      <LoginPrompt />
-      <SettingPopup />
     </template>
   </div>
 </template>
 
 <script>
 import Logo from "@/components/Logo";
-import SettingPopup from "@/components/stage/SettingPopup";
 import Chat from "@/components/stage/Chat/index";
-import Toolbox from "@/components/stage/Toolbox";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
-import Preloader from "./Preloader";
-import LoginPrompt from "./LoginPrompt";
-import ConnectionStatus from "./ConnectionStatus";
+import Preloader from "@/views/live/Preloader";
+import ConnectionStatus from "@/views/live/ConnectionStatus";
 import { useStore } from "vuex";
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, provide } from "vue";
 import { useRoute } from "vue-router";
 export default {
   components: {
     Logo,
     Preloader,
-    LoginPrompt,
-    SettingPopup,
     Chat,
-    Toolbox,
     Board,
     AudioPlayer,
     ConnectionStatus,
@@ -46,25 +37,15 @@ export default {
     );
 
     const route = useRoute();
-    store.dispatch("stage/loadStage", { url: route.params.url });
-
-    onMounted(() => {
-      store.dispatch("stage/connect");
+    store.dispatch("stage/loadStage", {
+      url: route.params.url,
+      recordId: route.params.id,
     });
 
-    onUnmounted(() => {
-      store.dispatch("stage/disconnect");
-    });
-
-    window.addEventListener("beforeunload", () => {
-      store.dispatch("stage/disconnect");
-    });
-
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+    provide("replaying", true);
 
     return {
       ready,
-      loggedIn,
     };
   },
 };
