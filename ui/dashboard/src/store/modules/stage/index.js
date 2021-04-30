@@ -4,7 +4,7 @@ import hash from 'object-hash';
 import mqtt from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -57,7 +57,17 @@ export default {
         reactions: [],
         viewport: getViewport(),
         sessions: [],
-        session: null
+        session: null,
+        replay: {
+            timestamp: {
+                begin: 0,
+                end: 0,
+                current: 0
+            },
+            timers: [],
+            interval: null,
+            speed: 100
+        }
     },
     getters: {
         url(state) {
@@ -131,9 +141,12 @@ export default {
                 }
             }
         },
-        CLEAN_STAGE(state) {
-            state.model = null;
-            // state.background = null;
+        CLEAN_STAGE(state, cleanModel) {
+            if (cleanModel) {
+                state.model = null;
+            }
+            state.status = 'OFFLINE';
+            state.background = null;
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
@@ -284,6 +297,9 @@ export default {
         },
         SET_BACKDROP_COLOR(state, color) {
             state.backdropColor = color
+        },
+        SET_REPLAY(state, replay) {
+            Object.assign(state.replay, replay)
         }
     },
     actions: {
@@ -539,15 +555,60 @@ export default {
         sendReaction(_, reaction) {
             mqtt.sendMessage(TOPICS.REACTION, reaction);
         },
-        async loadStage({ commit }, url) {
-            commit('CLEAN_STAGE', null);
+        async loadStage({ commit, dispatch }, { url, recordId }) {
+            commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const model = await stageGraph.loadStage(url)
+            const model = await stageGraph.loadStage(url, recordId)
             if (model) {
                 commit('SET_MODEL', model);
+                const { events } = model
+                if (recordId) {
+                    commit('SET_REPLAY', {
+                        timestamp: {
+                            begin: events[0].mqttTimestamp,
+                            current: events[0].mqttTimestamp,
+                            end: events[events.length - 1].mqttTimestamp,
+                        }
+                    })
+                } else {
+                    events.forEach(event => dispatch('replayEvent', event));
+                }
             } else {
                 commit('SET_PRELOADING_STATUS', false);
             }
+        },
+        replayEvent({ dispatch }, { topic, payload }) {
+            dispatch("handleMessage", {
+                topic: unnamespaceTopic(topic),
+                message: JSON.parse(payload),
+            })
+        },
+        async replayRecord({ state, dispatch, commit }, timestamp) {
+            await dispatch('pauseReplay');
+            const current = timestamp ? Number(timestamp) : state.replay.timestamp.begin
+            state.replay.timestamp.current = current
+            commit('CLEAN_STAGE')
+            state.replay.isReplaying = true
+            const events = state.model.events
+            const speed = state.replay.speed
+            state.replay.interval = setInterval(() => {
+                state.replay.timestamp.current += 10
+                if (state.replay.timestamp.current > state.replay.timestamp.end) {
+                    dispatch('pauseReplay');
+                }
+            }, 1000 / speed)
+            events.forEach(event => {
+                const timer = setTimeout(() => {
+                    dispatch('replayEvent', event);
+                }, (event.mqttTimestamp - current) * 100 / speed)
+                state.replay.timers.push(timer)
+            });
+        },
+        pauseReplay({ state }) {
+            clearInterval(state.replay.interval)
+            state.replay.interval = null
+            state.replay.timers.forEach(timer => clearTimeout(timer))
+            state.replay.timers = []
         },
         handleCounterMessage({ commit, state }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)

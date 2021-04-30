@@ -31,6 +31,20 @@
       </header>
     </template>
   </MultiSelectList>
+
+  <teleport to="#media-menu">
+    <ul>
+      <li
+        v-for="type in mediaTypes.slice(1)"
+        :key="type.value"
+        @click="filter.type = type.value"
+      >
+        <a :class="{ 'is-active': type.value === filter.type }">{{
+          type.label
+        }}</a>
+      </li>
+    </ul>
+  </teleport>
 </template>
 
 <script>

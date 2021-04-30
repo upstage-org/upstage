@@ -1,5 +1,9 @@
 <template>
-  <section v-if="(model && preloading) || !model" class="hero is-fullheight">
+  <section
+    v-if="(model && preloading) || !model"
+    class="hero is-fullheight"
+    :class="{ replaying }"
+  >
     <div class="hero-body">
       <div class="container">
         <template v-if="model">
@@ -44,9 +48,8 @@
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
+import { computed, inject, ref } from "vue";
 import { useStore } from "vuex";
-import { unnamespaceTopic } from "@/store/modules/stage/reusable";
 export default {
   setup: () => {
     const store = useStore();
@@ -66,19 +69,16 @@ export default {
     };
 
     setTimeout(stopLoading, 60000);
-    watch(
-      () => model.value?.events,
-      (events) => {
-        events.forEach(({ topic, payload }) => {
-          store.dispatch("stage/handleMessage", {
-            topic: unnamespaceTopic(topic),
-            message: JSON.parse(payload),
-          });
-        });
-      }
-    );
+    const replaying = inject("replaying");
 
-    return { model, preloadableAssets, progress, increaseProgress, preloading };
+    return {
+      model,
+      preloadableAssets,
+      progress,
+      increaseProgress,
+      preloading,
+      replaying,
+    };
   },
 };
 </script>
@@ -94,6 +94,9 @@ section {
   * {
     color: white;
     background-color: transparent !important;
+  }
+  &.replaying {
+    background-color: #363636;
   }
 }
 </style>
