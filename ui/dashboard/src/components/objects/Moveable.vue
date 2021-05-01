@@ -5,8 +5,8 @@
       position: 'absolute',
       opacity: isDragging ? 0.5 : 1,
     }"
-    @mousedown="showControls(true, $event)"
-    v-click-outside="(e) => showControls(false, e)"
+    @mousedown="clickInside"
+    v-click-outside="clickOutside"
   >
     <slot />
   </div>
@@ -147,9 +147,9 @@ export default {
         });
     });
 
-    const showControls = (iShowing, e) => {
+    const showControls = (isShowing, e) => {
       if (moveable) {
-        if (props.controlable && iShowing) {
+        if (props.controlable && isShowing) {
           moveable.setState(
             {
               target: el.value,
@@ -160,17 +160,30 @@ export default {
           );
           emit("update:active", true);
         } else {
-          if (!e || e.target.id === "board") {
-            moveable.setState(
-              {
-                target: null,
-              },
-              () => {
-                emit("update:active", false);
-              }
-            );
-          }
+          moveable.setState(
+            {
+              target: null,
+            },
+            () => {
+              emit("update:active", false);
+            }
+          );
         }
+      }
+    };
+
+    const clickInside = (e) => {
+      const isClickingMarker = e.target.parentElement.classList.contains(
+        "marker"
+      );
+      if (!isClickingMarker) {
+        showControls(true, e);
+      }
+    };
+
+    const clickOutside = (e) => {
+      if (!e || e.target.id === "board") {
+        showControls(false);
       }
     };
 
@@ -224,7 +237,7 @@ export default {
       moveable.destroy();
     });
 
-    return { el, showControls, isDragging };
+    return { el, showControls, isDragging, clickInside, clickOutside };
   },
 };
 </script>

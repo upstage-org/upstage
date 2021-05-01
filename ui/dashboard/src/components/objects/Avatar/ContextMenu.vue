@@ -41,30 +41,6 @@
         <span class="panel-icon pt-1">
           <Icon src="rotation-slider.svg" />
         </span>
-        <span>Rotation</span>
-      </p>
-      <p class="control menu-group-item">
-        <button class="button is-light" @click="rotate(+45)">
-          <span class="panel-icon">
-            <Icon src="45degpositive.svg" />
-          </span>
-          <span>+ 45deg</span>
-        </button>
-      </p>
-      <p class="control menu-group-item">
-        <button class="button is-light" @click="rotate(-45)">
-          <span class="panel-icon">
-            <Icon src="45degnegative.svg" />
-          </span>
-          <span>- 45deg</span>
-        </button>
-      </p>
-    </div>
-    <div class="field has-addons menu-group">
-      <p class="control menu-group-title">
-        <span class="panel-icon pt-1">
-          <Icon src="rotation-slider.svg" />
-        </span>
         <span>Slider</span>
       </p>
       <p class="control menu-group-item">
@@ -179,7 +155,7 @@ export default {
 
     const changeNickname = () =>
       store.dispatch("stage/openSettingPopup", {
-        type: "Chat",
+        type: "ChatParameters",
       });
 
     const bringToFront = () => {
@@ -194,13 +170,6 @@ export default {
       props.setSliderMode(mode);
       emit("update:active", true);
       props.keepActive(true);
-    };
-
-    const rotate = (deg) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        rotate: (props.object.rotate ?? 0) + deg,
-      });
     };
 
     const holder = inject("holder") ?? ref();
@@ -219,7 +188,6 @@ export default {
       sendToBack,
       toggleAutoplayFrames,
       changeSliderMode,
-      rotate,
       isHolding,
       holdable
     };

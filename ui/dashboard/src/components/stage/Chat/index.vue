@@ -90,7 +90,7 @@ export default {
 
     const openChatSetting = () =>
       store.dispatch("stage/openSettingPopup", {
-        type: "Chat",
+        type: "ChatParameters",
       });
 
     const opacity = computed(() => store.state.stage.chat.opacity);
