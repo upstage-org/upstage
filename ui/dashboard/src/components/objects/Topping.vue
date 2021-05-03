@@ -7,6 +7,7 @@
       :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
         holder.nickname
       }`"
+      @click="openChatBox"
     >
       <Icon src="my-avatar.svg" />
     </span>
@@ -67,12 +68,20 @@ export default {
       });
     };
 
+    const openChatBox = () => {
+      store.dispatch("stage/openSettingPopup", {
+        type: "ChatBox",
+        simple: true,
+      });
+    };
+
     return {
       enter,
       leave,
       holder,
       isHolding,
       isPlayer,
+      openChatBox,
     };
   },
 };

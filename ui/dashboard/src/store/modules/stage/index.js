@@ -8,6 +8,7 @@ import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } 
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
+import { avatarSpeak } from '@/services/speech';
 
 export default {
     namespaced: true,
@@ -192,10 +193,12 @@ export default {
             state.board.objects = state.board.objects.filter(o => o.id !== id);
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
+            speak.hash = hash(speak)
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
-            if (model) {
+            if (model && model.speak?.hash !== speak.hash) {
                 model.speak = speak;
+                avatarSpeak(model);
                 setTimeout(() => {
                     if (model.speak?.message === speak.message) { model.speak = null }
                 }, 1000 + speak.message.split(' ').length * 1000);
@@ -308,13 +311,11 @@ export default {
 
             const client = mqtt.connect();
             client.on("connect", () => {
-                console.log("Connection succeeded!");
                 commit('SET_STATUS', 'LIVE')
                 dispatch('subscribe');
                 dispatch('joinStage');
             });
-            client.on("error", (error) => {
-                console.log(error);
+            client.on("error", () => {
                 commit('SET_STATUS', 'OFFLINE')
             });
             mqtt.receiveMessage((payload) => {
@@ -373,7 +374,7 @@ export default {
                 backgroundColor: state.chat.color.bg,
                 at: +new Date()
             };
-            mqtt.sendMessage(TOPICS.CHAT, payload).catch(error => console.log(error));
+            mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
             if (avatar) {
                 mqtt.sendMessage(TOPICS.BOARD, {

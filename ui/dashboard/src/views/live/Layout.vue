@@ -25,7 +25,7 @@ import Preloader from "./Preloader";
 import LoginPrompt from "./LoginPrompt";
 import ConnectionStatus from "./ConnectionStatus";
 import { useStore } from "vuex";
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 export default {
   components: {
@@ -46,9 +46,7 @@ export default {
     );
 
     const route = useRoute();
-    store.dispatch("stage/loadStage", { url: route.params.url });
-
-    onMounted(() => {
+    store.dispatch("stage/loadStage", { url: route.params.url }).then(() => {
       store.dispatch("stage/connect");
     });
 
