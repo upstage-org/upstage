@@ -20,13 +20,14 @@
 <script>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import ChatParameters from "./settings/ChatParameters";
 import ChatBox from "./settings/ChatBox";
+import ChatParameters from "./settings/ChatParameters";
+import VoiceParameters from "./settings/VoiceParameters";
 import CreateStream from "./settings/CreateStream";
 import Icon from "@/components/Icon";
 
 export default {
-  components: { ChatParameters, CreateStream, Icon, ChatBox },
+  components: { ChatParameters, VoiceParameters, CreateStream, Icon, ChatBox },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);

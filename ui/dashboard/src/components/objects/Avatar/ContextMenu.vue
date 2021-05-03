@@ -26,15 +26,17 @@
       </span>
       <span>Send to back</span>
     </a>
-    <a
-      v-if="holdable"
-      class="panel-block"
-      @click="changeNickname"
-    >
+    <a v-if="holdable" class="panel-block" @click="changeNickname">
       <span class="panel-icon">
         <Icon src="change-nickname.svg" />
       </span>
       <span>Change your nickname</span>
+    </a>
+    <a v-if="holdable" class="panel-block" @click="openVoiceSetting">
+      <span class="panel-icon">
+        <Icon src="change-nickname.svg" />
+      </span>
+      <span>Voice setting</span>
     </a>
     <div class="field has-addons menu-group">
       <p class="control menu-group-title">
@@ -62,7 +64,7 @@
           }"
           @click="changeSliderMode('animation')"
         >
-          <span>Frame Animation</span>
+          <span>Animation</span>
         </button>
       </p>
       <p class="control menu-group-item">
@@ -73,7 +75,7 @@
           }"
           @click="changeSliderMode('speed')"
         >
-          <span>Move Speed</span>
+          <span>Movement</span>
         </button>
       </p>
     </div>
@@ -178,6 +180,14 @@ export default {
       () => holder.value && holder.value.id === store.state.stage.session
     );
 
+    const openVoiceSetting = () => {
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "VoiceParameters",
+        })
+        .then(props.closeMenu);
+    };
+
     return {
       switchFrame,
       holdAvatar,
@@ -188,8 +198,9 @@ export default {
       sendToBack,
       toggleAutoplayFrames,
       changeSliderMode,
+      openVoiceSetting,
       isHolding,
-      holdable
+      holdable,
     };
   },
 };
