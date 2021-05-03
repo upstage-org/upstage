@@ -1,5 +1,5 @@
 export const avatarSpeak = (avatar, message) => {
-    speechSynthesis.cancel()
+    speechSynthesis.cancel();
     let utterance = new SpeechSynthesisUtterance(message ?? avatar.speak.message);
     if (avatar.voice) {
         const { volume, pitch, rate, voice } = avatar.voice

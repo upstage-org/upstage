@@ -193,9 +193,10 @@ export default {
             state.board.objects = state.board.objects.filter(o => o.id !== id);
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
+            speak.hash = hash(speak)
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
-            if (model) {
+            if (model && model.speak?.hash !== speak.hash) {
                 model.speak = speak;
                 avatarSpeak(model);
                 setTimeout(() => {

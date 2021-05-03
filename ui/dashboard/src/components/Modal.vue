@@ -54,6 +54,6 @@ export default {
 
 <style>
 .modal {
-  z-index: 4000;
+  z-index: 4000 !important;
 }
 </style>

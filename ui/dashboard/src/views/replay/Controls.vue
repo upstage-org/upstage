@@ -61,7 +61,7 @@ export default {
     const timestamp = computed(() => store.state.stage.replay.timestamp);
     const isPlaying = computed(() => store.state.stage.replay.interval);
     const speed = computed(() => store.state.stage.replay.speed);
-    const speeds = [0.5, 1, 2, 4, 8, 16, 32, 50, 100];
+    const speeds = [0.5, 1, 2, 4, 8, 16, 32];
 
     const seek = (e) => {
       store.dispatch("stage/replayRecord", e.target.value);

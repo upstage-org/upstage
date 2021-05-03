@@ -46,7 +46,11 @@
     </HorizontalField>
 
     <HorizontalField title="Test voice">
-      <InputButtonPostfix v-model="test" @ok="testVoice" icon="fas fa-volume-up" />
+      <InputButtonPostfix
+        v-model="test"
+        @ok="testVoice"
+        icon="fas fa-volume-up"
+      />
     </HorizontalField>
 
     <SaveButton @click="save" />
@@ -78,7 +82,7 @@ export default {
     );
     const test = ref("Welcome to UpStage!");
     const testVoice = () => {
-      avatarSpeak(currentAvatar.value, test.value);
+      avatarSpeak({ voice: parameters }, test.value);
     };
 
     const save = () => {
