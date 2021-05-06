@@ -4,7 +4,7 @@
       ref="el"
       class="input is-rounded"
       :value="modelValue"
-      @input="e => $emit('update:modelValue', e.target.value)"
+      @input="(e) => $emit('update:modelValue', e.target.value)"
       @keyup.enter="(e) => $emit('ok', e.target.value)"
       v-bind="$attrs"
     />
@@ -14,7 +14,9 @@
       :disabled="loading"
       @click="$emit('ok', el.value)"
     >
-      <i :class="icon"></i>
+      <slot name="icon">
+        <i :class="icon"></i>
+      </slot>
     </button>
   </div>
 </template>
