@@ -1,6 +1,6 @@
 <template>
   <div class="modal" :class="{ 'is-active': showing }">
-    <div class="modal-background"></div>
+    <div class="modal-background" @click="enterAsAudience"></div>
     <div ref="modal" class="modal-content">
       <LoginForm v-if="showLoginForm" />
       <div v-else class="card">
@@ -82,14 +82,16 @@ export default {
     const close = () => (showing.value = false);
 
     const enterAsAudience = () => {
-      store
-        .dispatch("user/saveNickname", { nickname: nickname.value })
-        .then((nickname) => {
-          notification.success(
-            "Welcome to the stage! You nickname is " + nickname + "!"
-          );
-          close();
-        });
+      if (!showLoginForm.value) {
+        store
+          .dispatch("user/saveNickname", { nickname: nickname.value })
+          .then((nickname = "Guest") => {
+            notification.success(
+              "Welcome to the stage! You nickname is " + nickname + "!"
+            );
+            close();
+          });
+      }
     };
     return { showing, close, modal, showLoginForm, nickname, enterAsAudience };
   },
