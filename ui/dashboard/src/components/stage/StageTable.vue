@@ -1,12 +1,7 @@
 <template>
   <DataTable :data="data" :headers="headers">
     <template #name="{ item }">
-      <router-link
-        :to="`/live/${item.fileLocation}`"
-        class="has-text-primary has-text-weight-bold"
-      >
-        {{ item.name }}
-      </router-link>
+      <span class="has-text-weight-bold">{{ item.name }}</span>
     </template>
     <template #detail="{ item }">
       <Modal>

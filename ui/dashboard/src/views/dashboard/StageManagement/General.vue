@@ -56,7 +56,7 @@
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Users who can access and edit this stage</label>
+        <label class="label">Player access</label>
       </div>
       <div class="field-body" style="flex-wrap: wrap">
         <MultiTransferColumn
@@ -182,12 +182,8 @@ export default {
         console.log("<<<====");
         const stage = await mutation();
         console.log("<<<====");
-        notification.success(
-          "Stage created successfully! ID: " + stage.id
-        );
-        router.push(
-          `/dashboard/stage-management/${stage.id}/`
-        );
+        notification.success("Stage created successfully! ID: " + stage.id);
+        router.push(`/dashboard/stage-management/${stage.id}/`);
       } catch (error) {
         notification.error(error);
       }

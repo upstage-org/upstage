@@ -101,7 +101,7 @@ class Stage(SQLAlchemyObjectType):
             accesses = json.loads(player_access.description)
             if user_id in accesses[0]:
                 return "player"
-            elif user_id in accesses[0]:
+            elif user_id in accesses[1]:
                 return "editor"
         return "audience"
 

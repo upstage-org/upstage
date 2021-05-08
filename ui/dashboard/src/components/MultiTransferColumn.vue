@@ -104,11 +104,11 @@ export default {
     watch(positions, () => {
       let res = [];
       for (let i = 1; i < props.columns.length; i++) {
+        if (!res[i - 1]) {
+          res[i - 1] = [];
+        }
         for (let j = 0; j < props.data.length; j++) {
           if (positions[j] === i) {
-            if (!res[i - 1]) {
-              res[i - 1] = [];
-            }
             res[i - 1].push(props.renderValue(props.data[j]));
           }
         }
