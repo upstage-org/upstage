@@ -10,6 +10,7 @@ export const stageFragment = gql`
     name
     fileLocation
     description
+    permission
     owner {
       id
       username

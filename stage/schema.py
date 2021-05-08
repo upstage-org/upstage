@@ -1,6 +1,6 @@
 # -*- coding: iso8859-15 -*-
 from flask_jwt_extended.utils import get_jwt_identity
-from flask_jwt_extended.view_decorators import jwt_required
+from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
 from performance_config.models import Performance as PerformanceModel
 from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
@@ -17,6 +17,7 @@ from sqlalchemy import desc
 import graphene
 import sys
 import os
+import json
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -59,6 +60,7 @@ class Stage(SQLAlchemyObjectType):
         Performance, description="Recorded performances")
     chats = graphene.List(
         Event, description="All chat sent by players and audiences")
+    permission = graphene.String(description="Player access to this stage")
 
     class Meta:
         model = StageModel
@@ -85,6 +87,23 @@ class Stage(SQLAlchemyObjectType):
             .order_by(EventModel.mqtt_timestamp.asc())\
             .all()
         return events
+
+    def resolve_permission(self, info):
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        if not user_id:
+            return "audience"
+        if self.owner_id == user_id:
+            return 'owner'
+        player_access = self.attributes.filter(
+            StageAttributeModel.name == 'playerAccess').first()
+        if player_access:
+            accesses = json.loads(player_access.description)
+            if user_id in accesses[0]:
+                return "player"
+            elif user_id in accesses[0]:
+                return "editor"
+        return "audience"
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
