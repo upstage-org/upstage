@@ -11,16 +11,47 @@
     <template #detail="{ item }">
       <Modal>
         <template #trigger>
-          <i class="fas fa-lg fa-eye" />
+          <button class="button is-light is-small">
+            <i class="fas fa-lg fa-eye has-text-primary" />
+          </button>
         </template>
         <template #header>Stage Detail</template>
         <template #content><Detail :stage="item" /></template>
         <template #footer><ActionButtons :stage="item" /></template>
       </Modal>
     </template>
-    <template #edit="{ item }">
-      <router-link :to="`/dashboard/stage-management/${item.id}/`">
-        <i class="fa fa-lg fa-pen has-text-black"></i>
+    <template #manage="{ item }">
+      <router-link
+        :to="`/dashboard/stage-management/${item.id}/`"
+        class="button is-light is-small"
+        data-tooltip="Go to stage management"
+      >
+        <i class="fa fa-lg fa-cog has-text-primary"></i>
+      </router-link>
+      <router-link
+        :to="`/dashboard/stage-management/${item.id}/`"
+        class="button is-light is-small"
+        data-tooltip="Duplicate stage"
+      >
+        <i class="fa fa-lg fa-clone has-text-warning"></i>
+      </router-link>
+      <router-link
+        :to="`/dashboard/stage-management/${item.id}/`"
+        class="button is-light is-small"
+        data-tooltip="Delete stage"
+      >
+        <i class="fa fa-lg fa-trash has-text-danger"></i>
+      </router-link>
+    </template>
+    <template #enter="{ item }">
+      <router-link
+        :to="`/live/${item.fileLocation}`"
+        class="button is-small is-primary"
+      >
+        <span>ENTER</span>
+        <span class="icon">
+          <i class="fas fa-chevron-right"></i>
+        </span>
       </router-link>
     </template>
   </DataTable>
@@ -55,8 +86,13 @@ export default {
         align: "center",
       },
       {
-        title: "Edit Stage",
-        slot: "edit",
+        title: "Manage Stage",
+        slot: "manage",
+        align: "center",
+      },
+      {
+        title: "",
+        slot: "enter",
         align: "center",
       },
     ];

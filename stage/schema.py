@@ -1,4 +1,6 @@
 # -*- coding: iso8859-15 -*-
+from flask_jwt_extended.utils import get_jwt_identity
+from flask_jwt_extended.view_decorators import jwt_required
 from performance_config.models import Performance as PerformanceModel
 from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
@@ -26,11 +28,12 @@ if projdir not in sys.path:
 class StageAttribute:
     name = graphene.String(description="Stage Name")
     description = graphene.String(description="Stage Description")
-    owner_id = graphene.String(description="User ID of the owner")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
     media = graphene.String(description="Media attached to stage")
     config = graphene.String(description="Stage configurations")
+    playerAccess = graphene.String(
+        description="Users who can access and edit this stage")
 
 
 class StageAttributes(SQLAlchemyObjectType):
@@ -118,13 +121,15 @@ class CreateStage(graphene.Mutation):
     class Arguments:
         input = CreateStageInput(required=True)
 
+    @jwt_required()
     def mutate(self, info, input):
-        if not input.name or not input.file_location or not input.owner_id:
+        if not input.name or not input.file_location:
             raise Exception('Please fill in all required fields')
 
         data = graphql_utils.input_to_dictionary(input)
 
         stage = StageModel(**data)
+        stage.owner_id = get_jwt_identity()
         # Add validation for non-empty passwords, etc.
         with ScopedSession() as local_db_session:
             local_db_session.add(stage)
