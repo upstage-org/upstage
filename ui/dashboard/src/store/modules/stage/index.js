@@ -67,7 +67,7 @@ export default {
             },
             timers: [],
             interval: null,
-            speed: 100
+            speed: 32
         }
     },
     getters: {
