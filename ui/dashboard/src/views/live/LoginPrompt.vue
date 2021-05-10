@@ -11,10 +11,14 @@
           <div class="content">
             <InputButtonPostfix
               v-model="nickname"
-              placeholder="Choose your nickname"
+              placeholder="Choose a nickname"
               icon="fas fa-sign-in-alt"
               @ok="enterAsAudience"
             />
+            <p class="help">
+              Click anywhere to enter the stage. Choose a nickname if you want
+              one.
+            </p>
           </div>
         </div>
       </div>

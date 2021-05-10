@@ -21,12 +21,8 @@ export default {
     const { performances } = stage.value;
     const headers = [
       {
-        title: "ID",
-        dataIndex: "id",
-      },
-      {
         title: "Created On",
-        dataIndex: "createdOn",
+        key: "createdOn",
         type: "date",
       },
       {
