@@ -7,9 +7,21 @@
       <Dropdown
         v-model="parameters.voice"
         :data="voices"
-        :render-label="(voice) => `${voice.name} (${voice.lang})`"
-        :render-value="(voice) => voice.voiceURI"
+        :render-label="(voice) => voice.name"
+        :render-value="(voice) => voice.id"
         style="width: 100%"
+        fixed
+      />
+    </HorizontalField>
+
+    <HorizontalField title="Variant">
+      <Dropdown
+        v-model="parameters.variant"
+        :data="variants"
+        :render-label="(variant) => variant.name"
+        :render-value="(variant) => variant.id"
+        style="width: 100%"
+        fixed
       />
     </HorizontalField>
 
@@ -19,29 +31,29 @@
         v-model="parameters.pitch"
         type="range"
         min="0"
-        max="1"
-        step="0.05"
+        max="100"
+        step="1"
       />
     </HorizontalField>
     <HorizontalField title="Rate">
       <input
         class="slider is-fullwidth is-primary m-0"
-        v-model="parameters.rate"
+        v-model="parameters.speed"
         type="range"
-        min="-3"
-        max="3"
-        step="0.25"
+        min="0"
+        max="350"
+        step="1"
       />
     </HorizontalField>
 
     <HorizontalField title="Volume">
       <input
         class="slider is-fullwidth is-primary m-0"
-        v-model="parameters.volume"
+        v-model="parameters.amplitude"
         type="range"
         min="0"
-        max="1"
-        step="0.05"
+        max="100"
+        step="1"
       />
     </HorizontalField>
 
@@ -65,19 +77,27 @@ import HorizontalField from "@/components/form/HorizontalField";
 import InputButtonPostfix from "@/components/form/InputButtonPostfix";
 import { useStore } from "vuex";
 import { avatarSpeak } from "@/services/speech";
+import {
+  getDefaultVariant,
+  getDefaultVoice,
+  getVariantList,
+  getVoiceList,
+} from "@/services/speech/voice";
 
 export default {
   components: { SaveButton, Dropdown, HorizontalField, InputButtonPostfix },
   setup: (props, { emit }) => {
     const store = useStore();
     const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
-    const voices = window.speechSynthesis.getVoices();
+    const voices = getVoiceList();
+    const variants = getVariantList();
     const parameters = reactive(
       currentAvatar.value?.voice ?? {
-        voice: (voices.find((v) => v.default) ?? voices[0]).voiceURI,
-        pitch: 0.5,
-        rate: 0,
-        volume: 1,
+        voice: getDefaultVoice(),
+        pitch: 50,
+        speed: 175,
+        amplitude: 100,
+        variant: getDefaultVariant(),
       }
     );
     const test = ref("Welcome to UpStage!");
@@ -94,7 +114,7 @@ export default {
         .then(() => emit("close"));
     };
 
-    return { save, parameters, voices, test, testVoice };
+    return { save, parameters, voices, variants, test, testVoice };
   },
 };
 </script>

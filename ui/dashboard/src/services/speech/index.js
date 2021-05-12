@@ -1,12 +1,20 @@
-export const avatarSpeak = (avatar, message) => {
-    speechSynthesis.cancel();
-    let utterance = new SpeechSynthesisUtterance(message ?? avatar.speak.message);
+import { getDefaultVoice, isValidVoice } from "./voice";
+
+const { loadVoice, speak } = window.meSpeak
+
+export const avatarSpeak = (avatar, message = avatar.speak.message) => {
+    const params = {}
     if (avatar.voice) {
-        const { volume, pitch, rate, voice } = avatar.voice
-        utterance.volume = volume
-        utterance.pitch = pitch
-        utterance.rate = Math.pow(Math.abs(rate) + 1, rate < 0 ? -1 : 1);
-        utterance.voice = speechSynthesis.getVoices().find(v => v.voiceURI === voice) ?? speechSynthesis.getVoices[0] // Default to first voice found
+        const { voice, variant, amplitude, pitch, speed } = avatar.voice
+        if (isValidVoice(voice)) {
+            loadVoice(voice)
+        } else {
+            loadVoice(getDefaultVoice())
+        }
+        params.variant = variant
+        params.amplitude = amplitude
+        params.pitch = pitch
+        params.speed = speed;
     }
-    speechSynthesis.speak(utterance);
+    speak(message, params)
 }
