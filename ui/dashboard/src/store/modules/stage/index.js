@@ -196,12 +196,13 @@ export default {
             state.board.objects = state.board.objects.filter(o => o.id !== id);
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
-            speak.hash = hash(speak)
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
-            if (model && model.speak?.hash !== speak.hash) {
+            if (model) {
                 model.speak = speak;
-                avatarSpeak(model);
+                if (state.status === 'LIVE' || state.replay.isReplaying) {
+                    avatarSpeak(model);
+                }
                 setTimeout(() => {
                     if (model.speak?.message === speak.message) { model.speak = null }
                 }, 1000 + speak.message.split(' ').length * 1000);
