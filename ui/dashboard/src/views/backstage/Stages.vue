@@ -1,7 +1,7 @@
 <template>
   <section class="hero is-small is-primary is-bold">
     <div class="hero-body">
-      <Breadcrum
+      <Breadcrumb
         description="Create a new stage, enter or manage an existing stage"
       />
       <h1 class="title is-inline">Stages</h1>
@@ -64,10 +64,10 @@ import Skeleton from "@/components/Skeleton.vue";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
 import { displayName } from "@/utils/auth";
-import Breadcrum from "@/components/Breadcrum";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default {
-  components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrum },
+  components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrumb },
   setup: () => {
     const store = useStore();
     const currentUser = computed(() => store.state.user.user);

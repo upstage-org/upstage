@@ -1,7 +1,7 @@
 <template>
   <section class="hero is-small is-warning is-bold">
     <div class="hero-body">
-      <Breadcrum description="Manage players and system settings" />
+      <Breadcrumb description="Manage players and system settings" />
       <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
@@ -84,9 +84,9 @@
 import { displayName } from "@/utils/auth";
 import { useStore } from "vuex";
 import { computed } from "vue";
-import Breadcrum from "@/components/Breadcrum";
+import Breadcrumb from "@/components/Breadcrumb";
 export default {
-  components: { Breadcrum },
+  components: { Breadcrumb },
   setup: () => {
     const store = useStore();
     const user = computed(() => store.state.user.user);
