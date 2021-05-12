@@ -1,12 +1,8 @@
 <template>
   <section class="hero is-small is-dark is-bold">
     <div class="hero-body">
-      <h1 class="title">Player Profile</h1>
-      <h2 class="subtitle" v-if="user">
-        <ul>
-          <li>{{ displayName(user) }}'s profile</li>
-        </ul>
-      </h2>
+      <Breadcrum :description="user ? displayName(user) + '\'s profile' : ''" />
+      <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
   <div class="columns" :class="{ 'is-loading': !user }">
@@ -15,14 +11,17 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/backstage/profile/"
+              to="/backstage/profile/information"
               exact-active-class="is-active"
             >
               Update Information
             </router-link>
           </li>
           <li>
-            <router-link to="change-password" exact-active-class="is-active">
+            <router-link
+              to="/backstage/profile/change-password"
+              exact-active-class="is-active"
+            >
               Change Password
             </router-link>
           </li>
@@ -41,7 +40,10 @@
 import { displayName } from "@/utils/auth";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Breadcrum from "@/components/Breadcrum";
+
 export default {
+  components: { Breadcrum },
   setup: () => {
     const store = useStore();
     const user = computed(() => store.state.user.user);

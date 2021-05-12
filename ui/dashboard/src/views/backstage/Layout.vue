@@ -3,16 +3,10 @@
     <div class="navbar-menu is-active">
       <div class="navbar-start">
         &nbsp;
-        <router-link class="navbar-item" to="/backstage">
-          Backstage
-        </router-link>
+        <router-link class="navbar-item" to="/backstage"> Stages </router-link>
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/backstage/media">
           Media
-        </router-link>
-        <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/new-stage">
-          New Stage
         </router-link>
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/backstage/profile/">

@@ -33,13 +33,18 @@ const routes = [
   },
   {
     path: '/backstage',
+    name: 'Backstage',
     component: () => import('../views/backstage/Layout.vue'),
     meta: { requireAuth: true },
     children: [
       {
-        path: '/backstage',
-        name: 'Backstage',
-        component: () => import('../views/backstage/Backstage.vue'),
+        path: '',
+        redirect: '/backstage/stages',
+      },
+      {
+        path: '/backstage/stages',
+        name: 'Stages',
+        component: () => import('../views/backstage/Stages.vue'),
       },
       {
         path: '/backstage/workshop',
@@ -53,11 +58,16 @@ const routes = [
       },
       {
         path: '/backstage/profile',
+        name: 'Profile',
         component: () => import('../views/backstage/Profile/index.vue'),
         children: [
           {
             path: '',
-            name: 'Player Profile',
+            redirect: '/backstage/profile/information',
+          },
+          {
+            path: 'information',
+            name: 'Update Information',
             component: () => import('../views/backstage/Profile/Information.vue'),
           },
           {
@@ -69,6 +79,7 @@ const routes = [
       },
       {
         path: '/backstage/admin',
+        name: 'Admin',
         component: () => import('../views/backstage/Admin/index.vue'),
         children: [
           {

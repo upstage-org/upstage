@@ -1,7 +1,8 @@
 <template>
   <section class="hero is-small is-warning is-bold">
     <div class="hero-body">
-      <h1 class="title">UpStage Admin</h1>
+      <Breadcrum description="Manage players and system settings" />
+      <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
   <div class="columns" :class="{ 'is-loading': !user }">
@@ -83,7 +84,9 @@
 import { displayName } from "@/utils/auth";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Breadcrum from "@/components/Breadcrum";
 export default {
+  components: { Breadcrum },
   setup: () => {
     const store = useStore();
     const user = computed(() => store.state.user.user);

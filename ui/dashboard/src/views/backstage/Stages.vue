@@ -1,14 +1,17 @@
 <template>
   <section class="hero is-small is-primary is-bold">
     <div class="hero-body">
-      <div class="container">
-        <h1 class="title">BACKSTAGE</h1>
-        <h2 class="subtitle">
-          <ul>
-            <li>Presentation of the goal of the page...</li>
-          </ul>
-        </h2>
-      </div>
+      <Breadcrum
+        description="Create a new stage, enter or manage an existing stage"
+      />
+      <h1 class="title is-inline">Stages</h1>
+      &nbsp;
+      <router-link to="/backstage/new-stage" class="button">
+        <span>New</span>
+        <span class="icon">
+          <i class="fa fa-plus"></i>
+        </span>
+      </router-link>
     </div>
   </section>
   <section class="section">
@@ -21,15 +24,6 @@
             filter.mine ? 'Show my stages only' : 'Show stages created by: '
           "
         />
-        <router-link
-          to="/backstage/new-stage"
-          class="button mx-2 is-pulled-right"
-        >
-          <span>New</span>
-          <span class="icon">
-            <i class="fa fa-plus"></i>
-          </span>
-        </router-link>
         <Dropdown
           v-if="!filter.mine"
           class="ml-2"
@@ -70,9 +64,10 @@ import Skeleton from "@/components/Skeleton.vue";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
 import { displayName } from "@/utils/auth";
+import Breadcrum from "@/components/Breadcrum";
 
 export default {
-  components: { StageTable, Field, Switch, Dropdown, Skeleton },
+  components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrum },
   setup: () => {
     const store = useStore();
     const currentUser = computed(() => store.state.user.user);
