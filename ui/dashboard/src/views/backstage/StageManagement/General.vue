@@ -183,7 +183,7 @@ export default {
         const stage = await mutation();
         console.log("<<<====");
         notification.success("Stage created successfully! ID: " + stage.id);
-        router.push(`/dashboard/stage-management/${stage.id}/`);
+        router.push(`/backstage/stage-management/${stage.id}/`);
       } catch (error) {
         notification.error(error);
       }

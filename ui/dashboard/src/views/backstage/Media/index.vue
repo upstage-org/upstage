@@ -1,6 +1,7 @@
 <template>
-  <section class="hero is-small is-light is-bold">
+  <section class="hero is-small is-dark is-bold">
     <div class="hero-body">
+      <Breadcrumb description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>
       &nbsp;
       <MediaUpload @complete="uploadCompleted" />
@@ -79,9 +80,10 @@ import { stageGraph } from "@/services/graphql";
 import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
 import { getStageMedia } from "@/utils/stage";
+import Breadcrumb from "@/components/Breadcrumb";
 
 export default {
-  components: { MediaList, MediaUpload, Skeleton, Field },
+  components: { MediaList, MediaUpload, Skeleton, Field, Breadcrumb },
   setup: () => {
     const filter = reactive({
       mediaType: null,

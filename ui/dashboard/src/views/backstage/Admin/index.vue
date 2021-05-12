@@ -1,7 +1,8 @@
 <template>
   <section class="hero is-small is-warning is-bold">
     <div class="hero-body">
-      <h1 class="title">UpStage Admin</h1>
+      <Breadcrumb description="Manage players and system settings" />
+      <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
   <div class="columns" :class="{ 'is-loading': !user }">
@@ -11,7 +12,7 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/admin/approval"
+              to="/backstage/admin/approval"
               exact-active-class="is-active"
             >
               Registration Approval
@@ -19,7 +20,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/reset-password"
+              to="/backstage/admin/reset-password"
               exact-active-class="is-active"
             >
               Reset Password
@@ -27,7 +28,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/switch-role"
+              to="/backstage/admin/switch-role"
               exact-active-class="is-active"
             >
               Switch Role
@@ -35,7 +36,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/delete-user"
+              to="/backstage/admin/delete-user"
               exact-active-class="is-active"
             >
               Delete User
@@ -43,7 +44,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/profile-management"
+              to="/backstage/admin/profile-management"
               exact-active-class="is-active"
             >
               Profile Management
@@ -51,7 +52,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/upload-limit"
+              to="/backstage/admin/upload-limit"
               exact-active-class="is-active"
             >
               Upload Limit
@@ -62,7 +63,7 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/admin/system-configurations"
+              to="/backstage/admin/system-configurations"
               exact-active-class="is-active"
             >
               System Configurations
@@ -83,7 +84,9 @@
 import { displayName } from "@/utils/auth";
 import { useStore } from "vuex";
 import { computed } from "vue";
+import Breadcrumb from "@/components/Breadcrumb";
 export default {
+  components: { Breadcrumb },
   setup: () => {
     const store = useStore();
     const user = computed(() => store.state.user.user);

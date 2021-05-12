@@ -16,7 +16,7 @@
   </div>
   <template v-else>
     <router-link
-      :to="`/dashboard/stage-management/${stage.id}/`"
+      :to="`/backstage/stage-management/${stage.id}/`"
       class="button mx-2 is-block is-fullwidth is-primary"
     >
       <span class="icon">

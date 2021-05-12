@@ -27,8 +27,8 @@
             <router-link
               :to="
                 id
-                  ? `/dashboard/stage-management/${id}/`
-                  : '/dashboard/new-stage'
+                  ? `/backstage/stage-management/${id}/`
+                  : '/backstage/new-stage'
               "
               exact-active-class="is-active"
               >General Information</router-link
