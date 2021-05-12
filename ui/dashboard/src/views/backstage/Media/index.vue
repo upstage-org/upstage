@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-small is-light is-bold">
+  <section class="hero is-small is-dark is-bold">
     <div class="hero-body">
       <Breadcrum description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>

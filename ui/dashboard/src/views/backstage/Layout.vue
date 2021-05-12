@@ -3,7 +3,9 @@
     <div class="navbar-menu is-active">
       <div class="navbar-start">
         &nbsp;
-        <router-link class="navbar-item" to="/backstage"> Stages </router-link>
+        <router-link class="navbar-item" to="/backstage/stages">
+          Stages
+        </router-link>
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/backstage/media">
           Media

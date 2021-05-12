@@ -1,5 +1,5 @@
 <template>
-  <section class="hero is-small is-dark is-bold">
+  <section class="hero is-small is-light is-bold">
     <div class="hero-body">
       <Breadcrum :description="user ? displayName(user) + '\'s profile' : ''" />
       <h1 class="title is-inline">{{ $route.name }}</h1>
