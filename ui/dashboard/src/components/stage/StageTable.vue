@@ -20,21 +20,21 @@
         v-if="item.permission === 'editor' || item.permission === 'owner'"
       >
         <router-link
-          :to="`/dashboard/stage-management/${item.id}/`"
+          :to="`/backstage/stage-management/${item.id}/`"
           class="button is-light is-small"
           data-tooltip="Go to stage management"
         >
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
         <router-link
-          :to="`/dashboard/stage-management/${item.id}/`"
+          :to="`/backstage/stage-management/${item.id}/`"
           class="button is-light is-small"
           data-tooltip="Duplicate stage"
         >
           <i class="fa fa-lg fa-clone has-text-warning"></i>
         </router-link>
         <router-link
-          :to="`/dashboard/stage-management/${item.id}/`"
+          :to="`/backstage/stage-management/${item.id}/`"
           class="button is-light is-small"
           data-tooltip="Delete stage"
           v-if="item.permission === 'owner'"

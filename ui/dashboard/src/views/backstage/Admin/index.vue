@@ -11,7 +11,7 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/admin/approval"
+              to="/backstage/admin/approval"
               exact-active-class="is-active"
             >
               Registration Approval
@@ -19,7 +19,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/reset-password"
+              to="/backstage/admin/reset-password"
               exact-active-class="is-active"
             >
               Reset Password
@@ -27,7 +27,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/switch-role"
+              to="/backstage/admin/switch-role"
               exact-active-class="is-active"
             >
               Switch Role
@@ -35,7 +35,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/delete-user"
+              to="/backstage/admin/delete-user"
               exact-active-class="is-active"
             >
               Delete User
@@ -43,7 +43,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/profile-management"
+              to="/backstage/admin/profile-management"
               exact-active-class="is-active"
             >
               Profile Management
@@ -51,7 +51,7 @@
           </li>
           <li>
             <router-link
-              to="/dashboard/admin/upload-limit"
+              to="/backstage/admin/upload-limit"
               exact-active-class="is-active"
             >
               Upload Limit
@@ -62,7 +62,7 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/admin/system-configurations"
+              to="/backstage/admin/system-configurations"
               exact-active-class="is-active"
             >
               System Configurations

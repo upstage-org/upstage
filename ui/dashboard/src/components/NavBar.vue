@@ -63,8 +63,8 @@
 
       <div class="navbar-end">
         <template v-if="loggedIn">
-          <router-link to="/dashboard" class="button is-primary m-2">
-            <strong>Dashboard</strong>
+          <router-link to="/backstage" class="button is-primary m-2">
+            <strong>Backstage</strong>
           </router-link>
           <button @click="logout" class="button m-2 mr-6">
             <strong>Logout</strong>

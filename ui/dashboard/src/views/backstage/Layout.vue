@@ -3,24 +3,24 @@
     <div class="navbar-menu is-active">
       <div class="navbar-start">
         &nbsp;
-        <router-link class="navbar-item" to="/dashboard">
-          Dashboard
+        <router-link class="navbar-item" to="/backstage">
+          Backstage
         </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/dashboard/media">
+        <router-link class="navbar-item" to="/backstage/media">
           Media
         </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/dashboard/new-stage">
+        <router-link class="navbar-item" to="/backstage/new-stage">
           New Stage
         </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/dashboard/profile/">
+        <router-link class="navbar-item" to="/backstage/profile/">
           Profile
         </router-link>
         <template v-if="isAdmin">
           <div class="vertical-divider" />
-          <router-link class="navbar-item" to="/dashboard/admin/">
+          <router-link class="navbar-item" to="/backstage/admin/">
             <span>
               Admin <i class="fas fa-shield-alt has-text-warning"></i>
             </span>

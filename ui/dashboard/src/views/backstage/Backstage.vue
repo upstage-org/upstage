@@ -22,7 +22,7 @@
           "
         />
         <router-link
-          to="/dashboard/new-stage"
+          to="/backstage/new-stage"
           class="button mx-2 is-pulled-right"
         >
           <span>New</span>

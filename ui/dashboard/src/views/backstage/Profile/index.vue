@@ -15,7 +15,7 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/dashboard/profile/"
+              to="/backstage/profile/"
               exact-active-class="is-active"
             >
               Update Information
