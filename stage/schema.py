@@ -1,10 +1,14 @@
 # -*- coding: iso8859-15 -*-
+from flask_jwt_extended.utils import get_jwt_identity
+from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
+from performance_config.models import Performance as PerformanceModel
 from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
 from flask_graphql import GraphQLView
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
+from event_archive.models import Event as EventModel
 from config.settings import VERSION
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
@@ -13,6 +17,7 @@ from sqlalchemy import desc
 import graphene
 import sys
 import os
+import json
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -24,11 +29,12 @@ if projdir not in sys.path:
 class StageAttribute:
     name = graphene.String(description="Stage Name")
     description = graphene.String(description="Stage Description")
-    owner_id = graphene.String(description="User ID of the owner")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
     media = graphene.String(description="Media attached to stage")
     config = graphene.String(description="Stage configurations")
+    playerAccess = graphene.String(
+        description="Users who can access and edit this stage")
 
 
 class StageAttributes(SQLAlchemyObjectType):
@@ -36,14 +42,68 @@ class StageAttributes(SQLAlchemyObjectType):
         model = StageAttributeModel
 
 
+class Event(SQLAlchemyObjectType):
+    class Meta:
+        model = EventModel
+
+
+class Performance(SQLAlchemyObjectType):
+    class Meta:
+        model = PerformanceModel
+
+
 class Stage(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    events = graphene.List(
+        Event, description="Archived events of this performance", performance_id=graphene.Int())
+    performances = graphene.List(
+        Performance, description="Recorded performances")
+    chats = graphene.List(
+        Event, description="All chat sent by players and audiences")
+    permission = graphene.String(description="Player access to this stage")
 
     class Meta:
         model = StageModel
         model.db_id = model.id
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
+
+    def resolve_events(self, info, performance_id=None):
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.performance_id == performance_id)\
+            .filter(EventModel.topic.like("%/{}/%".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
+            .all()
+        return events
+
+    def resolve_performances(self, info):
+        performances = DBSession.query(PerformanceModel).filter(
+            PerformanceModel.stage_id == self.db_id).all()
+        return performances
+
+    def resolve_chats(self, info):
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
+            .all()
+        return events
+
+    def resolve_permission(self, info):
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        if not user_id:
+            return "audience"
+        if self.owner_id == user_id:
+            return 'owner'
+        player_access = self.attributes.filter(
+            StageAttributeModel.name == 'playerAccess').first()
+        if player_access:
+            accesses = json.loads(player_access.description)
+            if user_id in accesses[0]:
+                return "player"
+            elif user_id in accesses[1]:
+                return "editor"
+        return "audience"
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -57,10 +117,12 @@ class StageConnectionField(SQLAlchemyConnectionField):
             if field == 'id':
                 _type, _id = from_global_id(value)
                 query = query.filter(getattr(model, field) == _id)
+            elif field == 'asset_type':
+                query = query.filter(getattr(model, field).has(name=value))
             elif len(field) > 5 and field[-4:] == 'like':
                 query = query.filter(
                     getattr(model, field[:-5]).ilike(f"%{value}%"))
-            elif field not in cls.RELAY_ARGS:
+            elif field not in cls.RELAY_ARGS and hasattr(model, field):
                 query = query.filter(getattr(model, field) == value)
         return query
 
@@ -78,13 +140,15 @@ class CreateStage(graphene.Mutation):
     class Arguments:
         input = CreateStageInput(required=True)
 
+    @jwt_required()
     def mutate(self, info, input):
-        if not input.name or not input.file_location or not input.owner_id:
+        if not input.name or not input.file_location:
             raise Exception('Please fill in all required fields')
 
         data = graphql_utils.input_to_dictionary(input)
 
         stage = StageModel(**data)
+        stage.owner_id = get_jwt_identity()
         # Add validation for non-empty passwords, etc.
         with ScopedSession() as local_db_session:
             local_db_session.add(stage)
@@ -139,11 +203,51 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class SweepStageInput(graphene.InputObjectType, StageAttribute):
+    id = graphene.ID(required=True, description="Global Id of the stage.")
+
+
+class SweepStage(graphene.Mutation):
+    """Mutation to sweep a stage."""
+    success = graphene.Boolean()
+    performance_id = graphene.Int()
+
+    class Arguments:
+        input = SweepStageInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = graphql_utils.input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            stage = local_db_session.query(StageModel)\
+                .filter(StageModel.id == data['id'])\
+                .first()
+
+            events = DBSession.query(EventModel)\
+                .filter(EventModel.performance_id == None)\
+                .filter(EventModel.topic.like("%/{}/%".format(stage.file_location)))
+
+            if events.count() > 0:
+                performance = PerformanceModel(stage=stage)
+                local_db_session.add(performance)
+                local_db_session.flush()
+
+                events.update(
+                    {EventModel.performance_id: performance.id}, synchronize_session="fetch")
+            else:
+                raise Exception("The stage is already sweeped!")
+
+            local_db_session.commit()
+
+            return SweepStage(success=True, performance_id=performance.id)
+
+
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
+    sweepStage = SweepStage.Field()
 
 
 class Query(graphene.ObjectType):
@@ -151,7 +255,7 @@ class Query(graphene.ObjectType):
     stageList = StageConnectionField(
         Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
     assetList = StageConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type_id=graphene.ID())
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 

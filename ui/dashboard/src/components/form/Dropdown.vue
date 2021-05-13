@@ -20,7 +20,11 @@
       </button>
     </div>
     <div class="dropdown-menu" id="dropdown-menu" role="menu">
-      <div class="dropdown-content" ref="el">
+      <div
+        class="dropdown-content"
+        ref="el"
+        :style="{ position: fixed ? 'fixed' : 'unset' }"
+      >
         <template v-if="data && data.length">
           <a
             v-for="item in data"
@@ -60,6 +64,7 @@ export default {
     isRight: Boolean,
     isUp: Boolean,
     isRounded: Boolean,
+    fixed: Boolean,
   },
   emits: ["update:modelValue", "select"],
   setup: (props, { emit }) => {

@@ -32,126 +32,142 @@ const routes = [
     ]
   },
   {
-    path: '/dashboard',
-    component: () => import('../views/dashboard/Layout.vue'),
+    path: '/backstage',
+    name: 'Backstage',
+    component: () => import('../views/backstage/Layout.vue'),
     meta: { requireAuth: true },
     children: [
       {
-        path: '/dashboard',
-        name: 'Dashboard',
-        component: () => import('../views/dashboard/Dashboard.vue'),
+        path: '',
+        redirect: '/backstage/stages',
       },
       {
-        path: '/dashboard/workshop',
+        path: '/backstage/stages',
+        name: 'Stages',
+        component: () => import('../views/backstage/Stages.vue'),
+      },
+      {
+        path: '/backstage/workshop',
         name: 'Workshop',
-        component: () => import('../views/dashboard/Workshop.vue'),
+        component: () => import('../views/backstage/Workshop.vue'),
       },
       {
-        path: '/dashboard/media',
+        path: '/backstage/media',
         name: 'Media',
-        component: () => import('../views/dashboard/Media/index.vue'),
+        component: () => import('../views/backstage/Media/index.vue'),
       },
       {
-        path: '/dashboard/profile',
-        component: () => import('../views/dashboard/Profile/index.vue'),
+        path: '/backstage/profile',
+        name: 'Profile',
+        component: () => import('../views/backstage/Profile/index.vue'),
         children: [
           {
             path: '',
-            name: 'Player Profile',
-            component: () => import('../views/dashboard/Profile/Information.vue'),
+            redirect: '/backstage/profile/information',
+          },
+          {
+            path: 'information',
+            name: 'Update Information',
+            component: () => import('../views/backstage/Profile/Information.vue'),
           },
           {
             path: 'change-password',
             name: 'Change Password',
-            component: () => import('../views/dashboard/Profile/ChangePassword.vue'),
+            component: () => import('../views/backstage/Profile/ChangePassword.vue'),
           },
         ]
       },
       {
-        path: '/dashboard/admin',
-        component: () => import('../views/dashboard/Admin/index.vue'),
+        path: '/backstage/admin',
+        name: 'Admin',
+        component: () => import('../views/backstage/Admin/index.vue'),
         children: [
           {
             path: '',
-            redirect: '/dashboard/admin/approval',
+            redirect: '/backstage/admin/approval',
           },
           {
             path: 'approval',
             name: 'Registration Approval',
-            component: () => import('../views/dashboard/Admin/RegistrationApproval.vue'),
+            component: () => import('../views/backstage/Admin/RegistrationApproval.vue'),
           },
           {
             path: 'reset-password',
             name: 'Reset Password',
-            component: () => import('../views/dashboard/Admin/ResetPassword.vue'),
+            component: () => import('../views/backstage/Admin/ResetPassword.vue'),
           },
           {
             path: 'switch-role',
             name: 'Switch Role',
-            component: () => import('../views/dashboard/Admin/SwitchRole.vue'),
+            component: () => import('../views/backstage/Admin/SwitchRole.vue'),
           },
           {
             path: 'delete-user',
             name: 'Delete User',
-            component: () => import('../views/dashboard/Admin/DeleteUser.vue'),
+            component: () => import('../views/backstage/Admin/DeleteUser.vue'),
           },
           {
             path: 'profile-management',
             name: 'Profile Management',
-            component: () => import('../views/dashboard/Admin/ProfileManagement.vue'),
+            component: () => import('../views/backstage/Admin/ProfileManagement.vue'),
           },
           {
             path: 'upload-limit',
             name: 'Upload Limit',
-            component: () => import('../views/dashboard/Admin/UploadLimit.vue'),
+            component: () => import('../views/backstage/Admin/UploadLimit.vue'),
           },
           {
             path: 'system-configurations',
             name: 'System Configurations',
-            component: () => import('../views/dashboard/Admin/SystemConfigurations.vue'),
+            component: () => import('../views/backstage/Admin/SystemConfigurations.vue'),
           },
         ]
       },
       {
-        path: '/dashboard/new-stage',
-        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        path: '/backstage/new-stage',
+        component: () => import('../views/backstage/StageManagement/index.vue'),
         children: [
           {
             path: '',
             name: 'Create New Stage',
-            component: () => import('../views/dashboard/StageManagement/General.vue'),
+            component: () => import('../views/backstage/StageManagement/General.vue'),
           },
         ]
       },
       {
-        path: '/dashboard/stage-management/:id',
-        component: () => import('../views/dashboard/StageManagement/index.vue'),
+        path: '/backstage/stage-management/:id',
+        component: () => import('../views/backstage/StageManagement/index.vue'),
         props: route => ({ id: route.params.id }),
         children: [
           {
             path: '',
             name: 'Stage Management',
-            component: () => import('../views/dashboard/StageManagement/General.vue'),
+            component: () => import('../views/backstage/StageManagement/General.vue'),
           },
           {
             name: 'Stage Layout',
             path: 'layout',
-            component: () => import('../views/dashboard/StageManagement/Layout.vue'),
+            component: () => import('../views/backstage/StageManagement/Layout.vue'),
           },
           {
             name: 'Stage Media',
             path: 'media',
-            component: () => import('../views/dashboard/StageManagement/Media.vue'),
+            component: () => import('../views/backstage/StageManagement/Media.vue'),
           },
           {
             name: 'Chat',
             path: 'chat',
-            component: () => import('../views/dashboard/StageManagement/Chat.vue'),
+            component: () => import('../views/backstage/StageManagement/Chat.vue'),
           },
           {
             name: 'Scenes',
             path: 'scenes',
-            component: () => import('../views/dashboard/StageManagement/Scenes.vue'),
+            component: () => import('../views/backstage/StageManagement/Scenes.vue'),
+          },
+          {
+            name: 'Records',
+            path: 'records',
+            component: () => import('../views/backstage/StageManagement/Records.vue'),
           }
         ]
       }
@@ -162,6 +178,11 @@ const routes = [
     path: '/live/:url?',
     name: 'Live',
     component: () => import('../views/live/Layout.vue'),
+  },
+  {
+    path: '/replay/:url/:id',
+    name: 'Replay Record',
+    component: () => import('../views/replay/Layout.vue'),
   },
 ]
 
@@ -179,7 +200,7 @@ router.beforeEach((to, from, next) => {
     next("/login");
   }
   if (to.name === 'Login' && loggedIn) {
-    next("/dashboard");
+    next("/backstage");
   }
   if (to.name === 'Live') {
     document.querySelector("meta[name=viewport]").setAttribute("content", "");

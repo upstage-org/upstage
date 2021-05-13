@@ -1,4 +1,5 @@
 import { gql } from "graphql-request";
+import { stageGraph } from ".";
 import { createClient } from "./graphql";
 
 const client = createClient('stage_graphql')
@@ -9,6 +10,7 @@ export const stageFragment = gql`
     name
     fileLocation
     description
+    permission
     owner {
       id
       username
@@ -43,25 +45,39 @@ export const assetFragment = gql`
 `
 
 export default {
-  createStage: (variables) => client.request(gql`
-    mutation CreateStage($name: String, $description: String, $ownerId: String, $fileLocation: String) {
-      createStage(input: {name: $name, description: $description, ownerId: $ownerId, fileLocation: $fileLocation}) {
-        stage {
-          id
-          name
+  createStage: async (variables) => {
+    let result = await client.request(gql`
+      mutation CreateStage($name: String, $fileLocation: String) {
+        createStage(input: {name: $name, fileLocation: $fileLocation}) {
+          stage {
+            id
+          }
         }
       }
+    `, variables);
+    if (result) {
+      variables.id = result.createStage.stage.id
+      result = await stageGraph.updateStage(variables)
+      return result.updateStage.stage
     }
-  `, variables),
+  },
   updateStage: (variables) => client.request(gql`
-    mutation UpdateStage($id: ID!, $name: String, $description: String, $ownerId: String, $fileLocation: String, $status: String) {
-      updateStage(input: {id: $id, name: $name, description: $description, ownerId: $ownerId, fileLocation: $fileLocation, status: $status}) {
+    mutation UpdateStage($id: ID!, $name: String, $description: String, $fileLocation: String, $status: String, $playerAccess: String) {
+      updateStage(input: {id: $id, name: $name, description: $description, fileLocation: $fileLocation, status: $status, playerAccess: $playerAccess}) {
         stage {
           ...stageFragment
         }
       }
     }
     ${stageFragment}
+  `, variables),
+  sweepStage: (variables) => client.request(gql`
+    mutation SweepStage($id: ID!) {
+      sweepStage(input: {id: $id}) {
+        success
+        performanceId
+      }
+    }
   `, variables),
   stageList: (variables) => client.request(gql`
     query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
@@ -76,6 +92,44 @@ export default {
     }
     ${stageFragment}
   `, variables),
+  getStage: (id) => client.request(gql`
+    query ListStage($id: ID) {
+      stageList(id: $id) {
+        edges {
+          node {
+            ...stageFragment
+            chats {
+              payload
+              created
+            }
+            performances {
+              id
+              createdOn
+            }
+          }
+        }
+      }
+    }
+    ${stageFragment}
+  `, { id }),
+  loadStage: (fileLocation, performanceId) => client.request(gql`
+    query ListStage($fileLocation: String, $performanceId: Int) {
+      stageList(fileLocation: $fileLocation) {
+        edges {
+          node {
+            ...stageFragment
+            events(performanceId: $performanceId) {
+              id
+              topic
+              payload
+              mqttTimestamp
+            }
+          }
+        }
+      }
+    }
+    ${stageFragment}
+  `, { fileLocation, performanceId }).then(response => response.stageList.edges[0]?.node),
   uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
@@ -87,8 +141,8 @@ export default {
     ${assetFragment}
   `, variables),
   mediaList: (variables) => client.request(gql`
-    query AssetList($id: ID, $nameLike: String, $assetTypeId: ID) {
-      assetList(id: $id, nameLike: $nameLike, assetTypeId: $assetTypeId, sort: ID_DESC) {
+    query AssetList($id: ID, $nameLike: String, $assetType: String) {
+      assetList(id: $id, nameLike: $nameLike, assetType: $assetType, sort: ID_DESC) {
         edges {
           node {
             ...assetFragment
@@ -133,35 +187,35 @@ export default {
   `, { id, config }),
   assignableMedia: () => client.request(gql`
     query AssignableMedia {
-      avatars: assetList(assetTypeId: 2) {
+      avatars: assetList(assetType: "avatar") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      props: assetList(assetTypeId: 3) {
+      props: assetList(assetType: "prop") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      backdrops: assetList(assetTypeId: 4) {
+      backdrops: assetList(assetType: "backdrop") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      audios: assetList(assetTypeId: 5) {
+      audios: assetList(assetType: "audio") {
         edges {
           node {
             ...assetFragment
           }
         }
       }
-      streams: assetList(assetTypeId: 6) {
+      streams: assetList(assetType: "stream") {
         edges {
           node {
             ...assetFragment
