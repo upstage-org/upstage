@@ -14,7 +14,7 @@ Getting Started
 
 You do not need to install anything to create and present live performances on UpStage (unless you wish to set up your own server, in which case, see Installation Manuals). Simply navigate to https://app1.upstage.org.nz/V4.0/ui/ with a standard browser such as Mozilla Firefox or Google Chrome. 
 
-You will arrive at the Foyer, the landing page and public entry point. 
+You will arrive at the Foyer: this is the home page for this UpStage instance. 
  :ref:`login screen<login>`.
 
 - At the top of the page, you will find the :ref:`header <header>`.  
@@ -111,82 +111,96 @@ Stages
 
 Creating a Stage
 -------------------------------------------------------
-Once you have logged in, navigate to the Backstage, located in the upper right, where you can create and manage stages. Go to the Stages menu.
+Once you have logged in, click on "Stages" in the top menu. Here you can create and manage stages. You will see the list of stages, by default displaying your stages. 
 
-Once there, press “New +” to create a stage. In General Information, You must add a name (both the full version and a short version for the URL). Add a description, it will be visible vy the audience during the loading. You can designate specific users ad Audience or Player. You must set the stage to either live, upcoming, or rehearsal. And press the Create Stage button
+Click “New +” to create a stage. You must give the stage a name (both the full version and a short version for the URL). 
+
+You can add a description, which will be visible to the audience while they are loading the stage (NOTE: WILL THIS ALSO SHOW UP ON THE FOYER PAGE WHEN THE STAGE IS LISTED AS PUBLIC?). 
+
+Designate the access that other players have on your stage. By default they are audience, which means they can't operate anything on your stage. You can give them "player access", which means they have access to the on-stage tools and can be part of the performance, or "player and edit access" which means they can also edit the stage - add media and make other changes in the stage management interface. 
+
+Lastly, set the stage to either live, upcoming, or rehearsal. (NOTE: NEED TO ADD HERE WHAT THE DIFFERENT SETTINGS MEAN. sHOULD A NEW STAGE BE REHEARSAL AS DEFAULT?)
+
+Then press the "Create Stage" button.
 
 .. image:: /backstage-stage-creation.png
     :alt: Creating a new stage
 
-Finally, you must set the stage. New options appear on the stage management : Layout, Media, Chat, Records and Scenes.
+You will now be in the stage management interface for your stage. New options appear in the left-hand menu: Layout, Media, Chat, Records and Scenes.
 
 In the Layout section, you can choose the ratio of the stage (4/3, 16/9 or custom ratio).
-In the Media section, the Chat and the Records session, it should be empty on a new stage, but will show the attached media, the history of the chat and the available recording. 
+The other sections will be empty when it is a new stage.
 
 .. _modify-stage:
 
 Modifying a Stage
 -------------------------------------------------------
-One you created a Stage you can modify the General Information, the layout, manage the media, see the history of the chat, manage the Recording. Go in the backstage and in the list of all Stage, click on the manage button.
+One you have created a Stage you can: modify the general information and layout; assign media to the stage; and access and manage chat logs and recordings. You can access the stage management interface by finding your stage in the Stages list and clicking on the manage stage icon.
 
-In General Information, you can change the Stage name and url, the description, the Audience and player access and the status of the stage.
-In Layout you can change the ratio of the stage.
-In Media you can select new media or remove somes. 
-In chat you can read the historical.
-Records and Scenes section are coming.
+The left-hand menu of the stage management interface has links to:
+
+General Information: change the stage name and url, the description, player access and the status of the stage.
+Layout: change the ratio of the stage.
+Media: assign or remove media. 
+Chat: access the chat text from previous sessions on the stage.
+Records and Scenes section are in development.
 
 .. _delete-stage:
 
 Deleting a Stage
 -------------------------------------------------------
-Actually is not possible yet to delete a stage.
+Currently it is not possible yet to delete a stage; this feature is still in development.
 
 .. _duplicate-stage:
 
 Duplicating a Stage
 -------------------------------------------------------
-Duplicating Stage could be useful if you want to make the quite same stage but with minors change. It's faster to beguin with the base than from scrach.
-Go in the backstage and hit the duplicate yellow button to duplicate the choosen stage. Rename it and save the creation.
+Duplicating Stage could be useful if you want to make a similar stage but with minor changes. It's quicker to begin with an existing stage than from scratch.
 
-Then you can manage the minors change needed.
+From the Stages list, find the stage you want to duplicate and click the yellow "duplicate" icon under "Manage Stage". Give the new stage a new name and click "Save Stage".
+
+You can then modify all of the information for the new stage.
 
 .. _find-stage:
 
 Finding a Stage
 -------------------------------------------------------
-In the backstage and STAGES menu, you see the list of your stages. You can use the search form if you remember the name of the stage or search by yourself. 
+Click "Stages" in the top menu, and you will see a list of the stages that you have created. (NOTE: "MY STAGES" SHOULD INCLUDE STAGES THAT YOU HAVE PLAYER ACCESS TO, AS WELL AS THOSE YOU HAVE CREATED)
+
+You can also use the search tool to search for a specific stage by name. 
 
 ..note::
-    click on the green toogle button to see all stages and not only yours
+    click on the green toogle button to see all stages and not only yours. 
 
 
 Media
 *******************************************************
-Media is a digital media file. It can be an image, a sound, a stream, a video. These media will be used to your cyberformance and be manipulated by others player or see by the audience. 
+You can upload digital media including images, audio and video. These media items can then be assigned to your stage and used by you and the other players to create and present your cyberformance.
 
-This media will be manipulated during the Stage as :
-* avatar 
+Media files can be manipulated on the Stage as:
+* avatars
 * props 
-* backdrop 
-* music or sound  
+* backdrops 
+* music or sound effects  
 
-In order to see your media, you must upload it to the server and attach it to your stage. So you can handle them during the live. 
+Media files must be first uploaded to the server and then assigned to your stage. A media file can be assigned to multiple stages. When you remove, or unassign, media from a stage, this does not delete it from the server.
 
-Here is the list of file formats accepted as a media :
-* images : .png, .jpg, .gig, .svg
-* sound : .wav, .mpeg, .mp4, .aac, .aacp, .orgg, .webm, .flac
-* videos : .mp4
+File formats:
+* images: .png, .jpg, .gif, .svg
+* sound: .wav, .mpeg, .mp4, .aac, .aacp, .orgg, .webm, .flac
+* video: .mp4
+(NOTE: WHAT ABOUT .m4a?)
 
 ..note::
-    Our server is limited in 10mb per media. An admin can increase this limitation at 300Mb
+    There is a file size limit of 1MB per media item, apart from video which can be up to 300MB. An admin can override this limit.
 
-It is strongly recommended to optimize the size of the media files in order to facilitate their handling as much as possible during the Stage and the loading of the Stage to each of the spectators. 
+This limit is to encourage you to optimise your file sizes as much as possible, in order to minimise stage loading time and optimise performance on the live stage.  
 
 .. _create-media:
 
 Creating Media
 -------------------------------------------------------
-To upload new media for use in your performances, navigate to  Backstage > Media and then click "New +" located in the upper left. You will be prompted to title the new media, define the type, and upload the desired file. Press save. You should now see it listed. 
+To upload a media file, navigate to  Media (top menu) and and click "New +", located upper left. Give the media item a name, select the type, and upload the file from your computer. Click save. You will see it in the media list. 
 
 .. _attach-media:
 Attach Media 
