@@ -14,7 +14,7 @@ export default {
   components: { LoginForm },
   methods: {
     onLoginSuccess() {
-      this.$router.push({ name: "Backstage" });
+      this.$router.push({ path: "/backstage/stages" });
     },
   },
 };
