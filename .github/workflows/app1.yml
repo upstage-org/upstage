@@ -35,4 +35,5 @@ jobs:
             yarn
             yarn build
             systemctl restart upstage.service
+            systemctl restart event_archive.service
             chown -R upstage:upstage /home/upstage/mobilise
