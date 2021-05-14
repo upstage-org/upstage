@@ -12,13 +12,15 @@ User Manual
 Getting Started
 *******************************************************
 
-For most users, there is no need to install anything (unless you wish to set up your own server, in which case, see Installation Manuals). Simply navigate to https://app1.upstage.org.nz/V4.0/ui/ with a brower like Firefox by Mozilla or Chrome by Google. You will start out in the foyer, the landing page and public entry point.
-When you first navigate into the UpStage platform, you are presented with the :ref:`login screen<login>`.
+You do not need to install anything to create and present live performances on UpStage (unless you wish to set up your own server, in which case, see Installation Manuals). Simply navigate to https://app1.upstage.org.nz/V4.0/ui/ with a standard browser such as Mozilla Firefox or Google Chrome. 
+
+You will arrive at the Foyer, the landing page and public entry point. 
+ :ref:`login screen<login>`.
 
 - At the top of the page, you will find the :ref:`header <header>`.  
 - The :ref:`header <header>` is divided into three distinct sections.
-- The leftmost section of the :ref:`header <header>` contains the UpStage logo.  Clicking this logo will take you to our `website`_.
-- In the center :ref:`header <header>` section you will find links to various sections of the UpStage `website`_ that provide information such as our history and values as well as how to get involved in the project.
+- The leftmost section of the :ref:`header <header>` contains the UpStage logo.  Clicking this logo will take you to the UpStage Project `website`_. 
+- In the center :ref:`header <header>` section you will find links to various sections of the UpStage `website`_ that provide information such as our history and values as well as how to get involved in the project. NOTE: THIS NEEDS TO CHANGE, SEE https://github.com/upstage-org/mobilise/issues/325
 - Finally, the rightmost section of the :ref:`header <header>` provides links to both the :ref:`login <login>` and :ref:`registration <registration>` screens.
 
 Players
@@ -28,30 +30,29 @@ Players
 
 Registration
 -------------------------------------------------------
-The registration screen enables you to register for a user account.  While registration is not necessary to enjoy or participate in a performance as an audience member,
-you will require an account if you wish to participate in a performance as a :ref:`Player <player>`.
+The registration screen enables you to register a user account. You do not need to register to attend a performance as audience, only if you wish to create and participate in performances as a :ref:`Player <player>`.
 
 The *Registration* screen can be accessed via a button located in the rightmost section of the :ref:`header <header>`.
 
 .. image:: /register_box2.png
     :alt: Registration Screen
 
-Registration requires you to provide a username and password that you would like to use.  You are also required to provide your name and email address.
+Enter a username, password, your name and email address.
 
-The username will be share during the Stage.
+Your username will be visible to other players and audience on live Stages.
 
 .. note::
     Your email address is used by administrators to contact you about upcoming changes, scheduled maintenance, etc.  It is also used in the event that you find yourself locked out of your account.
     It is never used for solicitation, nor shared with anyone outside of the administration team.
 
-Read and check the agreement with our Terms of Service. You *must agree* to use our service.
+Read and check the agreement with our Terms of Service. You *must agree* to these terms in order to use our service.
 
 .. _login:
 
 Logging In
 -------------------------------------------------------
-You are not required to log in in order to enjoy an UpStage performance or participate as an audience member. 
-If however, you wish to participate in a performance as a *player* you will need to log in with your registered account (see: `registration`_).
+You are not required to log in in order to participate as an audience member. 
+If however, you wish to participate as a *player* you will need to log in with your registered account (see: `registration`_).
 
 You can log in with your credentials using the log in box which is accessible via the *Login* button in the rightmost section of the :ref:`header <header>`.
 
@@ -59,22 +60,26 @@ You can log in with your credentials using the log in box which is accessible vi
     :alt: Login Screen
 
 
-.. _dashboard:
+.. _backstage: 
 
-The Backstage
+Backstage
 -------------------------------------------------------
-The dashboard represents the backstage of your productions, where you make important decisions and pull all the strings from behind the scenes. Here you can view and manage all your stages, as well as the stages of others. By default, you will only see your own stages listed. To view the stages of others, toggle the green switch at the top left. Each stage listed has its number, name, and owner displayed. To the right of that, you will find a “detail” button, the “manage” button and the “enter”.
+Backstage is where all the preparation for your cyberformance happens. Here you can create, view and manage your stages and media, and manage your profile. If you have admin permissions you can also manage others' profiles, stages and media. 
+
+Stages
+-------------------------------------------------------
+By default, you will see only the stages you have created. To view the stages of others, toggle the green switch at the top left. The stage list displays the number, name, and owner of each stage, followed by the access that you have to each stage. To the right of that, you will find the buttons “detail”, “manage” and “enter”.
 
 **Detail**
-The detail button displays more information about the stage when clicked, such as the assigned “players” and media files in a pop-up menu. This menu also contains options to manage, duplicate, and delete the stage at the bottom.
+The detail button displays more information about the stage when clicked, such as the assigned players and media files in a pop-up menu. This menu also contains options to manage, duplicate, and delete the stage at the bottom.
 
-If you press the “manage button”, you will redirect to the same stage management page as when you created the stage. 
+If you press the “manage" button, you will come to the stage management page. 
 
 **Manage**
-When you click the “manage” button, you will redirect to the stage management page.
+When you click the “manage” button, you will come to the stage management page.
 
 **Enter**
-When you click the “enter” button, you will redirect to the stage live.
+When you click the “enter” button, you will enter the stage live.
 
 .. image:: /backstage-list.png
     :alt: Basckstage
@@ -83,8 +88,8 @@ When you click the “enter” button, you will redirect to the stage live.
 
 Your Profile
 -------------------------------------------------------
-You want update the information you entered when registering for UpStage, such as changing your email address or changing the password. Go to the Profile page. You see the name, username, mail and password you entered. 
-To modify any information present in this form, write directly then click on update information.
+To update the information you entered when registering for UpStage, such as changing your email address or changing your password, go to the Profile page. You will see the name, username, mail and password you entered. 
+To modify any information, write directly in the fields then click "update information".
 
 .. image:: /change-profile02.png
     :alt: Your profile
@@ -93,8 +98,8 @@ To modify any information present in this form, write directly then click on upd
 
 Changing Your Password
 -------------------------------------------------------
-You want change the password you entered when registering for UpStage. Go to the Profile page. You see the name, username, mail and password you entered. 
-To change the password, go to Change Password section and write the old and the new twice. Confirm in click on Change Password button.
+To change your password, go to the Profile page. In the left-hand menu, click "Change password".
+You will need to enter your old password, and the new password twice. Click the "Change Password" button below the form to confirm.
 
 .. image:: /change-profile02.png
     :alt: Your profile
