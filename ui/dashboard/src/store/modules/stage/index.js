@@ -71,6 +71,9 @@ export default {
         }
     },
     getters: {
+        ready(state) {
+            return state.model && !state.preloading;
+        },
         url(state) {
             return state.model ? state.model.fileLocation : 'demo';
         },

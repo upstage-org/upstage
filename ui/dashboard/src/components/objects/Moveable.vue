@@ -173,12 +173,7 @@ export default {
     };
 
     const clickInside = (e) => {
-      const isClickingMarker = e.target.parentElement.classList.contains(
-        "marker"
-      );
-      if (!isClickingMarker) {
-        showControls(true, e);
-      }
+      showControls(true, e);
     };
 
     const clickOutside = (e) => {
