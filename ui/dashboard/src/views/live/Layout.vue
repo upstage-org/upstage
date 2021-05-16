@@ -41,9 +41,7 @@ export default {
   },
   setup: () => {
     const store = useStore();
-    const ready = computed(
-      () => store.state.stage.model && !store.state.stage.preloading
-    );
+    const ready = computed(() => store.getters["stage/ready"]);
 
     const route = useRoute();
     store.dispatch("stage/loadStage", { url: route.params.url }).then(() => {
