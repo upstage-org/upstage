@@ -35,7 +35,7 @@
         </router-link>
         <router-link
           :to="`/backstage/stage-management/${item.id}/`"
-          class="button is-light is-small"
+          class="button is-light is-small is-danger"
           data-tooltip="Delete stage"
           v-if="item.permission === 'owner'"
         >

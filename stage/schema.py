@@ -3,7 +3,7 @@ from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
 import performance_config.models
 from performance_config.models import ParentStage, Performance as PerformanceModel
-from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
+from stage.asset import Asset, AssetType, DeleteMedia, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -293,10 +293,11 @@ class SweepStage(graphene.Mutation):
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
+    sweepStage = SweepStage.Field()
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
-    sweepStage = SweepStage.Field()
     assignMedia = AssignMedia.Field()
+    deleteMedia = DeleteMedia.Field()
 
 
 class Query(graphene.ObjectType):

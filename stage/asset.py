@@ -1,4 +1,7 @@
 import os
+from user.models import ADMIN, SUPER_ADMIN
+from user.user_utils import current_user
+from performance_config.models import ParentStage
 from utils.graphql_utils import CountableConnection
 import uuid
 
@@ -12,6 +15,7 @@ import graphene
 from base64 import b64decode
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
 
 
@@ -52,7 +56,6 @@ class UploadMedia(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, name, base64, media_type, filename):
         current_user_id = get_jwt_identity()
-        absolutePath = os.path.dirname(appdir)
 
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -127,3 +130,42 @@ class UpdateMedia(graphene.Mutation):
             asset = local_db_session.query(AssetModel).filter(
                 AssetModel.id == asset.id).first()
             return UploadMedia(asset=asset)
+
+
+class DeleteMedia(graphene.Mutation):
+    """Mutation to sweep a stage."""
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    class Arguments:
+        id = graphene.ID(
+            required=True, description="Global Id of the asset to be deleted.")
+
+    @jwt_required()
+    def mutate(self, info, id):
+        with ScopedSession() as local_db_session:
+            id = from_global_id(id)[1]
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == id).first()
+            if asset:
+                code, error, user, timezone = current_user()
+                if not user.role in (ADMIN, SUPER_ADMIN):
+                    if not user.id == asset.owner_id:
+                        return DeleteMedia(success=False, message="Only media owner or admin can delete this media!")
+
+                physical_path = os.path.join(
+                    absolutePath, storagePath, asset.file_location)
+                local_db_session.query(ParentStage).filter(
+                    ParentStage.child_asset_id == id).delete(synchronize_session=False)
+                local_db_session.delete(asset)
+                local_db_session.flush()
+                local_db_session.commit()
+            else:
+                return DeleteMedia(success=False, message="Media not found!")
+
+            if os.path.exists(physical_path):
+                os.remove(physical_path)
+            else:
+                return DeleteMedia(success=True, message="File not existed!")
+
+        return DeleteMedia(success=True, message="Media deleted successfully!")
