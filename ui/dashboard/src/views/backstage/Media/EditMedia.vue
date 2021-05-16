@@ -1,9 +1,9 @@
 <template>
   <Modal width="100%">
     <template #trigger>
-      <span class="icon">
-        <i class="fas fa-pen" aria-hidden="true"></i>
-      </span>
+      <a class="button is-light is-small">
+        <i class="fas fa-pen has-text-primary" aria-hidden="true"></i>
+      </a>
     </template>
     <template #header> Edit {{ data.name }} </template>
     <template #content>

@@ -1,8 +1,10 @@
 # -*- coding: iso8859-15 -*-
+from user.user_utils import current_user
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
-from performance_config.models import Performance as PerformanceModel
-from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
+import performance_config.models
+from performance_config.models import ParentStage, Performance as PerformanceModel
+from stage.asset import Asset, AssetType, DeleteMedia, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -14,6 +16,7 @@ from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
 from graphql_relay.node.node import from_global_id
 from sqlalchemy import desc
+from user.models import ADMIN, SUPER_ADMIN
 import graphene
 import sys
 import os
@@ -47,6 +50,13 @@ class Event(SQLAlchemyObjectType):
         model = EventModel
 
 
+class Media(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    type = graphene.String()
+    src = graphene.String()
+
+
 class Performance(SQLAlchemyObjectType):
     class Meta:
         model = PerformanceModel
@@ -61,6 +71,7 @@ class Stage(SQLAlchemyObjectType):
     chats = graphene.List(
         Event, description="All chat sent by players and audiences")
     permission = graphene.String(description="Player access to this stage")
+    media = graphene.List(Media, description="Media assigned to this stage")
 
     class Meta:
         model = StageModel
@@ -104,6 +115,14 @@ class Stage(SQLAlchemyObjectType):
             elif user_id in accesses[1]:
                 return "editor"
         return "audience"
+
+    def resolve_media(self, info):
+        return [{
+            'id': x.child_asset.id,
+            'name': x.child_asset.name,
+            'type': x.child_asset.asset_type.name,
+            'src': x.child_asset.file_location
+        } for x in self.assets.all()]
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -203,6 +222,37 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class AssignMediaInput(graphene.InputObjectType, StageAttribute):
+    id = graphene.ID(required=True, description="Global Id of the stage.")
+    media_ids = graphene.List(graphene.Int, description="Id of assigned media")
+
+
+class AssignMedia(graphene.Mutation):
+    """Mutation to update a stage."""
+    stage = graphene.Field(
+        lambda: Stage, description="Stage with assigned media")
+
+    class Arguments:
+        input = AssignMediaInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = graphql_utils.input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            stage = local_db_session.query(StageModel).filter(
+                StageModel.id == data['id']
+            ).first()
+            stage.assets.delete()
+            for id in data['media_ids']:
+                stage.assets.append(ParentStage(child_asset_id=id))
+
+            local_db_session.commit()
+            stage = DBSession.query(StageModel).filter(
+                StageModel.id == data['id']).first()
+
+            return AssignMedia(stage=stage)
+
+
 class SweepStageInput(graphene.InputObjectType, StageAttribute):
     id = graphene.ID(required=True, description="Global Id of the stage.")
 
@@ -242,12 +292,54 @@ class SweepStage(graphene.Mutation):
             return SweepStage(success=True, performance_id=performance.id)
 
 
+class DeleteStage(graphene.Mutation):
+    """Mutation to sweep a stage."""
+    success = graphene.Boolean()
+
+    class Arguments:
+        id = graphene.ID(
+            required=True, description="Global Id of the stage to be deleted.")
+
+    @jwt_required()
+    def mutate(self, info, id):
+        with ScopedSession() as local_db_session:
+            id = from_global_id(id)[1]
+            stage = local_db_session.query(StageModel).filter(
+                StageModel.id == id).first()
+            if stage:
+                code, error, user, timezone = current_user()
+                if not user.role in (ADMIN, SUPER_ADMIN):
+                    if not user.id == stage.owner_id:
+                        raise Exception(
+                            "Only stage owner or admin can delete this stage!")
+
+                local_db_session.query(ParentStage).filter(
+                    ParentStage.stage_id == id).delete(synchronize_session=False)
+                local_db_session.query(StageAttributeModel).filter(
+                    StageAttributeModel.stage_id == id).delete(synchronize_session=False)
+                for performance in local_db_session.query(PerformanceModel).filter(
+                        PerformanceModel.stage_id == id).all():
+                    local_db_session.query(EventModel).filter(
+                        EventModel.performance_id == performance.id).delete(synchronize_session=False)
+                    local_db_session.delete(performance)
+                local_db_session.delete(stage)
+                local_db_session.flush()
+                local_db_session.commit()
+            else:
+                raise Exception("Stage not found!")
+
+        return DeleteStage(success=True)
+
+
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
+    sweepStage = SweepStage.Field()
+    deleteStage = DeleteStage.Field()
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
-    sweepStage = SweepStage.Field()
+    assignMedia = AssignMedia.Field()
+    deleteMedia = DeleteMedia.Field()
 
 
 class Query(graphene.ObjectType):

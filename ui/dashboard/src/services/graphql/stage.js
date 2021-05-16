@@ -234,4 +234,19 @@ export default {
       }
     }
   `, variables),
+  deleteMedia: (id) => client.request(gql`
+    mutation deleteMedia($id: ID!) {
+      deleteMedia(id: $id) {
+        success
+        message
+      }
+    }
+  `, { id }),
+  deleteStage: (id) => client.request(gql`
+    mutation deleteStage($id: ID!) {
+      deleteStage(id: $id) {
+        success
+      }
+    }
+  `, { id }),
 }

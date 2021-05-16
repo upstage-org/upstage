@@ -11,8 +11,25 @@
         <span v-if="index < item.stages.length - 1">, </span>
       </span>
     </template>
-    <template #edit="{ item }">
-      <EditMedia :media="item" />
+    <template #manage="{ item }">
+      <span style="float: left">
+        <EditMedia :media="item" />
+      </span>
+      <Confirm
+        @confirm="(complete) => deleteMedia(item, complete)"
+        :loading="loading"
+      >
+        Deleting <b>{{ item.name }}</b> will also remove it from storage and any
+        assigned stages, there is no undo!
+        <span class="has-text-danger">
+          Are you sure you want to delete this media?
+        </span>
+        <template #trigger>
+          <a class="button is-light is-small is-danger">
+            <i class="fas fa-trash"></i>
+          </a>
+        </template>
+      </Confirm>
     </template>
   </DataTable>
 </template>
@@ -22,13 +39,18 @@ import { inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
+import Confirm from "@/components/Confirm";
 import EditMedia from "./EditMedia";
 import { displayName } from "@/utils/auth";
+import { useMutation } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
+import { notification } from "@/utils/notification";
 
 export default {
-  components: { Asset, EditMedia, DataTable },
+  components: { Asset, EditMedia, DataTable, Confirm },
   setup: () => {
     const mediaList = inject("mediaList");
+    const refresh = inject("refresh");
 
     const headers = [
       {
@@ -60,12 +82,26 @@ export default {
         key: "createdOn",
       },
       {
-        title: "Edit",
-        slot: "edit",
+        title: "Manage Media",
+        slot: "manage",
       },
     ];
 
-    return { mediaList, absolutePath, headers };
+    const { mutation, loading } = useMutation(stageGraph.deleteMedia);
+    const deleteMedia = async (item, complete) => {
+      const result = await mutation(item.id);
+      if (result.deleteMedia) {
+        const { message, success } = result.deleteMedia;
+        const notify = success ? notification.success : notification.error;
+        notify(message);
+        if (refresh) {
+          refresh();
+        }
+      }
+      complete();
+    };
+
+    return { mediaList, absolutePath, headers, deleteMedia, loading };
   },
 };
 </script>

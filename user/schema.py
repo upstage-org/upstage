@@ -1,5 +1,6 @@
 # -*- coding: iso8859-15 -*-
 from auth.models import UserSession
+import performance_config.models
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
 import sys,os
 import json
