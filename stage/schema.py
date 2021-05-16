@@ -1,7 +1,8 @@
 # -*- coding: iso8859-15 -*-
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
-from performance_config.models import Performance as PerformanceModel
+import performance_config.models
+from performance_config.models import ParentStage, Performance as PerformanceModel
 from stage.asset import Asset, AssetType, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
@@ -47,6 +48,13 @@ class Event(SQLAlchemyObjectType):
         model = EventModel
 
 
+class Media(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    type = graphene.String()
+    src = graphene.String()
+
+
 class Performance(SQLAlchemyObjectType):
     class Meta:
         model = PerformanceModel
@@ -61,6 +69,7 @@ class Stage(SQLAlchemyObjectType):
     chats = graphene.List(
         Event, description="All chat sent by players and audiences")
     permission = graphene.String(description="Player access to this stage")
+    media = graphene.List(Media, description="Media assigned to this stage")
 
     class Meta:
         model = StageModel
@@ -104,6 +113,14 @@ class Stage(SQLAlchemyObjectType):
             elif user_id in accesses[1]:
                 return "editor"
         return "audience"
+
+    def resolve_media(self, info):
+        return [{
+            'id': x.child_asset.id,
+            'name': x.child_asset.name,
+            'type': x.child_asset.asset_type.name,
+            'src': x.child_asset.file_location
+        } for x in self.assets.all()]
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -203,6 +220,37 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class AssignMediaInput(graphene.InputObjectType, StageAttribute):
+    id = graphene.ID(required=True, description="Global Id of the stage.")
+    media_ids = graphene.List(graphene.Int, description="Id of assigned media")
+
+
+class AssignMedia(graphene.Mutation):
+    """Mutation to update a stage."""
+    stage = graphene.Field(
+        lambda: Stage, description="Stage with assigned media")
+
+    class Arguments:
+        input = AssignMediaInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = graphql_utils.input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            stage = local_db_session.query(StageModel).filter(
+                StageModel.id == data['id']
+            ).first()
+            stage.assets.delete()
+            for id in data['media_ids']:
+                stage.assets.append(ParentStage(child_asset_id=id))
+
+            local_db_session.commit()
+            stage = DBSession.query(StageModel).filter(
+                StageModel.id == data['id']).first()
+
+            return AssignMedia(stage=stage)
+
+
 class SweepStageInput(graphene.InputObjectType, StageAttribute):
     id = graphene.ID(required=True, description="Global Id of the stage.")
 
@@ -248,6 +296,7 @@ class Mutation(graphene.ObjectType):
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
     sweepStage = SweepStage.Field()
+    assignMedia = AssignMedia.Field()
 
 
 class Query(graphene.ObjectType):

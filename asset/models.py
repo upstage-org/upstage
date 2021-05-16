@@ -39,6 +39,7 @@ class Asset(Base,db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
     owner = relationship(User, foreign_keys=[owner_id])
+    stages = relationship('ParentStage', lazy='dynamic')
 
 class Stage(Base,db.Model):
     '''
@@ -54,6 +55,7 @@ class Stage(Base,db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     owner = relationship(User, foreign_keys=[owner_id])
     attributes = relationship(lambda: StageAttribute, lazy='dynamic')
+    assets = relationship('ParentStage', lazy='dynamic')
 
 class AssetAttribute(Base,db.Model):
     '''
