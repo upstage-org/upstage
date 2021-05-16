@@ -19,7 +19,7 @@
         @confirm="(complete) => deleteMedia(item, complete)"
         :loading="loading"
       >
-        Delete <b>{{ item.name }}</b> will also remove it from storage and any
+        Deleting <b>{{ item.name }}</b> will also remove it from storage and any
         assigned stages, there is no undo!
         <span class="has-text-danger">
           Are you sure you want to delete this media?
@@ -94,7 +94,9 @@ export default {
         const { message, success } = result.deleteMedia;
         const notify = success ? notification.success : notification.error;
         notify(message);
-        refresh();
+        if (refresh) {
+          refresh();
+        }
       }
       complete();
     };

@@ -242,4 +242,11 @@ export default {
       }
     }
   `, { id }),
+  deleteStage: (id) => client.request(gql`
+    mutation deleteStage($id: ID!) {
+      deleteStage(id: $id) {
+        success
+      }
+    }
+  `, { id }),
 }

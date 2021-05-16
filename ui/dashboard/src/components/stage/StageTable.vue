@@ -33,14 +33,25 @@
         >
           <i class="fa fa-lg fa-clone has-text-warning"></i>
         </router-link>
-        <router-link
-          :to="`/backstage/stage-management/${item.id}/`"
-          class="button is-light is-small is-danger"
-          data-tooltip="Delete stage"
+        <Confirm
           v-if="item.permission === 'owner'"
+          @confirm="(complete) => deleteStage(item, complete)"
+          :loading="loading"
         >
-          <i class="fa fa-lg fa-trash has-text-danger"></i>
-        </router-link>
+          Deleting <b>{{ item.name }}</b> will also remove all records and chat
+          that ever happened on this stage, there is no undo!
+          <span class="has-text-danger">
+            Are you sure you want to delete this stage?
+          </span>
+          <template #trigger>
+            <a
+              class="button is-light is-small is-danger"
+              data-tooltip="Delete stage"
+            >
+              <i class="fa fa-lg fa-trash has-text-danger"></i>
+            </a>
+          </template>
+        </Confirm>
       </template>
       <span v-else data-tooltip="You don't have edit permission on this stage">
         🙅‍♀️🙅‍♂️
@@ -62,13 +73,17 @@
 
 <script>
 import DataTable from "@/components/DataTable/index";
-import Modal from "../Modal";
+import Modal from "@/components/Modal";
+import Confirm from "@/components/Confirm";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
+import { stageGraph } from "@/services/graphql";
+import { useMutation } from "@/services/graphql/composable";
+import { inject } from "@vue/runtime-core";
 
 export default {
-  components: { DataTable, Modal, ActionButtons, Detail },
+  components: { DataTable, Modal, ActionButtons, Detail, Confirm },
   props: { data: Array },
   setup: () => {
     const headers = [
@@ -106,7 +121,17 @@ export default {
       },
     ];
 
-    return { headers };
+    const { save, loading } = useMutation(stageGraph.deleteStage);
+    const refresh = inject("refresh");
+    const deleteStage = async (item, complete) => {
+      await save("Stage deleted successfully!", item.id);
+      complete();
+      if (refresh) {
+        refresh();
+      }
+    };
+
+    return { headers, deleteStage, loading };
   },
 };
 </script>

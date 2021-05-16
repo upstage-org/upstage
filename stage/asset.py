@@ -166,6 +166,6 @@ class DeleteMedia(graphene.Mutation):
             if os.path.exists(physical_path):
                 os.remove(physical_path)
             else:
-                return DeleteMedia(success=True, message="File not existed!")
+                return DeleteMedia(success=True, message="Media deleted successfully but file not existed on storage!")
 
         return DeleteMedia(success=True, message="Media deleted successfully!")
