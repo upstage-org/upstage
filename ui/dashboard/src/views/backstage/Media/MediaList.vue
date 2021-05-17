@@ -13,7 +13,7 @@
     </template>
     <template #manage="{ item }">
       <span style="float: left">
-        <EditMedia :media="item" />
+        <MediaEdit :media="item" />
       </span>
       <Confirm
         @confirm="(complete) => deleteMedia(item, complete)"
@@ -40,14 +40,14 @@ import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
 import Confirm from "@/components/Confirm";
-import EditMedia from "./EditMedia";
+import MediaEdit from "./MediaEdit";
 import { displayName } from "@/utils/auth";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 
 export default {
-  components: { Asset, EditMedia, DataTable, Confirm },
+  components: { Asset, MediaEdit, DataTable, Confirm },
   setup: () => {
     const mediaList = inject("mediaList");
     const refresh = inject("refresh");
