@@ -9,6 +9,30 @@
             <Asset :asset="media" />
           </div>
         </template>
+        <template #stages>
+          <MultiSelectList
+            :loading="loadingAllMedia"
+            :data="stageList"
+            v-model="form.stages"
+            :columnClass="() => 'is-12'"
+          >
+            <template #render="{ item }">
+              <div class="box m-0">
+                <div class="content">
+                  <strong>{{ item.name }}</strong>
+                  <span style="float: right">
+                    Created by
+                    <span class="has-text-primary">
+                      {{ displayName(item.owner) }}
+                    </span>
+                  </span>
+                  <br />
+                  <small>{{ item.description }}</small>
+                </div>
+              </div>
+            </template>
+          </MultiSelectList>
+        </template>
         <template #voice>
           <VoiceParameters v-model="form.voice" />
         </template>
@@ -36,14 +60,14 @@
       </Tabs>
     </div>
   </div>
-  <SaveButton @click="updateMedia" :loading="loading" :disabled="!form.name" />
+  <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
+import { reactive, ref } from "@vue/reactivity";
 import { useMutation, useQuery } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
-import { computed, inject } from "@vue/runtime-core";
+import { computed, inject, watch } from "@vue/runtime-core";
 import { notification } from "@/utils/notification";
 import HorizontalField from "@/components/form/HorizontalField";
 import Field from "@/components/form/Field";
@@ -54,6 +78,7 @@ import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
+import { displayName } from "@/utils/auth";
 
 export default {
   components: {
@@ -81,19 +106,29 @@ export default {
     }
     const refresh = inject("refresh");
 
-    const { loading, save } = useMutation(stageGraph.updateMedia);
-    const updateMedia = async () => {
-      const { id, name, mediaType, multi, frames, voice } = form;
-      const payload = {
-        id,
-        name,
-        mediaType,
-        description: JSON.stringify({ multi, frames, voice }),
-      };
-      await save(() => {
+    const { mutation: updateMedia } = useMutation(stageGraph.updateMedia);
+    const { mutation: assignStages } = useMutation(stageGraph.assignStages);
+
+    const loading = ref(false);
+    const save = async () => {
+      try {
+        loading.value = true;
+        const { id, name, mediaType, multi, frames, voice } = form;
+        const stageIds = form.stages.map((s) => s.dbId);
+        const payload = {
+          id,
+          name,
+          mediaType,
+          description: JSON.stringify({ multi, frames, voice }),
+        };
+        await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success("Media updated successfully!");
         refresh();
-      }, payload);
+      } catch (error) {
+        notification.error(error);
+      } finally {
+        loading.value = false;
+      }
     };
 
     const { nodes: allMedia, loading: loadingAllMedia } = useQuery(
@@ -106,7 +141,10 @@ export default {
     });
 
     const tabs = computed(() => {
-      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      const res = [
+        { key: "preview", label: "Preview", icon: "fas fa-image" },
+        { key: "stages", label: "Stage", icon: "fas fa-theater-masks" },
+      ];
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }
@@ -119,15 +157,30 @@ export default {
       }
       return res;
     });
+    const { nodes: stageList } = useQuery(stageGraph.stageList);
+    watch(
+      stageList,
+      (val) => {
+        if (val) {
+          form.stages = form.stages.map((stage) =>
+            val.find((s) => s.dbId === stage.id)
+          );
+          console.log(form.stages);
+        }
+      },
+      { immediate: true }
+    );
 
     return {
       form,
       loading,
-      updateMedia,
+      save,
       allMedia,
       loadingAllMedia,
       availableTypes,
       tabs,
+      stageList,
+      displayName,
     };
   },
 };

@@ -1,17 +1,25 @@
 <template>
+  <img v-if="fallback" src="@/assets/notfound.png" />
   <img
+    v-else
     v-bind="$props"
     :style="{
       'object-fit': fit,
       opacity,
       transform: `rotate(${rotate ?? 0}deg)`,
     }"
+    @error="fallback = true"
   />
 </template>
 
 <script>
+import { ref } from "@vue/reactivity";
 export default {
   props: ["src", "fit", "opacity", "rotate"],
+  setup: () => {
+    const fallback = ref(false);
+    return { fallback };
+  },
 };
 </script>
 

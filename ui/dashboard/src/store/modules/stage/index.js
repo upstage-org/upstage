@@ -121,12 +121,17 @@ export default {
         SET_MODEL(state, model) {
             state.model = model
             if (model) {
-                console.log(model)
-                const media = useAttribute({ value: model }, 'media', true).value;
+                const media = model.media;
                 if (media && media.length) {
                     media.forEach(item => {
+                        if (item.description) {
+                            const meta = JSON.parse(item.description)
+                            delete item.description
+                            Object.assign(item, meta)
+                        }
                         if (item.type === 'stream') {
-                            item.url = absolutePath(item.url);
+                            item.url = absolutePath(item.src);
+                            delete item.src
                         } else {
                             item.src = absolutePath(item.src);
                         }
@@ -137,6 +142,7 @@ export default {
                         if (!state.tools[key]) {
                             state.tools[key] = [];
                         }
+                        console.log(item)
                         state.tools[key].push(item)
                     });
                 } else {

@@ -4,7 +4,7 @@ from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
 import performance_config.models
 from performance_config.models import ParentStage, Performance as PerformanceModel
-from stage.asset import Asset, AssetType, DeleteMedia, UpdateMedia, UploadMedia
+from stage.asset import Asset, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -55,6 +55,7 @@ class Media(graphene.ObjectType):
     name = graphene.String()
     type = graphene.String()
     src = graphene.String()
+    description = graphene.String()
 
 
 class Performance(SQLAlchemyObjectType):
@@ -121,7 +122,8 @@ class Stage(SQLAlchemyObjectType):
             'id': x.child_asset.id,
             'name': x.child_asset.name,
             'type': x.child_asset.asset_type.name,
-            'src': x.child_asset.file_location
+            'src': x.child_asset.file_location,
+            'description': x.child_asset.description
         } for x in self.assets.all()]
 
 
@@ -222,7 +224,7 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
-class AssignMediaInput(graphene.InputObjectType, StageAttribute):
+class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
     media_ids = graphene.List(graphene.Int, description="Id of assigned media")
 
@@ -338,9 +340,9 @@ class Mutation(graphene.ObjectType):
     deleteStage = DeleteStage.Field()
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
-    assignMedia = AssignMedia.Field()
     deleteMedia = DeleteMedia.Field()
-
+    assignMedia = AssignMedia.Field()
+    assignStages = AssignStages.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()

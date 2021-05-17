@@ -21,6 +21,14 @@ export const stageFragment = gql`
       name
       description
     }
+    media {
+      id
+      name
+      type
+      src
+      description
+    }
+    dbId
   }
 `
 
@@ -37,6 +45,10 @@ export const assetFragment = gql`
       id
       username
       displayName
+    }
+    stages {
+      id
+      name
     }
     createdOn
     fileLocation
@@ -165,16 +177,28 @@ export default {
       }
     }
   `, variables),
-  saveStageMedia: (id, media) => client.request(gql`
-    mutation UpdateStage($id: ID!, $media: String) {
-      updateStage(input: {id: $id, media: $media}) {
+  saveStageMedia: (id, mediaIds) => client.request(gql`
+    mutation SaveStageMedia($id: ID!, $mediaIds: [Int]) {
+      assignMedia(input: {id: $id, mediaIds: $mediaIds}) {
         stage {
           ...stageFragment
         }
       }
     }
     ${stageFragment}
-  `, { id, media }),
+  `, { id, mediaIds }),
+  assignStages: (id, stageIds) => client.request(gql`
+    mutation AssignStages($id: ID!, $stageIds: [Int]) {
+      assignStages(input: {id: $id, stageIds: $stageIds}) {
+        asset {
+          stages {
+            id
+            name
+          }
+        }
+      }
+    }
+  `, { id, stageIds }),
   saveStageConfig: (id, config) => client.request(gql`
     mutation UpdateStage($id: ID!, $config: String) {
       updateStage(input: {id: $id, config: $config}) {
