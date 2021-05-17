@@ -72,7 +72,7 @@
 
 <script>
 import MediaList from "./MediaList";
-import MediaUpload from "@/components/MediaUpload";
+import MediaUpload from "./MediaUpload";
 import Skeleton from "@/components/Skeleton";
 import Field from "@/components/form/Field";
 import { computed, provide, reactive } from "@vue/runtime-core";

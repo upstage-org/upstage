@@ -1,7 +1,8 @@
 <template>
-  <div class="file">
-    <label class="file-label">
+  <div style="display: inline-block" class="file">
+    <label class="file-label has-tooltip-right" :data-tooltip="tooltip">
       <input
+        :id="id"
         class="file-input"
         type="file"
         name="resume"
@@ -9,10 +10,12 @@
         @input="handleInputFile"
       />
       <span class="file-cta">
-        <span class="file-icon">
-          <i class="fas fa-upload"></i>
-        </span>
-        <span class="file-label"> Choose a file… </span>
+        <slot>
+          <span class="file-icon">
+            <i class="fas fa-file"></i>
+          </span>
+          <span class="file-label"> Choose a file… </span>
+        </slot>
       </span>
       <div v-if="!valid" class="mt-2 mx-2 has-text-danger">
         <span>Maximum file size: {{ humanFileSize(mediaLimit) }}&nbsp;</span>
@@ -21,12 +24,6 @@
       </div>
     </label>
   </div>
-  <p class="help">
-    Permitted file formats are
-    <span v-if="accept">{{ accept }}</span>
-    <span v-else>all extensions</span>. Maximum file size
-    {{ humanFileSize(mediaLimit) }}.
-  </p>
 
   <template v-if="file">
     <img v-if="isImage" :src="modelValue" alt="Preview" />
@@ -45,18 +42,8 @@ import { useStore } from "vuex";
 export default {
   props: {
     modelValue: String,
-    acceptImage: {
-      type: Boolean,
-      default: true,
-    },
-    acceptAudio: {
-      type: Boolean,
-      default: false,
-    },
-    acceptVideo: {
-      type: Boolean,
-      default: false,
-    },
+    id: String,
+    initialFile: Object,
   },
   emits: ["update:modelValue", "change"],
   setup: (props, { emit }) => {
@@ -69,25 +56,41 @@ export default {
       }
       return limit;
     });
-    const file = ref();
+    const file = ref(props.initialFile);
+
+    const imageExtensions = ".svg,.jpg,.png,.gif";
+    const audioExtensions = ".wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a";
+    const videoExtensions = ".mp4,.webm,.opgg,.3gp,.flv";
     const accept = computed(() => {
       let extensions = [];
-      if (props.acceptImage) {
-        extensions.push(".svg,.jpg,.png,.gif");
-      }
-      if (props.acceptAudio) {
-        extensions.push(".wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a");
-      }
-      if (props.acceptVideo) {
-        extensions.push(".mp4,.webm,.opgg,.3gp,.flv");
-      }
+      extensions.push(imageExtensions);
+      extensions.push(audioExtensions);
+      extensions.push(videoExtensions);
       return extensions.join(",");
     });
+
     const valid = computed(() => {
       if (file.value) {
         return file.value.size <= mediaLimit.value;
       }
       return true;
+    });
+
+    const type = computed(() => {
+      if (file.value) {
+        const parts = file.value.name.split(".");
+        const extension = parts[parts.length - 1];
+        if (imageExtensions.includes(extension)) {
+          return "image";
+        }
+        if (audioExtensions.includes(extension)) {
+          return "audio";
+        }
+        if (videoExtensions.includes(extension)) {
+          return "video";
+        }
+      }
+      return null;
     });
 
     watch(
@@ -110,16 +113,22 @@ export default {
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = () => {
         emit("update:modelValue", reader.result);
+        file.value = e.target.files[0];
+        if (valid.value) {
+          emit("change", file.value, type.value);
+        } else {
+          emit("change", null);
+        }
       };
-      file.value = e.target.files[0];
-      if (valid.value) {
-        emit("change", file.value);
-      } else {
-        emit("change", null);
-      }
     };
 
     const isImage = computed(() => file.value?.type?.startsWith("image"));
+    const tooltip = computed(
+      () =>
+        `Permitted file formats are ${
+          accept.value
+        }. Maximum file size is ${humanFileSize(mediaLimit.value)}`
+    );
 
     return {
       handleInputFile,
@@ -129,6 +138,7 @@ export default {
       humanFileSize,
       accept,
       valid,
+      tooltip,
     };
   },
 };
