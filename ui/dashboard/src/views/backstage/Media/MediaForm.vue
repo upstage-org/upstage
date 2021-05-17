@@ -1,30 +1,39 @@
 <template>
   <div class="columns">
-    <div class="column is-narrow has-text-centered" style="max-width: 20vw">
-      <Asset :asset="media" />
-    </div>
     <div class="column">
       <Field horizontal v-model="form.name" label="Media Name" />
       <MediaType v-model="form.mediaType" />
-      <HorizontalField v-if="multiframable" title="Multiframe">
-        <Switch v-model="form.multi" className="is-rounded is-success" />
-      </HorizontalField>
-      <HorizontalField v-if="multiframable && form.multi">
-        <MultiSelectList
-          :loading="loadingAllMedia"
-          :data="
-            allMedia
-              ?.filter((item) => item.assetType.name !== 'audio')
-              .map((media) => media.fileLocation)
-          "
-          v-model="form.frames"
-          :columnClass="() => 'is-4'"
-        >
-          <template #render="{ item: fileLocation }">
-            <Asset :asset="{ fileLocation }" />
-          </template>
-        </MultiSelectList>
-      </HorizontalField>
+      <Tabs :items="tabs" :centered="true">
+        <template #preview>
+          <div style="text-align: center">
+            <Asset :asset="media" />
+          </div>
+        </template>
+        <template #voice>
+          <VoiceParameters v-model="form.voice" />
+        </template>
+        <template #multiframe>
+          <HorizontalField title="Multiframe">
+            <Switch v-model="form.multi" className="is-rounded is-success" />
+          </HorizontalField>
+          <HorizontalField v-if="form.multi">
+            <MultiSelectList
+              :loading="loadingAllMedia"
+              :data="
+                allMedia
+                  ?.filter((item) => item.assetType.name !== 'audio')
+                  .map((media) => media.fileLocation)
+              "
+              v-model="form.frames"
+              :columnClass="() => 'is-4'"
+            >
+              <template #render="{ item: fileLocation }">
+                <Asset :asset="{ fileLocation }" />
+              </template>
+            </MultiSelectList>
+          </HorizontalField>
+        </template>
+      </Tabs>
     </div>
   </div>
   <SaveButton @click="updateMedia" :loading="loading" :disabled="!form.name" />
@@ -43,6 +52,8 @@ import SaveButton from "@/components/form/SaveButton";
 import Switch from "@/components/form/Switch";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
+import Tabs from "@/components/Tabs";
+import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 
 export default {
   components: {
@@ -53,6 +64,8 @@ export default {
     Switch,
     Asset,
     MultiSelectList,
+    Tabs,
+    VoiceParameters,
   },
   props: {
     media: Object,
@@ -60,26 +73,22 @@ export default {
   setup: (props) => {
     const form = reactive(props.media);
     form.mediaType = form.assetType.name;
+    form.multi = false;
+    form.frames = [];
+    form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
-    } else {
-      form.multi = false;
-      form.frames = [];
     }
     const refresh = inject("refresh");
 
-    const multiframable = computed(
-      () => form.mediaType === "avatar" || form.mediaType === "prop"
-    );
-
     const { loading, save } = useMutation(stageGraph.updateMedia);
     const updateMedia = async () => {
-      const { id, name, mediaType, multi, frames } = form;
+      const { id, name, mediaType, multi, frames, voice } = form;
       const payload = {
         id,
         name,
         mediaType,
-        description: JSON.stringify({ multi, frames }),
+        description: JSON.stringify({ multi, frames, voice }),
       };
       await save(() => {
         notification.success("Media updated successfully!");
@@ -96,14 +105,29 @@ export default {
       if (form.fileType === "video") return ["stream"];
     });
 
+    const tabs = computed(() => {
+      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      if (form.mediaType === "avatar") {
+        res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
+      }
+      if (form.mediaType === "avatar" || form.mediaType === "prop") {
+        res.push({
+          key: "multiframe",
+          label: "Multiframe",
+          icon: "fas fa-clone",
+        });
+      }
+      return res;
+    });
+
     return {
       form,
       loading,
       updateMedia,
       allMedia,
       loadingAllMedia,
-      multiframable,
       availableTypes,
+      tabs,
     };
   },
 };

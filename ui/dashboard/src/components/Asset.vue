@@ -5,15 +5,13 @@
     v-else-if="asset.assetType?.name === 'stream'"
     :src="src"
   ></video>
-  <Image v-else :src="src" />
+  <img v-else :src="src" style="max-width: 100%" />
 </template>
 
 <script>
 import { computed } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
-import Image from "./Image.vue";
 export default {
-  components: { Image },
   props: ["asset"],
   setup: (props) => {
     const src = computed(() => absolutePath(props.asset.fileLocation));
