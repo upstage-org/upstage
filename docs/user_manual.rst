@@ -237,90 +237,111 @@ To delete a media item from the UpStage server, go to the Media list and find th
 
 On-Stage Tools
 *******************************************************
-A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media files will play.
+Once you have created a stage, uploaded media and assigned it to your stage, you will want to start creating your performance. When you are logged in and have player access to a stage (either you created it, or the stage owner gave you access), you will see tools on the live stage that are not visible to the audience. These tools allow you to manipulate the media assigned to the stage, in real time, to present your performance to the audience.
+
+Navigate to the Stages list and find your stage. Click enter at the right-hand end of the information for your stage. The stage will load, and you will see a message asking you to click anywhere to finish the loading and enter the stage. Once in the stage, you will see a chat window on the right, and on the left a tool bar.
+
+The left-hand tool bar gives you access to the following tools: Backdrops, Avatars, Props, Audio, Streams, Draw, Text, Settings and Scenes. Here you will find the media you have assigned to this stage as well as tools for real-time features.
+
+.. _backdrops:
+
+Backdrops
+-------------------------------------------------------
+Backdrops are images that can be displayed behind the rest of the media on the stage, providing a visual background or scenery. The image will fill the background area of the stage. Note that audience members may have different sized browser windows, so they may have space at the sides of the backdrop. You can change the background colour of the stage in the Settings tool, to match it to your backdrops.
+
+Place a Backdrop
+================
+Click on the Backdrop tool in the left-hand toolbar, and an overlay will appear on the top of the Stage. Thumbnails of all the Backdrops assigned to this Stage are displayed. Click on the one you want and it appear on the Stage.
+
+Change or Remove a Backdrop
+=================
+Click on the Backdrop tool, and the overlay appears on the top of the Stage. Click on another Backdrop thumbnail and it will replace the backdrop previously shown. Click on the *Clear button*. The backdrop is removed from the Stage. 
 
 .. _avatars:
 
 Avatars
 -------------------------------------------------------
-Avatar it's like a character. It can be moved, rotated, extend and shrunk. It is possible to make him speak by voice or speech bubbles from the chat. For those manipulation you need to holding it by double cliking on it. Other player can't hold it while it's your turn.  
+An avatar is an image that can appear on the Stage as a character or digital puppet. It can be moved, rotated, scaled in size, and faded in and out. Avatars can speak with a computerised voice and in speech bubbles as well as in the chat window. You can "hold" an avatar by placing it on the stage, or by double-clicking on an avatar already on the stage, that is not held by another player. When you are holding an avatar, only you can operate that avatar.
 
 .. _avatars-selecting:
 
 Place avatar on Stage
 =======================================================
-Select the Avatar tool, it's open an overlay. In this overlay you see several avatar. Drag'n'drop one avatar to the Stage. The avatar appear on the Stage.
+From the left-hand menu, select the Avatar tool, and an overlay will appear at the top of the Stage showing thumbnails of the avatars assigned to this Stage. Drag and drop an avatar to the Stage; it will appear there.
 
-Selecting (Holding)
+Holding an Avatar
 =======================================================
-To select an avatar present on the stage, double click it. When you actively control an avatar, you will see a spinning red pointer above it. The holding avatar is important. You can do a lot of things with it like : make it speak, move it, resize it, bring it to the front or back, rotate it, as well as change its opacity, speed and animation. And of course, you can also delete it from the stage.
+To "hold" an avatar means that you are controlling that avatar, and no other player can operate it unless you release it. If you have placed an avatar on the stage by dragging it from the Avatar tool overlay, you will be holding it by default. To hold an avatar that is already on the stage, double-click on it.
+
+A red "carrot" or pointer above the avatar indicates that you are holding it; a gray "carrot" shows over avatars held by other players. The audience don't see the carrots.
+
+You need to hold an avatar to be able to operate it, including make it speak, move it, resize it, bring it in front of or behind other media on the stage, rotate it, as well as change its opacity, speed and animation. And of course, you can also remove it from the stage. 
+
+When you click on the avatar that you are holding, a frame, icons and a slider appear around the avatar. You can also right-click on the avatar for an additional menu. Read on to discover what these tools allow you to do.
 
 .. _avatars-movement:
 
 Movement
 =======================================================
-You want to place the avatar in another corner of the stage? Just drag'n'drop it to its new location. 
+To move an avatar to another area of the stage, drag and drop it to the new location. 
+
+To adjust the speed at which the avatar moves, right-click on the avatar and select the slider option "Movement". This changes the slider function, and you will see it is now pink. Move the slider handle up to make the avatar move faster, or down to make it move slower.
 
 ..note::
-    The audience see the avatar in his new location. If you want them see the travel, hit the bulb icon to light up. 
+    The audience see the avatar in his new location. If you want them see the travel, hit the bulb icon to light up. (I DON'T QUITE GET THIS: IF I HAVE SET THE MOVEMENT SPEED TO BE SLOW, I DRAG & DROP THEN WATCH THE AVATAR MOVE THERE. IT HAPPENS MORE OR LESS THE SAME WHETHER THE BULB IS WHITE OR GREEN ... )
 
 .. _avatars-scaling:
 
 Resizing
 =======================================================
-When you select an avatar, a green box with with handles around the avatar appears. If you drag'n'drop the handle, this automatically resizes the avatar. Doing this will preserve the original proportions.
+When you click on the avatar you are holding, a green box with with handles appears around the avatar. Drag the handles to resize the avatar; the original proportions will be maintained. Adjust the movement speed of the resizing using the pink slider.
 
 ..note::
-    The audience see the avatar in his new size. If you want them see the change, hit the bulb icon to light up. 
+    The audience see the avatar in his new size. If you want them see the change, hit the bulb icon to light up. (AGAIN - SEEMS TO HAPPEN THE SAME REGARDLESS OF BULB ... )
 
 .. _avatars-rotation:
 
 Rotating
 =======================================================
-When you see the box around the avatar, a vertical handle appear. Drag'n'drop to rotate the avatar.
+Click on the avatar you are holding to see the green frame; at the top is a handle with a small white cirlce. Click and hold on this handle, and drag it to rotate the avatar.
 
 ..note::
     The audience see the avatar in his new size. If you want them see the change, hit the bulb icon to light up. 
 
 Change opacity
 =======================================================
-By default the avatar will appear with full opacity. The green slider at the left side of the avatar allows you to decrease or increase the opacity.
+By default the avatar will appear with full opacity. Click on the avatar you are holding to see the green frame. The green slider on the left allows you to decrease or increase the opacity.
 
 ..note::
     The audience see the avatar in his new opacit. If you want them see the change, hit the bulb icon to light up. 
 
 Bring to front or Send to back
 =======================================================
-If you put other media on the Stage, it could hide your avatar. To put the avatar on top of other media, the *click right* on it display the *context menu* to allow you bring it to front.
-If you want other media be above the avatar you can send to back your avatar in the same way.
+As media is placed on the stage, it will appear in front of other media that is already there (CHECK - IS THAT CORRECT?). To bring your avatar in front of other media, the *right click* on it to display the *context menu* and select "Bring to front". To move your avatar behind another avatar or prop, select "Send to back".
 
-
-Make avatar visual speach
+Avatar speech and voice
 =======================================================
-The holding allows you to make the avatar speak. If you write on the chat, a bubble speech appear above the avatar and the speech voice play.
+When you are holding an avatar, you can make it speak by typing in the chat window input field. The text will appear in the chat window and as a speech bubble above the avatar. If you have given your avatar a voice, the text will also be spoken aloud in a computerised voice.
 
-..note::
-    You can manage the voice setting in the setting tool.
+You can customise your avatar's voice from the Media edit interface (see the Media section), or directly on the stage. On stage, right click on the avatar you are holding and in the context menu select "Voice setting". Here you can adjust the pitch, rate and volume of the voice, as well as its accent and variant. You can test the voice before saving it. 
 
-Change name of avatar on the chat
+Change the avatar name
 =======================================================
-When you use the chat, holding an avatar, the nickname of the avatar appears. To change his nickname, use the *right click* to display the context menu and hit Change your nickname. A new window appear to let you choose the new nickname. Press "Save" to confirm.
+When you are holding an avatar and type text into the chat input field to speak as that avatar, its name will appear in the chat window alongside the text. To change the nickname, *right click* on the avatar and in the context menu select "Change your nickname". A pop-up window appears where you can enter a new name. Press "Save" to confirm.
 
-Run avatar animation
+Multiframe avatar animation
 =======================================================
-If your avatar has several frames, you can cycle through them as an animation. Go to the context menu in *right click*. The frames appears on the bottom of this context menu. Hit "play" button to run the animation. 
+If your avatar has several frames (a multiframe avatar), you can display one frame at a time or cycle through them as an animation. 
 
-Change speedness of the animation
-=======================================================
-*Right click* on the avatar, and choose the slider Frame Animation. The slider on the left ot the avatar is now yellow. This slider control the velocity of the animation.
+Use *right click* to open the context menu. You will see the avatar's frames as small thumbnails at the bottom of the context menu. Click on a frame to display it as the avatar, or hit the "play" button to run the animation. 
 
-Change velocity movement avatar
-=======================================================
-*Right click* on the avatar, and choose the slider Move Speed. The slider on the left of the avatar is now pink. This slider control the velocity of his movement on the Stage.
+You can change the speed of the animation with the slider: in the context menu, select the "Animation" slider option. The slider becomes yellow. Move the handle up to make the frames animate faster, or down to slow the animation down.
 
-Delete
+Remove
 =======================================================
-You can temove the avatar from your stage by *right click* to display the context menu and click on delete button. Alternatively hit the cross button.
+You can remove the avatar you are holding from the stage in three ways: in the right-click context menu, select "Delete"; hit the X button on the right side of the avatar's frame; or hit the delete key on your keyboard.
+
+Note that removing the avatar from the stage does not unassign it from the stage: it is still available in the Avatar toolbar, just not visible on the stage any more. You can place it back on the stage at any time. See the Media management section for information on how to unassign media from a stage, and how to delete media from the server.
 
 .. _audio:
 
@@ -379,20 +400,6 @@ To change the velocity of the movement of the props, *right click* on it and on 
 Delete props for the Stage
 =========================
 To take of the props of your stage, *right click* on it and hit the delete button visible on the context menu or the cross icon. The props now is waiting on the overlay.
-
-.. _backdrops:
-
-Backdrops
--------------------------------------------------------
-Often backdrops are the background image of the stage. If the window is bigger than the stage, then it's a good idea to set the background-color of the window too in the Setting tool and the Backdrop Color option. 
-
-Place a Backdrop
-================
-Click on the Backdrop tool, an overlay appear on the top of the Stage. Select the one you want and it appear on Stage.
-
-Remove a Backdrop
-=================
-Click on the Backdrop tool, an overlay appear on the top of the Stage. Click on *Clear button*. No more Backdrop appear on Stage.
 
 .._stream:
 
