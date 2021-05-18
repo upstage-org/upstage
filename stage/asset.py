@@ -2,7 +2,7 @@ import os
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
 from performance_config.models import ParentStage
-from utils.graphql_utils import CountableConnection
+from utils.graphql_utils import CountableConnection, input_to_dictionary
 import uuid
 
 from sqlalchemy.orm import joinedload
@@ -19,14 +19,25 @@ absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
 
 
+class AssignedStage(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    url = graphene.String()
+
+
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    stages = graphene.List(
+        AssignedStage, description="Stages that this media is assigned to")
 
     class Meta:
         model = AssetModel
         model.db_id = model.id
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
+
+    def resolve_stages(self, info):
+        return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
 
 
 class AssetType(SQLAlchemyObjectType):
@@ -169,3 +180,37 @@ class DeleteMedia(graphene.Mutation):
                 return DeleteMedia(success=True, message="Media deleted successfully but file not existed on storage!")
 
         return DeleteMedia(success=True, message="Media deleted successfully!")
+
+
+class AssignStagesInput(graphene.InputObjectType):
+    id = graphene.ID(required=True, description="Global Id of the media.")
+    stage_ids = graphene.List(
+        graphene.Int, description="Id of stages to be assigned to")
+
+
+class AssignStages(graphene.Mutation):
+    """Mutation to update a stage."""
+    asset = graphene.Field(
+        lambda: Asset, description="Asset with assigned stages")
+
+    class Arguments:
+        input = AssignStagesInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == data['id']
+            ).first()
+            asset.stages.delete()
+            for id in data['stage_ids']:
+                asset.stages.append(ParentStage(stage_id=id))
+
+            local_db_session.flush()
+            local_db_session.commit()
+
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == data['id']).first()
+
+            return AssignStages(asset=asset)

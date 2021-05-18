@@ -79,7 +79,6 @@ import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
 import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
-import { getStageMedia } from "@/utils/stage";
 import Breadcrumb from "@/components/Breadcrumb";
 
 export default {
@@ -118,19 +117,10 @@ export default {
           (media) => media.owner.username === filter.owner.username
         );
       }
-      list.forEach((media) => (media.stages = []));
-      if (stageList.value) {
-        stageList.value.forEach((stage) => {
-          const assignedMedia = getStageMedia(stage);
-          list.forEach((media) => {
-            if (assignedMedia.some((m) => m.src === media.fileLocation)) {
-              media.stages.push(stage);
-            }
-          });
-        });
-      }
       if (filter.stage) {
-        list = list.filter((media) => media.stages.includes(filter.stage));
+        list = list.filter((media) =>
+          media.stages.find((s) => s.id === filter.stage.dbId)
+        );
       }
       return list;
     });
