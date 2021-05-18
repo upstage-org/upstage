@@ -234,15 +234,15 @@ If your avatar has several frames, you can cycle through thses as an animation. 
 
 Change speedness of the animation
 =======================================================
-Right click on the avatar, and choose the slider Frame Animation. The slider on the left ot the avatar is now yellow. This slider control the velocity of the animation.
+Right click on the avatar, and choose the slider Frame Animation. The slider on the left ot the avatar is now yellow. This slider controls the frame rate of the animation.
 
 Change velocity movement avatar
 =======================================================
-Right click on the avatar, and choose the slider Move Speed. The slider on the left of the avatar is now pink. This slider control the velocity of his movement on the Stage.
+Right click on the avatar and choose the slider "Move Speed". The slider on the left of the avatar is now pink. This slider controls thespeed of your avatar's movement.
 
 Delete
 =======================================================
-You can temove the avatar from your stage by right click to display the context menu and click on delete button. Alternatively, select and hot backspace.
+You can remove the avatar from your stage by right-clicking to display the context menu and click on delete button. Alternatively, select the avatar and hit backspace.
 
 .. _audio:
 
@@ -252,7 +252,7 @@ introduce : context use for a player an audio... what consequence for audience
 
 Run an audio
 =============
-Click on the audio tool. The differents audio appear on an overlay. Click on the one you want to run the sound, it's a play button.
+Click on the audio tool. The different audio appears on an overlay. Click on the one you want to run the sound; it's a play button.
 
 Pause an audio
 ==============
@@ -266,35 +266,35 @@ introduction : why artist need prop. Difference between prop and avatar. consequ
 
 Place a prop
 ============
-Click on the Prop tool. An overlay appear on the top of the Stage showing all the props available for the Stage. To place one on the Stage, drag'n'drop from the overlay to the Stage.
+Click on the "Prop" tool. An overlay appears on the top of the Stage showing all the props available for the Stage. To place one on the Stage, drag'n'drop from the overlay to the Stage.
 
 Resize
 ======
-One click on it show a box around it. Drag the white square handle to resize it propally.
+One click on the object will shows a box around it. Drag the white square handle to resize it proportionately.
 
 Bring to front or Send to back
 ===============================
-If you want to change his plan, right click on it to display the context menu and hit bring to front or send to back. Several times if needed.
+If you want to move a prop to the forefront of a scene or push it behind other objects, right-click on it to display the context menu and hit "bring to front" or "send to back" as many times as needed.
 
 Change opacity
 ==============
-One click on it show a box around it and on his left a green slider. Drag the handle of the slider to change his opacity. If the slider is not green, then right click to display the context menu and hit the opacity slider.
+Single-click on the prop to show a box around it, and to the left of that a green slider. Drag the handle of the slider to change the prop's opacity. If the slider is not green, then right-click to display the context menu and hit the opacity slider.
 
 Run animated prop
 =================
-If your prop contains several frames, click right on it and hit the play button.
+If your prop contains several frames, right-click on it and hit the "play" button.
 
-Slow or speed frame animation
+Increase or Decrease Prop Animation Frame Rate
 =============================
-To change the velocity of the frames animation of your prop, right click on it to display the context menu and hit the Frame Animation slider. Now you can directly change the speedness frame with the left slider.
+To change the frame rate of your prop's animation, right-click on it to display the context menu and click the "Frame Animation" slider. Now you can directly change the  frame rate with the left slider.
 
 Make the prop faster or slower
 ==============================
-To change the velocity of the movement of the prop, right click on it and on the context menu hit the Move Speed slider. Then a pink slider appear on the left of the prop to change dynamically his velocity. Cute no ?
+To change the speed at which your prop moves, right-click on it. On the context menu, click the "Move Speed" slider. A pink slider will appear on the left of the prop to change its rate of movement. Cute, no ?
 
 Delete prop for the Stage
 =========================
-To take of the prop of your page, right click on it and hit the delete button visible on the context menu. The prop now is waiting on the overlay.
+To remove a prop from your stage, right-click on it and click the "delete" button visible on the context menu. The prop will be stored on the overlay.
 
 .. _backdrops:
 
