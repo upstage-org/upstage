@@ -185,54 +185,57 @@ Media files can be manipulated on the Stage as:
 
 Media files must be first uploaded to the server and then assigned to your stage. A media file can be assigned to multiple stages. When you remove, or unassign, media from a stage, this does not delete it from the server.
 
-File formats:
+Allowed file formats:
 * images: .png, .jpg, .gif, .svg
 * sound: .wav, .mpeg, .mp4, .aac, .aacp, .orgg, .webm, .flac
 * video: .mp4
 (NOTE: WHAT ABOUT .m4a?)
 
-..note::
-    There is a file size limit of 1MB per media item, apart from video which can be up to 300MB. An admin can override this limit.
-
-This limit is to encourage you to optimise your file sizes as much as possible, in order to minimise stage loading time and optimise performance on the live stage.  
+Note: there is a limit of 1MB per media item, apart from video which can be up to 300MB. An admin can override this limit. This limit is to encourage you to optimise your file sizes as much as possible, in order to minimise stage loading time and optimise performance on the live stage.  
 
 .. _create-media:
 
 Creating Media
 -------------------------------------------------------
-To upload a media file, navigate to  Media (top menu) and and click "New +", located upper left. Give the media item a name, select the type, and upload the file from your computer. Click save. You will see it in the media list. 
+To upload a media file, navigate to  Media (top menu) and and click "New +", located upper left. Give the media item a meaningful name, select the type (Avatar, Backdrop, Prop, Audio or Stream) and upload the file from your computer. Click save. You will see it in the media list. 
 
-.. _attach-media:
-Attach Media 
+.. _assign-media:
+Assign Media 
 ---------------------------------------------------------
-Usually Stage need lot of type of media. After the creation of a stage, there is no media. You need attach media to the Stage.
+When you create a new Stage, it has no media on it; you need assign media to a Stage, then it will appear in the on-stage tools and you can manipulate it in a performance. 
 
-Go to the Stage managment of your Stage on the Media subsection. In this page, you see 2 columns, the left show all the media available on the server. On the right the media attached to your stage.
+There are two ways to assign media to a Stage: during upload, or from the Stage management interface.
 
-Click on the media you want in the left column to automatically put them in the right column. A green overlay with a check icon cover it.
+During the media upload process, you can (NEED TO SEE NEW INTERFACE TO COMPLETE THIS)
 
-Hit the save button to confirm.
+To assign media that has already been uploaded, first go to the Stages list and find the stage you want to assign media to, then click on the Stage management icon. In the left-hand menu, select "Media" and then below it the type of media that you want to assign to the stage. From the "Available Media" list, click on each of the media items that you want to assign to the stage. You will see them appear in the "Selected Media" list. Hit "Save" to save the changes. You can then enter the stage using the "Enter" button at top left to see your media items on the stage.
 
-..note::
-    to detached a media, just click on the media on the right column.
+To unassign media, so that it no longer appears on this stage, just click on the media icon in the "Selected Media" column and it will move back to the "Available Media" column. Again, remember to save. Unassigning media from a stage does not delete it from the server, only from that stage.
 
 .. _modify-media:
 
 Modifying Media
 -------------------------------------------------------
-You can change a media file's type by finding it under the "media" listing and clicking the pencil icon to the left of it under the "edit" column.
+To modify a media item that has been uploaded to UpStage, first go to the Media list and find the item you want to modify. Then at the far right under the column "Manage Media", click on the pencil icon. This brings you to the Media management interface. Here you can do the following:
+
+* change the name of the media item by typing a new name in the name field
+* change the file type by selecting a new one
+* for avatars, select and adjust the voice
+* create a multiframe avatar or prop
+
+Rember to hit Save otherwise your changes will not take effect.
+
+Multiframe avatars and props are a series of images contained in one media item. This allows simple frame animation on stage. You must first create the frames as upload them as separate media items, then edit one of them to be the multiframe avatar or prop. Go to the "Multiframe" tab and turn on the toggle to see the available frames. In the left-hand column, click on the thumbnail image of each frame that you want, and it will appear in the right-hand column. Click on a frame in the right hand column to remove it. Give the new multiframe avatar a name that you will recognise as being the multiframe one, and click Save. You can still use all of the frames as individual props or avatars as well if you wish.
 
 .. _delete-media:
 
 Deleting Media
 -------------------------------------------------------
-Actually, you can delete a media from a stage but not delete it from the server. It's a security because this media can be use by another artist in another stage.
-To "delete" it from your stage, or to detached go to the Backstage and the stage management of your stage and on the Media subsection :
-You see the list of your media on the right column. Click on it to remove from your Stage. A red overlay appear with a minus icon.
+Deleting a media item removes it completely from the UpStage server. If you just want to remove a media item from a stage that it's assigned to, you can do this from the Stage management interface for that stage.
 
-Hit the save button to confirm.
+To delete a media item from the UpStage server, go to the Media list and find the item you want to delete. At the far right in the "Manage Media" column, click on the red trash icon. You will be prompted to say yes or no to deleteing the item. If you say yes, it will be removed from the server and no longer available on any stages or anywhere in the system. You will need to reupload the file if you have deleted it by mistake. 
 
-Performing (as an artist player)
+On-Stage Tools
 *******************************************************
 A performance involves several types of media uploads: avatars, props, and backgrounds. You chose these when you set the stage, and during a live performance they interact with each other in view of the audience. The players each control an avatar that may interact with other avatars, props, and the audience in front of a background. If the stage's creator chose music or sound effects, those media files will play.
 
