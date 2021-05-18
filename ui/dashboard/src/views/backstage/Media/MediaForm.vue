@@ -143,7 +143,7 @@ export default {
     const tabs = computed(() => {
       const res = [
         { key: "preview", label: "Preview", icon: "fas fa-image" },
-        { key: "stages", label: "Stage", icon: "fas fa-theater-masks" },
+        { key: "stages", label: "Stage", icon: "fas fa-person-booth" },
       ];
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
