@@ -359,69 +359,69 @@ Now when you click on the draw tool you see the available drawing. drag'n'drop o
 
 Resize the drawing
 ===================
-Double click on it to hold it. And drag the white handle around the box to resize your drawing.
+Double-click on the drawing to hold it. Drag the white handle around the box to resize it.
 
 Change opacity of the drawing
 ==============================
-Double click on it to display the green slider on the left. Move the slider to change his opacity. If the slider is not green but yellow or pink, right click to select the good one on the context menu.
+Double-click on the drawing to display the green slider on the left. Move the slider to change its opacity. If the slider is not green but yellow or pink, right-click to select the desired option in the context menu.
 
-Make the drawing speach
+Make Your Drawing Speak
 =======================
-Holding it and write on the chat. Bubbles on top of the drawing appear to show his thinking...
+Hold the drawing and write in the chat. Bubbles on top of the drawing appear to show its thoughts...
 
 Change the nickname of the drawing
 ==================================
-It's fun but the drawing have a nickname on the chat ! You can change it right clicking on it to make the context menu appear and choose the option : change nickname.
+Here's a fun detail: the drawing have a nickname in the chat! You can change it right-clicking the drawing to make the context menu appear. Choose the option : change nickname.
 
 Bring to front or Send to back
 ===============================
-To adjust the level of your drawing secund the other media already Stage, right click on it to display the context menu and choose Bring to front or Send to back. Hit several times if needed.
+To adjust the position of your drawing relative to other stage elements, right click on it to display the context menu and choose Bring to front or Send to back. Hit several times if needed.
 
 Rotate your drawing
 ===================
-Right click on it and in the context menu and choose the good rotation.
+Right click on it and in the context menu and rotate as desired.
 
-Change speedness
+Change speed of drawing
 ================
-Right click on it and in the context menu select the move speed slider to directly drag the value in Stage.
+Right-click on the drawing. In the context menu select the move speed slider to directly alter your drawings speed.
 
 Delete drawing
 ==============
-Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear). Be awar that your drawing still available on the overlay of the draw tool but disappear for ever since your Stage finised.
+Say bye-bye to your beautiful drawing by pressing the delete button on the context menu (right click on the drawing to make it appear). Be aware that your drawing will remain available on the overlay of the draw tool but disappear forever once your performance ends.
 
 Make several drawing
 ====================
-Ugh you really an illustrate artist ! Then after click on the tool, hit the big + button on the overaly. It allow you to draw another drawing. Make it better this time please !
+Ugh, you really an illustration artist! After clicking the drawing tool, hit the big + button on the overalay. This action allows you to draw another drawing. Make it better this time please!
 
 Text
 ------------------------------------------------
-introduction : during the live you can write above the Stage and not in the chat.
-limitation : the text is not resizable after his creation.
+introduction : During a live performanceyou can write above the Stage rather than in the chat.
+limitation : However, keep in mind that this text is not resizable after its creation.
 
-Creat a new text
+Create Text
 ================
-Click on the text tool. A white overlay is covering the Stage yo help you in creating the text. The top overlay allow you to choose the font, the size, the color of the font and the style (bold, italic, uderline). In the place of the default text "Write or paste your text here" write or paste your own text. Save to keep it or cancel if youw ant to remade one.
+Click on the text tool. A white overlay will cover appear on the stage. The top overlay allows you to choose the font, size, color, and the style (bold, italic, uderline) of the text. In the place of the default text "Write or paste your text here" write or paste your own text. Save to keep it, or cancel if you want to try again.
 
 Place the text on the Stage
 ============================
-Autmatically the text is placed on the Stage after save it. It's present too on the top overlay. To place a duplicate text you can drag'n'drop the text to the good place.
+By default, the text is placed on the Stage after saving it. It is also present on the top overlay. To place a duplicate text you can drag'n'drop the text to the desired place.
 
 Change opacity
 ==============
-Click on it to display the green slider who can change his opacity by draggin his handle.
+Click on the text to display the green slider, which you can drag up and down to adjust the opacity.
 
 Bring to front or Send to back
 ==============================
-right click on it to show the context menu. This option are available on it.
+Right-click on the text to show the context menu. Right click on it to display the context menu and choose "Bring to front" or "Send to back". Hit several times if needed.
 
 Rotate your text
 ================
-Are you sure to rotate your text ? It's increase his illisibility ! But ok, right click on it and choose the bad rotation you really want ! And think in the usability of this idea...
+Are you sure you want to rotate your text? Keep in mind that doing so may decrease its readability! Right-click the text and rotate as desire. Then, reconsider the practicality of this idea...
 
-Change the speed
+Change the speed of Text Animation
 ================
-Right click on it to show the context menu and select Move speed to change the left slider. Now the slider allow you to control his velocity.
+Right-click on the text to show the context menu. Select "Move speed". Use the left slider to control its velocity.
 
 Delete text
 ===========
-Text on Stage is not more useful ? Ok right click on it and click on the delete button on the context menu. This take of the text but it still waiting on the overlay. After the stage finished, the text will disappear for ever. At the beguining there is the verb, but at the end there is emptyness.
+Have text on the stage that you no longer need? Right-click on it and click the "delete" button on the context menu. This removes the text, but it will remain availiable on the overlay. After the performance has finished, the text will disappear forever. 
