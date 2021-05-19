@@ -131,6 +131,7 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
+        const stageIds = form.stages.map((s) => s.dbId);
         const { name, base64, mediaType, filename } = form;
         if (!form.id) {
           const response = await uploadMedia({
@@ -139,10 +140,10 @@ export default {
             mediaType,
             filename,
           });
+          delete response.uploadMedia.asset.stages;
           Object.assign(form, response.uploadMedia.asset);
         }
         const { id, multi, frames, voice } = form;
-        const stageIds = form.stages.map((s) => s.dbId);
         const payload = {
           id,
           name,

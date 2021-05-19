@@ -37,6 +37,8 @@ class Asset(SQLAlchemyObjectType):
         connection_class = CountableConnection
 
     def resolve_stages(self, info):
+        if not self.stages:
+            return []
         return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
 
 
