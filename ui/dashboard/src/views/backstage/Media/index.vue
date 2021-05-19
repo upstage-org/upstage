@@ -129,8 +129,9 @@ export default {
       stageGraph.assetTypeList
     );
 
-    const uploadCompleted = (result) => {
-      pushNode(result.uploadMedia.asset, true);
+    const uploadCompleted = (media) => {
+      console.log(media);
+      pushNode(media, true);
     };
 
     provide("mediaList", mediaList);

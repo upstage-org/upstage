@@ -5,7 +5,7 @@
         <i class="fas fa-pen has-text-primary" aria-hidden="true"></i>
       </a>
     </template>
-    <MediaForm :media="media" />
+    <MediaForm :media="media" @complete="refresh()" />
   </Modal>
   <div></div>
 </template>
@@ -22,6 +22,7 @@ export default {
   props: {
     media: Object,
   },
+  inject: ["refresh"],
 };
 </script>
 

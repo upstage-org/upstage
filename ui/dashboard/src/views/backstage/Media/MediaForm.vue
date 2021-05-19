@@ -70,7 +70,7 @@
       </div>
       <div class="column is-narrow">
         <Field horizontal label="Media Type">
-          <MediaType v-model="form.mediaType" />
+          <MediaType v-model="form.mediaType" is-up />
         </Field>
       </div>
       <div class="column is-narrow">
@@ -112,17 +112,20 @@ export default {
   props: {
     media: Object,
   },
-  setup: (props) => {
+  emits: ["complete"],
+  setup: (props, { emit }) => {
     const form = reactive(props.media);
-    form.mediaType = form.assetType.name;
+    if (form.assetType) {
+      form.mediaType = form.assetType.name;
+    }
     form.multi = false;
     form.frames = [];
     form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
     }
-    const refresh = inject("refresh");
 
+    const { mutation: uploadMedia } = useMutation(stageGraph.uploadMedia);
     const { mutation: updateMedia } = useMutation(stageGraph.updateMedia);
     const { mutation: assignStages } = useMutation(stageGraph.assignStages);
 
@@ -130,7 +133,17 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
-        const { id, name, mediaType, multi, frames, voice } = form;
+        const { name, base64, mediaType, filename } = form;
+        if (!form.id) {
+          const response = await uploadMedia({
+            name,
+            base64,
+            mediaType,
+            filename,
+          });
+          Object.assign(form, response.uploadMedia.asset);
+        }
+        const { id, multi, frames, voice } = form;
         const stageIds = form.stages.map((s) => s.dbId);
         const payload = {
           id,
@@ -140,7 +153,8 @@ export default {
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success("Media updated successfully!");
-        refresh();
+        emit("complete", form);
+        closeModal();
       } catch (error) {
         notification.error(error);
       } finally {
