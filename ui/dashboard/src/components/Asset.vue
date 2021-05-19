@@ -10,6 +10,9 @@ import { absolutePath } from "@/utils/common";
 export default {
   props: ["asset"],
   setup: (props) => {
+    if (props.asset.assetType) {
+      Object.assign(props.asset, { mediaType: props.asset.assetType.name });
+    }
     const src = computed(
       () => props.asset.base64 ?? absolutePath(props.asset.fileLocation)
     );

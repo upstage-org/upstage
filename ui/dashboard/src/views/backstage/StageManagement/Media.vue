@@ -88,7 +88,7 @@ export default {
 
     const saveMedia = async () => {
       const ids = selectedMedia.value.map((media) => media.dbId);
-      await save("Media saved successfully!", stage.value.id, ids);
+      await save("Stage updated successfully!", stage.value.id, ids);
     };
 
     const mediaTypes = [

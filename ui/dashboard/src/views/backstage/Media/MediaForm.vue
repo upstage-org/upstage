@@ -131,8 +131,8 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
-        const stageIds = form.stages.map((s) => s.dbId);
         const { name, base64, mediaType, filename } = form;
+        let message = "Media updated successfully!";
         if (!form.id) {
           const response = await uploadMedia({
             name,
@@ -140,9 +140,10 @@ export default {
             mediaType,
             filename,
           });
-          delete response.uploadMedia.asset.stages;
           Object.assign(form, response.uploadMedia.asset);
+          message = "Media created successfully!";
         }
+        const stageIds = form.stages.map((s) => s.dbId);
         const { id, multi, frames, voice } = form;
         const payload = {
           id,
@@ -151,7 +152,7 @@ export default {
           description: JSON.stringify({ multi, frames, voice }),
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
-        notification.success("Media updated successfully!");
+        notification.success(message);
         emit("complete", form);
         closeModal();
       } catch (error) {
