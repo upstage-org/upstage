@@ -1,11 +1,7 @@
 <template>
-  <audio controls v-if="asset.assetType?.name === 'audio'" :src="src"></audio>
-  <video
-    controls
-    v-else-if="asset.assetType?.name === 'stream'"
-    :src="src"
-  ></video>
-  <img v-else :src="src" style="max-width: 100%" />
+  <audio controls v-if="asset.mediaType === 'audio'" :src="src"></audio>
+  <video controls v-else-if="asset.mediaType === 'stream'" :src="src"></video>
+  <img v-else :src="src" style="max-width: 100%; max-height: 100%" />
 </template>
 
 <script>
@@ -14,7 +10,9 @@ import { absolutePath } from "@/utils/common";
 export default {
   props: ["asset"],
   setup: (props) => {
-    const src = computed(() => absolutePath(props.asset.fileLocation));
+    const src = computed(
+      () => props.asset.base64 ?? absolutePath(props.asset.fileLocation)
+    );
     return { src };
   },
 };

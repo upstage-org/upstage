@@ -1,23 +1,26 @@
 <template>
-  <div class="columns">
-    <div class="column">
-      <Field horizontal v-model="form.name" label="Media Name" />
-      <MediaType v-model="form.mediaType" />
-      <Tabs :items="tabs" :centered="true">
+  <section class="modal-card-body p-0">
+    <button
+      class="delete close-modal"
+      aria-label="close"
+      @click="closeModal"
+    ></button>
+    <div class="container-fluid">
+      <Tabs :items="tabs" teleport="#header">
         <template #preview>
-          <div style="text-align: center">
+          <div style="text-align: center; height: calc(100vh - 200px)">
             <Asset :asset="media" />
           </div>
         </template>
         <template #stages>
           <MultiSelectList
             :loading="loadingAllMedia"
-            :data="stageList"
+            :data="availableStages"
             v-model="form.stages"
-            :columnClass="() => 'is-12'"
+            :columnClass="() => 'is-12 p-0'"
           >
             <template #render="{ item }">
-              <div class="box m-0">
+              <div class="box m-0 p-2">
                 <div class="content">
                   <strong>{{ item.name }}</strong>
                   <span style="float: right">
@@ -26,8 +29,6 @@
                       {{ displayName(item.owner) }}
                     </span>
                   </span>
-                  <br />
-                  <small>{{ item.description }}</small>
                 </div>
               </div>
             </template>
@@ -59,8 +60,22 @@
         </template>
       </Tabs>
     </div>
-  </div>
-  <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
+  </section>
+  <footer class="modal-card-foot">
+    <div class="columns is-fullwidth">
+      <div class="column">
+        <Field horizontal v-model="form.name" label="Media Name" />
+      </div>
+      <div class="column is-narrow">
+        <Field horizontal label="Media Type">
+          <MediaType v-model="form.mediaType" is-up />
+        </Field>
+      </div>
+      <div class="column is-narrow">
+        <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -95,17 +110,20 @@ export default {
   props: {
     media: Object,
   },
-  setup: (props) => {
+  emits: ["complete"],
+  setup: (props, { emit }) => {
     const form = reactive(props.media);
-    form.mediaType = form.assetType.name;
+    if (form.assetType) {
+      form.mediaType = form.assetType.name;
+    }
     form.multi = false;
     form.frames = [];
     form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
     }
-    const refresh = inject("refresh");
 
+    const { mutation: uploadMedia } = useMutation(stageGraph.uploadMedia);
     const { mutation: updateMedia } = useMutation(stageGraph.updateMedia);
     const { mutation: assignStages } = useMutation(stageGraph.assignStages);
 
@@ -113,8 +131,19 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
-        const { id, name, mediaType, multi, frames, voice } = form;
         const stageIds = form.stages.map((s) => s.dbId);
+        const { name, base64, mediaType, filename } = form;
+        if (!form.id) {
+          const response = await uploadMedia({
+            name,
+            base64,
+            mediaType,
+            filename,
+          });
+          delete response.uploadMedia.asset.stages;
+          Object.assign(form, response.uploadMedia.asset);
+        }
+        const { id, multi, frames, voice } = form;
         const payload = {
           id,
           name,
@@ -123,7 +152,8 @@ export default {
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success("Media updated successfully!");
-        refresh();
+        emit("complete", form);
+        closeModal();
       } catch (error) {
         notification.error(error);
       } finally {
@@ -158,6 +188,14 @@ export default {
       return res;
     });
     const { nodes: stageList } = useQuery(stageGraph.stageList);
+    const availableStages = computed(() => {
+      if (!stageList.value) return [];
+      const res = stageList.value.filter(
+        (stage) => stage.permission === "owner" || stage.permission === "editor"
+      );
+      res.sort((a, b) => (a.name > b.name ? 1 : -1));
+      return res;
+    });
     watch(
       stageList,
       (val) => {
@@ -165,11 +203,12 @@ export default {
           form.stages = form.stages.map((stage) =>
             val.find((s) => s.dbId === stage.id)
           );
-          console.log(form.stages);
         }
       },
       { immediate: true }
     );
+
+    const closeModal = inject("closeModal");
 
     return {
       form,
@@ -179,12 +218,25 @@ export default {
       loadingAllMedia,
       availableTypes,
       tabs,
-      stageList,
+      availableStages,
       displayName,
+      closeModal,
     };
   },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  z-index: 20;
+}
+
+:deep(.field-label) {
+  white-space: nowrap;
+  margin: auto;
+  margin-right: 10px;
+}
 </style>

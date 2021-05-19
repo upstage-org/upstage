@@ -33,4 +33,10 @@ export default {
 </script>
 
 <style>
+.tabs {
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 10;
+}
 </style>

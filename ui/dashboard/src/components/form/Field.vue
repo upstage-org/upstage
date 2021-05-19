@@ -6,44 +6,46 @@
 
     <div class="field-body">
       <div class="field">
-        <div
-          class="control is-expanded"
-          :class="{
-            'has-icons-left': left,
-            'has-icons-right': right,
-          }"
-        >
-          <input
-            class="input"
-            :class="{ 'is-danger': isTouched && (isRequired || error) }"
-            :type="type"
-            :placeholder="placeholder"
-            :value="modelValue"
-            @input="$emit('update:modelValue', $event.target.value)"
-            @blur="stateTouched = true"
-            v-bind="$attrs"
-          />
-          <slot name="left">
-            <span class="icon is-small is-left" v-if="left">
-              <i :class="left"></i>
-            </span>
-          </slot>
-          <slot name="right">
-            <span class="icon is-small is-right" v-if="right">
-              <i :class="right"></i>
-            </span>
-          </slot>
-        </div>
-        <p class="help is-danger" v-if="isTouched && error">
-          <span>{{ error }}</span>
-        </p>
-        <p class="help is-danger" v-if="isRequired">
-          <span v-if="requiredMessage">{{ requiredMessage }}</span>
-          <span v-else>{{ label }} is required</span>
-        </p>
-        <template v-else>
-          <p class="help" v-if="help">{{ help }}</p>
-        </template>
+        <slot>
+          <div
+            class="control is-expanded"
+            :class="{
+              'has-icons-left': left,
+              'has-icons-right': right,
+            }"
+          >
+            <input
+              class="input"
+              :class="{ 'is-danger': isTouched && (isRequired || error) }"
+              :type="type"
+              :placeholder="placeholder"
+              :value="modelValue"
+              @input="$emit('update:modelValue', $event.target.value)"
+              @blur="stateTouched = true"
+              v-bind="$attrs"
+            />
+            <slot name="left">
+              <span class="icon is-small is-left" v-if="left">
+                <i :class="left"></i>
+              </span>
+            </slot>
+            <slot name="right">
+              <span class="icon is-small is-right" v-if="right">
+                <i :class="right"></i>
+              </span>
+            </slot>
+          </div>
+          <p class="help is-danger" v-if="isTouched && error">
+            <span>{{ error }}</span>
+          </p>
+          <p class="help is-danger" v-if="isRequired">
+            <span v-if="requiredMessage">{{ requiredMessage }}</span>
+            <span v-else>{{ label }} is required</span>
+          </p>
+          <template v-else>
+            <p class="help" v-if="help">{{ help }}</p>
+          </template>
+        </slot>
       </div>
     </div>
   </div>
