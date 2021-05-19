@@ -15,12 +15,12 @@
         <template #stages>
           <MultiSelectList
             :loading="loadingAllMedia"
-            :data="stageList"
+            :data="availableStages"
             v-model="form.stages"
-            :columnClass="() => 'is-12'"
+            :columnClass="() => 'is-12 p-0'"
           >
             <template #render="{ item }">
-              <div class="box m-0">
+              <div class="box m-0 p-2">
                 <div class="content">
                   <strong>{{ item.name }}</strong>
                   <span style="float: right">
@@ -29,8 +29,6 @@
                       {{ displayName(item.owner) }}
                     </span>
                   </span>
-                  <br />
-                  <small>{{ item.description }}</small>
                 </div>
               </div>
             </template>
@@ -189,6 +187,14 @@ export default {
       return res;
     });
     const { nodes: stageList } = useQuery(stageGraph.stageList);
+    const availableStages = computed(() => {
+      if (!stageList.value) return [];
+      const res = stageList.value.filter(
+        (stage) => stage.permission === "owner" || stage.permission === "editor"
+      );
+      res.sort((a, b) => (a.name > b.name ? 1 : -1));
+      return res;
+    });
     watch(
       stageList,
       (val) => {
@@ -196,7 +202,6 @@ export default {
           form.stages = form.stages.map((stage) =>
             val.find((s) => s.dbId === stage.id)
           );
-          console.log(form.stages);
         }
       },
       { immediate: true }
@@ -212,7 +217,7 @@ export default {
       loadingAllMedia,
       availableTypes,
       tabs,
-      stageList,
+      availableStages,
       displayName,
       closeModal,
     };
@@ -228,7 +233,7 @@ export default {
   z-index: 20;
 }
 
-::v-deep .field-label {
+:deep(.field-label) {
   white-space: nowrap;
   margin: auto;
   margin-right: 10px;
