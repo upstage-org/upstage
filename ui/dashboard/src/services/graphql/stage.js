@@ -46,10 +46,6 @@ export const assetFragment = gql`
       username
       displayName
     }
-    stages {
-      id
-      name
-    }
     createdOn
     fileLocation
     dbId
@@ -158,6 +154,10 @@ export default {
         edges {
           node {
             ...assetFragment
+            stages {
+              id
+              name
+            }
           }
         }
       }
@@ -191,10 +191,7 @@ export default {
     mutation AssignStages($id: ID!, $stageIds: [Int]) {
       assignStages(input: {id: $id, stageIds: $stageIds}) {
         asset {
-          stages {
-            id
-            name
-          }
+          id
         }
       }
     }
