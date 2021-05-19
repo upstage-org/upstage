@@ -5,7 +5,7 @@
     v-else-if="asset.assetType?.name === 'stream'"
     :src="src"
   ></video>
-  <img v-else :src="src" style="max-width: 100%" />
+  <img v-else :src="src" style="max-width: 100%; max-height: 100%" />
 </template>
 
 <script>

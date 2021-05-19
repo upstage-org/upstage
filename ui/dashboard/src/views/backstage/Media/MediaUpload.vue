@@ -9,7 +9,7 @@
     </span>
     <span>New</span>
   </Upload>
-  <Modal width="100%" v-model="active">
+  <Modal width="100%" height="100%" v-model="active">
     <template #header>Upload Media</template>
     <template #content>
       <MediaForm v-if="media" :media="media" />

@@ -1,11 +1,14 @@
 <template>
-  <div class="columns">
-    <div class="column">
-      <Field horizontal v-model="form.name" label="Media Name" />
-      <MediaType v-model="form.mediaType" />
-      <Tabs :items="tabs" :centered="true">
+  <section class="modal-card-body p-0">
+    <button
+      class="delete close-modal"
+      aria-label="close"
+      @click="closeModal"
+    ></button>
+    <div class="container-fluid">
+      <Tabs :items="tabs" teleport="#header">
         <template #preview>
-          <div style="text-align: center">
+          <div style="text-align: center; height: calc(100vh - 200px)">
             <Asset :asset="media" />
           </div>
         </template>
@@ -59,8 +62,22 @@
         </template>
       </Tabs>
     </div>
-  </div>
-  <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
+  </section>
+  <footer class="modal-card-foot">
+    <div class="columns is-fullwidth">
+      <div class="column">
+        <Field horizontal v-model="form.name" label="Media Name" />
+      </div>
+      <div class="column is-narrow">
+        <Field horizontal label="Media Type">
+          <MediaType v-model="form.mediaType" />
+        </Field>
+      </div>
+      <div class="column is-narrow">
+        <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
+      </div>
+    </div>
+  </footer>
 </template>
 
 <script>
@@ -171,6 +188,8 @@ export default {
       { immediate: true }
     );
 
+    const closeModal = inject("closeModal");
+
     return {
       form,
       loading,
@@ -181,10 +200,23 @@ export default {
       tabs,
       stageList,
       displayName,
+      closeModal,
     };
   },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.close-modal {
+  position: absolute;
+  right: 20px;
+  top: 10px;
+  z-index: 20;
+}
+
+::v-deep .field-label {
+  white-space: nowrap;
+  margin: auto;
+  margin-right: 10px;
+}
 </style>

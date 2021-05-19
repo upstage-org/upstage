@@ -1,14 +1,11 @@
 <template>
-  <Modal width="100%">
+  <Modal width="100%" height="100%">
     <template #trigger>
       <a class="button is-light is-small">
         <i class="fas fa-pen has-text-primary" aria-hidden="true"></i>
       </a>
     </template>
-    <template #header> Edit {{ media.name }} </template>
-    <template #content>
-      <MediaForm :media="media" />
-    </template>
+    <MediaForm :media="media" />
   </Modal>
   <div></div>
 </template>
@@ -29,8 +26,4 @@ export default {
 </script>
 
 <style>
-.field-label {
-  padding-top: 0 !important;
-  white-space: nowrap;
-}
 </style>
