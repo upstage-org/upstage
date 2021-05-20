@@ -50,7 +50,7 @@ export default {
   components: { Asset, MediaEdit, DataTable, Confirm },
   setup: () => {
     const mediaList = inject("mediaList");
-    const refresh = inject("refresh");
+    const popNode = inject("popNode");
 
     const headers = [
       {
@@ -94,8 +94,8 @@ export default {
         const { message, success } = result.deleteMedia;
         const notify = success ? notification.success : notification.error;
         notify(message);
-        if (refresh) {
-          refresh();
+        if (popNode) {
+          popNode((m) => m.id === item.id);
         }
       }
       complete();

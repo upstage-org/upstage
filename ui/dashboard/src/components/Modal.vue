@@ -51,7 +51,7 @@ export default {
         document.body.style.overflow = "hidden";
       } else {
         document.body.style.height = "unset";
-        document.body.style.overflow = "auto";
+        document.body.style.overflow = "unset";
       }
     });
 

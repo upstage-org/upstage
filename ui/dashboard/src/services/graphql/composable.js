@@ -23,6 +23,15 @@ export const useRequest = (service, ...params) => {
             data.value = { [key]: { edges } }
         }
     };
+    const popNode = (selector) => {
+        if (data.value) {
+            const key = Object.keys(data.value)[0];
+            let edges = data.value[key].edges
+            const position = edges.findIndex(edge => selector(edge.node))
+            edges.splice(position, 1)
+            data.value = { [key]: { edges } }
+        }
+    };
     const totalCount = computed(() => {
         if (!data.value) return 0;
         const key = Object.keys(data.value)[0];
@@ -63,7 +72,7 @@ export const useRequest = (service, ...params) => {
         return fetch(...params);
     }
 
-    return { loading, data, nodes, totalCount, fetch, clearCache, refresh, pushNode }
+    return { loading, data, nodes, totalCount, fetch, clearCache, refresh, pushNode, popNode }
 }
 
 export const useMutation = (...params) => {

@@ -6,11 +6,7 @@
     <span>New</span>
   </Upload>
   <Modal width="100%" height="100%" v-model="active">
-    <MediaForm
-      v-if="media"
-      :media="media"
-      @complete="$emit('complete', $event)"
-    />
+    <MediaForm v-if="media" :media="media" @complete="uploadCompleted" />
   </Modal>
 </template>
 
@@ -19,10 +15,10 @@ import Modal from "@/components/Modal.vue";
 import Upload from "@/components/form/Upload";
 import MediaForm from "./MediaForm";
 import { ref } from "@vue/reactivity";
+import { inject } from "@vue/runtime-core";
 
 export default {
   components: { Modal, MediaForm, Upload },
-  emits: ["complete"],
   setup: () => {
     const base64 = ref();
     const active = ref();
@@ -46,11 +42,18 @@ export default {
       };
     };
 
+    const refresh = inject("refresh");
+    const uploadCompleted = () => {
+      refresh();
+      media.value = null;
+    };
+
     return {
       active,
       base64,
       media,
       handleFileChange,
+      uploadCompleted,
     };
   },
 };
