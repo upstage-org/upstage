@@ -68,7 +68,8 @@ export default {
             timers: [],
             interval: null,
             speed: 32
-        }
+        },
+        backgroundChangedTimestamp: 0
     },
     getters: {
         ready(state) {
@@ -171,8 +172,11 @@ export default {
             state.chat.messages = [];
             state.chat.color = randomColor();
         },
-        SET_BACKGROUND(state, background) {
-            state.background = background
+        SET_BACKGROUND(state, { background, at }) {
+            if (state.backgroundChangedTimestamp < at) {
+                state.background = background
+                state.backgroundChangedTimestamp = at
+            }
         },
         SET_STATUS(state, status) {
             state.status = status
@@ -507,7 +511,7 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background, at: +new Date() })
         },
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
@@ -518,7 +522,7 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
-                    commit('SET_BACKGROUND', message.background);
+                    commit('SET_BACKGROUND', message);
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)

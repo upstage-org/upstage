@@ -6,7 +6,7 @@
       @click="closeModal"
     ></button>
     <div class="container-fluid">
-      <Tabs :items="tabs" teleport="#header">
+      <Tabs :items="tabs">
         <template #preview>
           <div style="text-align: center; height: calc(100vh - 200px)">
             <Asset :asset="media" />
@@ -16,7 +16,7 @@
           <MultiSelectList
             :loading="loadingAllMedia"
             :data="availableStages"
-            v-model="form.stages"
+            v-model="form.assignedStages"
             :columnClass="() => 'is-12 p-0'"
           >
             <template #render="{ item }">
@@ -143,7 +143,7 @@ export default {
           Object.assign(form, response.uploadMedia.asset);
           message = "Media created successfully!";
         }
-        const stageIds = form.stages.map((s) => s.dbId);
+        const stageIds = form.assignedStages.map((s) => s.dbId);
         const { id, multi, frames, voice } = form;
         const payload = {
           id,
@@ -201,9 +201,11 @@ export default {
       stageList,
       (val) => {
         if (val) {
-          form.stages = form.stages.map((stage) =>
+          form.assignedStages = form.stages.map((stage) =>
             val.find((s) => s.dbId === stage.id)
           );
+        } else {
+          form.assignedStages = [];
         }
       },
       { immediate: true }

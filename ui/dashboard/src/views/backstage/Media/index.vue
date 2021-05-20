@@ -4,7 +4,7 @@
       <Breadcrumb description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="uploadCompleted" />
+      <MediaUpload />
     </div>
   </section>
   <div class="columns">
@@ -88,7 +88,7 @@ export default {
       mediaType: null,
       owner: null,
     });
-    const { loading, nodes, fetch, refresh, pushNode } = useQuery(
+    const { loading, nodes, fetch, refresh, popNode } = useQuery(
       stageGraph.mediaList
     );
 
@@ -129,14 +129,10 @@ export default {
       stageGraph.assetTypeList
     );
 
-    const uploadCompleted = (media) => {
-      console.log(media);
-      pushNode(media, true);
-    };
-
     provide("mediaList", mediaList);
     provide("loading", loading);
     provide("refresh", refresh);
+    provide("popNode", popNode);
     provide("types", types);
 
     return {
@@ -149,7 +145,6 @@ export default {
       users,
       displayName,
       stageList,
-      uploadCompleted,
     };
   },
 };
