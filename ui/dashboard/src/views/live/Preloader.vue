@@ -77,7 +77,6 @@ export default {
       }
     };
 
-    setTimeout(stopLoading, 60000);
     const replaying = inject("replaying");
     const ready = computed(() => store.getters["stage/ready"]);
     const clicked = ref(false); // Trick the user to click in order to play meSpeak voice
