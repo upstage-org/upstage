@@ -415,11 +415,11 @@ export default {
         },
         placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
-                id: uuidv4(),
                 w: 100,
                 h: 100,
-                ...data,
                 opacity: 1,
+                ...data,
+                id: uuidv4(),
             }
             const payload = {
                 type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
