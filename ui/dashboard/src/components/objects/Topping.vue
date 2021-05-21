@@ -25,7 +25,7 @@
           tabindex="-1"
           :key="object.speak"
           :style="{
-            width: object.w + 'px',
+            width: max(object.w, 200) + 'px',
             'max-width': 'max-content',
           }"
         >
@@ -92,6 +92,7 @@ export default {
       canPlay,
       openChatBox,
       stageSize,
+      max: Math.max,
     };
   },
 };

@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, watch } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 export default {
@@ -77,7 +77,11 @@ export default {
       }
     };
 
-    setTimeout(stopLoading, 60000);
+    watch(model, (val) => {
+      if (val) {
+        setTimeout(stopLoading, 60000);
+      }
+    });
     const replaying = inject("replaying");
     const ready = computed(() => store.getters["stage/ready"]);
     const clicked = ref(false); // Trick the user to click in order to play meSpeak voice
