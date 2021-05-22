@@ -143,7 +143,6 @@ export default {
                         if (!state.tools[key]) {
                             state.tools[key] = [];
                         }
-                        console.log(item)
                         state.tools[key].push(item)
                     });
                 } else {
@@ -644,9 +643,6 @@ export default {
             const avatarId = rootGetters['user/avatarId'];
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
-            if (!payload.avatarId) {
-                delete payload.avatarId
-            }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
         async leaveStage({ state }) {

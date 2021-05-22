@@ -33,6 +33,8 @@ import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
+import { throttle } from "@/utils/common";
+import { DURATIONS } from "@/utils/constants";
 
 export default {
   props: ["object", "controlable", "active"],
@@ -54,7 +56,7 @@ export default {
         keepRatio: true,
       });
 
-      const sendMovement = (target, { left, top }) => {
+      const sendMovement = throttle((target, { left, top }) => {
         target.style.left = `${props.object.x}px`;
         target.style.top = `${props.object.y}px`;
         store.dispatch("stage/shapeObject", {
@@ -62,7 +64,7 @@ export default {
           x: left,
           y: top,
         });
-      };
+      }, DURATIONS.LIVE_ACTION_THROTTLE);
       moveable
         .on("dragStart", () => {
           isDragging.value = true;
@@ -82,7 +84,7 @@ export default {
           isDragging.value = false;
         });
 
-      const sendResize = (target, { width, height, left, top }) => {
+      const sendResize = throttle((target, { width, height, left, top }) => {
         store.dispatch("stage/shapeObject", {
           ...props.object,
           x: left,
@@ -90,7 +92,7 @@ export default {
           w: width,
           h: height,
         });
-      };
+      }, DURATIONS.LIVE_ACTION_THROTTLE);
       moveable
         .on("resizeStart", () => {
           isDragging.value = true;
@@ -121,16 +123,16 @@ export default {
           }
         );
 
-      const sendRotation = (target, rotate) => {
+      const sendRotation = throttle((target, rotate) => {
         target.style.transform = `rotate(${props.object.rotate}deg)`;
         store.dispatch("stage/shapeObject", {
           ...props.object,
           rotate,
         });
-      };
+      }, DURATIONS.LIVE_ACTION_THROTTLE);
       moveable
         .on("rotateStart", (e) => {
-          e.set(props.object.rotate);
+          e.set(props.object.rotate ?? 0);
           isDragging.value = true;
         })
         .on("rotate", ({ target, rotate }) => {

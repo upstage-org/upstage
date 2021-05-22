@@ -1,9 +1,9 @@
 <template>
   <Upload v-if="!active" v-model="base64" @change="handleFileChange">
+    <span>New</span>
     <span class="icon">
       <i class="fas fa-plus"></i>
     </span>
-    <span>New</span>
   </Upload>
   <Modal width="100%" height="100%" v-model="active">
     <MediaForm v-if="media" :media="media" @complete="uploadCompleted" />
