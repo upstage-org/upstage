@@ -643,9 +643,6 @@ export default {
             const avatarId = rootGetters['user/avatarId'];
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
-            if (!payload.avatarId) {
-                delete payload.avatarId
-            }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
         async leaveStage({ state }) {
