@@ -143,7 +143,6 @@ export default {
                         if (!state.tools[key]) {
                             state.tools[key] = [];
                         }
-                        console.log(item)
                         state.tools[key].push(item)
                     });
                 } else {

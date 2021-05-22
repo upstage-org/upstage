@@ -85,6 +85,19 @@ export function debounce(callback, delay) {
   }
 }
 
+export function throttle(callback, limit) {
+  let wait = false;
+  return function (...args) {
+    if (!wait) {
+      callback.call(this, ...args);
+      wait = true;
+      setTimeout(function () {
+        wait = false;
+      }, limit);
+    }
+  }
+}
+
 export function cloneDeep(object) {
   return JSON.parse(JSON.stringify(object));
 }
