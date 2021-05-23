@@ -7,14 +7,14 @@ import pymongo
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-import config as conf
+from config.settings import MONGO_HOST, MONGO_PORT, SQLALCHEMY_DATABASE_URI
 
 
-def build_mongo_client(host=conf.MONGO_HOST, port=conf.MONGO_PORT):
+def build_mongo_client(host=MONGO_HOST, port=MONGO_PORT):
     return pymongo.MongoClient(host, port)
 
 
-def build_pg_engine(connection_string=conf.PG_CONNECTION_STR):
+def build_pg_engine(connection_string=SQLALCHEMY_DATABASE_URI):
     return create_engine(connection_string)
 
 
