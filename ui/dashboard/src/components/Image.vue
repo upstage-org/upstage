@@ -1,5 +1,5 @@
 <template>
-  <img v-if="fallback" src="@/assets/notfound.png" />
+  <img v-if="fallback" src="@/assets/notfound.svg" />
   <img
     v-else
     v-bind="$props"

@@ -4,6 +4,7 @@ import os
 import re
 import secrets
 import sys
+from time import time
 
 import paho.mqtt.client as paho
 
@@ -25,7 +26,7 @@ def on_message(client, userdata, msg: paho.MQTTMessage):
             db = client[MONGO_DB]
             db[EVENT_COLLECTION].insert_one(
                 {"topic": msg.topic, "payload": msg.payload,
-                    "timestamp": msg.timestamp}
+                    "timestamp": time()}
             )
             client.close()
         except Exception as e:
