@@ -4,8 +4,8 @@ import json
 from multiprocessing import Process, cpu_count
 import os
 
-from db import build_mongo_client
-import config as conf
+from event_archive.db import build_mongo_client
+from config.settings import MONGO_DB, EVENT_COLLECTION
 
 
 _payload_map = {}
@@ -74,8 +74,8 @@ def functions_for(payload):
 def worker():
     logging.info(f"Worker started (PID: {os.getpid()})")
     client = build_mongo_client()
-    db = client[conf.MONGO_DB]
-    queue = db[conf.EVENT_COLLECTION]
+    db = client[MONGO_DB]
+    queue = db[EVENT_COLLECTION]
     while True:
         try:
             event = queue.find_one_and_delete({})
