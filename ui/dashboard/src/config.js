@@ -8,7 +8,7 @@ let configs = {
     ACCESS_TOKEN_KEY: 'access_token',
     MQTT_NAMESPACE: VUE_APP_MQTT_NAMESPACE,
     MQTT_CONNECTION: {
-        url: 'wss://svc.upstage.org.nz:9001/mqtt',
+        url: 'wss://svc1.upstage.org.nz:9002/mqtt',
         username: 'performance',
         password: 'z48FCTsJVEUkYmtUw5S9',
         clean: true, // Reserved session
