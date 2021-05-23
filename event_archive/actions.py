@@ -3,10 +3,9 @@ import json
 import os
 import sys
 
-import config as conf
-from system import reacts_to_payload, reacts_to_anything
-from db import build_pg_session
-from models import Event
+from event_archive.system import reacts_to_payload, reacts_to_anything
+from event_archive.db import build_pg_session
+from event_archive.models import Event
 
 
 @reacts_to_anything
