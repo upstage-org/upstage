@@ -337,11 +337,20 @@ Use *right click* to open the context menu. You will see the avatar's frames as 
 
 You can change the speed of the animation with the slider: in the context menu, select the "Animation" slider option. The slider becomes yellow. Move the handle up to make the frames animate faster, or down to slow the animation down.
 
+Right click on the avatar, and choose the slider Frame Animation. The slider on the left ot the avatar is now yellow. This slider controls the frame rate of the animation.
+
+Change velocity movement avatar
+=======================================================
+Right click on the avatar and choose the slider "Move Speed". The slider on the left of the avatar is now pink. This slider controls thespeed of your avatar's movement.
+
+
 Remove
 =======================================================
 You can remove the avatar you are holding from the stage in three ways: in the right-click context menu, select "Delete"; hit the X button on the right side of the avatar's frame; or hit the delete key on your keyboard.
 
 Note that removing the avatar from the stage does not unassign it from the stage: it is still available in the Avatar toolbar, just not visible on the stage any more. You can place it back on the stage at any time. See the Media management section for information on how to unassign media from a stage, and how to delete media from the server.
+
+You can remove the avatar from your stage by right-clicking to display the context menu and click on delete button. Alternatively, select the avatar and hit backspace.
 
 .. _audio:
 
@@ -351,7 +360,7 @@ For backgroud music or sound, you choose when the sound is running and when it's
 
 Run an audio
 =============
-Click on the audio tool. The differents audio appear on an overlay. Click on the one you want to run the sound, it's a play button.
+Click on the audio tool. The different audio appears on an overlay. Click on the one you want to run the sound; it's a play button.
 
 Pause an audio
 ==============
@@ -367,20 +376,25 @@ Place a prop
 ============
 Click on the Props tool. An overlay appear on the top of the Stage showing all the props available for the Stage. To place one on the Stage, drag'n'drop from the overlay to the Stage.
 
-Resize
-======
-One click on it show a box around it. Drag the handle to resize it propally.
+Click on the "Prop" tool. An overlay appears on the top of the Stage showing all the props available for the Stage. To place one on the Stage, drag'n'drop from the overlay to the Stage.
 
 ..note::
     The audience see the props with his new size. If you want them see the change, hit the bulb icon to light up. 
 
+Resize
+======
+One click on it show a box around it. Drag the handle to resize it propally.
+
+One click on the object will shows a box around it. Drag the white square handle to resize it proportionately.
+
+
 Bring to front or Send to back
 ===============================
-If you want to change his plan, right click on it to display the context menu and hit bring to front or send to back. Several times if needed.
+If you want to move a prop to the forefront of a scene or push it behind other objects, right-click on it to display the context menu and hit "bring to front" or "send to back" as many times as needed.
 
 Change opacity
 ==============
-One click on it show a box around it and on his left a green slider. Drag the handle of the slider to change his opacity. If the slider is not green, then right click to display the context menu and hit the opacity slider.
+Single-click on the prop to show a box around it, and to the left of that a green slider. Drag the handle of the slider to change the prop's opacity. If the slider is not green, then right-click to display the context menu and hit the opacity slider.
 
 ..note::
     The audience see the props in his new opacity. If you want them see the change, hit the bulb icon to light up. 
@@ -389,17 +403,44 @@ Run animated props
 =================
 If your props contains several frames, *click right* on it and hit the play button.
 
-Slow or speed frame animation
+If your prop contains several frames, right-click on it and hit the "play" button.
+
+
+Increase or Decrease Prop Animation Frame Rate
 =============================
 To change the velocity of the frames animation of your props, *right click* on it to display the context menu and hit the Frame Animation slider. Now you can directly change the speedness frame with the left slider.
+
+To change the frame rate of your prop's animation, right-click on it to display the context menu and click the "Frame Animation" slider. Now you can directly change the  frame rate with the left slider.
+
 
 Make the props faster or slower
 ==============================
 To change the velocity of the movement of the props, *right click* on it and on the context menu hit the Move Speed slider. Then a pink slider appear on the left of the props to change dynamically his velocity. Cute no ?
 
+To change the speed at which your prop moves, right-click on it. On the context menu, click the "Move Speed" slider. A pink slider will appear on the left of the prop to change its rate of movement. Cute, no ?
+
+
 Delete props for the Stage
 =========================
 To take of the props of your stage, *right click* on it and hit the delete button visible on the context menu or the cross icon. The props now is waiting on the overlay.
+
+To remove a prop from your stage, right-click on it and click the "delete" button visible on the context menu. The prop will be stored on the overlay.
+
+.. _backdrops:
+
+Backdrops
+-------------------------------------------------------
+introduction : context use for a player, consequence for audience
+
+
+Place a backdrop
+================
+Click on the backdrop tool, an overlay appear on the top of the Stage. Select the one you want and it appear on Stage.
+
+Remove a backdrop
+=================
+Click on the backdrop tool, an overlay appear on the top of the Stage. Click on Clear button. No more backdrop appear on Stage.
+
 
 .._stream:
 
@@ -450,23 +491,31 @@ Now when you click on the draw tool you see the available drawing. drag'n'drop o
 
 Resize the drawing
 ===================
-Double click on it to hold it. And drag the white handle around the box to resize your drawing.
+Double-click on the drawing to hold it. Drag the white handle around the box to resize it.
 
 Change opacity of the drawing
 ==============================
 Double click on it to display the green slider on the left. Move the slider to change his opacity. If the slider is not green but yellow or pink, *right click* to select the good one on the context menu.
 
-Make the drawing speach
+Double-click on the drawing to display the green slider on the left. Move the slider to change its opacity. If the slider is not green but yellow or pink, right-click to select the desired option in the context menu.
+
+
+Make Your Drawing Speak
 =======================
-Holding it and write on the chat. Bubbles on top of the drawing appear to show his thinking...
+Hold the drawing and write in the chat. Bubbles on top of the drawing appear to show its thoughts...
 
 Change the nickname of the drawing
 ==================================
 It's fun but the drawing have your nickname on the chat ! You can change it right clicking on it to make the context menu appear and choose the option : change nickname.
 
+Here's a fun detail: the drawing have a nickname in the chat! You can change it right-clicking the drawing to make the context menu appear. Choose the option : change nickname.
+
 Bring to front or Send to back
 ===============================
 To adjust the level of your drawing secund the other media already Stage, *right click* on it to display the context menu and choose Bring to front or Send to back. Hit several times if needed.
+
+To adjust the position of your drawing relative to other stage elements, right click on it to display the context menu and choose Bring to front or Send to back. Hit several times if needed.
+
 
 Rotate the drawing
 ===================
@@ -475,17 +524,25 @@ Click on it and drag the vertical handle to rotation.
 ..note::
     Hit the bulb icon to light up if you want the audience see the rotation movement. 
 
-Change speedness
+Right click on it and in the context menu and rotate as desired.
+
+
+Change speed of drawing
 ================
 *Right click* on it and in the context menu select the move speed slider to directly drag the value in Stage.
 
+Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear or hit the cross icon). Be awar that your drawing still available on the overlay of the draw tool but disappear for ever since your Stage finised.
+
 Delete drawing
 ==============
-Say bye to your beautiful drawing by the delete button on the context menu (right click on the drawing to make it appear or hit the cross icon). Be awar that your drawing still available on the overlay of the draw tool but disappear for ever since your Stage finised.
+Right-click on the drawing. In the context menu select the move speed slider to directly alter your drawings speed.
+
+Say bye-bye to your beautiful drawing by pressing the delete button on the context menu (right click on the drawing to make it appear). Be aware that your drawing will remain available on the overlay of the draw tool but disappear forever once your performance ends.
+
 
 Make several drawing
 ====================
-Ugh you really an illustrate artist ! Then after click on the tool, hit the big + button on the overaly. It allow you to draw another drawing. Make it better this time please !
+Ugh, you really an illustration artist! After clicking the drawing tool, hit the big + button on the overalay. This action allows you to draw another drawing. Make it better this time please!
 
 .._text:
 
@@ -493,39 +550,37 @@ Text
 ------------------------------------------------
 You want to put words, sentence in Stage. Use the text tool for that purpose. Be aware that the text become image and it no longer editable neither resizable.
 
-Creat a new text
+introduction : During a live performanceyou can write above the Stage rather than in the chat.
+limitation : However, keep in mind that this text is not resizable after its creation.
+
+
+Create Text
 ================
-Click on the text tool. A white overlay is covering the Stage yo help you in creating the text. The top overlay allow you to choose the font, the size, the color of the font and the style (bold, italic, uderline). In the place of the default text "Write or paste your text here" write or paste your own text (yes, really). Save to keep it or cancel if you want to remade one.
+Click on the text tool. A white overlay will cover appear on the stage. The top overlay allows you to choose the font, size, color, and the style (bold, italic, uderline) of the text. In the place of the default text "Write or paste your text here" write or paste your own text. Save to keep it, or cancel if you want to try again.
 
 Place the text on the Stage
 ============================
-Automatically the text is placed on the Stage after save it. It's still avaiable on the top overlay. If you want place a duplicate text you can drag'n'drop the text to the good place.
+By default, the text is placed on the Stage after saving it. It is also present on the top overlay. To place a duplicate text you can drag'n'drop the text to the desired place.
 
 Change opacity
 ==============
-Click on it to display the green slider who can change his opacity by dragging his handle.
-
-..note::
-    Hit the bulb icon to light up if you want the audience see the opacity change.
+Click on the text to display the green slider, which you can drag up and down to adjust the opacity.
 
 Bring to front or Send to back
 ==============================
-*Right click* on it to show the context menu. This option are available on it.
+Right-click on the text to show the context menu. Right click on it to display the context menu and choose "Bring to front" or "Send to back". Hit several times if needed.
 
 Rotate your text
 ================
-Are you sure to rotate your text ? It's increase his illisibility ! But ok, click on it and handle the vertical handle to the bad rotation you really want ! And think in the usability of this idea...
+Are you sure you want to rotate your text? Keep in mind that doing so may decrease its readability! Right-click the text and rotate as desire. Then, reconsider the practicality of this idea...
 
-..note::
-    Hit the bulb icon to light up if you want the audience feel nauseous (yes i do think it's not a good idea neither).
-    
-Change the speed
+Change the speed of Text Animation
 ================
-Right click on it to show the context menu and select Move speed to change the left slider. Now the slider allow you to control his velocity.
+Right-click on the text to show the context menu. Select "Move speed". Use the left slider to control its velocity.
 
 Delete text
 ===========
-Text on Stage is not more useful ? Ok right click on it and click on the delete button on the context menu. This take of the text but it still waiting on the overlay. After the stage finished, the text will disappear for ever. At the beguining there is the verb, but at the end there is emptyness.
+Have text on the stage that you no longer need? Right-click on it and click the "delete" button on the context menu. This removes the text, but it will remain availiable on the overlay. After the performance has finished, the text will disappear forever.
 
 
 .._settings:
