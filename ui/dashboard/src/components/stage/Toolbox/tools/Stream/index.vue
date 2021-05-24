@@ -5,6 +5,9 @@
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
+  <div>
+    <Webcam />
+  </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
       <video :src="stream.url"></video>
@@ -17,9 +20,10 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "@/components/objects/Skeleton";
 import Icon from "@/components/Icon";
+import Webcam from "./Webcam";
 
 export default {
-  components: { Skeleton, Icon },
+  components: { Skeleton, Icon, Webcam },
   setup: () => {
     const store = useStore();
     const newStream = () => {
@@ -29,7 +33,7 @@ export default {
     };
     const streams = computed(() => store.state.stage.tools.streams);
 
-    return { streams, newStream };
+    return { streams, newStream, Webcam };
   },
 };
 </script>
