@@ -5,7 +5,8 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import config from "@/config";
+import { reactive, ref } from "@vue/reactivity";
 import Skeleton from "@/components/objects/Skeleton";
 import { computed } from "@vue/runtime-core";
 import { cropImageFromCanvas } from "@/utils/canvas";
@@ -14,14 +15,25 @@ export default {
   components: { Skeleton },
   setup: () => {
     const video = ref();
+    const rtc = reactive({});
+
+    const pc1 = new RTCPeerConnection(config.RTC.iceConfiguration);
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
         .getUserMedia({ video: true })
         .then(function (stream) {
           video.value.srcObject = stream;
-        })
-        .catch(function (error) {
-          console.log("Something went wrong!", error);
+          stream.getTracks().forEach((track) => {
+            pc1.addTrack(track, stream);
+          });
+          pc1.addEventListener("icecandidate", (e) => {
+            rtc.candidate = e.candidate;
+          });
+          pc1.createOffer(config.RTC.offerOptions).then((desc) => {
+            pc1.setLocalDescription(desc).then(() => {
+              rtc.desc = desc;
+            });
+          });
         });
     }
 
@@ -36,11 +48,10 @@ export default {
       canvas.getContext("2d").drawImage(video.value, 0, 0, width, height);
       image.value = cropImageFromCanvas(canvas).src;
     };
-
     const object = computed(() => ({
       src: image.value,
       type: "stream",
-      isWebcam: true,
+      rtc,
     }));
 
     return { video, object, capture };
