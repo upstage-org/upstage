@@ -18,7 +18,7 @@ import Backdrop from "./tools/Backdrop";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
-import Stream from "./tools/Stream";
+import Stream from "./tools/Stream/index";
 import Text from "./tools/Text";
 import Setting from "./tools/Setting";
 

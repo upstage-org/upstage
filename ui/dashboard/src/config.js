@@ -16,6 +16,22 @@ let configs = {
         reconnectPeriod: 4000, // Reconnection interval
         retain: true,
     },
+    RTC: {
+        iceConfiguration: {
+            iceServers: [
+                { urls: 'stun:192.241.148.233:3478' },
+                {
+                    urls: 'turn:192.241.148.233:3478',
+                    credential: 'upstage',
+                    username: 'upstage'
+                },
+            ]
+        },
+        offerOptions: {
+            offerToReceiveAudio: 1,
+            offerToReceiveVideo: 1
+        }
+    }
 }
 
 export default configs;
