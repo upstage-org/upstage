@@ -31,6 +31,11 @@ let configs = {
             offerToReceiveAudio: 1,
             offerToReceiveVideo: 1
         }
+    },
+    RTMP: {
+        server: "streaming1.upstage.org.nz",
+        publishPort: 1936,
+        subscribePort: 8080
     }
 }
 

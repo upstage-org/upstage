@@ -109,16 +109,18 @@ class UpdateMedia(graphene.Mutation):
         lambda: Asset, description="Media updated by this mutation.")
 
     class Arguments:
-        id = graphene.ID(
-            required=True, description="ID of the media")
         name = graphene.String(
             required=True, description="Name of the media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        file_location = graphene.String(description="File src")
         description = graphene.String(
             description="JSON serialized metadata of the media")
+        id = graphene.ID(description="ID of the media")
 
-    def mutate(self, info, id, name, media_type, description):
+    @jwt_required()
+    def mutate(self, info, name, media_type, file_location=None, description=None, id=None):
+        current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
                 AssetTypeModel.name == media_type).first()
@@ -128,19 +130,26 @@ class UpdateMedia(graphene.Mutation):
                 local_db_session.add(asset_type)
                 local_db_session.flush()
 
-            id = from_global_id(id)[1]
-            asset = local_db_session.query(AssetModel).filter(
-                AssetModel.id == id).first()
+            if id:
+                id = from_global_id(id)[1]
+                asset = local_db_session.query(AssetModel).filter(
+                    AssetModel.id == id).first()
+            elif file_location:
+                asset = AssetModel(owner_id=current_user_id)
+                local_db_session.add(asset)
+
             if asset:
                 asset.name = name
                 asset.asset_type = asset_type
                 asset.description = description
+                if file_location:
+                    asset.file_location = file_location
 
             local_db_session.flush()
             local_db_session.commit()
             asset = local_db_session.query(AssetModel).filter(
                 AssetModel.id == asset.id).first()
-            return UploadMedia(asset=asset)
+            return UpdateMedia(asset=asset)
 
 
 class DeleteMedia(graphene.Mutation):

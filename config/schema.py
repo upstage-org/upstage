@@ -2,7 +2,7 @@
 from os import name
 from config.project_globals import ScopedSession, app
 from flask_graphql import GraphQLView
-from config.settings import VERSION
+from config.settings import HOSTNAME, VERSION
 from graphene import relay
 import graphene
 from config.models import Config as ConfigModel
@@ -14,7 +14,7 @@ class NginxConfig(graphene.ObjectType):
     uploadLimit = graphene.Int()
 
     def resolve_uploadLimit(self, info):
-        nginx_config = 'system/dev/upstage.nginx'
+        nginx_config = 'system/dev/{0}_nginx_upstage.conf'.format(HOSTNAME)
         with open(nginx_config) as file:
             for line in file:
                 line = line.strip().lower()
