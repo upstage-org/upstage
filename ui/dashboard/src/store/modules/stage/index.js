@@ -36,7 +36,7 @@ export default {
             audios: [],
             streams: [],
             config: {
-                animateDuration: 500,
+                animateDuration: 1000,
                 reactionDuration: 5000,
                 ratio: 16 / 9,
             }
@@ -417,6 +417,7 @@ export default {
                 w: 100,
                 h: 100,
                 opacity: 1,
+                moveSpeed: 2000,
                 ...data,
                 id: uuidv4(),
             }
@@ -592,6 +593,12 @@ export default {
                 }
             } else {
                 commit('SET_PRELOADING_STATUS', false);
+            }
+        },
+        async reloadPermission({ state }) {
+            const permission = await stageGraph.loadPermission(state.model.fileLocation)
+            if (permission) {
+                state.model.permission = permission
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {

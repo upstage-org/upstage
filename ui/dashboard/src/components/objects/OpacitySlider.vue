@@ -33,7 +33,7 @@ export default {
   setup: (props, { emit }) => {
     const store = useStore();
     const maxFrameSpeed = 50;
-    const maxMoveSpeed = 500;
+    const maxMoveSpeed = 1000;
     const value = computed(() => {
       switch (props.sliderMode) {
         case "animation":

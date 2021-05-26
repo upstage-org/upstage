@@ -210,7 +210,7 @@ export default {
           width,
           height,
           rotate,
-          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
         });
       },

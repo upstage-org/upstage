@@ -34,6 +34,7 @@
               opacity: object.opacity ?? 1,
               cursor: 'grab',
             }"
+            @dragstart.prevent
           >
             <slot name="render">
               <Image class="the-object" :src="src" />
