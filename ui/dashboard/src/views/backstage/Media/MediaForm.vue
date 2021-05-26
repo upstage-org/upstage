@@ -147,7 +147,7 @@ export default {
     if (form.assetType) {
       form.mediaType = form.assetType.name;
     }
-    if (form.isRTMP) {
+    if (form.isRTMP && !form.src) {
       form.src = form.fileLocation;
     }
 
@@ -181,12 +181,13 @@ export default {
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice, isRTMP } = form;
+        const { id, multi, frames, voice, isRTMP, src } = form;
         const payload = {
           id,
           name,
           mediaType,
           description: JSON.stringify({ multi, frames, voice, isRTMP }),
+          fileLocation: src,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
