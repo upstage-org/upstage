@@ -1,10 +1,28 @@
 <template>
-  <Upload v-if="!active" v-model="base64" @change="handleFileChange">
-    <span>New</span>
-    <span class="icon">
-      <i class="fas fa-plus"></i>
-    </span>
-  </Upload>
+  <div class="dropdown is-hoverable">
+    <div class="dropdown-trigger">
+      <Upload v-if="!active" v-model="base64" @change="handleFileChange">
+        <span>New</span>
+        <span class="icon">
+          <i class="fas fa-plus"></i>
+        </span>
+      </Upload>
+    </div>
+    <div class="dropdown-menu" role="menu">
+      <div class="dropdown-content">
+        <div class="dropdown-item">
+          <p>Special media that does not require upload:</p>
+        </div>
+        <hr class="dropdown-divider" />
+        <a class="dropdown-item" @click="newRTMPStream">
+          <span class="icon">
+            <i class="fas fa-video"></i>
+          </span>
+          <span>RTMP Stream</span>
+        </a>
+      </div>
+    </div>
+  </div>
   <Modal width="100%" height="100%" v-model="active">
     <MediaForm v-if="media" :media="media" @complete="uploadCompleted" />
   </Modal>
@@ -16,6 +34,7 @@ import Upload from "@/components/form/Upload";
 import MediaForm from "./MediaForm";
 import { ref } from "@vue/reactivity";
 import { inject } from "@vue/runtime-core";
+import { getUniqueKey } from "@/utils/rtmp";
 
 export default {
   components: { Modal, MediaForm, Upload },
@@ -48,12 +67,26 @@ export default {
       media.value = null;
     };
 
+    const newRTMPStream = () => {
+      media.value = {
+        name: "",
+        base64: "",
+        filename: "stream.rtmp",
+        mediaType: "stream",
+        stages: [],
+        isRTMP: true,
+        src: getUniqueKey(),
+      };
+      active.value = true;
+    };
+
     return {
       active,
       base64,
       media,
       handleFileChange,
       uploadCompleted,
+      newRTMPStream,
     };
   },
 };

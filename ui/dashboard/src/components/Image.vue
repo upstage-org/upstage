@@ -14,10 +14,15 @@
 
 <script>
 import { ref } from "@vue/reactivity";
+import { watch } from "@vue/runtime-core";
 export default {
   props: ["src", "fit", "opacity", "rotate"],
-  setup: () => {
+  setup: (props) => {
     const fallback = ref(false);
+    watch(
+      () => props.src,
+      () => (fallback.value = false)
+    );
     return { fallback };
   },
 };

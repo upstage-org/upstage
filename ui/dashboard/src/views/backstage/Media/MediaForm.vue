@@ -8,8 +8,24 @@
     <div class="container-fluid">
       <Tabs :items="tabs">
         <template #preview>
-          <div style="text-align: center; height: calc(100vh - 200px)">
-            <Asset :asset="media" />
+          <div class="preview">
+            <Asset v-if="!media.isRTMP" :asset="media" />
+            <template v-else>
+              <RTMPStream controls :src="media.src" />
+              <Field
+                horizontal
+                label="Unique key"
+                v-model="form.src"
+                help="You can change it to anything you like, but remember: it must be unique!"
+              />
+              <p>
+                Use this URL to publish your stream:
+                <a :href="getPublishLink(form.src)">{{
+                  getPublishLink(form.src)
+                }}</a>
+              </p>
+              <OBSInstruction :src="form.src" />
+            </template>
           </div>
         </template>
         <template #stages>
@@ -68,7 +84,8 @@
       </div>
       <div class="column is-narrow">
         <Field horizontal label="Media Type">
-          <MediaType v-model="form.mediaType" is-up />
+          <button v-if="media.isRTMP" class="button" disabled>Stream</button>
+          <MediaType v-else v-model="form.mediaType" is-up />
         </Field>
       </div>
       <div class="column is-narrow">
@@ -92,8 +109,11 @@ import Switch from "@/components/form/Switch";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
+import RTMPStream from "@/components/RTMPStream";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
+import { getPublishLink } from "@/utils/rtmp";
+import OBSInstruction from "./OBSInstruction";
 
 export default {
   components: {
@@ -106,21 +126,29 @@ export default {
     MultiSelectList,
     Tabs,
     VoiceParameters,
+    RTMPStream,
+    OBSInstruction,
   },
   props: {
     media: Object,
   },
+  methods: {
+    getPublishLink,
+  },
   emits: ["complete"],
   setup: (props, { emit }) => {
     const form = reactive(props.media);
-    if (form.assetType) {
-      form.mediaType = form.assetType.name;
-    }
     form.multi = false;
     form.frames = [];
     form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
+    }
+    if (form.assetType) {
+      form.mediaType = form.assetType.name;
+    }
+    if (form.isRTMP && !form.src) {
+      form.src = form.fileLocation;
     }
 
     const { mutation: uploadMedia } = useMutation(stageGraph.uploadMedia);
@@ -134,22 +162,32 @@ export default {
         const { name, base64, mediaType, filename } = form;
         let message = "Media updated successfully!";
         if (!form.id) {
-          const response = await uploadMedia({
-            name,
-            base64,
-            mediaType,
-            filename,
-          });
-          Object.assign(form, response.uploadMedia.asset);
+          if (form.isRTMP) {
+            const response = await updateMedia({
+              name,
+              mediaType,
+              fileLocation: form.src,
+            });
+            Object.assign(form, response.updateMedia.asset);
+          } else {
+            const response = await uploadMedia({
+              name,
+              base64,
+              mediaType,
+              filename,
+            });
+            Object.assign(form, response.uploadMedia.asset);
+          }
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice } = form;
+        const { id, multi, frames, voice, isRTMP, src } = form;
         const payload = {
           id,
           name,
           mediaType,
-          description: JSON.stringify({ multi, frames, voice }),
+          description: JSON.stringify({ multi, frames, voice, isRTMP }),
+          fileLocation: src,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
@@ -230,6 +268,12 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+:deep(.field-label) {
+  white-space: nowrap;
+  margin: auto;
+  margin-right: 10px;
+}
+
 .close-modal {
   position: absolute;
   right: 20px;
@@ -237,9 +281,13 @@ export default {
   z-index: 20;
 }
 
-:deep(.field-label) {
-  white-space: nowrap;
-  margin: auto;
-  margin-right: 10px;
+.preview {
+  text-align: center;
+  height: calc(100vh - 200px);
+  padding: 24px;
+
+  .field {
+    text-align: left;
+  }
 }
 </style>

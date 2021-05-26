@@ -5,12 +5,13 @@
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
-  <div>
+  <div style="float: left">
     <Webcam />
   </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
-      <video :src="stream.url"></video>
+      <RTMPStream v-if="stream.isRTMP" :src="stream.url"></RTMPStream>
+      <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
 </template>
@@ -20,10 +21,11 @@ import { computed } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "@/components/objects/Skeleton";
 import Icon from "@/components/Icon";
+import RTMPStream from "@/components/RTMPStream";
 import Webcam from "./Webcam";
 
 export default {
-  components: { Skeleton, Icon, Webcam },
+  components: { Skeleton, Icon, Webcam, RTMPStream },
   setup: () => {
     const store = useStore();
     const newStream = () => {

@@ -19,9 +19,9 @@ let configs = {
     RTC: {
         iceConfiguration: {
             iceServers: [
-                { urls: 'stun:192.241.148.233:3478' },
+                { urls: 'stun:dev-app1.upstage.org.nz:3478' },
                 {
-                    urls: 'turn:192.241.148.233:3478',
+                    urls: 'turn:dev-app1.upstage.org.nz:3478',
                     credential: 'upstage',
                     username: 'upstage'
                 },
@@ -31,6 +31,11 @@ let configs = {
             offerToReceiveAudio: 1,
             offerToReceiveVideo: 1
         }
+    },
+    RTMP: {
+        server: "streaming1.upstage.org.nz",
+        publishPort: 1936,
+        subscribePort: 8080
     }
 }
 

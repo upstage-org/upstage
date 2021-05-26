@@ -56,7 +56,7 @@
 </template>
 
 <script>
-import { computed, inject, ref, watch } from "vue";
+import { computed, inject, ref, watch, watchEffect } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 export default {
@@ -76,6 +76,11 @@ export default {
         stopLoading();
       }
     };
+    watchEffect(() => {
+      if (preloadableAssets.value.length === 0 && model.value) {
+        stopLoading();
+      }
+    });
 
     watch(model, (val) => {
       if (val) {
