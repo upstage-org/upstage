@@ -138,6 +138,17 @@ export default {
     }
     ${stageFragment}
   `, { fileLocation, performanceId }).then(response => response.stageList.edges[0]?.node),
+  loadPermission: (fileLocation) => client.request(gql`
+    query ListStage($fileLocation: String) {
+      stageList(fileLocation: $fileLocation) {
+        edges {
+          node {
+            permission
+          }
+        }
+      }
+    }
+  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.permission),
   uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
