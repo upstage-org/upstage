@@ -3,7 +3,7 @@
     ref="el"
     :style="{
       position: 'absolute',
-      opacity: isDragging ? 0.5 : 1,
+      opacity: object.opacity * (isDragging ? 0.5 : 1),
     }"
     @mousedown="clickInside"
     v-click-outside="clickOutside"
@@ -19,6 +19,7 @@
       width: object.w + 'px',
       height: object.h + 'px',
       transform: `rotate(${object.rotate}deg)`,
+      opacity: object.opacity,
     }"
   >
     <slot />
@@ -197,6 +198,7 @@ export default {
           moveSpeed,
           type,
           isPlaying,
+          opacity,
         } = props.object;
         if (isDragging.value || (type === "stream" && isPlaying)) {
           return;
@@ -210,6 +212,7 @@ export default {
           width,
           height,
           rotate,
+          opacity,
           ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
         });

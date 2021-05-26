@@ -14,10 +14,14 @@
       :pad-right="250"
     >
       <template #trigger>
-        <Moveable
-          v-model:active="active"
-          :controlable="controlable"
-          :object="object"
+        <div
+          :style="{
+            left: object.x + 'px',
+            top: object.y + 'px',
+            width: object.w + 'px',
+            height: object.h + 'px',
+            position: 'absolute',
+          }"
         >
           <OpacitySlider
             v-model:active="active"
@@ -26,12 +30,17 @@
           />
           <QuickAction :object="object" v-model:active="active" />
           <Topping :object="object" v-model:active="active" />
+        </div>
+        <Moveable
+          v-model:active="active"
+          :controlable="controlable"
+          :object="object"
+        >
           <div
             class="object"
             :style="{
               width: '100%',
               height: '100%',
-              opacity: object.opacity ?? 1,
               cursor: 'grab',
             }"
             @dragstart.prevent
