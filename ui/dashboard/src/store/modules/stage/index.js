@@ -246,20 +246,23 @@ export default {
         SET_SETTING_POPUP(state, setting) {
             state.settingPopup = setting;
         },
-        BRING_TO_FRONT(state, object) {
-            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
-            if (index > -1) {
-                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
-            }
-        },
         SEND_TO_BACK(state, object) {
             const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
                 state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
+            }
+        },
+        BRING_TO_FRONT(state, object) {
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
+            if (index > -1) {
+                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
+            }
+        },
+        BRING_TO_FRONT_OF(state, { front, back }) {
+            const frontIndex = state.board.objects.findIndex(avatar => avatar.id === front);
+            const backIndex = state.board.objects.findIndex(avatar => avatar.id === back);
+            if (frontIndex > -1 && backIndex > -1) {
+                state.board.objects.splice(backIndex, 0, state.board.objects.splice(frontIndex, 1)[0])
             }
         },
         SET_PREFERENCES(state, preferences) {
@@ -484,6 +487,13 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        sendToBack(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SEND_TO_BACK,
+                object: serializeObject(object)
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
@@ -491,10 +501,11 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
-        sendToBack(action, object) {
+        bringToFrontOf(action, { front, back }) {
             const payload = {
-                type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: serializeObject(object)
+                type: BOARD_ACTIONS.BRING_TO_FRONT_OF,
+                front,
+                back
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -522,11 +533,14 @@ export default {
                 case BOARD_ACTIONS.SPEAK:
                     commit('SET_OBJECT_SPEAK', message);
                     break;
+                case BOARD_ACTIONS.SEND_TO_BACK:
+                    commit('SEND_TO_BACK', message.object);
+                    break;
                 case BOARD_ACTIONS.BRING_TO_FRONT:
                     commit('BRING_TO_FRONT', message.object);
                     break;
-                case BOARD_ACTIONS.SEND_TO_BACK:
-                    commit('SEND_TO_BACK', message.object);
+                case BOARD_ACTIONS.BRING_TO_FRONT_OF:
+                    commit('BRING_TO_FRONT_OF', message);
                     break;
                 case BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES:
                     commit('UPDATE_OBJECT', message.object);

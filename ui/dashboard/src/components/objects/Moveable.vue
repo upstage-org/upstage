@@ -181,7 +181,6 @@ export default {
 
     const activeMovable = computed(() => store.state.stage.activeMovable);
     watch(activeMovable, (val) => {
-      console.log(val, props.object.id);
       showControls(val === props.object.id);
     });
 

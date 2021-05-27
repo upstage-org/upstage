@@ -58,7 +58,6 @@ export default {
 
     const drop = (e) => {
       const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
-      console.log(isReal, object);
       if (e.clientX > 0 && e.clientY > 0) {
         store.dispatch(
           isReal ? "stage/shapeObject" : "stage/placeObjectOnStage",
