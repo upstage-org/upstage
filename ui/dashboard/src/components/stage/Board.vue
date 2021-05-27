@@ -29,7 +29,7 @@
       >
         <component
           v-for="object in objects"
-          :key="object"
+          :key="object.id"
           :is="object.type ?? 'avatar'"
           :object="object"
         />
@@ -57,13 +57,17 @@ export default {
     const objects = computed(() => store.getters["stage/objects"]);
 
     const drop = (e) => {
-      const avatar = JSON.parse(e.dataTransfer.getData("object"));
+      const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
+      console.log(isReal, object);
       if (e.clientX > 0 && e.clientY > 0) {
-        store.dispatch("stage/placeObjectOnStage", {
-          ...avatar,
-          x: e.clientX - 50 - stageSize.value.left,
-          y: e.clientY - 50 - stageSize.value.top,
-        });
+        store.dispatch(
+          isReal ? "stage/shapeObject" : "stage/placeObjectOnStage",
+          {
+            ...object,
+            x: e.clientX - 50 - stageSize.value.left,
+            y: e.clientY - 50 - stageSize.value.top,
+          }
+        );
       }
     };
 

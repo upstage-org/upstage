@@ -19,14 +19,13 @@
 </template>
 
 <script>
-import { computed, inject } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
   props: ["object", "active"],
   emits: ["update:active"],
   setup: (props, { emit }) => {
     const store = useStore();
-    const holder = inject("holder");
     const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
@@ -50,7 +49,6 @@ export default {
       deleteObject,
       keepActive,
       toggleLiveAction,
-      holder,
       isHolding,
     };
   },

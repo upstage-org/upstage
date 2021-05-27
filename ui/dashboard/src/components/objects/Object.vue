@@ -67,7 +67,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject, provide, reactive, ref, watch } from "vue";
+import { computed, provide, reactive, ref, watch } from "vue";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
 import OpacitySlider from "./OpacitySlider";
@@ -98,9 +98,8 @@ export default {
     const active = ref(false);
     const sliderMode = ref("opacity");
     const beforeDragPosition = ref();
-    const holder = inject("holder") ?? ref();
     const isHolding = computed(
-      () => holder.value?.id === store.state.stage.session
+      () => props.object.holder?.id === store.state.stage.session
     );
     const holdable = computed(() =>
       ["avatar", "drawing"].includes(props.object.type)
@@ -152,7 +151,7 @@ export default {
     });
 
     const hold = () => {
-      if (holdable.value && !holder.value) {
+      if (holdable.value && !props.object.holder) {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };
@@ -166,7 +165,6 @@ export default {
       src,
       stageSize,
       hold,
-      holder,
       isHolding,
       holdable,
       controlable,

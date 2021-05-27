@@ -9,11 +9,11 @@
       @click="openChatBox"
     >
       <span
-        v-if="holder && canPlay"
+        v-if="object.holder && canPlay"
         class="icon marker"
         :class="{ inactive: !isHolding }"
         :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
-          holder.nickname
+          object.holder.nickname
         }`"
       >
         <Icon src="my-avatar.svg" />
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { computed, inject } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
@@ -50,7 +50,6 @@ export default {
   components: { Icon, Linkify },
   setup: (props) => {
     const store = useStore();
-    const holder = inject("holder");
     const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
@@ -77,17 +76,18 @@ export default {
     };
 
     const openChatBox = () => {
-      store.dispatch("stage/openSettingPopup", {
-        type: "ChatBox",
-        simple: true,
-      });
+      if (isHolding.value) {
+        store.dispatch("stage/openSettingPopup", {
+          type: "ChatBox",
+          simple: true,
+        });
+      }
     };
     const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     return {
       enter,
       leave,
-      holder,
       isHolding,
       canPlay,
       openChatBox,

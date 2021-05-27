@@ -7,7 +7,7 @@
 <script>
 import config from "@/config";
 import { reactive, ref } from "@vue/reactivity";
-import Skeleton from "@/components/objects/Skeleton";
+import Skeleton from "../../Skeleton";
 import { computed } from "@vue/runtime-core";
 import { cropImageFromCanvas } from "@/utils/canvas";
 

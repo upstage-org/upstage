@@ -15,6 +15,16 @@
     :title="data.name"
   >
     <slot v-if="$slots.default" />
+    <SavedDrawing v-else-if="data.type === 'drawing'" :drawing="data" />
+    <p
+      v-else-if="data.type === 'text'"
+      :style="{
+        ...data,
+        transform: `scale(${76 / data.w})`,
+        'transform-origin': 0,
+      }"
+      v-html="data.content"
+    ></p>
     <Image v-else :src="data.src" />
     <Icon
       v-if="data.multi"
@@ -26,14 +36,15 @@
 </template>
 
 <script>
+import { useStore } from "vuex";
 import { reactive, ref } from "vue";
 import Image from "@/components/Image";
 import Icon from "@/components/Icon";
-import { useStore } from "vuex";
+import SavedDrawing from "./tools/Draw/SavedDrawing";
 
 export default {
-  props: ["data", "type"],
-  components: { Image, Icon },
+  props: ["data", "real"],
+  components: { Image, Icon, SavedDrawing },
   setup: (props) => {
     const store = useStore();
     const position = reactive({
@@ -42,7 +53,10 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      e.dataTransfer.setData("object", JSON.stringify(props.data));
+      e.dataTransfer.setData(
+        "text",
+        JSON.stringify({ object: props.data, isReal: props.real })
+      );
     };
 
     const touchmove = (e) => {
@@ -57,11 +71,14 @@ export default {
 
     const touchend = () => {
       position.isDragging = false;
-      store.dispatch("stage/placeObjectOnStage", {
-        ...props.data,
-        x: position.x,
-        y: position.y,
-      });
+      store.dispatch(
+        props.real ? "stage/shapeObject" : "stage/placeObjectOnStage",
+        {
+          ...props.data,
+          x: position.x,
+          y: position.y,
+        }
+      );
     };
 
     return { dragstart, touchmove, touchend, position, topbarPosition };

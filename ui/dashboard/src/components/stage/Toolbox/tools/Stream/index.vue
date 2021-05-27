@@ -5,7 +5,7 @@
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
-  <div style="float: left">
+  <div>
     <Webcam />
   </div>
   <div v-for="stream in streams" :key="stream">
@@ -19,7 +19,7 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Skeleton from "@/components/objects/Skeleton";
+import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
 import Webcam from "./Webcam";

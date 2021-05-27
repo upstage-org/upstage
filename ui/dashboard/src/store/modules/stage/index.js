@@ -19,6 +19,7 @@ export default {
         backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
+        activeMovable: null,
         chat: {
             messages: [],
             color: randomMessageColor(),
@@ -79,7 +80,10 @@ export default {
             return state.model ? state.model.fileLocation : 'demo';
         },
         objects(state) {
-            return state.board.objects;
+            return state.board.objects.map(o => ({
+                ...o,
+                holder: state.sessions.find((s) => s.avatarId === o.id)
+            }));
         },
         config(state) {
             return state.tools.config;
@@ -329,6 +333,9 @@ export default {
         },
         SET_REPLAY(state, replay) {
             Object.assign(state.replay, replay)
+        },
+        SET_ACTIVE_MOVABLE(state, id) {
+            state.activeMovable = id
         }
     },
     actions: {
@@ -658,7 +665,7 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state, rootState }) {
+        async joinStage({ rootGetters, state, rootState, commit }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
             }
@@ -666,6 +673,7 @@ export default {
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
             const avatarId = rootGetters['user/avatarId'];
+            commit('SET_ACTIVE_MOVABLE', avatarId)
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);

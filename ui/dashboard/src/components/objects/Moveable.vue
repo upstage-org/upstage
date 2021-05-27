@@ -32,7 +32,7 @@
 /* eslint-disable vue/no-mutating-props */
 
 import { ref } from "@vue/reactivity";
-import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
+import { computed, onMounted, onUnmounted, watch } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
@@ -142,13 +142,15 @@ export default {
 
     const showControls = (isShowing, e) => {
       if (moveable) {
-        if (props.controlable && isShowing) {
+        if (isShowing) {
           moveable.setState(
             {
               target: el.value,
             },
             () => {
-              moveable.dragStart(e);
+              if (e) {
+                moveable.dragStart(e);
+              }
             }
           );
           emit("update:active", true);
@@ -165,19 +167,33 @@ export default {
       }
     };
 
-    const clickInside = (e) => {
-      showControls(true, e);
-    };
-
-    const clickOutside = (e) => {
-      if (!e || e.target.id === "board") {
-        showControls(false);
+    const clickInside = () => {
+      if (props.controlable) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", props.object.id);
       }
     };
 
+    const clickOutside = (e) => {
+      if ((!e || e.target.id === "board") && props.controlable) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", null);
+      }
+    };
+
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    watch(activeMovable, (val) => {
+      console.log(val, props.object.id);
+      showControls(val === props.object.id);
+    });
+
+    watch(isDragging, (val) => {
+      if (!val) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", null);
+      }
+    });
+
     let animation;
     watch(
-      props.object,
+      () => props.object,
       () => {
         const {
           x: left,
@@ -194,7 +210,7 @@ export default {
           return;
         }
         animation?.pause(true);
-        moveable?.setState({ target: null });
+
         animation = anime({
           targets: el.value,
           left,
@@ -218,16 +234,12 @@ export default {
       el.value.style.top = `${y}px`;
       el.value.style.transform = `rotate(${rotate}deg)`;
     });
-    watchEffect(() => {
-      if (!props.controlable) {
-        showControls(false);
-      }
-    });
+
     onUnmounted(() => {
       moveable.destroy();
     });
 
-    return { el, showControls, isDragging, clickInside, clickOutside };
+    return { el, isDragging, clickInside, clickOutside };
   },
 };
 </script>
