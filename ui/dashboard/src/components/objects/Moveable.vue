@@ -4,6 +4,7 @@
     :style="{
       position: 'absolute',
       opacity: object.opacity * (isDragging ? 0.5 : 1),
+      filter: `grayscale(${object.liveAction ? 0 : 1})`,
     }"
     @mousedown="clickInside"
     v-click-outside="clickOutside"
@@ -20,6 +21,7 @@
       height: object.h + 'px',
       transform: `rotate(${object.rotate}deg)`,
       opacity: object.opacity,
+      filter: `grayscale(${object.liveAction ? 0 : 1})`,
     }"
   >
     <slot />
@@ -52,7 +54,6 @@ export default {
         resizable: true,
         rotatable: true,
         origin: false,
-        keepRatio: true,
       });
 
       const sendMovement = (target, { left, top }) => {
