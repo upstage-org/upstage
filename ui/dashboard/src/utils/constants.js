@@ -32,7 +32,3 @@ export const ROLES = {
   CREATOR: 16,
   SUPER_ADMIN: 32,
 }
-
-export const DURATIONS = {
-  LIVE_ACTION_THROTTLE: 100
-}

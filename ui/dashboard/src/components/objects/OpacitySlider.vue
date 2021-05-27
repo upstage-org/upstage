@@ -16,7 +16,7 @@
       left: '-15px',
       width: object.h + 'px',
     }"
-    v-show="active"
+    v-show="isHolding"
     @change="handleChange"
     @mousedown.stop="keepActive"
     @mouseover.stop="keepActive"
@@ -95,7 +95,11 @@ export default {
       }
     };
 
-    return { keepActive, handleChange, value };
+    const isHolding = computed(
+      () => props.object.id === store.state.user.avatarId
+    );
+
+    return { keepActive, handleChange, value, isHolding };
   },
 };
 </script>

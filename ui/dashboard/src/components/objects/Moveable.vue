@@ -34,8 +34,6 @@ import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
-import { throttle } from "@/utils/common";
-import { DURATIONS } from "@/utils/constants";
 
 export default {
   props: ["object", "controlable", "active"],
@@ -57,7 +55,7 @@ export default {
         keepRatio: true,
       });
 
-      const sendMovement = throttle((target, { left, top }) => {
+      const sendMovement = (target, { left, top }) => {
         target.style.left = `${props.object.x}px`;
         target.style.top = `${props.object.y}px`;
         store.dispatch("stage/shapeObject", {
@@ -65,7 +63,7 @@ export default {
           x: left,
           y: top,
         });
-      }, DURATIONS.LIVE_ACTION_THROTTLE);
+      };
       moveable
         .on("dragStart", () => {
           isDragging.value = true;
@@ -74,9 +72,6 @@ export default {
           emit("update:active", false);
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
-          if (props.object.liveAction) {
-            sendMovement(target, { left, top });
-          }
         })
         .on("dragEnd", ({ lastEvent, target }) => {
           if (lastEvent) {
@@ -85,7 +80,7 @@ export default {
           isDragging.value = false;
         });
 
-      const sendResize = throttle((target, { width, height, left, top }) => {
+      const sendResize = (target, { width, height, left, top }) => {
         store.dispatch("stage/shapeObject", {
           ...props.object,
           x: left,
@@ -93,7 +88,7 @@ export default {
           w: width,
           h: height,
         });
-      }, DURATIONS.LIVE_ACTION_THROTTLE);
+      };
       moveable
         .on("resizeStart", () => {
           isDragging.value = true;
@@ -104,9 +99,6 @@ export default {
           target.style.height = `${height}px`;
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
-          if (props.object.liveAction) {
-            sendResize(target, { left, top, width, height });
-          }
         })
         .on(
           "resizeEnd",
@@ -124,13 +116,13 @@ export default {
           }
         );
 
-      const sendRotation = throttle((target, rotate) => {
+      const sendRotation = (target, rotate) => {
         target.style.transform = `rotate(${props.object.rotate}deg)`;
         store.dispatch("stage/shapeObject", {
           ...props.object,
           rotate,
         });
-      }, DURATIONS.LIVE_ACTION_THROTTLE);
+      };
       moveable
         .on("rotateStart", (e) => {
           e.set(props.object.rotate ?? 0);
@@ -139,9 +131,6 @@ export default {
         .on("rotate", ({ target, rotate }) => {
           emit("update:active", false);
           target.style.transform = `rotate(${rotate}deg)`;
-          if (props.object.liveAction) {
-            sendRotation(target, rotate);
-          }
         })
         .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
           sendRotation(target, rotate);
