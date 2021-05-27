@@ -196,8 +196,14 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
+            const { id } = object;
             deserializeObject(object, true);
-            state.board.objects.push(object)
+            const model = state.board.objects.find(o => o.id === id);
+            if (model) {
+                Object.assign(model, object);
+            } else {
+                state.board.objects.push(object)
+            }
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
@@ -425,11 +431,7 @@ export default {
                 ...data,
                 id: uuidv4(),
             }
-            const payload = {
-                type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object: serializeObject(object, true)
-            }
-            mqtt.sendMessage(TOPICS.BOARD, payload);
+            commit('PUSH_OBJECT', serializeObject(object));
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
             }
@@ -438,12 +440,24 @@ export default {
             }
             return object;
         },
-        shapeObject(action, object) {
-            const payload = {
-                type: BOARD_ACTIONS.MOVE_TO,
-                object: serializeObject(object)
+        shapeObject({ commit }, object) {
+            if (object.liveAction) {
+                if (object.published) {
+                    mqtt.sendMessage(TOPICS.BOARD, {
+                        type: BOARD_ACTIONS.MOVE_TO,
+                        object: serializeObject(object)
+                    })
+                } else {
+                    object.published = true
+                    mqtt.sendMessage(TOPICS.BOARD, {
+                        type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
+                        object: serializeObject(object, true)
+                    })
+                }
+
+            } else {
+                commit('UPDATE_OBJECT', serializeObject(object))
             }
-            mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             object = serializeObject(object)

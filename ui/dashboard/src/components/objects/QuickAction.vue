@@ -1,7 +1,7 @@
 <template>
   <div
     class="quick-action"
-    v-show="active"
+    v-show="isHolding"
     @mousedown.stop="keepActive"
     @mouseup.stop="keepActive"
   >

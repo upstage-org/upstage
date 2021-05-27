@@ -16,11 +16,12 @@
       <template #trigger>
         <div
           :style="{
+            position: 'absolute',
             left: object.x + 'px',
             top: object.y + 'px',
             width: object.w + 'px',
             height: object.h + 'px',
-            position: 'absolute',
+            transform: `rotate(${object.rotate}deg)`,
           }"
         >
           <OpacitySlider
