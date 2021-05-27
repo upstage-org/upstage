@@ -5,7 +5,7 @@
     </template>
     <template #stage="{ item }">
       <span v-for="(stage, index) in item.stages" :key="stage">
-        <router-link :to="`/backstage/stage-management/${stage.id}/`">
+        <router-link :to="`/live/${stage.url}/`">
           {{ stage.name }}
         </router-link>
         <span v-if="index < item.stages.length - 1">, </span>
