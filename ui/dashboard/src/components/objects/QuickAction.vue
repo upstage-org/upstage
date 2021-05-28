@@ -1,7 +1,7 @@
 <template>
   <div
     class="quick-action"
-    v-show="isHolding"
+    v-show="showQuickActions"
     @mousedown.stop="keepActive"
     @mouseup.stop="keepActive"
   >
@@ -45,11 +45,22 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const showQuickActions = computed(
+      () =>
+        isHolding.value ||
+        (!holdable.value && activeMovable.value === props.object.id)
+    );
+
     return {
       deleteObject,
       keepActive,
       toggleLiveAction,
       isHolding,
+      showQuickActions,
     };
   },
 };
