@@ -80,6 +80,7 @@ export default {
   position: fixed;
   right: 0px;
   max-width: 200px;
+  z-index: 1;
 
   @media screen and (min-width: 1024px) {
     img {
