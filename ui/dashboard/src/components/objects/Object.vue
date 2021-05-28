@@ -1,13 +1,5 @@
 <template>
-  <div
-    ref="el"
-    tabindex="0"
-    @keyup.delete="deleteObject"
-    @dblclick="hold"
-    :style="{
-      ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
-    }"
-  >
+  <div ref="el" tabindex="0" @keyup.delete="deleteObject" @dblclick="hold">
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
