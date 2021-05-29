@@ -93,7 +93,7 @@
       <span class="tag is-light is-block">New</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
-      <SavedDrawing :drawing="drawing" />
+      <Skeleton :data="drawing" />
     </div>
   </template>
 </template>
@@ -105,10 +105,10 @@ import { useDrawable } from "./composable";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
 import Switch from "@/components/form/Switch";
-import SavedDrawing from "./SavedDrawing";
+import Skeleton from "../../Skeleton";
 
 export default {
-  components: { SavedDrawing, ColorPicker, Icon, Switch },
+  components: { Skeleton, ColorPicker, Icon, Switch },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);

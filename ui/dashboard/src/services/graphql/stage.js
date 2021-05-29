@@ -168,6 +168,7 @@ export default {
             stages {
               id
               name
+              url
             }
           }
         }

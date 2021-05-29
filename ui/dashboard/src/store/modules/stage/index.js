@@ -19,6 +19,7 @@ export default {
         backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
+        activeMovable: null,
         chat: {
             messages: [],
             color: randomMessageColor(),
@@ -79,7 +80,10 @@ export default {
             return state.model ? state.model.fileLocation : 'demo';
         },
         objects(state) {
-            return state.board.objects;
+            return state.board.objects.map(o => ({
+                ...o,
+                holder: state.sessions.find((s) => s.avatarId === o.id)
+            }));
         },
         config(state) {
             return state.tools.config;
@@ -242,20 +246,23 @@ export default {
         SET_SETTING_POPUP(state, setting) {
             state.settingPopup = setting;
         },
-        BRING_TO_FRONT(state, object) {
-            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
-            if (index > -1) {
-                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
-            }
-        },
         SEND_TO_BACK(state, object) {
             const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
                 state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
+            }
+        },
+        BRING_TO_FRONT(state, object) {
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
+            if (index > -1) {
+                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
+            }
+        },
+        BRING_TO_FRONT_OF(state, { front, back }) {
+            const frontIndex = state.board.objects.findIndex(avatar => avatar.id === front);
+            const backIndex = state.board.objects.findIndex(avatar => avatar.id === back);
+            if (frontIndex > -1 && backIndex > -1) {
+                state.board.objects.splice(backIndex, 0, state.board.objects.splice(frontIndex, 1)[0])
             }
         },
         SET_PREFERENCES(state, preferences) {
@@ -329,6 +336,9 @@ export default {
         },
         SET_REPLAY(state, replay) {
             Object.assign(state.replay, replay)
+        },
+        SET_ACTIVE_MOVABLE(state, id) {
+            state.activeMovable = id
         }
     },
     actions: {
@@ -477,6 +487,13 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        sendToBack(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SEND_TO_BACK,
+                object: serializeObject(object)
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
@@ -484,10 +501,11 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
-        sendToBack(action, object) {
+        bringToFrontOf(action, { front, back }) {
             const payload = {
-                type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: serializeObject(object)
+                type: BOARD_ACTIONS.BRING_TO_FRONT_OF,
+                front,
+                back
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -515,11 +533,14 @@ export default {
                 case BOARD_ACTIONS.SPEAK:
                     commit('SET_OBJECT_SPEAK', message);
                     break;
+                case BOARD_ACTIONS.SEND_TO_BACK:
+                    commit('SEND_TO_BACK', message.object);
+                    break;
                 case BOARD_ACTIONS.BRING_TO_FRONT:
                     commit('BRING_TO_FRONT', message.object);
                     break;
-                case BOARD_ACTIONS.SEND_TO_BACK:
-                    commit('SEND_TO_BACK', message.object);
+                case BOARD_ACTIONS.BRING_TO_FRONT_OF:
+                    commit('BRING_TO_FRONT_OF', message);
                     break;
                 case BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES:
                     commit('UPDATE_OBJECT', message.object);
@@ -658,7 +679,7 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state, rootState }) {
+        async joinStage({ rootGetters, state, rootState, commit }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
             }
@@ -666,6 +687,7 @@ export default {
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
             const avatarId = rootGetters['user/avatarId'];
+            commit('SET_ACTIVE_MOVABLE', avatarId)
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);

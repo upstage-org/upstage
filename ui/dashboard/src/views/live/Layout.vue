@@ -79,8 +79,8 @@ export default {
 #live-logo {
   position: fixed;
   right: 0px;
-  z-index: 30000;
   max-width: 200px;
+  z-index: 1;
 
   @media screen and (min-width: 1024px) {
     img {

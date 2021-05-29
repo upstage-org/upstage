@@ -1,7 +1,7 @@
 <template>
   <div
     class="quick-action"
-    v-show="isHolding"
+    v-show="showQuickActions"
     @mousedown.stop="keepActive"
     @mouseup.stop="keepActive"
   >
@@ -19,14 +19,13 @@
 </template>
 
 <script>
-import { computed, inject } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 export default {
   props: ["object", "active"],
   emits: ["update:active"],
   setup: (props, { emit }) => {
     const store = useStore();
-    const holder = inject("holder");
     const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
@@ -46,12 +45,22 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const showQuickActions = computed(
+      () =>
+        isHolding.value ||
+        (!holdable.value && activeMovable.value === props.object.id)
+    );
+
     return {
       deleteObject,
       keepActive,
       toggleLiveAction,
-      holder,
       isHolding,
+      showQuickActions,
     };
   },
 };

@@ -13,8 +13,9 @@ export const BOARD_ACTIONS = {
   DESTROY: 'destroy',
   SWITCH_FRAME: 'switchFrame',
   SPEAK: 'speak',
-  BRING_TO_FRONT: 'bringToFront',
   SEND_TO_BACK: 'sendToBack',
+  BRING_TO_FRONT: 'bringToFront',
+  BRING_TO_FRONT_OF: 'bringToFrontOf',
   TOGGLE_AUTOPLAY_FRAMES: 'toggleAutoplayFrames',
 }
 
