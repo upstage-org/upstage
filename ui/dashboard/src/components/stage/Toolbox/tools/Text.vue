@@ -22,16 +22,7 @@
       <span class="tag is-block">New</span>
     </div>
     <div v-for="text in savedTexts" :key="text" class="is-pulled-left">
-      <Skeleton :data="text">
-        <p
-          :style="{
-            ...text,
-            transform: `scale(${76 / text.w})`,
-            'transform-origin': 0,
-          }"
-          v-html="text.content"
-        ></p>
-      </Skeleton>
+      <Skeleton :data="text" />
     </div>
   </template>
   <template v-else>
@@ -104,7 +95,7 @@
 import Dropdown from "@/components/form/Dropdown";
 import Field from "@/components/form/Field";
 import ColorPicker from "@/components/form/ColorPicker";
-import Skeleton from "@/components/objects/Skeleton";
+import Skeleton from "../Skeleton";
 import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 import { computed, onMounted, ref } from "vue";

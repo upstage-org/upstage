@@ -174,10 +174,11 @@ export default {
       props.keepActive(true);
     };
 
-    const holder = inject("holder") ?? ref();
     const holdable = inject("holdable") ?? ref();
     const isHolding = computed(
-      () => holder.value && holder.value.id === store.state.stage.session
+      () =>
+        props.object.holder &&
+        props.object.holder.id === store.state.stage.session
     );
 
     const openVoiceSetting = () => {

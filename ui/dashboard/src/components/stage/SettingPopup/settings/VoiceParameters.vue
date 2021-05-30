@@ -1,5 +1,5 @@
 <template>
-  <div class="card-header">
+  <div v-if="!modelValue" class="card-header">
     <span class="card-header-title">Voice Setting</span>
   </div>
   <div class="card-content voice-parameters">
@@ -65,7 +65,7 @@
       />
     </HorizontalField>
 
-    <SaveButton @click="save" />
+    <SaveButton v-if="!modelValue" @click="save" />
   </div>
 </template>
 
@@ -86,19 +86,23 @@ import {
 
 export default {
   components: { SaveButton, Dropdown, HorizontalField, InputButtonPostfix },
+  props: ["modelValue"],
+  emits: ["close", "update:modelValue"],
   setup: (props, { emit }) => {
     const store = useStore();
     const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
     const voices = getVoiceList();
     const variants = getVariantList();
     const parameters = reactive(
-      currentAvatar.value?.voice ?? {
-        voice: getDefaultVoice(),
-        pitch: 50,
-        speed: 175,
-        amplitude: 100,
-        variant: getDefaultVariant(),
-      }
+      props.modelValue
+        ? props.modelValue
+        : currentAvatar.value?.voice ?? {
+            voice: getDefaultVoice(),
+            pitch: 50,
+            speed: 175,
+            amplitude: 100,
+            variant: getDefaultVariant(),
+          }
     );
     const test = ref("Welcome to UpStage!");
     const testVoice = () => {

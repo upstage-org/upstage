@@ -5,14 +5,31 @@
     </template>
     <template #stage="{ item }">
       <span v-for="(stage, index) in item.stages" :key="stage">
-        <router-link :to="`/backstage/stage-management/${stage.id}/`">
+        <router-link :to="`/live/${stage.url}/`">
           {{ stage.name }}
         </router-link>
         <span v-if="index < item.stages.length - 1">, </span>
       </span>
     </template>
-    <template #edit="{ item }">
-      <EditMedia :media="item" />
+    <template #manage="{ item }">
+      <span style="float: left">
+        <MediaEdit :media="item" />
+      </span>
+      <Confirm
+        @confirm="(complete) => deleteMedia(item, complete)"
+        :loading="loading"
+      >
+        Deleting <b>{{ item.name }}</b> will also remove it from storage and any
+        assigned stages, there is no undo!
+        <span class="has-text-danger">
+          Are you sure you want to delete this media?
+        </span>
+        <template #trigger>
+          <a class="button is-light is-small is-danger">
+            <i class="fas fa-trash"></i>
+          </a>
+        </template>
+      </Confirm>
     </template>
   </DataTable>
 </template>
@@ -22,13 +39,18 @@ import { inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
-import EditMedia from "./EditMedia";
+import Confirm from "@/components/Confirm";
+import MediaEdit from "./MediaEdit";
 import { displayName } from "@/utils/auth";
+import { useMutation } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
+import { notification } from "@/utils/notification";
 
 export default {
-  components: { Asset, EditMedia, DataTable },
+  components: { Asset, MediaEdit, DataTable, Confirm },
   setup: () => {
     const mediaList = inject("mediaList");
+    const popNode = inject("popNode");
 
     const headers = [
       {
@@ -60,12 +82,26 @@ export default {
         key: "createdOn",
       },
       {
-        title: "Edit",
-        slot: "edit",
+        title: "Manage Media",
+        slot: "manage",
       },
     ];
 
-    return { mediaList, absolutePath, headers };
+    const { mutation, loading } = useMutation(stageGraph.deleteMedia);
+    const deleteMedia = async (item, complete) => {
+      const result = await mutation(item.id);
+      if (result.deleteMedia) {
+        const { message, success } = result.deleteMedia;
+        const notify = success ? notification.success : notification.error;
+        notify(message);
+        if (popNode) {
+          popNode((m) => m.id === item.id);
+        }
+      }
+      complete();
+    };
+
+    return { mediaList, absolutePath, headers, deleteMedia, loading };
   },
 };
 </script>

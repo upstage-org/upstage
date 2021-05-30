@@ -9,7 +9,7 @@
       />
     </div>
     <div class="column">
-      <SaveButton :loading="saving" @click="saveMedia" />
+      <SaveButton :loading="saving" :disabled="loading" @click="saveMedia" />
     </div>
   </div>
 
@@ -53,11 +53,7 @@ import Asset from "@/components/Asset";
 import SaveButton from "@/components/form/SaveButton";
 import Dropdown from "@/components/form/Dropdown";
 import { stageGraph } from "@/services/graphql";
-import {
-  useAttribute,
-  useMutation,
-  useQuery,
-} from "@/services/graphql/composable";
+import { useMutation, useQuery } from "@/services/graphql/composable";
 import { reactive, ref } from "@vue/reactivity";
 import { computed, inject, watchEffect } from "@vue/runtime-core";
 export default {
@@ -84,37 +80,15 @@ export default {
     });
 
     watchEffect(() => {
-      const savedMedia = useAttribute(stage, "media", true);
-      if (!savedMedia.value || !mediaList.value) return;
+      if (!stage.value || !mediaList.value) return;
       selectedMedia.value = mediaList.value.filter((media) => {
-        return savedMedia.value.some((m) => m.src === media.fileLocation);
+        return stage.value.media.some((m) => m.id === media.dbId);
       });
     });
 
     const saveMedia = async () => {
-      const payload = JSON.stringify(
-        selectedMedia.value.map((media) => {
-          const type = media.assetType.name;
-          const attributes = media.description
-            ? JSON.parse(media.description)
-            : {};
-          if (type === "stream") {
-            return {
-              name: media.name,
-              type,
-              url: media.fileLocation,
-            };
-          } else {
-            return {
-              name: media.name,
-              type,
-              src: media.fileLocation,
-              ...attributes,
-            };
-          }
-        })
-      );
-      await save("Media saved successfully!", stage.value.id, payload);
+      const ids = selectedMedia.value.map((media) => media.dbId);
+      await save("Stage updated successfully!", stage.value.id, ids);
     };
 
     const mediaTypes = [

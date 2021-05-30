@@ -41,9 +41,7 @@ export default {
   },
   setup: () => {
     const store = useStore();
-    const ready = computed(
-      () => store.state.stage.model && !store.state.stage.preloading
-    );
+    const ready = computed(() => store.getters["stage/ready"]);
 
     const route = useRoute();
     store.dispatch("stage/loadStage", { url: route.params.url }).then(() => {
@@ -81,8 +79,8 @@ export default {
 #live-logo {
   position: fixed;
   right: 0px;
-  z-index: 1;
   max-width: 200px;
+  z-index: 1;
 
   @media screen and (min-width: 1024px) {
     img {

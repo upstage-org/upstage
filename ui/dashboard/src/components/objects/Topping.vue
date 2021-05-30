@@ -1,38 +1,46 @@
 <template>
-  <div class="avatar-topping">
-    <span
-      v-if="holder && canPlay"
-      class="icon marker"
-      :class="{ inactive: !isHolding }"
-      :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
-        holder.nickname
-      }`"
+  <teleport to="body">
+    <div
+      class="avatar-topping"
+      :style="{
+        left: stageSize.left + object.x + object.w / 2 + 'px',
+        top: stageSize.top + object.y - 30 + 'px',
+      }"
       @click="openChatBox"
     >
-      <Icon src="my-avatar.svg" />
-    </span>
-    <transition @enter="enter" @leave="leave" :css="false" appear>
-      <div
-        v-if="object.speak"
-        class="chat-bubble"
-        tabindex="-1"
-        :key="object.speak"
-        :style="{
-          width: object.w + 'px',
-          'max-width': 'max-content',
-        }"
+      <span
+        v-if="object.holder && canPlay"
+        class="icon marker"
+        :class="{ inactive: !isHolding }"
+        :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
+          object.holder.nickname
+        }`"
       >
-        <div class="py-2 px-4">
-          <Linkify>{{ object.speak.message }}</Linkify>
+        <Icon src="my-avatar.svg" />
+      </span>
+      <transition @enter="enter" @leave="leave" :css="false" appear>
+        <div
+          v-if="object.speak"
+          class="chat-bubble"
+          tabindex="-1"
+          :key="object.speak"
+          :style="{
+            width: max(object.w, 200) + 'px',
+            'max-width': 'max-content',
+          }"
+        >
+          <div class="py-2 px-4">
+            <Linkify>{{ object.speak.message }}</Linkify>
+          </div>
+          <i class="fas fa-caret-down"></i>
         </div>
-        <i class="fas fa-caret-down"></i>
-      </div>
-    </transition>
-  </div>
+      </transition>
+    </div>
+  </teleport>
 </template>
 
 <script>
-import { computed, inject } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
@@ -42,7 +50,6 @@ export default {
   components: { Icon, Linkify },
   setup: (props) => {
     const store = useStore();
-    const holder = inject("holder");
     const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
@@ -69,19 +76,23 @@ export default {
     };
 
     const openChatBox = () => {
-      store.dispatch("stage/openSettingPopup", {
-        type: "ChatBox",
-        simple: true,
-      });
+      if (isHolding.value) {
+        store.dispatch("stage/openSettingPopup", {
+          type: "ChatBox",
+          simple: true,
+        });
+      }
     };
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     return {
       enter,
       leave,
-      holder,
       isHolding,
       canPlay,
       openChatBox,
+      stageSize,
+      max: Math.max,
     };
   },
 };
@@ -89,9 +100,8 @@ export default {
 
 <style scoped lang="scss">
 .avatar-topping {
-  position: absolute;
-  top: -36px;
-  left: 50%;
+  position: fixed;
+  z-index: 10000;
 }
 .chat-bubble {
   position: absolute;

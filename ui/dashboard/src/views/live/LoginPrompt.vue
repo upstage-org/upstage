@@ -2,7 +2,7 @@
   <div class="modal" :class="{ 'is-active': showing }">
     <div class="modal-background" @click="enterAsAudience"></div>
     <div ref="modal" class="modal-content">
-      <LoginForm v-if="showLoginForm" />
+      <LoginForm v-if="showLoginForm" @success="onLoginSuccess" />
       <div v-else class="card">
         <header class="card-header">
           <p class="card-header-title">Welcome to UpStage!</p>
@@ -97,7 +97,20 @@ export default {
           });
       }
     };
-    return { showing, close, modal, showLoginForm, nickname, enterAsAudience };
+
+    const onLoginSuccess = () => {
+      store.dispatch("stage/reloadPermission");
+    };
+
+    return {
+      showing,
+      close,
+      modal,
+      showLoginForm,
+      nickname,
+      enterAsAudience,
+      onLoginSuccess,
+    };
   },
 };
 </script>

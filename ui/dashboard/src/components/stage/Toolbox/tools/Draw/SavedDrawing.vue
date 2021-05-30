@@ -1,17 +1,13 @@
 <template>
-  <Skeleton :data="drawing">
-    <canvas ref="el" />
-  </Skeleton>
+  <canvas ref="el" />
 </template>
 
 <script>
-import Skeleton from "@/components/objects/Skeleton";
 import { useDrawing } from "./composable";
 export default {
-  components: { Skeleton },
   props: ["drawing"],
   setup: (props) => {
-    const { el } = useDrawing({ ...props.drawing, w: 88, h: 88 });
+    const { el } = useDrawing({ ...props.drawing, w: 64, h: 64 });
     return { el };
   },
 };

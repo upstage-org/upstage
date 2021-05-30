@@ -57,7 +57,7 @@ import StageTable from "@/components/stage/StageTable";
 import Field from "@/components/form/Field";
 import Dropdown from "@/components/form/Dropdown";
 import Switch from "@/components/form/Switch";
-import { computed } from "@vue/runtime-core";
+import { computed, provide } from "@vue/runtime-core";
 import { useOwners, useQuery } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import Skeleton from "@/components/Skeleton.vue";
@@ -76,7 +76,8 @@ export default {
       keyword: "",
     });
 
-    const { loading, nodes } = useQuery(stageGraph.stageList);
+    const { loading, nodes, refresh } = useQuery(stageGraph.stageList);
+    provide("refresh", refresh);
 
     const owners = useOwners(nodes);
 

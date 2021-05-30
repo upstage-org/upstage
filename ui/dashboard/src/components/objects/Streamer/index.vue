@@ -53,6 +53,7 @@
         </div>
       </template>
     </Object>
+    <PeerWebcam v-if="object.rtc" :object="object" />
     <video
       ref="video"
       :src="object.url"
@@ -72,9 +73,12 @@ import { useStore } from "vuex";
 import { useShape } from "./composable";
 import vue from "@/assets/logo.png";
 import dog from "@/assets/dog.png";
+import PeerWebcam from "./PeerWebcam";
+import Hls from "hls.js";
+import { getSubsribeLink } from "@/utils/rtmp";
 
 export default {
-  components: { Object },
+  components: { Object, PeerWebcam },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
@@ -130,6 +134,14 @@ export default {
         shape,
       });
     };
+
+    if (props.object.isRTMP) {
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(getSubsribeLink(props.object.url));
+        hls.attachMedia(video.value);
+      }
+    }
 
     return {
       video,

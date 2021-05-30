@@ -22,7 +22,8 @@ export function serializeObject(object, keepSrc) {
     if (!keepSrc) {
         object = {
             ...object,
-            src: type === 'stream' ? null : src
+            src: type === 'stream' ? null : src,
+            rtc: null
         };
     }
     object.x = toRelative(object.x)

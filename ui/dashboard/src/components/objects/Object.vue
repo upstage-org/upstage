@@ -1,23 +1,20 @@
 <template>
-  <div
-    ref="el"
-    tabindex="0"
-    @keyup.delete="deleteObject"
-    @dblclick="hold"
-    :style="{
-      ...(object.speak ? { position: 'absolute', 'z-index': 20 } : {}),
-    }"
-  >
+  <div ref="el" tabindex="0" @keyup.delete="deleteObject" @dblclick="hold">
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
       :pad-right="250"
     >
       <template #trigger>
-        <Moveable
-          v-model:active="active"
-          :controlable="controlable"
-          :object="object"
+        <div
+          :style="{
+            position: 'absolute',
+            left: object.x + 'px',
+            top: object.y + 'px',
+            width: object.w + 'px',
+            height: object.h + 'px',
+            transform: `rotate(${object.rotate}deg)`,
+          }"
         >
           <OpacitySlider
             v-model:active="active"
@@ -26,14 +23,20 @@
           />
           <QuickAction :object="object" v-model:active="active" />
           <Topping :object="object" v-model:active="active" />
+        </div>
+        <Moveable
+          v-model:active="active"
+          :controlable="controlable"
+          :object="object"
+        >
           <div
             class="object"
             :style="{
               width: '100%',
               height: '100%',
-              opacity: object.opacity ?? 1,
               cursor: 'grab',
             }"
+            @dragstart.prevent
           >
             <slot name="render">
               <Image class="the-object" :src="src" />
@@ -56,7 +59,7 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject, provide, reactive, ref, watch } from "vue";
+import { computed, provide, reactive, ref, watch } from "vue";
 import Image from "@/components/Image";
 import ContextMenu from "@/components/ContextMenu";
 import OpacitySlider from "./OpacitySlider";
@@ -87,9 +90,8 @@ export default {
     const active = ref(false);
     const sliderMode = ref("opacity");
     const beforeDragPosition = ref();
-    const holder = inject("holder") ?? ref();
     const isHolding = computed(
-      () => holder.value?.id === store.state.stage.session
+      () => props.object.holder?.id === store.state.stage.session
     );
     const holdable = computed(() =>
       ["avatar", "drawing"].includes(props.object.type)
@@ -141,7 +143,7 @@ export default {
     });
 
     const hold = () => {
-      if (holdable.value && !holder.value) {
+      if (holdable.value && !props.object.holder) {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };
@@ -155,7 +157,6 @@ export default {
       src,
       stageSize,
       hold,
-      holder,
       isHolding,
       holdable,
       controlable,

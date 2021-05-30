@@ -4,7 +4,7 @@
       <Breadcrumb description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload @complete="uploadCompleted" />
+      <MediaUpload />
     </div>
   </section>
   <div class="columns">
@@ -72,14 +72,13 @@
 
 <script>
 import MediaList from "./MediaList";
-import MediaUpload from "@/components/MediaUpload";
+import MediaUpload from "./MediaUpload";
 import Skeleton from "@/components/Skeleton";
 import Field from "@/components/form/Field";
 import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
 import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
-import { getStageMedia } from "@/utils/stage";
 import Breadcrumb from "@/components/Breadcrumb";
 
 export default {
@@ -89,7 +88,7 @@ export default {
       mediaType: null,
       owner: null,
     });
-    const { loading, nodes, fetch, refresh, pushNode } = useQuery(
+    const { loading, nodes, fetch, refresh, popNode } = useQuery(
       stageGraph.mediaList
     );
 
@@ -118,19 +117,10 @@ export default {
           (media) => media.owner.username === filter.owner.username
         );
       }
-      list.forEach((media) => (media.stages = []));
-      if (stageList.value) {
-        stageList.value.forEach((stage) => {
-          const assignedMedia = getStageMedia(stage);
-          list.forEach((media) => {
-            if (assignedMedia.some((m) => m.src === media.fileLocation)) {
-              media.stages.push(stage);
-            }
-          });
-        });
-      }
       if (filter.stage) {
-        list = list.filter((media) => media.stages.includes(filter.stage));
+        list = list.filter((media) =>
+          media.stages.find((s) => s.id === filter.stage.dbId)
+        );
       }
       return list;
     });
@@ -139,13 +129,10 @@ export default {
       stageGraph.assetTypeList
     );
 
-    const uploadCompleted = (result) => {
-      pushNode(result.uploadMedia.asset, true);
-    };
-
     provide("mediaList", mediaList);
     provide("loading", loading);
     provide("refresh", refresh);
+    provide("popNode", popNode);
     provide("types", types);
 
     return {
@@ -158,7 +145,6 @@ export default {
       users,
       displayName,
       stageList,
-      uploadCompleted,
     };
   },
 };

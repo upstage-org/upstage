@@ -16,7 +16,7 @@
       left: '-15px',
       width: object.h + 'px',
     }"
-    v-show="active"
+    v-show="showSlider"
     @change="handleChange"
     @mousedown.stop="keepActive"
     @mouseover.stop="keepActive"
@@ -33,7 +33,7 @@ export default {
   setup: (props, { emit }) => {
     const store = useStore();
     const maxFrameSpeed = 50;
-    const maxMoveSpeed = 500;
+    const maxMoveSpeed = 1000;
     const value = computed(() => {
       switch (props.sliderMode) {
         case "animation":
@@ -95,7 +95,20 @@ export default {
       }
     };
 
-    return { keepActive, handleChange, value };
+    const isHolding = computed(
+      () => props.object.id === store.state.user.avatarId
+    );
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const showSlider = computed(
+      () =>
+        isHolding.value ||
+        (!holdable.value && activeMovable.value === props.object.id)
+    );
+
+    return { keepActive, handleChange, value, isHolding, showSlider };
   },
 };
 </script>

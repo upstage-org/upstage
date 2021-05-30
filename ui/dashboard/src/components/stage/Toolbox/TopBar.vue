@@ -18,13 +18,24 @@ import Backdrop from "./tools/Backdrop";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
-import Stream from "./tools/Stream";
+import Stream from "./tools/Stream/index";
 import Text from "./tools/Text";
 import Setting from "./tools/Setting";
+import Depth from "./tools/Depth";
 
 export default {
   props: ["tool"],
-  components: { Avatars, Backdrop, Props, Audio, Draw, Stream, Text, Setting },
+  components: {
+    Avatars,
+    Backdrop,
+    Props,
+    Audio,
+    Draw,
+    Stream,
+    Text,
+    Setting,
+    Depth,
+  },
   setup: () => {
     const bar = ref();
     const horizontalScroll = (e) => {
@@ -41,6 +52,8 @@ export default {
 @import "@/styles/mixins";
 
 #topbar {
+  display: flex;
+  flex: 1;
   position: fixed;
   max-width: 80vw;
   height: 100px;
@@ -50,18 +63,19 @@ export default {
   margin: auto;
   text-align: center;
   width: fit-content;
-  overflow: visible;
+  overflow-x: auto;
   z-index: 2;
+
   .card-content {
+    display: flex;
     padding: 0;
     padding-top: 12px;
-    overflow-x: auto;
+    min-height: min-content;
     white-space: nowrap;
 
     > div {
       width: 100px;
       height: 88px;
-      display: inline-block;
       padding: 12px;
       background: $light;
 

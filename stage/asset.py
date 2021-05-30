@@ -1,5 +1,8 @@
 import os
-from utils.graphql_utils import CountableConnection
+from user.models import ADMIN, SUPER_ADMIN
+from user.user_utils import current_user
+from performance_config.models import ParentStage
+from utils.graphql_utils import CountableConnection, input_to_dictionary
 import uuid
 
 from sqlalchemy.orm import joinedload
@@ -12,17 +15,29 @@ import graphene
 from base64 import b64decode
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
+absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
+
+
+class AssignedStage(graphene.ObjectType):
+    id = graphene.Int()
+    name = graphene.String()
+    url = graphene.String()
 
 
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    stages = graphene.List(
+        AssignedStage, description="Stages that this media is assigned to")
 
     class Meta:
         model = AssetModel
         model.db_id = model.id
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
+
+    def resolve_stages(self, info):
+        return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
 
 
 class AssetType(SQLAlchemyObjectType):
@@ -52,7 +67,6 @@ class UploadMedia(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, name, base64, media_type, filename):
         current_user_id = get_jwt_identity()
-        absolutePath = os.path.dirname(appdir)
 
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -95,16 +109,18 @@ class UpdateMedia(graphene.Mutation):
         lambda: Asset, description="Media updated by this mutation.")
 
     class Arguments:
-        id = graphene.ID(
-            required=True, description="ID of the media")
         name = graphene.String(
             required=True, description="Name of the media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        file_location = graphene.String(description="File src")
         description = graphene.String(
             description="JSON serialized metadata of the media")
+        id = graphene.ID(description="ID of the media")
 
-    def mutate(self, info, id, name, media_type, description):
+    @jwt_required()
+    def mutate(self, info, name, media_type, file_location=None, description=None, id=None):
+        current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
                 AssetTypeModel.name == media_type).first()
@@ -114,16 +130,96 @@ class UpdateMedia(graphene.Mutation):
                 local_db_session.add(asset_type)
                 local_db_session.flush()
 
-            id = from_global_id(id)[1]
-            asset = local_db_session.query(AssetModel).filter(
-                AssetModel.id == id).first()
+            if id:
+                id = from_global_id(id)[1]
+                asset = local_db_session.query(AssetModel).filter(
+                    AssetModel.id == id).first()
+            elif file_location:
+                asset = AssetModel(owner_id=current_user_id)
+                local_db_session.add(asset)
+
             if asset:
                 asset.name = name
                 asset.asset_type = asset_type
                 asset.description = description
+                if file_location:
+                    asset.file_location = file_location
 
             local_db_session.flush()
             local_db_session.commit()
             asset = local_db_session.query(AssetModel).filter(
                 AssetModel.id == asset.id).first()
-            return UploadMedia(asset=asset)
+            return UpdateMedia(asset=asset)
+
+
+class DeleteMedia(graphene.Mutation):
+    """Mutation to sweep a stage."""
+    success = graphene.Boolean()
+    message = graphene.String()
+
+    class Arguments:
+        id = graphene.ID(
+            required=True, description="Global Id of the asset to be deleted.")
+
+    @jwt_required()
+    def mutate(self, info, id):
+        with ScopedSession() as local_db_session:
+            id = from_global_id(id)[1]
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == id).first()
+            if asset:
+                code, error, user, timezone = current_user()
+                if not user.role in (ADMIN, SUPER_ADMIN):
+                    if not user.id == asset.owner_id:
+                        return DeleteMedia(success=False, message="Only media owner or admin can delete this media!")
+
+                physical_path = os.path.join(
+                    absolutePath, storagePath, asset.file_location)
+                local_db_session.query(ParentStage).filter(
+                    ParentStage.child_asset_id == id).delete(synchronize_session=False)
+                local_db_session.delete(asset)
+                local_db_session.flush()
+                local_db_session.commit()
+            else:
+                return DeleteMedia(success=False, message="Media not found!")
+
+            if os.path.exists(physical_path):
+                os.remove(physical_path)
+            else:
+                return DeleteMedia(success=True, message="Media deleted successfully but file not existed on storage!")
+
+        return DeleteMedia(success=True, message="Media deleted successfully!")
+
+
+class AssignStagesInput(graphene.InputObjectType):
+    id = graphene.ID(required=True, description="Global Id of the media.")
+    stage_ids = graphene.List(
+        graphene.Int, description="Id of stages to be assigned to")
+
+
+class AssignStages(graphene.Mutation):
+    """Mutation to update a stage."""
+    asset = graphene.Field(
+        lambda: Asset, description="Asset with assigned stages")
+
+    class Arguments:
+        input = AssignStagesInput(required=True)
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, input):
+        data = input_to_dictionary(input)
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == data['id']
+            ).first()
+            asset.stages.delete()
+            for id in data['stage_ids']:
+                asset.stages.append(ParentStage(stage_id=id))
+
+            local_db_session.flush()
+            local_db_session.commit()
+
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == data['id']).first()
+
+            return AssignStages(asset=asset)

@@ -19,55 +19,57 @@
       <h1 v-else class="title">Create new stage</h1>
     </div>
   </section>
-  <div class="columns">
-    <div class="column is-narrow">
-      <aside class="menu box has-background-light mx-4">
-        <ul class="menu-list">
-          <li>
-            <router-link
-              :to="
-                id
-                  ? `/backstage/stage-management/${id}/`
-                  : '/backstage/new-stage'
-              "
-              exact-active-class="is-active"
-              >General Information</router-link
-            >
-          </li>
-          <template v-if="id">
+  <div class="container-fluid">
+    <div class="columns">
+      <div class="column is-narrow">
+        <aside class="menu box has-background-light mx-4">
+          <ul class="menu-list">
             <li>
-              <router-link to="layout" exact-active-class="is-active"
-                >Layout</router-link
+              <router-link
+                :to="
+                  id
+                    ? `/backstage/stage-management/${id}/`
+                    : '/backstage/new-stage'
+                "
+                exact-active-class="is-active"
+                >General Information</router-link
               >
             </li>
-            <li id="media-menu">
-              <router-link to="media" exact-active-class="is-active">
-                Media
-              </router-link>
-            </li>
-            <li>
-              <router-link to="chat" exact-active-class="is-active">
-                Chat
-              </router-link>
-            </li>
-            <li>
-              <router-link to="records" exact-active-class="is-active">
-                Records
-              </router-link>
-            </li>
-            <li>
-              <router-link to="scenes" exact-active-class="is-active">
-                Scenes
-              </router-link>
-            </li>
-          </template>
-        </ul>
-      </aside>
-    </div>
-    <div class="column">
-      <div class="pt-4 pr-4 pb-4">
-        <Skeleton v-if="!!id && loading" />
-        <router-view v-else />
+            <template v-if="id">
+              <li>
+                <router-link to="layout" exact-active-class="is-active"
+                  >Layout</router-link
+                >
+              </li>
+              <li id="media-menu">
+                <router-link to="media" exact-active-class="is-active">
+                  Media
+                </router-link>
+              </li>
+              <li>
+                <router-link to="chat" exact-active-class="is-active">
+                  Chat
+                </router-link>
+              </li>
+              <li>
+                <router-link to="records" exact-active-class="is-active">
+                  Records
+                </router-link>
+              </li>
+              <li>
+                <router-link to="scenes" exact-active-class="is-active">
+                  Scenes
+                </router-link>
+              </li>
+            </template>
+          </ul>
+        </aside>
+      </div>
+      <div class="column">
+        <div class="pt-4 pr-4 pb-4">
+          <Skeleton v-if="!!id && loading" />
+          <router-view v-else />
+        </div>
       </div>
     </div>
   </div>

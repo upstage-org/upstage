@@ -3,7 +3,8 @@
     ref="el"
     :style="{
       position: 'absolute',
-      opacity: isDragging ? 0.5 : 1,
+      opacity: object.opacity * (isDragging ? 0.5 : 1),
+      filter: `grayscale(${object.liveAction ? 0 : 1})`,
     }"
     @mousedown="clickInside"
     v-click-outside="clickOutside"
@@ -19,6 +20,8 @@
       width: object.w + 'px',
       height: object.h + 'px',
       transform: `rotate(${object.rotate}deg)`,
+      opacity: object.opacity,
+      filter: `grayscale(${object.liveAction ? 0 : 1})`,
     }"
   >
     <slot />
@@ -29,7 +32,7 @@
 /* eslint-disable vue/no-mutating-props */
 
 import { ref } from "@vue/reactivity";
-import { onMounted, onUnmounted, watch, watchEffect } from "@vue/runtime-core";
+import { computed, onMounted, onUnmounted, watch } from "@vue/runtime-core";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";
@@ -51,7 +54,6 @@ export default {
         resizable: true,
         rotatable: true,
         origin: false,
-        keepRatio: true,
       });
 
       const sendMovement = (target, { left, top }) => {
@@ -71,9 +73,6 @@ export default {
           emit("update:active", false);
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
-          if (props.object.liveAction) {
-            sendMovement(target, { left, top });
-          }
         })
         .on("dragEnd", ({ lastEvent, target }) => {
           if (lastEvent) {
@@ -101,9 +100,6 @@ export default {
           target.style.height = `${height}px`;
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
-          if (props.object.liveAction) {
-            sendResize(target, { left, top, width, height });
-          }
         })
         .on(
           "resizeEnd",
@@ -130,15 +126,12 @@ export default {
       };
       moveable
         .on("rotateStart", (e) => {
-          e.set(props.object.rotate);
+          e.set(props.object.rotate ?? 0);
           isDragging.value = true;
         })
         .on("rotate", ({ target, rotate }) => {
           emit("update:active", false);
           target.style.transform = `rotate(${rotate}deg)`;
-          if (props.object.liveAction) {
-            sendRotation(target, rotate);
-          }
         })
         .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
           sendRotation(target, rotate);
@@ -149,13 +142,15 @@ export default {
 
     const showControls = (isShowing, e) => {
       if (moveable) {
-        if (props.controlable && isShowing) {
+        if (isShowing) {
           moveable.setState(
             {
               target: el.value,
             },
             () => {
-              moveable.dragStart(e);
+              if (e) {
+                moveable.dragStart(e);
+              }
             }
           );
           emit("update:active", true);
@@ -172,24 +167,32 @@ export default {
       }
     };
 
-    const clickInside = (e) => {
-      const isClickingMarker = e.target.parentElement.classList.contains(
-        "marker"
-      );
-      if (!isClickingMarker) {
-        showControls(true, e);
+    const clickInside = () => {
+      if (props.controlable) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", props.object.id);
       }
     };
 
     const clickOutside = (e) => {
-      if (!e || e.target.id === "board") {
-        showControls(false);
+      if ((!e || e.target.id === "board") && props.controlable) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
     };
 
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    watch(activeMovable, (val) => {
+      showControls(val === props.object.id);
+    });
+
+    watch(isDragging, (val) => {
+      if (!val) {
+        store.commit("stage/SET_ACTIVE_MOVABLE", null);
+      }
+    });
+
     let animation;
     watch(
-      props.object,
+      () => props.object,
       () => {
         const {
           x: left,
@@ -200,12 +203,13 @@ export default {
           moveSpeed,
           type,
           isPlaying,
+          opacity,
         } = props.object;
         if (isDragging.value || (type === "stream" && isPlaying)) {
           return;
         }
         animation?.pause(true);
-        moveable?.setState({ target: null });
+
         animation = anime({
           targets: el.value,
           left,
@@ -213,7 +217,8 @@ export default {
           width,
           height,
           rotate,
-          ...(moveSpeed > 1000 ? { easing: "easeInOutQuad" } : {}),
+          opacity,
+          ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
         });
       },
@@ -228,16 +233,12 @@ export default {
       el.value.style.top = `${y}px`;
       el.value.style.transform = `rotate(${rotate}deg)`;
     });
-    watchEffect(() => {
-      if (!props.controlable) {
-        showControls(false);
-      }
-    });
+
     onUnmounted(() => {
       moveable.destroy();
     });
 
-    return { el, showControls, isDragging, clickInside, clickOutside };
+    return { el, isDragging, clickInside, clickOutside };
   },
 };
 </script>

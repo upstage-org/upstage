@@ -19,6 +19,7 @@ export default {
         backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
+        activeMovable: null,
         chat: {
             messages: [],
             color: randomMessageColor(),
@@ -36,7 +37,7 @@ export default {
             audios: [],
             streams: [],
             config: {
-                animateDuration: 500,
+                animateDuration: 1000,
                 reactionDuration: 5000,
                 ratio: 16 / 9,
             }
@@ -68,14 +69,21 @@ export default {
             timers: [],
             interval: null,
             speed: 32
-        }
+        },
+        backgroundChangedTimestamp: 0
     },
     getters: {
+        ready(state) {
+            return state.model && !state.preloading;
+        },
         url(state) {
             return state.model ? state.model.fileLocation : 'demo';
         },
         objects(state) {
-            return state.board.objects;
+            return state.board.objects.map(o => ({
+                ...o,
+                holder: state.sessions.find((s) => s.avatarId === o.id)
+            }));
         },
         config(state) {
             return state.tools.config;
@@ -118,12 +126,21 @@ export default {
         SET_MODEL(state, model) {
             state.model = model
             if (model) {
-                console.log(model)
-                const media = useAttribute({ value: model }, 'media', true).value;
+                const media = model.media;
                 if (media && media.length) {
                     media.forEach(item => {
+                        if (item.description) {
+                            const meta = JSON.parse(item.description)
+                            delete item.description
+                            Object.assign(item, meta)
+                        }
                         if (item.type === 'stream') {
-                            item.url = absolutePath(item.url);
+                            if (item.isRTMP) {
+                                item.url = item.src
+                            } else {
+                                item.url = absolutePath(item.src);
+                            }
+                            delete item.src
                         } else {
                             item.src = absolutePath(item.src);
                         }
@@ -162,8 +179,11 @@ export default {
             state.chat.messages = [];
             state.chat.color = randomColor();
         },
-        SET_BACKGROUND(state, background) {
-            state.background = background
+        SET_BACKGROUND(state, { background, at }) {
+            if (state.backgroundChangedTimestamp < at) {
+                state.background = background
+                state.backgroundChangedTimestamp = at
+            }
         },
         SET_STATUS(state, status) {
             state.status = status
@@ -180,8 +200,14 @@ export default {
             state.chat.messages.push(message)
         },
         PUSH_OBJECT(state, object) {
+            const { id } = object;
             deserializeObject(object, true);
-            state.board.objects.push(object)
+            const model = state.board.objects.find(o => o.id === id);
+            if (model) {
+                Object.assign(model, object);
+            } else {
+                state.board.objects.push(object)
+            }
         },
         UPDATE_OBJECT(state, object) {
             const { id } = object;
@@ -220,20 +246,23 @@ export default {
         SET_SETTING_POPUP(state, setting) {
             state.settingPopup = setting;
         },
-        BRING_TO_FRONT(state, object) {
-            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
-            if (index > -1) {
-                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
-            }
-        },
         SEND_TO_BACK(state, object) {
             const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
             if (index > -1) {
                 state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
-            } else {
-                state.board.objects.push(object)
+            }
+        },
+        BRING_TO_FRONT(state, object) {
+            const index = state.board.objects.findIndex(avatar => avatar.id === object.id);
+            if (index > -1) {
+                state.board.objects.push(state.board.objects.splice(index, 1)[0]);
+            }
+        },
+        BRING_TO_FRONT_OF(state, { front, back }) {
+            const frontIndex = state.board.objects.findIndex(avatar => avatar.id === front);
+            const backIndex = state.board.objects.findIndex(avatar => avatar.id === back);
+            if (frontIndex > -1 && backIndex > -1) {
+                state.board.objects.splice(backIndex, 0, state.board.objects.splice(frontIndex, 1)[0])
             }
         },
         SET_PREFERENCES(state, preferences) {
@@ -307,6 +336,9 @@ export default {
         },
         SET_REPLAY(state, replay) {
             Object.assign(state.replay, replay)
+        },
+        SET_ACTIVE_MOVABLE(state, id) {
+            state.activeMovable = id
         }
     },
     actions: {
@@ -402,17 +434,14 @@ export default {
         },
         placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
-                id: uuidv4(),
                 w: 100,
                 h: 100,
-                ...data,
                 opacity: 1,
+                moveSpeed: 2000,
+                ...data,
+                id: uuidv4(),
             }
-            const payload = {
-                type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                object: serializeObject(object, true)
-            }
-            mqtt.sendMessage(TOPICS.BOARD, payload);
+            commit('PUSH_OBJECT', serializeObject(object));
             if (object.type === 'stream') {
                 commit('PUSH_STREAM_HOST', object);
             }
@@ -421,12 +450,24 @@ export default {
             }
             return object;
         },
-        shapeObject(action, object) {
-            const payload = {
-                type: BOARD_ACTIONS.MOVE_TO,
-                object: serializeObject(object)
+        shapeObject({ commit }, object) {
+            if (object.liveAction) {
+                if (object.published) {
+                    mqtt.sendMessage(TOPICS.BOARD, {
+                        type: BOARD_ACTIONS.MOVE_TO,
+                        object: serializeObject(object)
+                    })
+                } else {
+                    object.published = true
+                    mqtt.sendMessage(TOPICS.BOARD, {
+                        type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
+                        object: serializeObject(object, true)
+                    })
+                }
+
+            } else {
+                commit('UPDATE_OBJECT', serializeObject(object))
             }
-            mqtt.sendMessage(TOPICS.BOARD, payload)
         },
         deleteObject(action, object) {
             object = serializeObject(object)
@@ -446,6 +487,13 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
+        sendToBack(action, object) {
+            const payload = {
+                type: BOARD_ACTIONS.SEND_TO_BACK,
+                object: serializeObject(object)
+            }
+            mqtt.sendMessage(TOPICS.BOARD, payload)
+        },
         bringToFront(action, object) {
             const payload = {
                 type: BOARD_ACTIONS.BRING_TO_FRONT,
@@ -453,10 +501,11 @@ export default {
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
-        sendToBack(action, object) {
+        bringToFrontOf(action, { front, back }) {
             const payload = {
-                type: BOARD_ACTIONS.SEND_TO_BACK,
-                object: serializeObject(object)
+                type: BOARD_ACTIONS.BRING_TO_FRONT_OF,
+                front,
+                back
             }
             mqtt.sendMessage(TOPICS.BOARD, payload)
         },
@@ -484,11 +533,14 @@ export default {
                 case BOARD_ACTIONS.SPEAK:
                     commit('SET_OBJECT_SPEAK', message);
                     break;
+                case BOARD_ACTIONS.SEND_TO_BACK:
+                    commit('SEND_TO_BACK', message.object);
+                    break;
                 case BOARD_ACTIONS.BRING_TO_FRONT:
                     commit('BRING_TO_FRONT', message.object);
                     break;
-                case BOARD_ACTIONS.SEND_TO_BACK:
-                    commit('SEND_TO_BACK', message.object);
+                case BOARD_ACTIONS.BRING_TO_FRONT_OF:
+                    commit('BRING_TO_FRONT_OF', message);
                     break;
                 case BOARD_ACTIONS.TOGGLE_AUTOPLAY_FRAMES:
                     commit('UPDATE_OBJECT', message.object);
@@ -498,7 +550,7 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background, at: +new Date() })
         },
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
@@ -509,7 +561,7 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
-                    commit('SET_BACKGROUND', message.background);
+                    commit('SET_BACKGROUND', message);
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
@@ -582,6 +634,12 @@ export default {
                 commit('SET_PRELOADING_STATUS', false);
             }
         },
+        async reloadPermission({ state }) {
+            const permission = await stageGraph.loadPermission(state.model.fileLocation)
+            if (permission) {
+                state.model.permission = permission
+            }
+        },
         replayEvent({ dispatch }, { topic, payload }) {
             dispatch("handleMessage", {
                 topic: unnamespaceTopic(topic),
@@ -621,7 +679,7 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state, rootState }) {
+        async joinStage({ rootGetters, state, rootState, commit }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
             }
@@ -629,11 +687,9 @@ export default {
             const isPlayer = rootGetters['auth/loggedIn'];
             const nickname = rootGetters['user/nickname'];
             const avatarId = rootGetters['user/avatarId'];
+            commit('SET_ACTIVE_MOVABLE', avatarId)
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
-            if (!payload.avatarId) {
-                delete payload.avatarId
-            }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
         async leaveStage({ state }) {
