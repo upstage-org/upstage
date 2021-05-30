@@ -16,7 +16,7 @@
       left: '-15px',
       width: object.h + 'px',
     }"
-    v-show="isHolding"
+    v-show="showSlider"
     @change="handleChange"
     @mousedown.stop="keepActive"
     @mouseover.stop="keepActive"
@@ -98,8 +98,17 @@ export default {
     const isHolding = computed(
       () => props.object.id === store.state.user.avatarId
     );
+    const holdable = computed(() =>
+      ["avatar", "drawing"].includes(props.object.type)
+    );
+    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const showSlider = computed(
+      () =>
+        isHolding.value ||
+        (!holdable.value && activeMovable.value === props.object.id)
+    );
 
-    return { keepActive, handleChange, value, isHolding };
+    return { keepActive, handleChange, value, isHolding, showSlider };
   },
 };
 </script>

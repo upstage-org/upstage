@@ -46,7 +46,7 @@ export default {
         commit("SET_LOADING_USER", false);
       }
     },
-    async saveNickname({ commit, state, dispatch, getters }, { nickname }) {
+    async saveNickname({ commit, dispatch, getters }, { nickname }) {
       const avatar = getters.avatar
       if (avatar) {
         dispatch("stage/shapeObject", {
@@ -56,13 +56,6 @@ export default {
       } else {
         commit('SET_NICK_NAME', nickname);
         dispatch('stage/joinStage', null, { root: true });
-        if (state.user && state.user.id) {
-          const response = await userGraph.updateUser({
-            ...state.user,
-            displayName: nickname
-          });
-          return response.updateUser.user.displayName;
-        }
       }
       return nickname;
     },
