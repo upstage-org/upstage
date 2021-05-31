@@ -14,6 +14,7 @@
           left: position.x + 'px',
           'z-index': 10000,
           overflow: 'visible',
+          opacity,
         }"
       >
         <slot name="context" :closeMenu="closeMenu" />
@@ -42,6 +43,10 @@ export default {
     padBottom: {
       type: Number,
       default: 0,
+    },
+    opacity: {
+      type: Number,
+      default: 1,
     },
   },
   setup: (props) => {

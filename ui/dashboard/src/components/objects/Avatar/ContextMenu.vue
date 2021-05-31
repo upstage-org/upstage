@@ -5,7 +5,7 @@
         <span class="panel-icon">
           <Icon src="clear.svg" />
         </span>
-        <span>Release this avatar</span>
+        <span>Release</span>
       </a>
       <a v-else class="panel-block" @click="holdAvatar">
         <span class="panel-icon">
@@ -18,19 +18,19 @@
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
       </span>
-      <span>Bring to front</span>
+      <span>Bring forward</span>
     </a>
     <a class="panel-block" @click="sendToBack">
       <span class="panel-icon">
         <Icon src="send-to-back.svg" />
       </span>
-      <span>Send to back</span>
+      <span>Send back</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="changeNickname">
       <span class="panel-icon">
         <Icon src="change-nickname.svg" />
       </span>
-      <span>Change your nickname</span>
+      <span>Avatar name</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="openVoiceSetting">
       <span class="panel-icon">
@@ -90,9 +90,9 @@
     </div>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
-        <Icon src="delete.svg" />
+        <Icon src="remove.svg" />
       </span>
-      <span>Delete</span>
+      <span>Remove</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">

@@ -27,7 +27,7 @@
         </span>
         <template #trigger>
           <a class="button is-light is-small is-danger">
-            <Icon src="remove.svg" />
+            <Icon src="delete.svg" />
           </a>
         </template>
       </Confirm>

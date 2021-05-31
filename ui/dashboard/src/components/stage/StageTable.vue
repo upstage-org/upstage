@@ -48,7 +48,7 @@
               class="button is-light is-small is-danger"
               data-tooltip="Delete stage"
             >
-              <Icon src="remove.svg" />
+              <Icon src="delete.svg" />
             </a>
           </template>
         </Confirm>
