@@ -68,6 +68,11 @@ nav {
 .modal-card-foot {
     padding: 10px;
 }
+.is-multi {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
 div.moveable-control-box {
     --moveable-color: #{$primary};
 }

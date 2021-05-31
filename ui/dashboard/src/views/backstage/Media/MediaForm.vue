@@ -217,7 +217,11 @@ export default {
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }
-      if (form.mediaType === "avatar" || form.mediaType === "prop") {
+      if (
+        form.mediaType === "avatar" ||
+        form.mediaType === "prop" ||
+        form.mediaType === "backdrop"
+      ) {
         res.push({
           key: "multiframe",
           label: "Multiframe",

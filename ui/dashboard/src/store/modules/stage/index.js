@@ -9,6 +9,7 @@ import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak } from '@/services/speech';
+import anime from 'animejs';
 
 export default {
     namespaced: true,
@@ -70,7 +71,6 @@ export default {
             interval: null,
             speed: 32
         },
-        backgroundChangedTimestamp: 0
     },
     getters: {
         ready(state) {
@@ -167,6 +167,9 @@ export default {
                 state.model = null;
             }
             state.status = 'OFFLINE';
+            if (state.background?.interval) {
+                clearInterval(state.background.interval);
+            }
             state.background = null;
             state.tools.avatars = [];
             state.tools.props = [];
@@ -179,10 +182,29 @@ export default {
             state.chat.messages = [];
             state.chat.color = randomColor();
         },
-        SET_BACKGROUND(state, { background, at }) {
-            if (state.backgroundChangedTimestamp < at) {
-                state.background = background
-                state.backgroundChangedTimestamp = at
+        SET_BACKGROUND(state, background) {
+            if (background) {
+                if (!state.background || !state.background.at || (state.background.at < background.at)) {
+                    if (state.background?.interval) {
+                        clearInterval(state.background.interval);
+                    }
+                    state.background = background
+                    anime({
+                        targets: "#board",
+                        opacity: [0, 1],
+                        duration: 5000,
+                    });
+                    if (background.multi && background.speed > 0) {
+                        const { speed, frames } = state.background;
+                        state.background.interval = setInterval(() => {
+                            let nextFrame = frames.indexOf(state.background.currentFrame) + 1;
+                            if (nextFrame >= frames.length) {
+                                nextFrame = 0;
+                            }
+                            state.background.currentFrame = frames[nextFrame];
+                        }, 50 / speed);
+                    }
+                }
             }
         },
         SET_STATUS(state, status) {
@@ -550,7 +572,8 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background, at: +new Date() })
+            background.at = +new Date()
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
         },
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
@@ -561,7 +584,7 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
-                    commit('SET_BACKGROUND', message);
+                    commit('SET_BACKGROUND', message.background);
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
@@ -692,9 +715,10 @@ export default {
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
-        async leaveStage({ state }) {
+        async leaveStage({ state, commit }) {
             const id = state.session
             state.session = null
+            commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
         }
     },
