@@ -88,8 +88,7 @@
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
         <button class="button is-light">
-          <i v-if="object.autoplayFrames" class="fas fa-3x fa-pause"></i>
-          <Icon v-else src="play.svg" />
+          <Icon :src="object.autoplayFrames > 0 ? 'pause.svg' : 'play.svg'" />
         </button>
       </p>
       <p

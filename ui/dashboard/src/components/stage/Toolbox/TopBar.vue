@@ -74,6 +74,7 @@ export default {
     white-space: nowrap;
 
     > div {
+      position: relative;
       width: 100px;
       height: 88px;
       padding: 12px;

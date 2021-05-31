@@ -138,9 +138,4 @@ export default {
 </script>
 
 <style>
-.is-multi {
-  position: relative;
-  left: -10px;
-  top: 30px;
-}
 </style>

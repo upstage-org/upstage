@@ -2,6 +2,7 @@
   <DataTable :data="mediaList" :headers="headers">
     <template #preview="{ item }">
       <Asset :asset="item" />
+      <MultiframePreview :asset="item" />
     </template>
     <template #stage="{ item }">
       <span v-for="(stage, index) in item.stages" :key="stage">
@@ -45,9 +46,10 @@ import { displayName } from "@/utils/auth";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
+import MultiframePreview from "./MultiframePreview";
 
 export default {
-  components: { Asset, MediaEdit, DataTable, Confirm },
+  components: { Asset, MediaEdit, DataTable, Confirm, MultiframePreview },
   setup: () => {
     const mediaList = inject("mediaList");
     const popNode = inject("popNode");

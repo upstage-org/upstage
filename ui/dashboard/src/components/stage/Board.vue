@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import Avatar from "@/components/objects/Avatar/index";
 import Drawing from "@/components/objects/Drawing";
@@ -51,7 +51,14 @@ export default {
   components: { Avatar, Prop: Avatar, Stream, Drawing, Text },
   setup: () => {
     const store = useStore();
-    const background = computed(() => store.state.stage.background);
+    const background = computed(() => {
+      const background = store.state.stage.background;
+      if (background.multi && background.currentFrame) {
+        return background.currentFrame;
+      } else {
+        return background.src;
+      }
+    });
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);
@@ -91,13 +98,6 @@ export default {
       });
     };
 
-    watch(background, () => {
-      anime({
-        targets: "#board",
-        opacity: [0, 1],
-        duration: 5000,
-      });
-    });
     const backdropColor = computed(() => store.state.stage.backdropColor);
 
     return {
