@@ -48,7 +48,7 @@
               class="button is-light is-small is-danger"
               data-tooltip="Delete stage"
             >
-              <i class="fa fa-lg fa-trash has-text-danger"></i>
+              <Icon src="remove.svg" />
             </a>
           </template>
         </Confirm>
@@ -75,6 +75,7 @@
 import DataTable from "@/components/DataTable/index";
 import Modal from "@/components/Modal";
 import Confirm from "@/components/Confirm";
+import Icon from "@/components/Icon";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
@@ -83,7 +84,7 @@ import { useMutation } from "@/services/graphql/composable";
 import { inject } from "@vue/runtime-core";
 
 export default {
-  components: { DataTable, Modal, ActionButtons, Detail, Confirm },
+  components: { DataTable, Modal, ActionButtons, Detail, Confirm, Icon },
   props: { data: Array },
   setup: () => {
     const headers = [

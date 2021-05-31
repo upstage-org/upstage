@@ -34,7 +34,7 @@
     </a>
     <a v-if="holdable" class="panel-block" @click="openVoiceSetting">
       <span class="panel-icon">
-        <Icon src="change-nickname.svg" />
+        <Icon src="voice-setting.svg" />
       </span>
       <span>Voice setting</span>
     </a>
@@ -49,33 +49,42 @@
         <button
           class="button is-light"
           :class="{
-            'has-background-primary has-text-white': sliderMode === 'opacity',
+            'has-background-primary-light': sliderMode === 'opacity',
           }"
           @click="changeSliderMode('opacity')"
+          data-tooltip="Opacity slider"
         >
-          <span>Opacity</span>
+          <span class="mt-1">
+            <Icon src="opacity-slider.svg" />
+          </span>
         </button>
       </p>
       <p class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
-            'has-background-warning': sliderMode === 'animation',
+            'has-background-warning-light': sliderMode === 'animation',
           }"
           @click="changeSliderMode('animation')"
+          data-tooltip="Animation speed"
         >
-          <span>Animation</span>
+          <span class="mt-1">
+            <Icon src="animation-slider.svg" />
+          </span>
         </button>
       </p>
       <p class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
-            'has-background-danger has-text-white': sliderMode === 'speed',
+            'has-background-danger-light': sliderMode === 'speed',
           }"
           @click="changeSliderMode('speed')"
+          data-tooltip="Move speed"
         >
-          <span>Movement</span>
+          <span class="mt-1">
+            <Icon src="movement-slider.svg" />
+          </span>
         </button>
       </p>
     </div>

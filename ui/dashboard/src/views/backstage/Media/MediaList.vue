@@ -27,7 +27,7 @@
         </span>
         <template #trigger>
           <a class="button is-light is-small is-danger">
-            <i class="fas fa-trash"></i>
+            <Icon src="remove.svg" />
           </a>
         </template>
       </Confirm>
@@ -41,6 +41,7 @@ import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
 import Confirm from "@/components/Confirm";
+import Icon from "@/components/Icon";
 import MediaEdit from "./MediaEdit";
 import { displayName } from "@/utils/auth";
 import { useMutation } from "@/services/graphql/composable";
@@ -49,7 +50,7 @@ import { notification } from "@/utils/notification";
 import MultiframePreview from "./MultiframePreview";
 
 export default {
-  components: { Asset, MediaEdit, DataTable, Confirm, MultiframePreview },
+  components: { Asset, MediaEdit, DataTable, Confirm, MultiframePreview, Icon },
   setup: () => {
     const mediaList = inject("mediaList");
     const popNode = inject("popNode");
