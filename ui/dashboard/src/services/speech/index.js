@@ -6,15 +6,16 @@ export const avatarSpeak = (avatar, message = avatar.speak.message) => {
     const params = {}
     if (avatar.voice) {
         const { voice, variant, amplitude, pitch, speed } = avatar.voice
-        if (isValidVoice(voice)) {
-            loadVoice(voice)
-        } else {
-            loadVoice(getDefaultVoice())
-        }
         params.variant = variant
         params.amplitude = amplitude
         params.pitch = pitch
         params.speed = speed;
+        const callback = () => speak(message, params) // voice got loaded assynchronous
+        if (isValidVoice(voice)) {
+            loadVoice(voice, callback)
+        } else {
+            loadVoice(getDefaultVoice(), callback)
+        }
     }
-    speak(message, params)
+
 }

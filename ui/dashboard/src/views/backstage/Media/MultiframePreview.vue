@@ -1,5 +1,9 @@
 <template>
-  <div data-tooltip="This is a multiframe media" v-if="meta.multi">
+  <div
+    data-tooltip="This is a multiframe media"
+    class="has-tooltip-bottom"
+    v-if="meta.multi"
+  >
     <Icon src="multi-frame.svg" />
     <Image
       v-for="frame in meta.frames"
