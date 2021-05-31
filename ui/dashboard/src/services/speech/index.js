@@ -5,7 +5,6 @@ const { loadVoice, speak } = window.meSpeak
 export const avatarSpeak = (avatar, message = avatar.speak.message) => {
     const params = {}
     if (avatar.voice) {
-        console.log(avatar.voice)
         const { voice, variant, amplitude, pitch, speed } = avatar.voice
         params.variant = variant
         params.amplitude = amplitude
