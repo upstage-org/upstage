@@ -4,6 +4,7 @@
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
       :pad-right="250"
+      opacity="0.8"
     >
       <template #trigger>
         <div

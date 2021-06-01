@@ -58,11 +58,13 @@
     </HorizontalField>
 
     <HorizontalField title="Test voice">
-      <InputButtonPostfix
-        v-model="test"
-        @ok="testVoice"
-        icon="fas fa-volume-up"
-      />
+      <InputButtonPostfix v-model="test" @ok="testVoice">
+        <template #icon>
+          <span class="icon">
+            <Icon src="voice-setting-invert.svg" />
+          </span>
+        </template>
+      </InputButtonPostfix>
     </HorizontalField>
 
     <SaveButton v-if="!modelValue" @click="save" />
@@ -75,6 +77,7 @@ import SaveButton from "@/components/form/SaveButton";
 import Dropdown from "@/components/form/Dropdown";
 import HorizontalField from "@/components/form/HorizontalField";
 import InputButtonPostfix from "@/components/form/InputButtonPostfix";
+import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 import { avatarSpeak } from "@/services/speech";
 import {
@@ -85,7 +88,13 @@ import {
 } from "@/services/speech/voice";
 
 export default {
-  components: { SaveButton, Dropdown, HorizontalField, InputButtonPostfix },
+  components: {
+    SaveButton,
+    Dropdown,
+    HorizontalField,
+    InputButtonPostfix,
+    Icon,
+  },
   props: ["modelValue"],
   emits: ["close", "update:modelValue"],
   setup: (props, { emit }) => {
