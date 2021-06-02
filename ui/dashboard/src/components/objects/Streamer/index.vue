@@ -53,7 +53,6 @@
         </div>
       </template>
     </Object>
-    <PeerWebcam v-if="object.rtc" :object="object" />
     <video
       ref="video"
       :src="object.url"
@@ -70,15 +69,13 @@
 import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
-import { useShape } from "./composable";
+import { useFlv, useShape } from "./composable";
 import vue from "@/assets/logo.png";
 import dog from "@/assets/dog.png";
-import PeerWebcam from "./PeerWebcam";
-import Hls from "hls.js";
-import { getSubsribeLink } from "@/utils/rtmp";
+import { getSubsribeLink } from "@/utils/streaming";
 
 export default {
-  components: { Object, PeerWebcam },
+  components: { Object },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
@@ -90,23 +87,30 @@ export default {
     );
 
     const synchronize = () => {
-      if (stream.isPlaying) {
+      if (stream.isPlaying && video.value) {
         video.value.play();
       } else {
         video.value.pause();
       }
     };
 
-    watch(props.object, () => {
-      delete props.object.src;
-      window.Object.assign(stream, props.object);
-      synchronize();
-    });
+    watch(
+      () => props.object,
+      () => {
+        delete props.object.src;
+        window.Object.assign(stream, props.object);
+        synchronize();
+      }
+    );
 
     const loadeddata = () => {
       synchronize();
     };
 
+    if (props.object.isRTMP) {
+      const fullUrl = computed(() => getSubsribeLink(props.object.url));
+      useFlv(video, fullUrl);
+    }
     const { src } = useShape(video, stream);
     watch(src, () => (stream.src = src.value));
 
@@ -134,14 +138,6 @@ export default {
         shape,
       });
     };
-
-    if (props.object.isRTMP) {
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(getSubsribeLink(props.object.url));
-        hls.attachMedia(video.value);
-      }
-    }
 
     return {
       video,

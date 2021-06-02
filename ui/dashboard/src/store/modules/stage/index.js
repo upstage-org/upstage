@@ -9,6 +9,7 @@ import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak } from '@/services/speech';
+import { nmsService } from "@/services/rest";
 import anime from 'animejs';
 
 export default {
@@ -71,6 +72,7 @@ export default {
             interval: null,
             speed: 32
         },
+        loadingRunningStreams: false
     },
     getters: {
         ready(state) {
@@ -223,7 +225,7 @@ export default {
         },
         PUSH_OBJECT(state, object) {
             const { id } = object;
-            deserializeObject(object, true);
+            deserializeObject(object);
             const model = state.board.objects.find(o => o.id === id);
             if (model) {
                 Object.assign(model, object);
@@ -301,6 +303,10 @@ export default {
         },
         PUSH_STREAM_HOST(state, stream) {
             state.hosts.push(stream);
+        },
+        PUSH_RUNNING_STREAMS(state, streams) {
+            state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
+            state.loadingRunningStreams = false
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -483,7 +489,7 @@ export default {
                     object.published = true
                     mqtt.sendMessage(TOPICS.BOARD, {
                         type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                        object: serializeObject(object, true)
+                        object: serializeObject(object)
                     })
                 }
 
@@ -720,6 +726,11 @@ export default {
             state.session = null
             commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
+        },
+        async getRunningStreams({ state, commit }) {
+            state.loadingRunningStreams = true
+            const streams = await nmsService.getStreams()
+            commit('PUSH_RUNNING_STREAMS', streams)
         }
     },
 };

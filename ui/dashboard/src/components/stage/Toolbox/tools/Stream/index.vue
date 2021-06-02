@@ -5,14 +5,14 @@
     </div>
     <span class="tag is-light is-block">New</span>
   </div>
-  <div>
-    <Webcam />
-  </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
       <RTMPStream v-if="stream.isRTMP" :src="stream.url"></RTMPStream>
       <video v-else :src="stream.url"></video>
     </Skeleton>
+  </div>
+  <div v-if="loading">
+    <LoadingSkeleton />
   </div>
 </template>
 
@@ -22,10 +22,10 @@ import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
-import Webcam from "./Webcam";
+import LoadingSkeleton from "@/components/Skeleton";
 
 export default {
-  components: { Skeleton, Icon, Webcam, RTMPStream },
+  components: { Skeleton, Icon, RTMPStream, LoadingSkeleton },
   setup: () => {
     const store = useStore();
     const newStream = () => {
@@ -34,8 +34,10 @@ export default {
       });
     };
     const streams = computed(() => store.state.stage.tools.streams);
+    const loading = computed(() => store.state.stage.loadingRunningStreams);
+    store.dispatch("stage/getRunningStreams");
 
-    return { streams, newStream, Webcam };
+    return { streams, newStream, loading };
   },
 };
 </script>
