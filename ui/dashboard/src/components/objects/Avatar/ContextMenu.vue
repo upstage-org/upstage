@@ -164,9 +164,11 @@ export default {
     };
 
     const changeNickname = () =>
-      store.dispatch("stage/openSettingPopup", {
-        type: "ChatParameters",
-      });
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "ChatParameters",
+        })
+        .then(props.closeMenu);
 
     const bringToFront = () => {
       store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);

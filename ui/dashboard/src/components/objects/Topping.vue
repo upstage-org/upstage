@@ -101,7 +101,7 @@ export default {
 <style scoped lang="scss">
 .avatar-topping {
   position: fixed;
-  z-index: 10000;
+  z-index: 3000;
 }
 .chat-bubble {
   position: absolute;
