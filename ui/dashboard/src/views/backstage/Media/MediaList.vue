@@ -20,11 +20,11 @@
         @confirm="(complete) => deleteMedia(item, complete)"
         :loading="loading"
       >
-        Deleting <b>{{ item.name }}</b> will also remove it from storage and any
-        assigned stages, there is no undo!
-        <span class="has-text-danger">
-          Are you sure you want to delete this media?
-        </span>
+        Are you sure you want to delete <b>{{ item.name }}</b
+        >? It will be completely emoved from the UpStage server.
+        <span class="has-text-danger">There is no undo!</span> If you only
+        wanted to remove it from a stage, please go to Stage Management and
+        unassign it.
         <template #trigger>
           <a class="button is-light is-small is-danger">
             <Icon src="delete.svg" />
