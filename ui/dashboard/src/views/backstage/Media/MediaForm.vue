@@ -112,7 +112,7 @@ import Tabs from "@/components/Tabs";
 import RTMPStream from "@/components/RTMPStream";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
-import { getPublishLink } from "@/utils/rtmp";
+import { getPublishLink } from "@/utils/streaming";
 import OBSInstruction from "./OBSInstruction";
 
 export default {

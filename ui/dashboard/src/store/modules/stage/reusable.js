@@ -17,15 +17,12 @@ export function recalcFontSize(object, f) {
     }
 }
 
-export function serializeObject(object, keepSrc) {
+export function serializeObject(object) {
     const { src, type } = object;
-    if (!keepSrc) {
-        object = {
-            ...object,
-            src: type === 'stream' ? null : src,
-            rtc: null
-        };
-    }
+    object = {
+        ...object,
+        src: type === 'stream' ? null : src,
+    };
     object.x = toRelative(object.x)
     object.y = toRelative(object.y)
     object.w = toRelative(object.w)
@@ -34,11 +31,9 @@ export function serializeObject(object, keepSrc) {
     return object;
 }
 
-export function deserializeObject(object, keepSrc) {
-    if (!keepSrc) {
-        if (object.type === 'stream') {
-            delete object.src;
-        }
+export function deserializeObject(object) {
+    if (object.type === 'stream') {
+        delete object.src;
     }
     object.x = toAbsolute(object.x)
     object.y = toAbsolute(object.y)

@@ -1,5 +1,6 @@
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 import { cropImageFromCanvas } from "@/utils/canvas";
+import flvjs from "flv.js";
 
 export const useShape = (video, object) => {
     const canvas = document.createElement("canvas");
@@ -58,4 +59,26 @@ export const useShape = (video, object) => {
     }, { immediate: true })
 
     return { src }
+}
+
+export const useFlv = (video, src) => {
+    const isSupported = computed(() => flvjs.isSupported());
+
+    const initPlayer = () => {
+        if (flvjs.isSupported()) {
+            const flvPlayer = flvjs.createPlayer({
+                type: "flv",
+                url: src.value,
+            });
+            flvPlayer.attachMediaElement(video.value);
+            flvPlayer.load();
+            flvPlayer.play();
+        }
+    };
+
+    onMounted(initPlayer);
+    watch(src, initPlayer);
+    console.log(src.value)
+
+    return { isSupported }
 }

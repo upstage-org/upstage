@@ -52,7 +52,7 @@ export default {
   setup: () => {
     const store = useStore();
     const background = computed(() => {
-      const background = store.state.stage.background;
+      const background = store.state.stage.background ?? {};
       if (background.multi && background.currentFrame) {
         return background.currentFrame;
       } else {

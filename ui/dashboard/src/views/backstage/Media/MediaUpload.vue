@@ -34,7 +34,7 @@ import Upload from "@/components/form/Upload";
 import MediaForm from "./MediaForm";
 import { ref } from "@vue/reactivity";
 import { inject } from "@vue/runtime-core";
-import { getUniqueKey } from "@/utils/rtmp";
+import { getUniqueKey } from "@/utils/streaming";
 
 export default {
   components: { Modal, MediaForm, Upload },

@@ -16,26 +16,13 @@ let configs = {
         reconnectPeriod: 4000, // Reconnection interval
         retain: true,
     },
-    RTC: {
-        iceConfiguration: {
-            iceServers: [
-                { urls: 'stun:dev-app1.upstage.org.nz:3478' },
-                {
-                    urls: 'turn:dev-app1.upstage.org.nz:3478',
-                    credential: 'upstage',
-                    username: 'upstage'
-                },
-            ]
-        },
-        offerOptions: {
-            offerToReceiveAudio: 1,
-            offerToReceiveVideo: 1
+    STREAMING: {
+        publish: "rtmp://streaming1.upstage.org.nz:1941/live",
+        subscribe: "https://streaming1.upstage.org.nz:9999/",
+        auth: {
+            username: 'admin',
+            password: 'admin'
         }
-    },
-    RTMP: {
-        server: "streaming1.upstage.org.nz",
-        publishPort: 1936,
-        subscribePort: 8080
     }
 }
 
