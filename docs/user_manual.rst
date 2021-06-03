@@ -199,6 +199,10 @@ Creating Media
 -------------------------------------------------------
 To upload a media file, navigate to  Media (top menu) and and click "New +", located upper left. Give the media item a meaningful name, select the type (Avatar, Backdrop, Prop, Audio or Stream) and upload the file from your computer. Click save. You will see it in the media list. 
 
+Tips for creating media:
+* use .png format to retain transparency in images
+* dimensions: graphical media can be scaled on stage, so the actual dimensions for graphical media items are not so important. usually something between 300 to 500 pixels should be sufficient to allow scaling without losing quality. if you have an image that you want to make really big on the stage, you may need to experiment with larger sizes.
+
 .. _assign-media:
 Assign Media 
 ---------------------------------------------------------
@@ -235,6 +239,8 @@ Deleting a media item removes it completely from the UpStage server. If you just
 
 To delete a media item from the UpStage server, go to the Media list and find the item you want to delete. At the far right in the "Manage Media" column, click on the red trash icon. You will be prompted to say yes or no to deleteing the item. If you say yes, it will be removed from the server and no longer available on any stages or anywhere in the system. You will need to reupload the file if you have deleted it by mistake. 
 
+Please remember to delete unwanted media items, as this helps to keep things tidy and not too cluttered backstage. 
+
 On-Stage Tools
 *******************************************************
 Once you have created a stage, uploaded media and assigned it to your stage, you will want to start creating your performance. When you are logged in and have player access to a stage (either you created it, or the stage owner gave you access), you will see tools on the live stage that are not visible to the audience. These tools allow you to manipulate the media assigned to the stage, in real time, to present your performance to the audience.
@@ -267,7 +273,9 @@ An avatar is an image that can appear on the Stage as a character or digital pup
 
 Place avatar on Stage
 =======================================================
-From the left-hand menu, select the Avatar tool, and an overlay will appear at the top of the Stage showing thumbnails of the avatars assigned to this Stage. Drag and drop an avatar to the Stage; it will appear there.
+From the left-hand menu, select the Avatar tool, and an overlay will appear at the top of the Stage showing thumbnails of the avatars assigned to this Stage. 
+
+Drag the avatar you want onto the stage, and you will see it appear in black and white. The live action (light bulb) icon at the top right of the avatar shows white. This means that only you see the avatar, until you click on the light bulb, which will turn green and your avatar appears coloured. This means everyone can now see it. You can adjust the size, position, opacity and frame of the avatar before making it visible to the audience.
 
 Holding an Avatar
 =======================================================
