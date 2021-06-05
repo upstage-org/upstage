@@ -58,6 +58,14 @@
               Upload Limit
             </router-link>
           </li>
+          <li>
+            <router-link
+              to="/backstage/admin/batch-user-creation"
+              exact-active-class="is-active"
+            >
+              Batch User Creation
+            </router-link>
+          </li>
         </ul>
         <p class="menu-label">System</p>
         <ul class="menu-list">

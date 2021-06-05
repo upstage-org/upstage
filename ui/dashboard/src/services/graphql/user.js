@@ -82,5 +82,14 @@ export default {
         success
       }
     }
-  `, variables)
+  `, variables),
+  batchUserCreation: variables => client.request(gql`
+    mutation BatchUserCreation($users: [BatchUserInput]!, $stageIds: [Int]) {
+      batchUserCreation(users: $users, stageIds: $stageIds) {
+        users {
+          dbId
+        }
+      }
+    }
+  `, variables),
 }

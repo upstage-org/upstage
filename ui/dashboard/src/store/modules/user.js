@@ -14,6 +14,7 @@ export default {
   },
   mutations: {
     SET_USER_DATA(state, data) {
+      console.log(data)
       state.user = data;
     },
     SET_LOADING_USER(state, loading) {
@@ -78,6 +79,15 @@ export default {
     },
     isAdmin(state) {
       return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(state.user?.role);
+    },
+    isGuest(state) {
+      if (!state.user) {
+        return true
+      }
+      if (state.user.role === ROLES.GUEST) {
+        return true
+      }
+      return false
     },
     avatarId(state) {
       return state.avatarId;
