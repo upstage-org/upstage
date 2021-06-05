@@ -28,7 +28,7 @@ export const BACKGROUND_ACTIONS = {
 export const ROLES = {
   PLAYER: 1,
   MAKER: 2,
-  UNLIMITED_MAKER: 4,
+  GUEST: 4,
   ADMIN: 8,
   CREATOR: 16,
   SUPER_ADMIN: 32,

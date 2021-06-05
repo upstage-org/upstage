@@ -12,6 +12,11 @@ export default {
             keys.forEach(key => {
                 delete state.graphql[key]
             });
+        },
+        CLEAR_ALL_GRAPHQL_CACHES(state) {
+            Object.keys(state.graphql).forEach(key => {
+                delete state.graphql[key]
+            });
         }
     },
 };

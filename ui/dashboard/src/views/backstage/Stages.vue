@@ -6,7 +6,7 @@
       />
       <h1 class="title is-inline">Stages</h1>
       &nbsp;
-      <router-link to="/backstage/new-stage" class="button">
+      <router-link v-if="!isGuest" to="/backstage/new-stage" class="button">
         <span>New</span>
         <span class="icon">
           <i class="fa fa-plus"></i>
@@ -62,15 +62,13 @@ import { useOwners, useQuery } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import Skeleton from "@/components/Skeleton.vue";
 import { includesIgnoreCase } from "@/utils/common";
-import { useStore } from "vuex";
 import { displayName } from "@/utils/auth";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useStore } from "vuex";
 
 export default {
   components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrumb },
   setup: () => {
-    const store = useStore();
-    const currentUser = computed(() => store.state.user.user);
     const filter = reactive({
       mine: true,
       keyword: "",
@@ -89,8 +87,8 @@ export default {
         );
       }
       if (filter.mine) {
-        result = result.filter(
-          (stage) => stage.owner.id === currentUser.value.id
+        result = result.filter((stage) =>
+          ["player", "editor", "owner"].includes(stage.permission)
         );
         return result;
       }
@@ -100,7 +98,10 @@ export default {
       return result;
     });
 
-    return { filter, loading, stageList, owners, displayName };
+    const store = useStore();
+    const isGuest = computed(() => store.getters["user/isGuest"]);
+
+    return { filter, loading, stageList, owners, displayName, isGuest };
   },
 };
 </script>
