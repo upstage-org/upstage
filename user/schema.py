@@ -61,7 +61,7 @@ class CreateUser(graphene.Mutation):
 
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
-        if not data['email']:
+        if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
 
         user = UserModel(**data)
@@ -97,7 +97,7 @@ class UpdateUser(graphene.Mutation):
             if not user.id == int(data['id']):
                 raise Exception("Permission denied!")
         
-        if not data['email']:
+        if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
 
         with ScopedSession() as local_db_session:
@@ -248,6 +248,9 @@ class BatchUserCreation(graphene.Mutation):
 
     @jwt_required()
     def mutate(self, info, users, stageIds=[]):
+        code,error,user,timezone = current_user()
+        if not user.role in (ADMIN,SUPER_ADMIN) :
+            raise Exception("Permission denied!")
         ids = []
         with ScopedSession() as local_db_session:
             duplicated = []
