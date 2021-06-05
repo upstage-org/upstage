@@ -111,10 +111,11 @@ class Stage(SQLAlchemyObjectType):
             StageAttributeModel.name == 'playerAccess').first()
         if player_access:
             accesses = json.loads(player_access.description)
-            if user_id in accesses[0]:
-                return "player"
-            elif user_id in accesses[1]:
-                return "editor"
+            if len(accesses) == 2:
+                if user_id in accesses[0]:
+                    return "player"
+                elif user_id in accesses[1]:
+                    return "editor"
         return "audience"
 
     def resolve_media(self, info):

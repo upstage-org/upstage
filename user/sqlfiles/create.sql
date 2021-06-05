@@ -2,7 +2,7 @@ CREATE TABLE public.upstage_user (
         id BIGSERIAL NOT NULL,
         username TEXT unique not null,
         password TEXT not null,
-        email TEXT unique not null,
+        email TEXT,
         bin_name TEXT not null,
         role INTEGER not null default 0,
         first_name TEXT default null,

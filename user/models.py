@@ -25,7 +25,7 @@ from config.project_globals import Base,DBSession,db,app
 
 PLAYER = 1
 MAKER = 2
-UNLIMITED_MAKER = 4
+GUEST = 4
 ADMIN = 8
 CREATOR = 16
 SUPER_ADMIN = 32
@@ -33,7 +33,7 @@ SUPER_ADMIN = 32
 ROLES = {
     PLAYER:'Player access to on-stage tools',
     MAKER:'Maker access to workshop, stages',
-    UNLIMITED_MAKER:'Maker access with additional permissions',
+    GUEST:'Can play a stage if granted player permission, cannot create or edit media',
     ADMIN:'Admin access to edit media, players, content',
     CREATOR:'Creator access',
     SUPER_ADMIN:'Internal Upstage staff access to all',
@@ -53,8 +53,8 @@ class User(Base,db.Model):
     id = Column(BigInteger, primary_key=True)
     username = Column(Text, nullable=False, unique=True, default='')
     password = Column(Text, nullable=False, default='')
-    email = Column(Text, nullable=False, unique=True, default='')
-    bin_name = Column(Text,nullable=False,default='')
+    email = Column(Text, nullable=True, default='')
+    bin_name = Column(Text,nullable=True,default='')
     role = Column(Integer, nullable=False, default=0)
     first_name = Column(Text, default='')
     last_name = Column(Text, default='')

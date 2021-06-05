@@ -18,7 +18,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import VERSION
 from auth.auth_api import jwt_required
-from user.models import ADMIN, PLAYER, SUPER_ADMIN, User as UserModel
+from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -232,6 +232,64 @@ class DeleteUser(graphene.Mutation):
             local_db_session.commit()
         return DeleteUser(success=True)
 
+
+class BatchUserInput(graphene.InputObjectType):
+    username = graphene.String(required=True)
+    password = graphene.String(required=True)
+
+
+class BatchUserCreation(graphene.Mutation):
+    """Mutation to create a user."""
+    users = graphene.List(User, description="Users created by this mutation.")
+
+    class Arguments:
+        users = graphene.List(BatchUserInput, required=True)
+        stageIds = graphene.List(graphene.Int, required=False)
+
+    @jwt_required()
+    def mutate(self, info, users, stageIds=[]):
+        ids = []
+        with ScopedSession() as local_db_session:
+            duplicated = []
+            for i in range(len(users) - 1):
+                for j in range(i + 1, len(users)):
+                    if users[i].username == users[j].username:
+                        duplicated.append(users[i].username)
+            if duplicated:
+                raise Exception('Duplicated username: ' + ', '.join(duplicated))
+
+            existed = [user.username for user in DBSession.query(UserModel).filter(UserModel.username.in_([x.username for x in users])).all()]
+            if existed:
+                raise Exception('Username already existed: ' + ', '.join(existed))
+            for item in users:
+                user = UserModel(
+                    username=item.username,
+                    active=True,
+                    agreed_to_terms=True,
+                    role=GUEST
+                )
+                # Add validation for non-empty passwords, etc.
+                user.password = encrypt(item.password)
+                local_db_session.add(user)
+                local_db_session.flush()
+                ids.append(user.id)
+            
+            # Now assigns users into stages
+            stages = DBSession.query(StageModel).filter(StageModel.id.in_(stageIds)).all()
+            for stage in stages:
+                player_access = stage.attributes.filter(StageAttributeModel.name == 'playerAccess').first()
+                if player_access:
+                    accesses = json.loads(player_access.description)
+                    for user_id in ids:
+                        if user_id not in accesses[0]:
+                            accesses[0].append(user_id) # append user id to player ids
+                    player_access.description = json.dumps(accesses)
+                    local_db_session.flush()
+
+            local_db_session.commit()
+        users = DBSession.query(UserModel).filter(UserModel.id.in_(ids)).all()
+        return BatchUserCreation(users=users)
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     """ Some mutations are imported from auth/ """
@@ -241,6 +299,7 @@ class Mutation(graphene.ObjectType):
     refreshUser = RefreshMutation.Field()
     changePassword = ChangePassword.Field()
     deleteUser = DeleteUser.Field()
+    batchUserCreation = BatchUserCreation.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
