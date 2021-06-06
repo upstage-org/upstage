@@ -75,12 +75,8 @@ export const useFlv = (video, src) => {
         if (flvjs.isSupported()) {
             const flvPlayer = flvjs.createPlayer({
                 type: "flv",
-                url: src.value,
+                url: src.value + "?" + new Date(), // Since firefox cannot play multiple video with the same url (I don't know why, seem like a bug). I hack the url so that firefox treat thems as multiple url
             });
-            flvPlayer.on('error', (e) => {
-                console.log('error', e)
-                playable.value = false
-            })
             flvPlayer.attachMediaElement(video.value);
             flvPlayer.load();
         }

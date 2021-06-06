@@ -95,7 +95,6 @@ export default {
       () => props.object,
       () => {
         window.Object.assign(stream, props.object);
-        console.log(props.object);
         synchronize();
       }
     );
