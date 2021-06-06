@@ -41,6 +41,9 @@ export const useShape = (video, object) => {
         const r = Math.min(object.w, object.h) / 2;
         canvas.width = object.w;
         canvas.height = object.h;
+        if (video.value) {
+            video.value.pause()
+        }
         switch (shape) {
             case 'circle':
                 ctx.beginPath();
@@ -55,7 +58,11 @@ export const useShape = (video, object) => {
             default:
                 await clipImage(shape);
         }
-        draw();
+        if (video.value && object.isPlaying) {
+            video.value.play()
+        } else {
+            draw()
+        }
     }, { immediate: true })
 
     return { src }

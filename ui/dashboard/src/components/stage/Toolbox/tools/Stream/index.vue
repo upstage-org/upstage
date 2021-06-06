@@ -1,7 +1,7 @@
 <template>
   <div @click="newStream">
     <div style="height: 48px">
-      <OBSInstruction />
+      <OBSInstruction src="some_unique_key" />
     </div>
     <span class="tag is-light is-block">Instruction</span>
   </div>
