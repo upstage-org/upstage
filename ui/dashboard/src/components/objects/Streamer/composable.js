@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { cropImageFromCanvas } from "@/utils/canvas";
 import flvjs from "flv.js";
 
@@ -17,7 +17,7 @@ export const useShape = (video, object) => {
     const loop = () => {
         if (!video.value.paused && !video.value.ended) {
             draw();
-            setTimeout(loop, 1000 / 30); // drawing at 30fps
+            requestAnimationFrame(loop);
         }
     }
 
@@ -62,7 +62,7 @@ export const useShape = (video, object) => {
 }
 
 export const useFlv = (video, src) => {
-    const isSupported = computed(() => flvjs.isSupported());
+    const playable = ref(flvjs.isSupported());
 
     const initPlayer = () => {
         if (flvjs.isSupported()) {
@@ -70,15 +70,17 @@ export const useFlv = (video, src) => {
                 type: "flv",
                 url: src.value,
             });
+            flvPlayer.on('error', (e) => {
+                console.log('error', e)
+                playable.value = false
+            })
             flvPlayer.attachMediaElement(video.value);
             flvPlayer.load();
-            flvPlayer.play();
         }
     };
 
     onMounted(initPlayer);
     watch(src, initPlayer);
-    console.log(src.value)
 
-    return { isSupported }
+    return { playable }
 }

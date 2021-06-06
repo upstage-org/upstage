@@ -202,11 +202,9 @@ export default {
           h: height,
           rotate,
           moveSpeed,
-          type,
-          isPlaying,
           opacity,
         } = props.object;
-        if (isDragging.value || (type === "stream" && isPlaying)) {
+        if (isDragging.value) {
           return;
         }
         animation?.pause(true);

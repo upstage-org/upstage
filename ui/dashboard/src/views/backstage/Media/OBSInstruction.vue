@@ -1,10 +1,7 @@
 <template>
   <Modal>
     <template #trigger>
-      <p
-        data-tooltip="Show instruction on OBS Studio"
-        class="has-tooltip-bottom"
-      >
+      <p title="Show instruction on OBS Studio" class="has-tooltip-bottom">
         <Icon size="50" src="obs-logo.png" />
       </p>
     </template>
@@ -28,9 +25,9 @@
       </div>
       <div class="columns">
         <div class="column is-4 mt-6">
-          <b>Step 2: </b>In Stream tab, choose <code>Custom...</code> for
-          Service, <code>rtmp://streaming1.upstage.org.nz:1936/app</code> for
-          Server and <code>{{ src }}</code> for Stream Key.
+          <b>Step 2: </b>In Stream tab, choose Custom... for Service,
+          <code>{{ publishUrl }}</code> for Server and
+          <code>{{ src }}</code> for Stream Key.
         </div>
         <div class="column">
           <img src="@/assets/obs-instruction/2.png" alt="Step 2" />
@@ -53,10 +50,14 @@
 <script>
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
+import configs from "@/config";
 
 export default {
   components: { Icon, Modal },
   props: ["src"],
+  setup: () => {
+    return { publishUrl: configs.STREAMING.publish };
+  },
 };
 </script>
 

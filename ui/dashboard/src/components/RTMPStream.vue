@@ -1,5 +1,5 @@
 <template>
-  <video v-if="isSupported" ref="video"></video>
+  <video v-if="playable" ref="video"></video>
   <img v-else src="@/assets/notfound.svg" />
 </template>
 
@@ -13,8 +13,8 @@ export default {
     const video = ref();
     const fullUrl = computed(() => getSubsribeLink(props.src));
 
-    const { isSupported } = useFlv(video, fullUrl);
-    return { video, isSupported };
+    const { playable } = useFlv(video, fullUrl);
+    return { video, playable };
   },
 };
 </script>

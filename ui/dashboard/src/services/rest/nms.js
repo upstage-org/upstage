@@ -26,8 +26,8 @@ export default {
                     isRTMP: true,
                     autoDetect: true,
                     url: key,
-                    w: width,
-                    h: height,
+                    w: 100 * width / height,
+                    h: 100,
                 }
                 streams.push(stream)
             }

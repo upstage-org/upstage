@@ -1,9 +1,9 @@
 <template>
   <div @click="newStream">
-    <div class="icon is-large">
-      <Icon src="new.svg" size="36" />
+    <div style="height: 48px">
+      <OBSInstruction />
     </div>
-    <span class="tag is-light is-block">New</span>
+    <span class="tag is-light is-block">Instruction</span>
   </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
@@ -14,30 +14,35 @@
   <div v-if="loading">
     <LoadingSkeleton />
   </div>
+  <div v-else @click="fetchRunningStreams">
+    <div class="icon is-large">
+      <Icon src="refresh.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Refresh</span>
+  </div>
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
 import LoadingSkeleton from "@/components/Skeleton";
+import OBSInstruction from "@/views/backstage/Media/OBSInstruction";
 
 export default {
-  components: { Skeleton, Icon, RTMPStream, LoadingSkeleton },
+  components: { Skeleton, Icon, RTMPStream, LoadingSkeleton, OBSInstruction },
   setup: () => {
     const store = useStore();
-    const newStream = () => {
-      store.dispatch("stage/openSettingPopup", {
-        type: "CreateStream",
-      });
-    };
     const streams = computed(() => store.state.stage.tools.streams);
     const loading = computed(() => store.state.stage.loadingRunningStreams);
-    store.dispatch("stage/getRunningStreams");
+    const fetchRunningStreams = () => {
+      store.dispatch("stage/getRunningStreams");
+    };
+    onMounted(fetchRunningStreams);
 
-    return { streams, newStream, loading };
+    return { streams, loading, fetchRunningStreams };
   },
 };
 </script>

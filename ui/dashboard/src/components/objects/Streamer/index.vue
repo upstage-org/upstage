@@ -39,14 +39,15 @@
                 </div>
               </button>
             </p>
-            <p class="control menu-group-item" @click="clip(vue)">
+            <p
+              class="control menu-group-item"
+              v-for="shape in shapes"
+              :key="shape.src"
+              @click="clip(shape.src)"
+              :title="shape.name"
+            >
               <button class="button is-light">
-                <img style="height: 100%" :src="vue" />
-              </button>
-            </p>
-            <p class="control menu-group-item" @click="clip(dog)">
-              <button class="button is-light">
-                <img style="height: 100%" :src="dog" />
+                <img style="height: 100%" :src="shape.src" />
               </button>
             </p>
           </div>
@@ -70,8 +71,6 @@ import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv, useShape } from "./composable";
-import vue from "@/assets/logo.png";
-import dog from "@/assets/dog.png";
 import { getSubsribeLink } from "@/utils/streaming";
 
 export default {
@@ -79,6 +78,8 @@ export default {
   props: ["object"],
   setup: (props) => {
     const store = useStore();
+    const shapes = computed(() => store.state.stage.tools.shapes);
+
     const stream = reactive({ ...props.object, isPlaying: true });
     const video = ref();
 
@@ -97,8 +98,8 @@ export default {
     watch(
       () => props.object,
       () => {
-        delete props.object.src;
         window.Object.assign(stream, props.object);
+        console.log(props.object);
         synchronize();
       }
     );
@@ -147,8 +148,7 @@ export default {
       playStream,
       pauseStream,
       clip,
-      vue,
-      dog,
+      shapes,
     };
   },
 };

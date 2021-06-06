@@ -38,6 +38,7 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
+            shapes: [],
             config: {
                 animateDuration: 1000,
                 reactionDuration: 5000,
@@ -96,6 +97,7 @@ export default {
                 .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
+                .concat(state.tools.shapes.map(b => b.src))
             return assets;
         },
         audios(state) {
@@ -306,7 +308,9 @@ export default {
         },
         PUSH_RUNNING_STREAMS(state, streams) {
             state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
-            state.loadingRunningStreams = false
+        },
+        PUSH_SHAPES(state, shapes) {
+            state.tools.shapes = shapes;
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -644,10 +648,12 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const model = await stageGraph.loadStage(url, recordId)
-            if (model) {
-                commit('SET_MODEL', model);
-                const { events } = model
+            const { stage, shapes } = await stageGraph.loadStage(url, recordId)
+            console.log(shapes)
+            if (stage) {
+                commit('SET_MODEL', stage);
+                commit('PUSH_SHAPES', shapes)
+                const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {
                         timestamp: {
@@ -731,6 +737,7 @@ export default {
             state.loadingRunningStreams = true
             const streams = await nmsService.getStreams()
             commit('PUSH_RUNNING_STREAMS', streams)
+            state.loadingRunningStreams = false
         }
     },
 };
