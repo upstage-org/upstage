@@ -16,22 +16,24 @@ export default {
         const { data } = await instance.get(url);
         const { live } = data
         const streams = []
-        Object.keys(live).forEach(key => {
-            const { publisher } = live[key]
-            if (publisher) {
-                const { width, height } = publisher.video
-                const stream = {
-                    name: key,
-                    type: 'stream',
-                    isRTMP: true,
-                    autoDetect: true,
-                    url: key,
-                    w: width,
-                    h: height,
+        if (live) {
+            Object.keys(live).forEach(key => {
+                const { publisher } = live[key]
+                if (publisher) {
+                    const { width, height } = publisher.video
+                    const stream = {
+                        name: key,
+                        type: 'stream',
+                        isRTMP: true,
+                        autoDetect: true,
+                        url: key,
+                        w: 100 * width / height,
+                        h: 100,
+                    }
+                    streams.push(stream)
                 }
-                streams.push(stream)
-            }
-        })
+            })
+        }
         return streams;
     },
 };

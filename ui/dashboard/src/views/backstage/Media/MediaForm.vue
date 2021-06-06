@@ -210,10 +210,14 @@ export default {
     });
 
     const tabs = computed(() => {
-      const res = [
-        { key: "preview", label: "Preview", icon: "fas fa-image" },
-        { key: "stages", label: "Stage", icon: "fas fa-person-booth" },
-      ];
+      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      if (form.mediaType !== "shape") {
+        res.push({
+          key: "stages",
+          label: "Stage",
+          icon: "fas fa-person-booth",
+        });
+      }
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }

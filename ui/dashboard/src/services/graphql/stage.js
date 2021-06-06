@@ -1,3 +1,4 @@
+import { absolutePath } from "@/utils/common";
 import { gql } from "graphql-request";
 import { stageGraph } from ".";
 import { createClient } from "./graphql";
@@ -135,9 +136,23 @@ export default {
           }
         }
       }
+      shapes: assetList(assetType: "shape") {
+        edges {
+          node {
+            name
+            fileLocation
+          }
+        }
+      }
     }
     ${stageFragment}
-  `, { fileLocation, performanceId }).then(response => response.stageList.edges[0]?.node),
+  `, { fileLocation, performanceId }).then(response => ({
+    stage: response.stageList.edges[0]?.node,
+    shapes: response.shapes.edges.map(edge => ({
+      name: edge.node.name,
+      src: absolutePath(edge.node.fileLocation)
+    }))
+  })),
   loadPermission: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {

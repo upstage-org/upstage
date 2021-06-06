@@ -1,4 +1,4 @@
-import { computed, onMounted, ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { cropImageFromCanvas } from "@/utils/canvas";
 import flvjs from "flv.js";
 
@@ -17,7 +17,7 @@ export const useShape = (video, object) => {
     const loop = () => {
         if (!video.value.paused && !video.value.ended) {
             draw();
-            setTimeout(loop, 1000 / 30); // drawing at 30fps
+            requestAnimationFrame(loop);
         }
     }
 
@@ -41,6 +41,9 @@ export const useShape = (video, object) => {
         const r = Math.min(object.w, object.h) / 2;
         canvas.width = object.w;
         canvas.height = object.h;
+        if (video.value) {
+            video.value.pause()
+        }
         switch (shape) {
             case 'circle':
                 ctx.beginPath();
@@ -55,30 +58,32 @@ export const useShape = (video, object) => {
             default:
                 await clipImage(shape);
         }
-        draw();
+        if (video.value && object.isPlaying) {
+            video.value.play()
+        } else {
+            draw()
+        }
     }, { immediate: true })
 
     return { src }
 }
 
 export const useFlv = (video, src) => {
-    const isSupported = computed(() => flvjs.isSupported());
+    const playable = ref(flvjs.isSupported());
 
     const initPlayer = () => {
         if (flvjs.isSupported()) {
             const flvPlayer = flvjs.createPlayer({
                 type: "flv",
-                url: src.value,
+                url: src.value + "?" + new Date(), // Since firefox cannot play multiple video with the same url (I don't know why, seem like a bug). I hack the url so that firefox treat thems as multiple url
             });
             flvPlayer.attachMediaElement(video.value);
             flvPlayer.load();
-            flvPlayer.play();
         }
     };
 
     onMounted(initPlayer);
     watch(src, initPlayer);
-    console.log(src.value)
 
-    return { isSupported }
+    return { playable }
 }

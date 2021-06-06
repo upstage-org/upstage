@@ -39,14 +39,15 @@
                 </div>
               </button>
             </p>
-            <p class="control menu-group-item" @click="clip(vue)">
+            <p
+              class="control menu-group-item"
+              v-for="shape in shapes"
+              :key="shape.src"
+              @click="clip(shape.src)"
+              :title="shape.name"
+            >
               <button class="button is-light">
-                <img style="height: 100%" :src="vue" />
-              </button>
-            </p>
-            <p class="control menu-group-item" @click="clip(dog)">
-              <button class="button is-light">
-                <img style="height: 100%" :src="dog" />
+                <img style="height: 100%" :src="shape.src" />
               </button>
             </p>
           </div>
@@ -57,7 +58,6 @@
       ref="video"
       :src="object.url"
       preload="auto"
-      :muted="!isHost"
       @loadeddata="loadeddata"
       @ended="stream.isPlaying = false"
       style="display: none"
@@ -70,21 +70,18 @@ import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv, useShape } from "./composable";
-import vue from "@/assets/logo.png";
-import dog from "@/assets/dog.png";
 import { getSubsribeLink } from "@/utils/streaming";
+import loading from "@/assets/loading.svg";
 
 export default {
   components: { Object },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
-    const stream = reactive({ ...props.object, isPlaying: true });
-    const video = ref();
+    const shapes = computed(() => store.state.stage.tools.shapes);
 
-    const isHost = computed(() =>
-      store.state.stage.hosts.some((object) => object.id === props.object.id)
-    );
+    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
+    const video = ref();
 
     const synchronize = () => {
       if (stream.isPlaying && video.value) {
@@ -97,7 +94,6 @@ export default {
     watch(
       () => props.object,
       () => {
-        delete props.object.src;
         window.Object.assign(stream, props.object);
         synchronize();
       }
@@ -142,13 +138,11 @@ export default {
     return {
       video,
       stream,
-      isHost,
       loadeddata,
       playStream,
       pauseStream,
       clip,
-      vue,
-      dog,
+      shapes,
     };
   },
 };
