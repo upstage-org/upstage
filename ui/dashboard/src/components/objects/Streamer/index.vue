@@ -58,7 +58,6 @@
       ref="video"
       :src="object.url"
       preload="auto"
-      :muted="!isHost"
       @loadeddata="loadeddata"
       @ended="stream.isPlaying = false"
       style="display: none"
@@ -72,6 +71,7 @@ import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv, useShape } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
+import loading from "@/assets/loading.svg";
 
 export default {
   components: { Object },
@@ -80,12 +80,8 @@ export default {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
 
-    const stream = reactive({ ...props.object, isPlaying: true });
+    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
     const video = ref();
-
-    const isHost = computed(() =>
-      store.state.stage.hosts.some((object) => object.id === props.object.id)
-    );
 
     const synchronize = () => {
       if (stream.isPlaying && video.value) {
@@ -143,7 +139,6 @@ export default {
     return {
       video,
       stream,
-      isHost,
       loadeddata,
       playStream,
       pauseStream,

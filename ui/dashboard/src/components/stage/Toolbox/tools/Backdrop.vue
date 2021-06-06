@@ -73,7 +73,9 @@ export default {
   components: { Image, Icon, ContextMenu },
   setup: () => {
     const store = useStore();
-    const currentBackground = computed(() => store.state.stage.background);
+    const currentBackground = computed(
+      () => store.state.stage.background ?? {}
+    );
 
     const backgrounds = computed(() => store.state.stage.tools.backdrops);
 
