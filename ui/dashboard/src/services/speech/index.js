@@ -10,7 +10,7 @@ export const avatarSpeak = (avatar, message = avatar.speak.message) => {
         params.amplitude = amplitude
         params.pitch = pitch
         params.speed = speed;
-        const callback = () => speak(message, params) // voice got loaded assynchronous
+        const callback = () => speak(cleanEmoji(message), params) // voice got loaded assynchronous
         if (isValidVoice(voice)) {
             loadVoice(voice, callback)
         } else {
@@ -18,4 +18,8 @@ export const avatarSpeak = (avatar, message = avatar.speak.message) => {
         }
     }
 
+}
+
+export const cleanEmoji = message => {
+    return message.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
 }
