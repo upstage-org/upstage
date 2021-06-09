@@ -9,7 +9,7 @@ User Manual
 
 .. _user-manual_getting_started:
 
-Getting Started
+Getting Started (TRANSFERRED TO FM - "Create an account section")
 *******************************************************
 
 You do not need to install anything to create and present live performances on UpStage (unless you wish to set up your own server, in which case, see Installation Manuals). Simply navigate to https://app1.upstage.org.nz/V4.0/ui/ with a standard browser such as Mozilla Firefox or Google Chrome. 
@@ -28,7 +28,7 @@ Players
 
 .. _registration:
 
-Registration
+Registration (TRANSFERRED TO FM - "Create an account section")
 -------------------------------------------------------
 The registration screen enables you to register a user account. You do not need to register to attend a performance as audience, only if you wish to create and participate in performances as a :ref:`Player <player>`.
 
@@ -49,7 +49,7 @@ Read and check the agreement with our Terms of Service. You *must agree* to thes
 
 .. _login:
 
-Logging In
+Logging In (TRANSFERRED TO FM - "Create an account section")
 -------------------------------------------------------
 You are not required to log in in order to participate as an audience member. 
 If however, you wish to participate as a *player* you will need to log in with your registered account (see: `registration`_).
@@ -62,7 +62,7 @@ You can log in with your credentials using the log in box which is accessible vi
 
 .. _backstage: 
 
-Backstage
+Backstage (TRANSFERRED TO FM - "Backstage")
 -------------------------------------------------------
 Backstage is where all the preparation for your cyberformance happens. Here you can create, view and manage your stages and media, and manage your profile. If you have admin permissions you can also manage others' profiles, stages and media. 
 
@@ -86,7 +86,7 @@ When you click the “enter” button, you will enter the stage live.
 
 .. _profile:
 
-Your Profile
+Your Profile (TRANSFERRED TO FM - "Manage your profile")
 -------------------------------------------------------
 To update the information you entered when registering for UpStage, such as changing your email address or changing your password, go to the Profile page. You will see the name, username, mail and password you entered. 
 To modify any information, write directly in the fields then click "update information".
@@ -96,7 +96,7 @@ To modify any information, write directly in the fields then click "update infor
 
 .. _change-password:
 
-Changing Your Password
+Changing Your Password (TRANSFERRED TO FM - "Manage your profile")
 -------------------------------------------------------
 To change your password, go to the Profile page. In the left-hand menu, click "Change password".
 You will need to enter your old password, and the new password twice. Click the "Change Password" button below the form to confirm.
@@ -104,7 +104,7 @@ You will need to enter your old password, and the new password twice. Click the 
 .. image:: /change-profile02.png
     :alt: Your profile
 
-Stages
+Stages (TRANSFERRED TO FM - "Create your own stage" and "Manage your stage")
 *******************************************************
 
 .. _create-stage:
@@ -195,7 +195,7 @@ Note: there is a limit of 1MB per media item, apart from video which can be up t
 
 .. _create-media:
 
-Creating Media
+Creating Media (TRANSFERRED TO FM - "Creating Graphics")
 -------------------------------------------------------
 To upload a media file, navigate to  Media (top menu) and and click "New +", located upper left. Give the media item a meaningful name, select the type (Avatar, Backdrop, Prop, Audio or Stream) and upload the file from your computer. Click save. You will see it in the media list. 
 
@@ -204,7 +204,7 @@ Tips for creating media:
 * dimensions: graphical media can be scaled on stage, so the actual dimensions for graphical media items are not so important. usually something between 300 to 500 pixels should be sufficient to allow scaling without losing quality. if you have an image that you want to make really big on the stage, you may need to experiment with larger sizes.
 
 .. _assign-media:
-Assign Media 
+Assign Media (TRANSFERRED TO FM - "Assign Media to your Stage")
 ---------------------------------------------------------
 When you create a new Stage, it has no media on it; you need assign media to a Stage, then it will appear in the on-stage tools and you can manipulate it in a performance. 
 
@@ -218,7 +218,7 @@ To unassign media, so that it no longer appears on this stage, just click on the
 
 .. _modify-media:
 
-Modifying Media
+Modifying Media (TRANSFERRED TO FM - "Modify Media")
 -------------------------------------------------------
 To modify a media item that has been uploaded to UpStage, first go to the Media list and find the item you want to modify. Then at the far right under the column "Manage Media", click on the pencil icon. This brings you to the Media management interface. Here you can do the following:
 
@@ -233,7 +233,7 @@ Multiframe avatars and props are a series of images contained in one media item.
 
 .. _delete-media:
 
-Deleting Media
+Deleting Media (TRANSFERRED TO FM - "Delete Media")
 -------------------------------------------------------
 Deleting a media item removes it completely from the UpStage server. If you just want to remove a media item from a stage that it's assigned to, you can do this from the Stage management interface for that stage.
 
@@ -241,7 +241,7 @@ To delete a media item from the UpStage server, go to the Media list and find th
 
 Please remember to delete unwanted media items, as this helps to keep things tidy and not too cluttered backstage. 
 
-On-Stage Tools
+On-Stage Tools (TRANSFERRED TO FM - "Quick Overview of Tools")
 *******************************************************
 Once you have created a stage, uploaded media and assigned it to your stage, you will want to start creating your performance. When you are logged in and have player access to a stage (either you created it, or the stage owner gave you access), you will see tools on the live stage that are not visible to the audience. These tools allow you to manipulate the media assigned to the stage, in real time, to present your performance to the audience.
 
@@ -251,7 +251,7 @@ The left-hand tool bar gives you access to the following tools: Backdrops, Avata
 
 .. _backdrops:
 
-Backdrops
+Backdrops (TRANSFERRED TO FM - "Backdrop Tool")
 -------------------------------------------------------
 Backdrops are images that can be displayed behind the rest of the media on the stage, providing a visual background or scenery. The image will fill the background area of the stage. Note that audience members may have different sized browser windows, so they may have space at the sides of the backdrop. You can change the background colour of the stage in the Settings tool, to match it to your backdrops.
 
@@ -265,7 +265,7 @@ Click on the Backdrop tool, and the overlay appears on the top of the Stage. Cli
 
 .. _avatars:
 
-Avatars
+Avatars (TRANSFERRED TO FM - "Avatar Tool")
 -------------------------------------------------------
 An avatar is an image that can appear on the Stage as a character or digital puppet. It can be moved, rotated, scaled in size, and faded in and out. Avatars can speak with a computerised voice and in speech bubbles as well as in the chat window. You can "hold" an avatar by placing it on the stage, or by double-clicking on an avatar already on the stage, that is not held by another player. When you are holding an avatar, only you can operate that avatar.
 
@@ -327,13 +327,13 @@ Bring to front or Send to back
 =======================================================
 As media is placed on the stage, it will appear in front of other media that is already there (CHECK - IS THAT CORRECT?). To bring your avatar in front of other media, the *right click* on it to display the *context menu* and select "Bring to front". To move your avatar behind another avatar or prop, select "Send to back".
 
-Avatar speech and voice
+Avatar speech and voice (TRANSFERRED TO FM - "Avatar Speech and voice")
 =======================================================
 When you are holding an avatar, you can make it speak by typing in the chat window input field. The text will appear in the chat window and as a speech bubble above the avatar. If you have given your avatar a voice, the text will also be spoken aloud in a computerised voice.
 
 You can customise your avatar's voice from the Media edit interface (see the Media section), or directly on the stage. On stage, right click on the avatar you are holding and in the context menu select "Voice setting". Here you can adjust the pitch, rate and volume of the voice, as well as its accent and variant. You can test the voice before saving it. 
 
-Change the avatar name
+Change the avatar name (TRANSFERRED TO FM - "Avatar Tool")
 =======================================================
 When you are holding an avatar and type text into the chat input field to speak as that avatar, its name will appear in the chat window alongside the text. To change the nickname, *right click* on the avatar and in the context menu select "Change your nickname". A pop-up window appears where you can enter a new name. Press "Save" to confirm.
 
@@ -362,7 +362,7 @@ You can remove the avatar from your stage by right-clicking to display the conte
 
 .. _audio:
 
-Audio
+Audio (TRANSFERRED TO FM - "Audio Tool")
 -------------------------------------------------------
 For backgroud music or sound, you choose when the sound is running and when it's stop.
 
@@ -376,7 +376,7 @@ Re-clicking on the play button of the sound you make it pause.
 
 .. _props:
 
-Props
+Props (TRANSFERRED TO FM - "Props Tool")
 -------------------------------------------------------
 Props in UpStage are less powerful than avatar, with a propos you can move, resize, rotate, change opacity, velocity of his animation, and changing his level. 
 
@@ -436,7 +436,7 @@ To remove a prop from your stage, right-click on it and click the "delete" butto
 
 .. _backdrops:
 
-Backdrops
+Backdrops (TRANSFERRED TO FM - "Backdrops Tool")
 -------------------------------------------------------
 introduction : context use for a player, consequence for audience
 
@@ -452,7 +452,7 @@ Click on the backdrop tool, an overlay appear on the top of the Stage. Click on 
 
 .._stream:
 
-Stream
+Stream (TRANSFERRED TO FM - "Stream Tool")
 ----------------------------------------------------------
 introduction : 3 kinds of stream: a video file, an url, your webcam. Context explaination, difference between this for player and for audience.
 Prerequisite : put available media on management dashboard
@@ -485,7 +485,7 @@ Right click on the video on the Stage and hit the clear button to make it disapp
 
 .._draw:
 
-Draw
+Draw (TRANSFERRED TO FM - "Drawing Tool")
 -------------------------------------------------------
 You can draw directly during the Live, or creat the drawing and make it appear on Stage or drawing in live visible by the audience and other player as well.
 
@@ -554,7 +554,7 @@ Ugh, you really an illustration artist! After clicking the drawing tool, hit the
 
 .._text:
 
-Text
+Text (TRANSFERRED TO FM - "Text Tool")
 ------------------------------------------------
 You want to put words, sentence in Stage. Use the text tool for that purpose. Be aware that the text become image and it no longer editable neither resizable.
 
@@ -593,7 +593,7 @@ Have text on the stage that you no longer need? Right-click on it and click the 
 
 .._settings:
 
-Settings
+Settings (TRANSFERRED TO FM - "Stage Settings")
 ----------------------------------------
 Some settings in live are quiclu available in this tool. It's allow you to change the color of the background behing the backdrop and manage the chat.
 
