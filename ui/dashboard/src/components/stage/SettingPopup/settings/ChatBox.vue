@@ -1,6 +1,6 @@
 <template>
   <div style="width: 500px">
-    <EmojiInput
+    <ChatInput
       v-model="message"
       placeholder="Type message"
       @keyup.enter="sendChat"
@@ -9,11 +9,11 @@
 </template>
 
 <script>
-import EmojiInput from "@/components/form/EmojiInput";
+import ChatInput from "@/components/form/ChatInput";
 import { ref } from "@vue/reactivity";
 import { useStore } from "vuex";
 export default {
-  components: { EmojiInput },
+  components: { ChatInput },
   emits: ["close"],
   setup: (props, { emit }) => {
     const store = useStore();

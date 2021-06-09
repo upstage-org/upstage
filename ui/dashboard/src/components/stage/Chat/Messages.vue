@@ -15,6 +15,7 @@
         :style="
           'background-color: ' + item.backgroundColor + '; color: ' + item.color
         "
+        :class="messageClass[item.behavior]"
         :title="time(item.at)"
       >
         <Linkify>{{ item.message }}</Linkify>
@@ -29,6 +30,14 @@ import Linkify from "@/components/Linkify";
 export default {
   props: ["messages"],
   components: { Linkify },
+  data: function () {
+    return {
+      messageClass: {
+        think: "has-text-info has-background-info-light",
+        shout: "has-background-danger has-text-white",
+      },
+    };
+  },
   methods: {
     time(value) {
       return moment(value).fromNow();

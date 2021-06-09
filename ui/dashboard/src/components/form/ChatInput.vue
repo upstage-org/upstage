@@ -1,5 +1,9 @@
 <template>
-  <div style="position: relative">
+  <div
+    style="position: relative"
+    class="has-tooltip-left"
+    :data-tooltip="dynamicTooltip"
+  >
     <ElasticInput
       v-if="!pickerOnly"
       v-bind="$attrs"
@@ -12,6 +16,7 @@
         'border-bottom-right-radius': '20px',
         'padding-right': '40px',
       }"
+      :class="dynamicClass"
     />
     <div
       v-click-outside="() => (isPicking = false)"
@@ -44,7 +49,7 @@
 
 <script>
 import "emoji-picker-element";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import anime from "animejs";
 import Icon from "@/components/Icon";
 import ElasticInput from "@/components/form/ElasticInput";
@@ -61,7 +66,6 @@ export default {
       if (props.pickerOnly) {
         emit("update:modelValue", unicode);
       } else {
-        console.log(input.value);
         const start = input.value.selectionStart;
         const end = input.value.selectionEnd;
         const value = props.modelValue ?? "";
@@ -84,7 +88,31 @@ export default {
         complete,
       });
     };
-    return { input, isPicking, pickerEnter, log: console.log };
+    const behavior = computed(() => {
+      if (props.modelValue) {
+        if (props.modelValue.startsWith(":")) {
+          return "think";
+        }
+        if (props.modelValue.startsWith("!")) {
+          return "shout";
+        }
+      }
+      return "speak";
+    });
+    const dynamicClass = computed(() => {
+      return {
+        think: "has-background-info-light has-text-info",
+        shout: "has-background-danger has-text-white",
+      }[behavior.value];
+    });
+    const dynamicTooltip = computed(() => {
+      return {
+        think: "Think",
+        shout: "Shout",
+      }[behavior.value];
+    });
+
+    return { input, isPicking, pickerEnter, dynamicClass, dynamicTooltip };
   },
 };
 </script>

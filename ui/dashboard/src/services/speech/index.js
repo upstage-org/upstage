@@ -7,7 +7,15 @@ export const avatarSpeak = (avatar, message = avatar.speak.message) => {
     if (avatar.voice) {
         const { voice, variant, amplitude, pitch, speed } = avatar.voice
         params.variant = variant
-        params.amplitude = amplitude
+        params.amplitude = amplitude ?? 100
+        if (avatar.speak) {
+            if (avatar.speak.behavior === 'think') {
+                return;
+            }
+            if (avatar.speak.behavior === 'shout') {
+                params.amplitude *= 5
+            }
+        }
         params.pitch = pitch
         params.speed = speed;
         const callback = () => speak(cleanEmoji(message), params) // voice got loaded assynchronous
