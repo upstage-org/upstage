@@ -435,9 +435,19 @@ export default {
         sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
             const user = rootGetters["user/chatname"];
+            let behavior = "speak"
+            if (message.startsWith(":")) {
+                behavior = "think";
+                message = message.substr(1)
+            }
+            if (message.startsWith("!")) {
+                behavior = "shout"
+                message = message.substr(1).toUpperCase()
+            }
             const payload = {
                 user,
                 message: message,
+                behavior,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
                 at: +new Date()

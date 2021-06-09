@@ -36,7 +36,7 @@
             <Reaction :custom-emoji="true" />
           </div>
           <div class="control has-icons-right is-fullwidth">
-            <emoji-input
+            <ChatInput
               v-model="message"
               placeholder="Type message"
               :loading="loadingUser"
@@ -53,13 +53,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
-import EmojiInput from "@/components/form/EmojiInput";
+import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
 import Messages from "./Messages";
 
 export default {
-  components: { EmojiInput, Reaction, Icon, Messages },
+  components: { ChatInput, Reaction, Icon, Messages },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -146,6 +146,7 @@ export default {
   .card-content {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 36px;
   }
   .card-footer-item {

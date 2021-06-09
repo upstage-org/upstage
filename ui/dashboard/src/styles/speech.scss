@@ -1,0 +1,28 @@
+blockquote.bubble { 
+    background-position: center;
+    background-repeat: no-repeat !important;
+    background-size: 100% 100%;
+    text-align: center;
+    line-height: 1em;
+    min-width: min-content;
+    max-width: 300px;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+blockquote.speak {
+    background-image: url(../assets/speak.svg);
+    padding-top: 6%;
+    padding-bottom: 20%;
+}
+blockquote.think {
+    background-image: url(../assets/think.svg);
+    font-style: italic;
+    padding-top: 15%;
+    padding-bottom: 40%;
+}
+blockquote.shout {
+    background-image: url(../assets/shout.svg);
+    font-weight: bold;
+    padding-top: 10%;
+    padding-bottom: 25%;
+}

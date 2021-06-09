@@ -19,21 +19,17 @@
         <Icon src="my-avatar.svg" />
       </span>
       <transition @enter="enter" @leave="leave" :css="false" appear>
-        <div
+        <blockquote
           v-if="object.speak"
-          class="chat-bubble"
+          class="bubble"
           tabindex="-1"
           :key="object.speak"
-          :style="{
-            width: max(object.w, 200) + 'px',
-            'max-width': 'max-content',
-          }"
+          :class="object.speak.behavior ?? 'speak'"
         >
           <div class="py-2 px-4">
             <Linkify>{{ object.speak.message }}</Linkify>
           </div>
-          <i class="fas fa-caret-down"></i>
-        </div>
+        </blockquote>
       </transition>
     </div>
   </teleport>
@@ -102,22 +98,6 @@ export default {
 .avatar-topping {
   position: fixed;
   z-index: 3000;
-}
-.chat-bubble {
-  position: absolute;
-  border-radius: 4px;
-  text-align: center;
-  line-height: 1em;
-  background: white;
-  word-break: break-word;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
-    0 0px 0 1px rgba(10, 10, 10, 0.02);
-  i.fas {
-    position: absolute;
-    left: calc(50% - 4px);
-    bottom: -8px;
-    color: white;
-  }
 }
 .marker {
   position: absolute;

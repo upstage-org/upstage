@@ -8,7 +8,7 @@
     {{ react }}
   </button>
   <span v-if="customEmoji">
-    <emoji-input
+    <ChatInput
       :picker-only="true"
       :style="{ height: '30px' }"
       className="is-white"
@@ -19,7 +19,7 @@
           <Icon src="new.svg" />
         </span>
       </template>
-    </emoji-input>
+    </ChatInput>
   </span>
   <teleport to="body">
     <div class="flying-reactions">
@@ -45,11 +45,11 @@
 import { computed } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
-import EmojiInput from "@/components/form/EmojiInput";
+import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
 
 export default {
-  components: { EmojiInput, Icon },
+  components: { ChatInput, Icon },
   props: ["customEmoji"],
   setup: () => {
     const store = useStore();
