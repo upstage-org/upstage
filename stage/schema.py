@@ -34,6 +34,7 @@ class StageAttribute:
     description = graphene.String(description="Stage Description")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
+    cover = graphene.String(description="Cover image url")
     media = graphene.String(description="Media attached to stage")
     config = graphene.String(description="Stage configurations")
     playerAccess = graphene.String(
@@ -344,6 +345,7 @@ class Mutation(graphene.ObjectType):
     deleteMedia = DeleteMedia.Field()
     assignMedia = AssignMedia.Field()
     assignStages = AssignStages.Field()
+
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
