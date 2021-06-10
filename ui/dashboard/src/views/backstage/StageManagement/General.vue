@@ -151,10 +151,12 @@ import { useRouter } from "vue-router";
 import { displayName } from "@/utils/auth";
 import { debounce } from "@/utils/common";
 import SweepStage from "./SweepStage";
+import { useStore } from "vuex";
 
 export default {
   components: { Field, SweepStage, MultiTransferColumn },
   setup: () => {
+    const store = useStore();
     const router = useRouter();
     const stage = inject("stage");
 
@@ -179,10 +181,9 @@ export default {
     );
     const createStage = async () => {
       try {
-        console.log("<<<====");
         const stage = await mutation();
-        console.log("<<<====");
         notification.success("Stage created successfully! ID: " + stage.id);
+        store.dispatch("cache/fetchStages");
         router.push(`/backstage/stage-management/${stage.id}/`);
       } catch (error) {
         notification.error(error);

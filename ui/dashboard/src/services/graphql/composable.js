@@ -63,6 +63,7 @@ export const useRequest = (service, ...params) => {
     }
 
     const clearCache = () => {
+        cacheKeys.push(hash({ service, payload: params }))
         store.commit('cache/CLEAR_GRAPHQL_CACHES', { keys: cacheKeys });
         cacheKeys.length = 0;
     }

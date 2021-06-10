@@ -58,8 +58,7 @@ import Field from "@/components/form/Field";
 import Dropdown from "@/components/form/Dropdown";
 import Switch from "@/components/form/Switch";
 import { computed, provide } from "@vue/runtime-core";
-import { useOwners, useQuery } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
+import { useOwners } from "@/services/graphql/composable";
 import Skeleton from "@/components/Skeleton.vue";
 import { includesIgnoreCase } from "@/utils/common";
 import { displayName } from "@/utils/auth";
@@ -69,18 +68,27 @@ import { useStore } from "vuex";
 export default {
   components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrumb },
   setup: () => {
+    const store = useStore();
+    const isGuest = computed(() => store.getters["user/isGuest"]);
+
     const filter = reactive({
       mine: true,
       keyword: "",
     });
 
-    const { loading, nodes, refresh } = useQuery(stageGraph.stageList);
+    const stages = computed(() => store.state.cache.stageList);
+    const loading = computed(() => store.getters["cache/loadingStages"]);
+    const refresh = () => store.dispatch("cache/fetchStages");
     provide("refresh", refresh);
 
-    const owners = useOwners(nodes);
+    const owners = useOwners(stages);
 
     const stageList = computed(() => {
-      let result = nodes.value;
+      console.log("loading", stages.value);
+      if (loading.value) {
+        return [];
+      }
+      let result = stages.value;
       if (filter.keyword) {
         result = result.filter((stage) =>
           includesIgnoreCase(stage.name, filter.keyword)
@@ -97,9 +105,6 @@ export default {
       }
       return result;
     });
-
-    const store = useStore();
-    const isGuest = computed(() => store.getters["user/isGuest"]);
 
     return { filter, loading, stageList, owners, displayName, isGuest };
   },

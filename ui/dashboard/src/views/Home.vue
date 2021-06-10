@@ -10,29 +10,34 @@
           having to download and install any additional software. UpStage is
           available free to anyone who would like to use it.
         </h2>
-        <div class="links columns is-vcentered my-4">
+        <Skeleton v-if="loading" />
+        <div v-else class="links columns my-4">
           <div class="column">
             <router-link
-              to="/live/demo"
-              class="link"
+              v-for="stage in liveStages"
+              :key="stage.id"
+              :to="`/live/${stage.fileLocation}`"
+              class="link my-4"
               :style="{ 'background-image': url('live-stage.png') }"
             >
-              <span>Live Stage</span>
+              <span>{{ stage.name }}</span>
             </router-link>
           </div>
           <div class="column">
             <router-link
-              to="/live/demo"
-              class="link"
+              v-for="stage in upcomingStages"
+              :key="stage.id"
+              :to="`/live/${stage.fileLocation}`"
+              class="link my-4"
               :style="{ 'background-image': url('upcoming-performance.png') }"
             >
-              <span> Upcoming Performance </span>
+              <span>{{ stage.name }}</span>
             </router-link>
           </div>
           <div class="column">
             <router-link
               to="/live/demo"
-              class="link"
+              class="link my-4"
               :style="{ 'background-image': url('latest-news.jpg') }"
             >
               <span>Latest News</span>
@@ -46,13 +51,24 @@
 
 <script>
 import config from "@/../vue.config";
+import { computed } from "@vue/runtime-core";
+import { useStore } from "vuex";
+import Skeleton from "@/components/Skeleton";
 
 export default {
   name: "Home",
-  components: {},
+  components: { Skeleton },
   setup: () => {
+    const store = useStore();
     const url = (src) => `url(${config.publicPath}img/${src})`;
-    return { url };
+
+    const loading = computed(() => store.getters["cache/loadingStages"]);
+    const liveStages = computed(() => store.getters["cache/liveStages"]);
+    const upcomingStages = computed(
+      () => store.getters["cache/upcomingStages"]
+    );
+
+    return { url, liveStages, loading, upcomingStages };
   },
 };
 </script>
