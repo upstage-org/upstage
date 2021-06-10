@@ -4,7 +4,7 @@
       <Breadcrumb description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload v-if="!isGuest" />
+      <MediaUpload :special="true" v-if="!isGuest" />
     </div>
   </section>
   <div class="columns">

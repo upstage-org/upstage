@@ -5,6 +5,9 @@
       class="hero is-fullheight is-fullwidth"
       :class="{ replaying }"
       @click="clicked = true"
+      :style="{
+        'background-image': model && model.cover && `url(${model.cover})`,
+      }"
     >
       <div class="hero-body">
         <div class="container">
@@ -122,6 +125,8 @@ export default {
 }
 section {
   background-color: #30ac45;
+  background-size: cover !important;
+  text-shadow: black 0px 0px 3px;
   position: absolute;
   z-index: 20000;
   * {

@@ -96,6 +96,16 @@
         </div>
       </div>
     </div>
+
+    <div class="field is-horizontal">
+      <div class="field-label">
+        <label class="label">Cover image</label>
+      </div>
+      <div class="field-body">
+        <ImagePicker v-model="form.cover" />
+      </div>
+    </div>
+
     <div class="field is-horizontal">
       <div class="field-label">
         <!-- Left empty for spacing -->
@@ -145,6 +155,7 @@ import {
 import { stageGraph, userGraph } from "@/services/graphql";
 import { inject, reactive, ref, watch } from "vue";
 import Field from "@/components/form/Field";
+import ImagePicker from "@/components/form/ImagePicker";
 import MultiTransferColumn from "@/components/MultiTransferColumn";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
@@ -154,7 +165,7 @@ import SweepStage from "./SweepStage";
 import { useStore } from "vuex";
 
 export default {
-  components: { Field, SweepStage, MultiTransferColumn },
+  components: { Field, SweepStage, MultiTransferColumn, ImagePicker },
   setup: () => {
     const store = useStore();
     const router = useRouter();
@@ -164,6 +175,7 @@ export default {
       ...stage.value,
       ownerId: stage.value.owner?.id,
       status: useAttribute(stage, "status").value,
+      cover: useAttribute(stage, "cover").value,
     });
 
     const playerAccess = ref(

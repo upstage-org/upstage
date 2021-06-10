@@ -18,7 +18,7 @@
               :key="stage.id"
               :to="`/live/${stage.fileLocation}`"
               class="link my-4"
-              :style="{ 'background-image': url('live-stage.png') }"
+              :style="backgroundImage(stage.cover, 'live-stage.png')"
             >
               <span>{{ stage.name }}</span>
             </router-link>
@@ -29,7 +29,7 @@
               :key="stage.id"
               :to="`/live/${stage.fileLocation}`"
               class="link my-4"
-              :style="{ 'background-image': url('upcoming-performance.png') }"
+              :style="backgroundImage(stage.cover, 'upcoming-performance.png')"
             >
               <span>{{ stage.name }}</span>
             </router-link>
@@ -38,7 +38,7 @@
             <router-link
               to="/live/demo"
               class="link my-4"
-              :style="{ 'background-image': url('latest-news.jpg') }"
+              :style="backgroundImage(null, 'latest-news.jpg')"
             >
               <span>Latest News</span>
             </router-link>
@@ -54,21 +54,32 @@ import config from "@/../vue.config";
 import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Skeleton from "@/components/Skeleton";
+import { absolutePath } from "@/utils/common";
 
 export default {
   name: "Home",
   components: { Skeleton },
   setup: () => {
     const store = useStore();
-    const url = (src) => `url(${config.publicPath}img/${src})`;
 
     const loading = computed(() => store.getters["cache/loadingStages"]);
     const liveStages = computed(() => store.getters["cache/liveStages"]);
     const upcomingStages = computed(
       () => store.getters["cache/upcomingStages"]
     );
+    const backgroundImage = (src, defaultSrc) => ({
+      "background-image": `url(${
+        src ? absolutePath(src) : `${config.publicPath}img/${defaultSrc}`
+      })`,
+    });
 
-    return { url, liveStages, loading, upcomingStages };
+    return {
+      backgroundImage,
+      liveStages,
+      loading,
+      upcomingStages,
+      absolutePath,
+    };
   },
 };
 </script>
