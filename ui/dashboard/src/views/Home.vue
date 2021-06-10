@@ -10,30 +10,35 @@
           having to download and install any additional software. UpStage is
           available free to anyone who would like to use it.
         </h2>
-        <div class="links columns is-vcentered my-4">
+        <Skeleton v-if="loading" />
+        <div v-else class="links columns my-4">
           <div class="column">
             <router-link
-              to="/live/demo"
-              class="link"
-              :style="{ 'background-image': url('live-stage.png') }"
+              v-for="stage in liveStages"
+              :key="stage.id"
+              :to="`/live/${stage.fileLocation}`"
+              class="link my-4"
+              :style="backgroundImage(stage.cover, 'live-stage.png')"
             >
-              <span>Live Stage</span>
+              <span>{{ stage.name }}</span>
+            </router-link>
+          </div>
+          <div class="column">
+            <router-link
+              v-for="stage in upcomingStages"
+              :key="stage.id"
+              :to="`/live/${stage.fileLocation}`"
+              class="link my-4"
+              :style="backgroundImage(stage.cover, 'upcoming-performance.png')"
+            >
+              <span>{{ stage.name }}</span>
             </router-link>
           </div>
           <div class="column">
             <router-link
               to="/live/demo"
-              class="link"
-              :style="{ 'background-image': url('upcoming-performance.png') }"
-            >
-              <span> Upcoming Performance </span>
-            </router-link>
-          </div>
-          <div class="column">
-            <router-link
-              to="/live/demo"
-              class="link"
-              :style="{ 'background-image': url('latest-news.jpg') }"
+              class="link my-4"
+              :style="backgroundImage(null, 'latest-news.jpg')"
             >
               <span>Latest News</span>
             </router-link>
@@ -46,13 +51,35 @@
 
 <script>
 import config from "@/../vue.config";
+import { computed } from "@vue/runtime-core";
+import { useStore } from "vuex";
+import Skeleton from "@/components/Skeleton";
+import { absolutePath } from "@/utils/common";
 
 export default {
   name: "Home",
-  components: {},
+  components: { Skeleton },
   setup: () => {
-    const url = (src) => `url(${config.publicPath}img/${src})`;
-    return { url };
+    const store = useStore();
+
+    const loading = computed(() => store.getters["cache/loadingStages"]);
+    const liveStages = computed(() => store.getters["cache/liveStages"]);
+    const upcomingStages = computed(
+      () => store.getters["cache/upcomingStages"]
+    );
+    const backgroundImage = (src, defaultSrc) => ({
+      "background-image": `url(${
+        src ? absolutePath(src) : `${config.publicPath}img/${defaultSrc}`
+      })`,
+    });
+
+    return {
+      backgroundImage,
+      liveStages,
+      loading,
+      upcomingStages,
+      absolutePath,
+    };
   },
 };
 </script>

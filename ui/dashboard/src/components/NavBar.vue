@@ -58,7 +58,22 @@
         <div class="vertical-divider" />
         <a class="navbar-item" to="/#">Donate</a>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/live/demo">Stage</router-link>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link is-arrowless"> Stage </a>
+          <div class="navbar-dropdown">
+            <Skeleton v-if="loadingStages" />
+            <template v-else>
+              <router-link
+                v-for="stage in liveStages"
+                :key="stage.id"
+                class="navbar-item"
+                :to="`/live/${stage.fileLocation}`"
+              >
+                {{ stage.name }}
+              </router-link>
+            </template>
+          </div>
+        </div>
       </div>
 
       <div class="navbar-end">
@@ -84,16 +99,30 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { loggedIn, logout } from "@/utils/auth";
 import Logo from "./Logo";
+import { useStore } from "vuex";
+import Skeleton from "@/components/Skeleton";
 
 export default {
-  components: { Logo },
+  components: { Logo, Skeleton },
   setup() {
+    const store = useStore();
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
-    return { expanded, toggleExpanded, loggedIn, logout };
+
+    const loadingStages = computed(() => store.getters["cache/loadingStages"]);
+    const liveStages = computed(() => store.getters["cache/liveStages"]);
+
+    return {
+      expanded,
+      toggleExpanded,
+      loggedIn,
+      logout,
+      loadingStages,
+      liveStages,
+    };
   },
 };
 </script>

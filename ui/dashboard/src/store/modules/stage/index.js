@@ -124,7 +124,7 @@ export default {
         },
         canPlay(state) {
             return state.model.permission && state.model.permission !== 'audience'
-        }
+        },
     },
     mutations: {
         SET_MODEL(state, model) {
@@ -164,6 +164,8 @@ export default {
                 if (config) {
                     state.tools.config.ratio = config.ratio.width / config.ratio.height
                 }
+                const cover = useAttribute({ value: model }, 'cover', false).value;
+                state.model.cover = cover && absolutePath(cover)
             }
         },
         CLEAN_STAGE(state, cleanModel) {

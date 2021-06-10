@@ -14,7 +14,6 @@ export default {
   },
   mutations: {
     SET_USER_DATA(state, data) {
-      console.log(data)
       state.user = data;
     },
     SET_LOADING_USER(state, loading) {
