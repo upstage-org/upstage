@@ -12,7 +12,7 @@
     </Skeleton>
   </div>
   <div v-if="loading">
-    <LoadingSkeleton />
+    <LoadingSkeleton height="64px" />
   </div>
   <div v-else @click="fetchRunningStreams">
     <div class="icon is-large">
