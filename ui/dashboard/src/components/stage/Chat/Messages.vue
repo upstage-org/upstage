@@ -7,13 +7,13 @@
   </div>
   <div v-else>
     <p v-for="item in messages" :key="item">
-      <small>
+      <small :style="'font-size: 1em'">
         <b>{{ item.user }}: </b>
       </small>
       <span
         class="tag message"
         :style="
-          'background-color: ' + item.backgroundColor + '; color: ' + item.color
+          'background-color: ' + item.backgroundColor + '; color: ' + item.color + '; font-size: .85714em'
         "
         :class="messageClass[item.behavior]"
         :title="time(item.at)"
@@ -28,7 +28,7 @@
 import moment from "moment";
 import Linkify from "@/components/Linkify";
 export default {
-  props: ["messages"],
+  props: ["messages", "style"],
   components: { Linkify },
   data: function () {
     return {

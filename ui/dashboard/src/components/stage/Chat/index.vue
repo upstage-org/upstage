@@ -5,7 +5,7 @@
       v-show="chatVisibility"
       class="card is-light"
       :class="{ collapsed }"
-      :style="{ opacity }"
+      :style="{ opacity, fontSize, width: `calc(20% + ${fontSize} + ${fontSize})` }"
     >
       <div class="actions">
         <Reaction v-if="collapsed" />
@@ -27,8 +27,8 @@
           </span>
         </button>
       </div>
-      <div class="card-content" ref="theContent">
-        <Messages :messages="messages" />
+      <div class="card-content" ref="theContent" >
+        <Messages :messages="messages" :style="{ fontSize }"/>
       </div>
       <footer class="card-footer">
         <div class="card-footer-item">
@@ -94,6 +94,7 @@ export default {
       });
 
     const opacity = computed(() => store.state.stage.chat.opacity);
+    const fontSize = computed(() => store.state.stage.chat.fontSize);
 
     const enter = (el, complete) => {
       anime({
@@ -122,6 +123,7 @@ export default {
       openChatSetting,
       collapsed,
       opacity,
+      fontSize,
       chatVisibility,
       enter,
       leave,
@@ -135,7 +137,6 @@ export default {
   display: flex;
   flex-direction: column;
   position: fixed;
-  width: 20%;
   min-width: 250px;
   height: calc(100% - 135px);
   bottom: 16px;

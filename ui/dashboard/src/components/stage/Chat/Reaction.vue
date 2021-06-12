@@ -7,6 +7,20 @@
   >
     {{ react }}
   </button>
+  <button
+    class="button is-small is-rounded reaction mx-1"
+    :key="encrease - fontSize"
+    @click="increateFontSize()"
+  >
+    {{ "➕" }}
+  </button>
+  <button
+    class="button is-small is-rounded reaction mx-1"
+    :key="decrease - fontSize"
+    @click="decreaseFontSize()"
+  >
+    {{ "➖" }}
+  </button>
   <span v-if="customEmoji">
     <ChatInput
       :picker-only="true"
@@ -42,7 +56,7 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, reactive } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import ChatInput from "@/components/form/ChatInput";
@@ -57,6 +71,27 @@ export default {
     const reactions = ["❤️", "🤣", "🙌", "👏"];
     const sendReaction = (react) => {
       store.dispatch("stage/sendReaction", react);
+    };
+
+    const fontSize = computed(() => store.state.stage.chat.fontSize);
+    const increateFontSize = () => {
+      let incValue = fontSize.value?.replace("px", "");
+      incValue++;
+      const parameters = reactive({
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${incValue}px`,
+      });
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    };
+
+    const decreaseFontSize = () => {
+      let decValue = fontSize.value?.replace("px", "");
+      decValue > 1 && decValue--;
+      const parameters = reactive({
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${decValue}px`,
+      });
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
     };
 
     const flyingReactions = computed(() => store.state.stage.reactions);
@@ -90,6 +125,8 @@ export default {
       flyin,
       flyout,
       sendCustomReaction,
+      increateFontSize,
+      decreaseFontSize,
     };
   },
 };
