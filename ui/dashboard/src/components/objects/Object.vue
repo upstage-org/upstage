@@ -144,7 +144,7 @@ export default {
     });
 
     const hold = () => {
-      if (holdable.value && !props.object.holder) {
+      if (holdable.value && controlable.value && !props.object.holder) {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };

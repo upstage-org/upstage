@@ -41,6 +41,14 @@
           max="1"
         />
       </HorizontalField>
+      <HorizontalField title="Size (px)">
+        <Field
+          :modelValue="parameters.fontSize?.slice(0, -2)"
+          @update:modelValue="changeFontSize"
+          type="number"
+        />
+      </HorizontalField>
+
       <save-button @click="saveParameters" />
     </div>
   </div>
@@ -50,10 +58,11 @@
 import { computed, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import HorizontalField from "@/components/form/HorizontalField.vue";
+import Field from "@/components/form/Field";
 import SaveButton from "@/components/form/SaveButton.vue";
 import { notification } from "@/utils/notification";
 export default {
-  components: { HorizontalField, SaveButton },
+  components: { HorizontalField, Field, SaveButton },
   setup: (props, { emit }) => {
     const form = reactive({});
     const loading = ref(false);
@@ -69,12 +78,17 @@ export default {
       });
     };
 
+    const changeFontSize = (value) => {
+      parameters.fontSize = value.replace(/^\D+/g, "") + "px";
+    };
+
     const currentTab = ref("nickname");
     const parameters = reactive({
       opacity: store.state.stage.chat.opacity,
+      fontSize: store.state.stage.chat.fontSize,
     });
     const saveParameters = () => {
-      store.commit("stage/SET_CHAT_OPACITY", parameters.opacity);
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
       emit("close");
       notification.success("Chat parameters saved successfully!");
     };
@@ -87,6 +101,7 @@ export default {
       currentTab,
       parameters,
       saveParameters,
+      changeFontSize,
     };
   },
 };
