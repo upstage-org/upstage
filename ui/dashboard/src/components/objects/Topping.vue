@@ -25,6 +25,7 @@
           tabindex="-1"
           :key="object.speak"
           :class="object.speak.behavior ?? 'speak'"
+          :style="bubbleStyle"
         >
           <div class="py-2 px-4">
             <Linkify>{{ object.speak.message }}</Linkify>
@@ -51,24 +52,57 @@ export default {
     );
     const canPlay = computed(() => store.getters["stage/canPlay"]);
 
+    const config = computed(() => store.getters["stage/config"]);
+
     const enter = (el, complete) => {
-      anime({
-        targets: el,
-        scale: [0, 1],
-        rotate: [180, 0],
-        translateY: [0, "-100%"],
-        translateX: [0, "-50%"],
-        complete,
-      });
+      switch (config.value?.animations?.bubble) {
+        case "fade":
+          anime({
+            targets: el,
+            opacity: [0, 1],
+            complete,
+          });
+          break;
+
+        case "bounce":
+          anime({
+            targets: el,
+            scale: [0, 1],
+            rotate: [180, 0],
+            translateX: [0, "-50%"],
+            complete,
+          });
+          break;
+
+        default:
+          complete();
+          break;
+      }
     };
 
     const leave = (el, complete) => {
-      anime({
-        targets: el,
-        scale: [1, 0],
-        rotate: [0, 180],
-        complete,
-      });
+      switch (config.value?.animations?.bubble) {
+        case "fade":
+          anime({
+            targets: el,
+            opacity: 0,
+            complete,
+          });
+          break;
+
+        case "bounce":
+          anime({
+            targets: el,
+            scale: [1, 0],
+            rotate: [0, 180],
+            complete,
+          });
+          break;
+
+        default:
+          complete();
+          break;
+      }
     };
 
     const openChatBox = () => {
@@ -80,6 +114,15 @@ export default {
       }
     };
     const stageSize = computed(() => store.getters["stage/stageSize"]);
+    const bubbleStyle = computed(() => {
+      if (!props.object.speak?.message) {
+        return {};
+      }
+      const length = props.object.speak.message.length;
+      const width = Math.sqrt(length * 3);
+      const height = Math.max(2.5, width * 0.75);
+      return { width: width + "rem", height: height + "rem" };
+    });
 
     return {
       enter,
@@ -89,6 +132,7 @@ export default {
       openChatBox,
       stageSize,
       max: Math.max,
+      bubbleStyle,
     };
   },
 };

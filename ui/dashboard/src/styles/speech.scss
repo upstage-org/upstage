@@ -5,24 +5,29 @@ blockquote.bubble {
     text-align: center;
     line-height: 1em;
     min-width: min-content;
-    max-width: 300px;
     padding-left: 10%;
     padding-right: 10%;
+    margin-top: -80%;
+    transform: translateX(-50%);
 }
 blockquote.speak {
     background-image: url(../assets/speak.svg);
-    padding-top: 6%;
+    padding-top: calc(15% - 5px);
     padding-bottom: 20%;
 }
 blockquote.think {
     background-image: url(../assets/think.svg);
     font-style: italic;
-    padding-top: 15%;
+    padding-top: calc(15% - 5px);
     padding-bottom: 40%;
+    font-size: 0.75rem;
 }
 blockquote.shout {
     background-image: url(../assets/shout.svg);
     font-weight: bold;
-    padding-top: 10%;
-    padding-bottom: 25%;
+    padding-top: 15%;
+    padding-bottom: 15%;
+    padding-left: 20%;
+    padding-right: 20%;
+    box-sizing: content-box;
 }

@@ -163,6 +163,7 @@ export default {
                 }
                 const config = useAttribute({ value: model }, 'config', true).value;
                 if (config) {
+                    Object.assign(state.tools.config, config)
                     state.tools.config.ratio = config.ratio.width / config.ratio.height
                 }
                 const cover = useAttribute({ value: model }, 'cover', false).value;
@@ -663,7 +664,6 @@ export default {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
             const { stage, shapes } = await stageGraph.loadStage(url, recordId)
-            console.log(shapes)
             if (stage) {
                 commit('SET_MODEL', stage);
                 commit('PUSH_SHAPES', shapes)
