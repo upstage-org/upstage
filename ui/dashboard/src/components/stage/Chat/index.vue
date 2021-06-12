@@ -5,7 +5,11 @@
       v-show="chatVisibility"
       class="card is-light"
       :class="{ collapsed }"
-      :style="{ opacity, fontSize, width: `calc(20% + ${fontSize} + ${fontSize})` }"
+      :style="{
+        opacity,
+        fontSize,
+        width: `calc(20% + ${fontSize} + ${fontSize})`,
+      }"
     >
       <div class="actions">
         <Reaction v-if="collapsed" />
@@ -27,13 +31,29 @@
           </span>
         </button>
       </div>
-      <div class="card-content" ref="theContent" >
-        <Messages :messages="messages" :style="{ fontSize }"/>
+      <div class="card-content" ref="theContent">
+        <Messages :messages="messages" :style="{ fontSize }" />
       </div>
       <footer class="card-footer">
         <div class="card-footer-item">
-          <div v-if="!collapsed" class="is-fullwidth my-1" style="height: 30px">
+          <div v-if="!collapsed" class="is-fullwidth my-1 reaction-bar">
             <Reaction :custom-emoji="true" />
+            <div class="font-size-controls">
+              <button
+                class="button is-small is-rounded mx-1"
+                :key="encrease - fontSize"
+                @click="increateFontSize()"
+              >
+                ➕
+              </button>
+              <button
+                class="button is-small is-rounded mx-1"
+                :key="decrease - fontSize"
+                @click="decreaseFontSize()"
+              >
+                ➖
+              </button>
+            </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
             <ChatInput
@@ -114,6 +134,26 @@ export default {
       });
     };
 
+    const increateFontSize = () => {
+      let incValue = fontSize.value?.replace("px", "");
+      incValue++;
+      const parameters = {
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${incValue}px`,
+      };
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    };
+
+    const decreaseFontSize = () => {
+      let decValue = fontSize.value?.replace("px", "");
+      decValue > 1 && decValue--;
+      const parameters = {
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${decValue}px`,
+      };
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    };
+
     return {
       messages,
       message,
@@ -127,6 +167,8 @@ export default {
       chatVisibility,
       enter,
       leave,
+      increateFontSize,
+      decreaseFontSize,
     };
   },
 };
@@ -182,6 +224,18 @@ export default {
   }
   .control.has-icons-right .input {
     padding-right: 50px !important;
+  }
+}
+.reaction-bar {
+  height: 30px;
+  position: relative;
+  .font-size-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    .button.is-rounded {
+      width: 16px;
+    }
   }
 }
 </style>
