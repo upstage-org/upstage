@@ -1,12 +1,9 @@
 <template>
   <div @click="newStream">
-    <div class="icon is-large">
-      <Icon src="new.svg" size="36" />
+    <div style="height: 48px">
+      <OBSInstruction src="some_unique_key" />
     </div>
-    <span class="tag is-light is-block">New</span>
-  </div>
-  <div>
-    <Webcam />
+    <span class="tag is-light is-block">Instruction</span>
   </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
@@ -14,28 +11,38 @@
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
+  <div v-if="loading">
+    <LoadingSkeleton height="64px" />
+  </div>
+  <div v-else @click="fetchRunningStreams">
+    <div class="icon is-large">
+      <Icon src="refresh.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Refresh</span>
+  </div>
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
-import Webcam from "./Webcam";
+import LoadingSkeleton from "@/components/Skeleton";
+import OBSInstruction from "@/views/backstage/Media/OBSInstruction";
 
 export default {
-  components: { Skeleton, Icon, Webcam, RTMPStream },
+  components: { Skeleton, Icon, RTMPStream, LoadingSkeleton, OBSInstruction },
   setup: () => {
     const store = useStore();
-    const newStream = () => {
-      store.dispatch("stage/openSettingPopup", {
-        type: "CreateStream",
-      });
-    };
     const streams = computed(() => store.state.stage.tools.streams);
+    const loading = computed(() => store.state.stage.loadingRunningStreams);
+    const fetchRunningStreams = () => {
+      store.dispatch("stage/getRunningStreams");
+    };
+    onMounted(fetchRunningStreams);
 
-    return { streams, newStream, Webcam };
+    return { streams, loading, fetchRunningStreams };
   },
 };
 </script>

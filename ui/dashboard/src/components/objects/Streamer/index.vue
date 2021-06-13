@@ -39,26 +39,25 @@
                 </div>
               </button>
             </p>
-            <p class="control menu-group-item" @click="clip(vue)">
+            <p
+              class="control menu-group-item"
+              v-for="shape in shapes"
+              :key="shape.src"
+              @click="clip(shape.src)"
+              :title="shape.name"
+            >
               <button class="button is-light">
-                <img style="height: 100%" :src="vue" />
-              </button>
-            </p>
-            <p class="control menu-group-item" @click="clip(dog)">
-              <button class="button is-light">
-                <img style="height: 100%" :src="dog" />
+                <img style="height: 100%" :src="shape.src" />
               </button>
             </p>
           </div>
         </div>
       </template>
     </Object>
-    <PeerWebcam v-if="object.rtc" :object="object" />
     <video
       ref="video"
       :src="object.url"
       preload="auto"
-      :muted="!isHost"
       @loadeddata="loadeddata"
       @ended="stream.isPlaying = false"
       style="display: none"
@@ -70,43 +69,44 @@
 import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
-import { useShape } from "./composable";
-import vue from "@/assets/logo.png";
-import dog from "@/assets/dog.png";
-import PeerWebcam from "./PeerWebcam";
-import Hls from "hls.js";
-import { getSubsribeLink } from "@/utils/rtmp";
+import { useFlv, useShape } from "./composable";
+import { getSubsribeLink } from "@/utils/streaming";
+import loading from "@/assets/loading.svg";
 
 export default {
-  components: { Object, PeerWebcam },
+  components: { Object },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
-    const stream = reactive({ ...props.object, isPlaying: true });
+    const shapes = computed(() => store.state.stage.tools.shapes);
+
+    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
     const video = ref();
 
-    const isHost = computed(() =>
-      store.state.stage.hosts.some((object) => object.id === props.object.id)
-    );
-
     const synchronize = () => {
-      if (stream.isPlaying) {
+      if (stream.isPlaying && video.value) {
         video.value.play();
       } else {
         video.value.pause();
       }
     };
 
-    watch(props.object, () => {
-      delete props.object.src;
-      window.Object.assign(stream, props.object);
-      synchronize();
-    });
+    watch(
+      () => props.object,
+      () => {
+        window.Object.assign(stream, props.object);
+        synchronize();
+      }
+    );
 
     const loadeddata = () => {
       synchronize();
     };
 
+    if (props.object.isRTMP) {
+      const fullUrl = computed(() => getSubsribeLink(props.object.url));
+      useFlv(video, fullUrl);
+    }
     const { src } = useShape(video, stream);
     watch(src, () => (stream.src = src.value));
 
@@ -135,24 +135,14 @@ export default {
       });
     };
 
-    if (props.object.isRTMP) {
-      if (Hls.isSupported()) {
-        const hls = new Hls();
-        hls.loadSource(getSubsribeLink(props.object.url));
-        hls.attachMedia(video.value);
-      }
-    }
-
     return {
       video,
       stream,
-      isHost,
       loadeddata,
       playStream,
       pauseStream,
       clip,
-      vue,
-      dog,
+      shapes,
     };
   },
 };

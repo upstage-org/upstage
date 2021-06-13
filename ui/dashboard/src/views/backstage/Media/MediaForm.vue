@@ -112,7 +112,7 @@ import Tabs from "@/components/Tabs";
 import RTMPStream from "@/components/RTMPStream";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
-import { getPublishLink } from "@/utils/rtmp";
+import { getPublishLink } from "@/utils/streaming";
 import OBSInstruction from "./OBSInstruction";
 
 export default {
@@ -210,14 +210,22 @@ export default {
     });
 
     const tabs = computed(() => {
-      const res = [
-        { key: "preview", label: "Preview", icon: "fas fa-image" },
-        { key: "stages", label: "Stage", icon: "fas fa-person-booth" },
-      ];
+      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      if (form.mediaType !== "shape") {
+        res.push({
+          key: "stages",
+          label: "Stage",
+          icon: "fas fa-person-booth",
+        });
+      }
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }
-      if (form.mediaType === "avatar" || form.mediaType === "prop") {
+      if (
+        form.mediaType === "avatar" ||
+        form.mediaType === "prop" ||
+        form.mediaType === "backdrop"
+      ) {
         res.push({
           key: "multiframe",
           label: "Multiframe",

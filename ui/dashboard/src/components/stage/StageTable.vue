@@ -17,7 +17,9 @@
     </template>
     <template #manage="{ item }">
       <template
-        v-if="item.permission === 'editor' || item.permission === 'owner'"
+        v-if="
+          item.permission === 'editor' || item.permission === 'owner' || isAdmin
+        "
       >
         <router-link
           :to="`/backstage/stage-management/${item.id}/`"
@@ -34,7 +36,7 @@
           <i class="fa fa-lg fa-clone has-text-warning"></i>
         </router-link>
         <Confirm
-          v-if="item.permission === 'owner'"
+          v-if="item.permission === 'owner' || isAdmin"
           @confirm="(complete) => deleteStage(item, complete)"
           :loading="loading"
         >
@@ -48,7 +50,7 @@
               class="button is-light is-small is-danger"
               data-tooltip="Delete stage"
             >
-              <i class="fa fa-lg fa-trash has-text-danger"></i>
+              <Icon src="delete.svg" />
             </a>
           </template>
         </Confirm>
@@ -75,15 +77,17 @@
 import DataTable from "@/components/DataTable/index";
 import Modal from "@/components/Modal";
 import Confirm from "@/components/Confirm";
+import Icon from "@/components/Icon";
 import ActionButtons from "./ActionButtons";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
 import { stageGraph } from "@/services/graphql";
 import { useMutation } from "@/services/graphql/composable";
-import { inject } from "@vue/runtime-core";
+import { computed, inject } from "@vue/runtime-core";
+import { useStore } from "vuex";
 
 export default {
-  components: { DataTable, Modal, ActionButtons, Detail, Confirm },
+  components: { DataTable, Modal, ActionButtons, Detail, Confirm, Icon },
   props: { data: Array },
   setup: () => {
     const headers = [
@@ -130,8 +134,10 @@ export default {
         refresh();
       }
     };
+    const store = useStore();
+    const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
-    return { headers, deleteStage, loading };
+    return { headers, deleteStage, loading, isAdmin };
   },
 };
 </script>

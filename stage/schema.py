@@ -34,6 +34,7 @@ class StageAttribute:
     description = graphene.String(description="Stage Description")
     file_location = graphene.String(description="Unique File Location")
     status = graphene.String(description="Live/Upcoming/Rehearsal")
+    cover = graphene.String(description="Cover image url")
     media = graphene.String(description="Media attached to stage")
     config = graphene.String(description="Stage configurations")
     playerAccess = graphene.String(
@@ -111,10 +112,11 @@ class Stage(SQLAlchemyObjectType):
             StageAttributeModel.name == 'playerAccess').first()
         if player_access:
             accesses = json.loads(player_access.description)
-            if user_id in accesses[0]:
-                return "player"
-            elif user_id in accesses[1]:
-                return "editor"
+            if len(accesses) == 2:
+                if user_id in accesses[0]:
+                    return "player"
+                elif user_id in accesses[1]:
+                    return "editor"
         return "audience"
 
     def resolve_media(self, info):
@@ -343,6 +345,7 @@ class Mutation(graphene.ObjectType):
     deleteMedia = DeleteMedia.Field()
     assignMedia = AssignMedia.Field()
     assignStages = AssignStages.Field()
+
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()

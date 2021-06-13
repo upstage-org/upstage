@@ -28,7 +28,11 @@
   <template v-else>
     <div class="text-tool" style="width: 200px; z-index: 1005">
       <span class="tag muted is-block">Font</span>
-      <Dropdown v-model="options.fontFamily" :data="fontFamilies">
+      <Dropdown
+        v-model="options.fontFamily"
+        :data="fontFamilies"
+        style="position: fixed;"
+      >
         <template #option="{ label }">
           <span :style="{ 'font-family': label }">{{ label }}</span>
         </template>

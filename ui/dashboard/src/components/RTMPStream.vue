@@ -1,17 +1,20 @@
 <template>
-  <HLSPlayer v-bind="$attrs" :src="fullUrl" />
+  <video v-if="playable" ref="video"></video>
+  <img v-else src="@/assets/notfound.svg" />
 </template>
 
 <script>
-import HLSPlayer from "@/components/HLSPlayer.vue";
-import { computed } from "@vue/runtime-core";
-import { getSubsribeLink } from "@/utils/rtmp";
+import { computed, ref } from "@vue/runtime-core";
+import { getSubsribeLink } from "@/utils/streaming";
+import { useFlv } from "./objects/Streamer/composable";
 export default {
-  components: { HLSPlayer },
   props: ["src"],
   setup: (props) => {
+    const video = ref();
     const fullUrl = computed(() => getSubsribeLink(props.src));
-    return { fullUrl };
+
+    const { playable } = useFlv(video, fullUrl);
+    return { video, playable };
   },
 };
 </script>

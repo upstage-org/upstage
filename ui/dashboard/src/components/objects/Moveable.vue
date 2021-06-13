@@ -54,6 +54,7 @@ export default {
         resizable: true,
         rotatable: true,
         origin: false,
+        keepRatio: true,
       });
 
       const sendMovement = (target, { left, top }) => {
@@ -201,11 +202,9 @@ export default {
           h: height,
           rotate,
           moveSpeed,
-          type,
-          isPlaying,
           opacity,
         } = props.object;
-        if (isDragging.value || (type === "stream" && isPlaying)) {
+        if (isDragging.value) {
           return;
         }
         animation?.pause(true);

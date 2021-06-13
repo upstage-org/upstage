@@ -58,6 +58,16 @@
       </div>
     </div>
   </div>
+  <h3 class="title">Animations</h3>
+  <div>
+    <HorizontalField title="Speech bubble">
+      <Dropdown
+        v-model="animations.bubble"
+        :data="['fade', 'bounce']"
+        :render-label="capitalize"
+      />
+    </HorizontalField>
+  </div>
 </template>
 
 <script>
@@ -67,10 +77,12 @@ import SaveButton from "@/components/form/SaveButton";
 import { useAttribute, useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
-import { inject } from "@vue/runtime-core";
+import { capitalize, inject } from "@vue/runtime-core";
+import HorizontalField from "@/components/form/HorizontalField";
+import Dropdown from "@/components/form/Dropdown";
 
 export default {
-  components: { Selectable, SaveButton },
+  components: { Selectable, SaveButton, HorizontalField, Dropdown },
   setup: () => {
     const stage = inject("stage");
     const config = useAttribute(stage, "config", true).value ?? {
@@ -78,13 +90,17 @@ export default {
         width: 16,
         height: 9,
       },
+      animations: {
+        bubble: "fade",
+      },
     };
 
     const selectedRatio = reactive(config.ratio);
+    const animations = reactive(config.animations);
 
     const { loading: saving, save } = useMutation(stageGraph.saveStageConfig);
     const saveLayout = async () => {
-      const config = JSON.stringify({ ratio: selectedRatio });
+      const config = JSON.stringify({ ratio: selectedRatio, animations });
       await save(
         () => notification.success("Layout saved successfully!"),
         stage.value.id,
@@ -92,7 +108,7 @@ export default {
       );
     };
 
-    return { selectedRatio, saving, saveLayout };
+    return { selectedRatio, saving, saveLayout, animations, capitalize };
   },
 };
 </script>

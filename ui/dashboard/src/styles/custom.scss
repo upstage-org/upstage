@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,400;0,700;1,400&display=swap');
 @import "./mixins";
 @import "./bulma";
-
+@import "./speech";
 * {
     font-family: 'Josefin Sans', sans-serif;
 }
@@ -67,6 +67,11 @@ nav {
 }
 .modal-card-foot {
     padding: 10px;
+}
+.is-multi {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
 }
 div.moveable-control-box {
     --moveable-color: #{$primary};

@@ -79,6 +79,15 @@ export default {
     isAdmin(state) {
       return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(state.user?.role);
     },
+    isGuest(state) {
+      if (!state.user) {
+        return true
+      }
+      if (state.user.role === ROLES.GUEST) {
+        return true
+      }
+      return false
+    },
     avatarId(state) {
       return state.avatarId;
     },

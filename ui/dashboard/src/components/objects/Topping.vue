@@ -19,21 +19,18 @@
         <Icon src="my-avatar.svg" />
       </span>
       <transition @enter="enter" @leave="leave" :css="false" appear>
-        <div
+        <blockquote
           v-if="object.speak"
-          class="chat-bubble"
+          class="bubble"
           tabindex="-1"
           :key="object.speak"
-          :style="{
-            width: max(object.w, 200) + 'px',
-            'max-width': 'max-content',
-          }"
+          :class="object.speak.behavior ?? 'speak'"
+          :style="bubbleStyle"
         >
           <div class="py-2 px-4">
             <Linkify>{{ object.speak.message }}</Linkify>
           </div>
-          <i class="fas fa-caret-down"></i>
-        </div>
+        </blockquote>
       </transition>
     </div>
   </teleport>
@@ -55,24 +52,57 @@ export default {
     );
     const canPlay = computed(() => store.getters["stage/canPlay"]);
 
+    const config = computed(() => store.getters["stage/config"]);
+
     const enter = (el, complete) => {
-      anime({
-        targets: el,
-        scale: [0, 1],
-        rotate: [180, 0],
-        translateY: [0, "-100%"],
-        translateX: [0, "-50%"],
-        complete,
-      });
+      switch (config.value?.animations?.bubble) {
+        case "fade":
+          anime({
+            targets: el,
+            opacity: [0, 1],
+            complete,
+          });
+          break;
+
+        case "bounce":
+          anime({
+            targets: el,
+            scale: [0, 1],
+            rotate: [180, 0],
+            translateX: [0, "-50%"],
+            complete,
+          });
+          break;
+
+        default:
+          complete();
+          break;
+      }
     };
 
     const leave = (el, complete) => {
-      anime({
-        targets: el,
-        scale: [1, 0],
-        rotate: [0, 180],
-        complete,
-      });
+      switch (config.value?.animations?.bubble) {
+        case "fade":
+          anime({
+            targets: el,
+            opacity: 0,
+            complete,
+          });
+          break;
+
+        case "bounce":
+          anime({
+            targets: el,
+            scale: [1, 0],
+            rotate: [0, 180],
+            complete,
+          });
+          break;
+
+        default:
+          complete();
+          break;
+      }
     };
 
     const openChatBox = () => {
@@ -84,6 +114,15 @@ export default {
       }
     };
     const stageSize = computed(() => store.getters["stage/stageSize"]);
+    const bubbleStyle = computed(() => {
+      if (!props.object.speak?.message) {
+        return {};
+      }
+      const length = props.object.speak.message.length;
+      const width = Math.sqrt(length * 3);
+      const height = Math.max(2.5, width * 0.75);
+      return { width: width + "rem", height: height + "rem" };
+    });
 
     return {
       enter,
@@ -93,6 +132,7 @@ export default {
       openChatBox,
       stageSize,
       max: Math.max,
+      bubbleStyle,
     };
   },
 };
@@ -101,23 +141,7 @@ export default {
 <style scoped lang="scss">
 .avatar-topping {
   position: fixed;
-  z-index: 10000;
-}
-.chat-bubble {
-  position: absolute;
-  border-radius: 4px;
-  text-align: center;
-  line-height: 1em;
-  background: white;
-  word-break: break-word;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
-    0 0px 0 1px rgba(10, 10, 10, 0.02);
-  i.fas {
-    position: absolute;
-    left: calc(50% - 4px);
-    bottom: -8px;
-    color: white;
-  }
+  z-index: 3000;
 }
 .marker {
   position: absolute;

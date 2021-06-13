@@ -4,7 +4,7 @@
       <Breadcrumb description="Upload and manage media" />
       <h1 class="title is-inline">Media</h1>
       &nbsp;
-      <MediaUpload />
+      <MediaUpload :special="true" v-if="!isGuest" />
     </div>
   </section>
   <div class="columns">
@@ -80,10 +80,14 @@ import { stageGraph } from "@/services/graphql";
 import { useOwners, useQuery } from "@/services/graphql/composable";
 import { displayName } from "@/utils/auth";
 import Breadcrumb from "@/components/Breadcrumb";
+import { useStore } from "vuex";
 
 export default {
   components: { MediaList, MediaUpload, Skeleton, Field, Breadcrumb },
   setup: () => {
+    const store = useStore();
+    const isGuest = computed(() => store.getters["user/isGuest"]);
+
     const filter = reactive({
       mediaType: null,
       owner: null,
@@ -145,6 +149,7 @@ export default {
       users,
       displayName,
       stageList,
+      isGuest,
     };
   },
 };

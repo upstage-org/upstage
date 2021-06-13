@@ -2,6 +2,7 @@
   <DataTable :data="mediaList" :headers="headers">
     <template #preview="{ item }">
       <Asset :asset="item" />
+      <MultiframePreview :asset="item" />
     </template>
     <template #stage="{ item }">
       <span v-for="(stage, index) in item.stages" :key="stage">
@@ -19,14 +20,14 @@
         @confirm="(complete) => deleteMedia(item, complete)"
         :loading="loading"
       >
-        Deleting <b>{{ item.name }}</b> will also remove it from storage and any
-        assigned stages, there is no undo!
-        <span class="has-text-danger">
-          Are you sure you want to delete this media?
-        </span>
+        Are you sure you want to delete <b>{{ item.name }}</b
+        >? It will be completely emoved from the UpStage server.
+        <span class="has-text-danger">There is no undo!</span> If you only
+        wanted to remove it from a stage, please go to Stage Management and
+        unassign it.
         <template #trigger>
           <a class="button is-light is-small is-danger">
-            <i class="fas fa-trash"></i>
+            <Icon src="delete.svg" />
           </a>
         </template>
       </Confirm>
@@ -40,14 +41,16 @@ import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
 import Confirm from "@/components/Confirm";
+import Icon from "@/components/Icon";
 import MediaEdit from "./MediaEdit";
 import { displayName } from "@/utils/auth";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
+import MultiframePreview from "./MultiframePreview";
 
 export default {
-  components: { Asset, MediaEdit, DataTable, Confirm },
+  components: { Asset, MediaEdit, DataTable, Confirm, MultiframePreview, Icon },
   setup: () => {
     const mediaList = inject("mediaList");
     const popNode = inject("popNode");

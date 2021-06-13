@@ -8,7 +8,7 @@
         </span>
       </Upload>
     </div>
-    <div class="dropdown-menu" role="menu">
+    <div v-if="special" class="dropdown-menu" role="menu">
       <div class="dropdown-content">
         <div class="dropdown-item">
           <p>Special media that does not require upload:</p>
@@ -34,9 +34,10 @@ import Upload from "@/components/form/Upload";
 import MediaForm from "./MediaForm";
 import { ref } from "@vue/reactivity";
 import { inject } from "@vue/runtime-core";
-import { getUniqueKey } from "@/utils/rtmp";
+import { getUniqueKey } from "@/utils/streaming";
 
 export default {
+  props: ["special"],
   components: { Modal, MediaForm, Upload },
   setup: () => {
     const base64 = ref();

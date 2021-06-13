@@ -16,7 +16,7 @@
             ></button>
           </header>
           <section v-if="$slots.content" class="modal-card-body">
-            <slot name="content" />
+            <slot name="content" :close-modal="closeModal" />
           </section>
           <footer v-if="$slots.footer" class="modal-card-foot">
             <slot name="footer" :close-modal="closeModal" />

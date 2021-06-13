@@ -117,6 +117,11 @@ const routes = [
             component: () => import('../views/backstage/Admin/UploadLimit.vue'),
           },
           {
+            path: 'batch-user-creation',
+            name: 'Batch User Creation',
+            component: () => import('../views/backstage/Admin/BatchUserCreation.vue'),
+          },
+          {
             path: 'system-configurations',
             name: 'System Configurations',
             component: () => import('../views/backstage/Admin/SystemConfigurations.vue'),

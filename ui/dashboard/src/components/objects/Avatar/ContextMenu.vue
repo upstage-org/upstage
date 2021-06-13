@@ -5,7 +5,7 @@
         <span class="panel-icon">
           <Icon src="clear.svg" />
         </span>
-        <span>Release this avatar</span>
+        <span>Release</span>
       </a>
       <a v-else class="panel-block" @click="holdAvatar">
         <span class="panel-icon">
@@ -18,23 +18,23 @@
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
       </span>
-      <span>Bring to front</span>
+      <span>Bring forward</span>
     </a>
     <a class="panel-block" @click="sendToBack">
       <span class="panel-icon">
         <Icon src="send-to-back.svg" />
       </span>
-      <span>Send to back</span>
+      <span>Send back</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="changeNickname">
       <span class="panel-icon">
         <Icon src="change-nickname.svg" />
       </span>
-      <span>Change your nickname</span>
+      <span>Avatar name</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="openVoiceSetting">
       <span class="panel-icon">
-        <Icon src="change-nickname.svg" />
+        <Icon src="voice-setting.svg" />
       </span>
       <span>Voice setting</span>
     </a>
@@ -49,47 +49,55 @@
         <button
           class="button is-light"
           :class="{
-            'has-background-primary has-text-white': sliderMode === 'opacity',
+            'has-background-primary-light': sliderMode === 'opacity',
           }"
           @click="changeSliderMode('opacity')"
+          data-tooltip="Opacity slider"
         >
-          <span>Opacity</span>
+          <span class="mt-1">
+            <Icon src="opacity-slider.svg" />
+          </span>
         </button>
       </p>
       <p class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
-            'has-background-warning': sliderMode === 'animation',
+            'has-background-warning-light': sliderMode === 'animation',
           }"
           @click="changeSliderMode('animation')"
+          data-tooltip="Animation speed"
         >
-          <span>Animation</span>
+          <span class="mt-1">
+            <Icon src="animation-slider.svg" />
+          </span>
         </button>
       </p>
       <p class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
-            'has-background-danger has-text-white': sliderMode === 'speed',
+            'has-background-danger-light': sliderMode === 'speed',
           }"
           @click="changeSliderMode('speed')"
+          data-tooltip="Move speed"
         >
-          <span>Movement</span>
+          <span class="mt-1">
+            <Icon src="movement-slider.svg" />
+          </span>
         </button>
       </p>
     </div>
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
-        <Icon src="delete.svg" />
+        <Icon src="remove.svg" />
       </span>
-      <span>Delete</span>
+      <span>Remove</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
         <button class="button is-light">
-          <i v-if="object.autoplayFrames" class="fas fa-3x fa-pause"></i>
-          <Icon v-else src="play.svg" />
+          <Icon :src="object.autoplayFrames > 0 ? 'pause.svg' : 'play.svg'" />
         </button>
       </p>
       <p
@@ -156,9 +164,11 @@ export default {
     };
 
     const changeNickname = () =>
-      store.dispatch("stage/openSettingPopup", {
-        type: "ChatParameters",
-      });
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "ChatParameters",
+        })
+        .then(props.closeMenu);
 
     const bringToFront = () => {
       store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);

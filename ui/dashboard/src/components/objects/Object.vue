@@ -4,6 +4,7 @@
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
       :pad-right="250"
+      opacity="0.8"
     >
       <template #trigger>
         <div
@@ -143,7 +144,7 @@ export default {
     });
 
     const hold = () => {
-      if (holdable.value && !props.object.holder) {
+      if (holdable.value && canPlay.value && !props.object.holder) {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };

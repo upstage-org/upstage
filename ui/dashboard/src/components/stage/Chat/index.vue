@@ -5,7 +5,11 @@
       v-show="chatVisibility"
       class="card is-light"
       :class="{ collapsed }"
-      :style="{ opacity }"
+      :style="{
+        opacity,
+        fontSize,
+        width: `calc(20% + ${fontSize} + ${fontSize})`,
+      }"
     >
       <div class="actions">
         <Reaction v-if="collapsed" />
@@ -28,15 +32,31 @@
         </button>
       </div>
       <div class="card-content" ref="theContent">
-        <Messages :messages="messages" />
+        <Messages :messages="messages" :style="{ fontSize }" />
       </div>
       <footer class="card-footer">
         <div class="card-footer-item">
-          <div v-if="!collapsed" class="is-fullwidth my-1" style="height: 30px">
+          <div v-if="!collapsed" class="is-fullwidth my-1 reaction-bar">
             <Reaction :custom-emoji="true" />
+            <div class="font-size-controls">
+              <button
+                class="button is-small is-rounded mx-1"
+                :key="encrease - fontSize"
+                @click="increateFontSize()"
+              >
+                ➕
+              </button>
+              <button
+                class="button is-small is-rounded mx-1"
+                :key="decrease - fontSize"
+                @click="decreaseFontSize()"
+              >
+                ➖
+              </button>
+            </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
-            <emoji-input
+            <ChatInput
               v-model="message"
               placeholder="Type message"
               :loading="loadingUser"
@@ -53,13 +73,13 @@
 import { computed, onMounted, ref, watch } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
-import EmojiInput from "@/components/form/EmojiInput";
+import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
 import Messages from "./Messages";
 
 export default {
-  components: { EmojiInput, Reaction, Icon, Messages },
+  components: { ChatInput, Reaction, Icon, Messages },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -94,6 +114,7 @@ export default {
       });
 
     const opacity = computed(() => store.state.stage.chat.opacity);
+    const fontSize = computed(() => store.state.stage.chat.fontSize);
 
     const enter = (el, complete) => {
       anime({
@@ -113,6 +134,26 @@ export default {
       });
     };
 
+    const increateFontSize = () => {
+      let incValue = fontSize.value?.replace("px", "");
+      incValue++;
+      const parameters = {
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${incValue}px`,
+      };
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    };
+
+    const decreaseFontSize = () => {
+      let decValue = fontSize.value?.replace("px", "");
+      decValue > 1 && decValue--;
+      const parameters = {
+        opacity: store.state.stage.chat.opacity,
+        fontSize: `${decValue}px`,
+      };
+      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    };
+
     return {
       messages,
       message,
@@ -122,9 +163,12 @@ export default {
       openChatSetting,
       collapsed,
       opacity,
+      fontSize,
       chatVisibility,
       enter,
       leave,
+      increateFontSize,
+      decreaseFontSize,
     };
   },
 };
@@ -135,7 +179,6 @@ export default {
   display: flex;
   flex-direction: column;
   position: fixed;
-  width: 20%;
   min-width: 250px;
   height: calc(100% - 135px);
   bottom: 16px;
@@ -146,6 +189,7 @@ export default {
   .card-content {
     flex-grow: 1;
     overflow-y: auto;
+    overflow-x: hidden;
     padding-top: 36px;
   }
   .card-footer-item {
@@ -180,6 +224,18 @@ export default {
   }
   .control.has-icons-right .input {
     padding-right: 50px !important;
+  }
+}
+.reaction-bar {
+  height: 30px;
+  position: relative;
+  .font-size-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    .button.is-rounded {
+      width: 16px;
+    }
   }
 }
 </style>

@@ -6,9 +6,9 @@ export const getUniqueKey = () => {
 }
 
 export const getSubsribeLink = (key) => {
-    return `http://${config.RTMP.server}:${config.RTMP.subscribePort}/live/${key}/index.m3u8`
+    return `${config.STREAMING.subscribe}live/${key}.flv`
 }
 
 export const getPublishLink = (key) => {
-    return `rtmp://${config.RTMP.server}:${config.RTMP.publishPort}/app/${key}`
+    return `${config.STREAMING.publish}/${key}`
 }

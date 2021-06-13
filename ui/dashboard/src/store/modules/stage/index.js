@@ -9,6 +9,8 @@ import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak } from '@/services/speech';
+import { nmsService } from "@/services/rest";
+import anime from 'animejs';
 
 export default {
     namespaced: true,
@@ -23,7 +25,8 @@ export default {
         chat: {
             messages: [],
             color: randomMessageColor(),
-            opacity: 0.9
+            opacity: 0.9,
+            fontSize: '14px',
         },
         board: {
             objects: [],
@@ -36,6 +39,7 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
+            shapes: [],
             config: {
                 animateDuration: 1000,
                 reactionDuration: 5000,
@@ -70,7 +74,7 @@ export default {
             interval: null,
             speed: 32
         },
-        backgroundChangedTimestamp: 0
+        loadingRunningStreams: false
     },
     getters: {
         ready(state) {
@@ -94,6 +98,7 @@ export default {
                 .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
+                .concat(state.tools.shapes.map(b => b.src))
             return assets;
         },
         audios(state) {
@@ -120,7 +125,7 @@ export default {
         },
         canPlay(state) {
             return state.model.permission && state.model.permission !== 'audience'
-        }
+        },
     },
     mutations: {
         SET_MODEL(state, model) {
@@ -158,8 +163,11 @@ export default {
                 }
                 const config = useAttribute({ value: model }, 'config', true).value;
                 if (config) {
+                    Object.assign(state.tools.config, config)
                     state.tools.config.ratio = config.ratio.width / config.ratio.height
                 }
+                const cover = useAttribute({ value: model }, 'cover', false).value;
+                state.model.cover = cover && absolutePath(cover)
             }
         },
         CLEAN_STAGE(state, cleanModel) {
@@ -167,6 +175,9 @@ export default {
                 state.model = null;
             }
             state.status = 'OFFLINE';
+            if (state.background?.interval) {
+                clearInterval(state.background.interval);
+            }
             state.background = null;
             state.tools.avatars = [];
             state.tools.props = [];
@@ -179,10 +190,29 @@ export default {
             state.chat.messages = [];
             state.chat.color = randomColor();
         },
-        SET_BACKGROUND(state, { background, at }) {
-            if (state.backgroundChangedTimestamp < at) {
-                state.background = background
-                state.backgroundChangedTimestamp = at
+        SET_BACKGROUND(state, background) {
+            if (background) {
+                if (!state.background || !state.background.at || (state.background.at < background.at)) {
+                    if (state.background?.interval) {
+                        clearInterval(state.background.interval);
+                    }
+                    state.background = background
+                    anime({
+                        targets: "#board",
+                        opacity: [0, 1],
+                        duration: 5000,
+                    });
+                    if (background.multi && background.speed > 0) {
+                        const { speed, frames } = state.background;
+                        state.background.interval = setInterval(() => {
+                            let nextFrame = frames.indexOf(state.background.currentFrame) + 1;
+                            if (nextFrame >= frames.length) {
+                                nextFrame = 0;
+                            }
+                            state.background.currentFrame = frames[nextFrame];
+                        }, 50 / speed);
+                    }
+                }
             }
         },
         SET_STATUS(state, status) {
@@ -201,7 +231,7 @@ export default {
         },
         PUSH_OBJECT(state, object) {
             const { id } = object;
-            deserializeObject(object, true);
+            deserializeObject(object);
             const model = state.board.objects.find(o => o.id === id);
             if (model) {
                 Object.assign(model, object);
@@ -280,6 +310,12 @@ export default {
         PUSH_STREAM_HOST(state, stream) {
             state.hosts.push(stream);
         },
+        PUSH_RUNNING_STREAMS(state, streams) {
+            state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
+        },
+        PUSH_SHAPES(state, shapes) {
+            state.tools.shapes = shapes;
+        },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
@@ -311,8 +347,9 @@ export default {
                 recalcFontSize(object, s => s * ratio)
             })
         },
-        SET_CHAT_OPACITY(state, opacity) {
+        SET_CHAT_PARAMETERS(state, { opacity, fontSize }) {
             state.chat.opacity = opacity;
+            state.chat.fontSize = fontSize;
         },
         UPDATE_SESSIONS_COUNTER(state, session) {
             const index = state.sessions.findIndex(s => s.id === session.id)
@@ -403,9 +440,19 @@ export default {
         sendChat({ rootGetters, state, getters }, message) {
             if (!message) return;
             const user = rootGetters["user/chatname"];
+            let behavior = "speak"
+            if (message.startsWith(":")) {
+                behavior = "think";
+                message = message.substr(1)
+            }
+            if (message.startsWith("!")) {
+                behavior = "shout"
+                message = message.substr(1).toUpperCase()
+            }
             const payload = {
                 user,
                 message: message,
+                behavior,
                 color: state.chat.color.text,
                 backgroundColor: state.chat.color.bg,
                 at: +new Date()
@@ -461,7 +508,7 @@ export default {
                     object.published = true
                     mqtt.sendMessage(TOPICS.BOARD, {
                         type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
-                        object: serializeObject(object, true)
+                        object: serializeObject(object)
                     })
                 }
 
@@ -550,7 +597,8 @@ export default {
             }
         },
         setBackground(action, background) {
-            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background, at: +new Date() })
+            background.at = +new Date()
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.CHANGE_BACKGROUND, background })
         },
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
@@ -561,7 +609,7 @@ export default {
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
-                    commit('SET_BACKGROUND', message);
+                    commit('SET_BACKGROUND', message.background);
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
@@ -615,10 +663,11 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const model = await stageGraph.loadStage(url, recordId)
-            if (model) {
-                commit('SET_MODEL', model);
-                const { events } = model
+            const { stage, shapes } = await stageGraph.loadStage(url, recordId)
+            if (stage) {
+                commit('SET_MODEL', stage);
+                commit('PUSH_SHAPES', shapes)
+                const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {
                         timestamp: {
@@ -692,10 +741,17 @@ export default {
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
-        async leaveStage({ state }) {
+        async leaveStage({ state, commit }) {
             const id = state.session
             state.session = null
+            commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
+        },
+        async getRunningStreams({ state, commit }) {
+            state.loadingRunningStreams = true
+            const streams = await nmsService.getStreams()
+            commit('PUSH_RUNNING_STREAMS', streams)
+            state.loadingRunningStreams = false
         }
     },
 };
