@@ -12,7 +12,7 @@ from secrets import token_urlsafe
 from werkzeug.utils import secure_filename
 
 from config.project_globals import ScopedSession,app
-from license.models import StageLicense, AssetLicense
+from licenses.models import StageLicense, AssetLicense
 
 def create_license(**kwargs):
     app.logger.info(f"Attempting to create license: {kwargs.items()}")

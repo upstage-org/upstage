@@ -23,7 +23,7 @@ from auth import auth
 from user import user,schema
 from asset import asset
 from asset.views import assets
-from license.views import licenses
+from licenses.views import licenses
 from stage import schema
 from config import schema
 
