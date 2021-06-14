@@ -11,7 +11,7 @@
       <p
         ref="el"
         :style="object"
-        class="has-text-centered"
+        class="has-text-centered show-text"
         contenteditable="true"
         @keyup.delete.prevent.stop
         @keyup="liveTyping"
