@@ -13,7 +13,7 @@ from flask import jsonify, request, url_for
 from config.settings import URL_PREFIX
 from config.project_globals import app
 from asset.system import one_asset
-from license.system import create_license, revoke_license
+from licenses.system import create_license, revoke_license
 
 BASE_URL='/{0}license/'.format(URL_PREFIX)
 
