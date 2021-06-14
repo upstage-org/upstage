@@ -7,7 +7,7 @@
   >
     {{ react }}
   </button>
-  <span v-if="customEmoji">
+  <span v-if="customEmoji" style="position: absolute; margin-left: 40px">
     <ChatInput
       :picker-only="true"
       :style="{ height: '30px' }"
