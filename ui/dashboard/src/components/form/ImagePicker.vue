@@ -19,7 +19,7 @@
       </div>
       <Skeleton v-if="loading" />
       <div v-else class="columns is-multiline">
-        <div class="column is-3" v-for="item in mediaList" :key="item">
+        <div class="column is-3" v-for="item in availableImages" :key="item">
           <div class="card-image clickable" @click="select(item, closeModal)">
             <Asset :asset="item" />
           </div>
@@ -36,7 +36,7 @@ import Asset from "@/components/Asset";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
 import MediaUpload from "@/views/backstage/Media/MediaUpload";
-import { provide } from "@vue/runtime-core";
+import { computed, provide } from "@vue/runtime-core";
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue"],
@@ -47,6 +47,11 @@ export default {
       nodes: mediaList,
       refresh,
     } = useQuery(stageGraph.mediaList);
+    const availableImages = computed(() =>
+      mediaList.value.filter((m) =>
+        ["avatar", "prop", "backdrop", "shape"].includes(m.assetType.name)
+      )
+    );
     provide("refresh", refresh);
 
     const select = (item, closeModal) => {
@@ -54,7 +59,7 @@ export default {
       closeModal();
     };
 
-    return { loading, mediaList, select };
+    return { loading, availableImages, select };
   },
 };
 </script>
