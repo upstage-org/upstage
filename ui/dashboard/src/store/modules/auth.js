@@ -39,6 +39,7 @@ export default {
               commit("SET_TOKEN", access_token);
               commit("SET_REFRESH_TOKEN", refresh_token);
               dispatch("user/fetchCurrent", null, { root: true });
+              dispatch("cache/fetchStages", null, { root: true });
               resolve();
             }
           })
