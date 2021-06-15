@@ -84,7 +84,6 @@ export default {
     const owners = useOwners(stages);
 
     const stageList = computed(() => {
-      console.log("loading", stages.value);
       if (loading.value) {
         return [];
       }

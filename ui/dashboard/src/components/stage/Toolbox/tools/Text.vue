@@ -243,7 +243,4 @@ export default {
     transform: translateX(-50%);
   }
 }
-.show-text {
-  white-space: nowrap;
-}
 </style>

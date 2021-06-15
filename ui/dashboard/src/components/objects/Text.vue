@@ -66,4 +66,8 @@ export default {
 p[contenteditable] {
   outline: none;
 }
+.show-text {
+  white-space: nowrap;
+  cursor: text;
+}
 </style>
