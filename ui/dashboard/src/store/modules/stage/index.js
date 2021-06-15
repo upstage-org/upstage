@@ -74,7 +74,8 @@ export default {
             interval: null,
             speed: 32
         },
-        loadingRunningStreams: false
+        loadingRunningStreams: false,
+        audioPlayers: []
     },
     getters: {
         ready(state) {
@@ -270,6 +271,7 @@ export default {
         UPDATE_AUDIO(state, audio) {
             const model = state.tools.audios.find(a => a.src === audio.src);
             if (model) {
+                audio.changed = true
                 Object.assign(model, audio);
             }
         },
@@ -376,6 +378,12 @@ export default {
         },
         SET_ACTIVE_MOVABLE(state, id) {
             state.activeMovable = id
+        },
+        UPDATE_AUDIO_PLAYER_STATUS(state, { index, ...status }) {
+            if (!state.audioPlayers[index]) {
+                state.audioPlayers[index] = {}
+            }
+            Object.assign(state.audioPlayers[index], status)
         }
     },
     actions: {
@@ -621,12 +629,7 @@ export default {
                     break;
             }
         },
-        playAudio(_, audio) {
-            audio.isPlaying = true;
-            mqtt.sendMessage(TOPICS.AUDIO, audio)
-        },
-        pauseAudio(_, audio) {
-            audio.isPlaying = false;
+        updateAudioStatus(_, audio) {
             mqtt.sendMessage(TOPICS.AUDIO, audio)
         },
         handleAudioMessage({ commit }, { message }) {
