@@ -4,7 +4,7 @@ import mqtt from "mqtt";
 import { namespaceTopic, unnamespaceTopic } from '@/store/modules/stage/reusable';
 import { isJson } from '@/utils/common';
 
-const mqttService = {
+const buildClient = () => ({
   client: null,
   connect() {
     const { url, ...options } = config.MQTT_CONNECTION;
@@ -52,10 +52,7 @@ const mqttService = {
         message,
         {
           qos: 1,
-          retain: true,
-          properties: {
-            userProperties: "upstage",
-          },
+          retain: true
         },
         (error, res) => {
           if (error) {
@@ -75,6 +72,6 @@ const mqttService = {
       handler({ topic, message })
     });
   }
-}
+})
 
-export default mqttService;
+export default buildClient;
