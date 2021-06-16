@@ -423,7 +423,7 @@ export default {
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
-                dispatch('updateCounterNumbers')
+                dispatch('sendStatistics')
             })
         },
         async disconnect({ dispatch }) {
@@ -740,11 +740,6 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        updateCounterNumbers({ state, getters }) {
-            if (getters.canPlay && state.subscribeSuccess) {
-                mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
-            }
-        },
         async joinStage({ rootGetters, state, rootState, commit }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
@@ -758,11 +753,17 @@ export default {
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
-        async leaveStage({ state, commit }) {
+        async leaveStage({ state, commit, dispatch }) {
             const id = state.session
             state.session = null
             commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
+            await dispatch('sendStatistics')
+        },
+        async sendStatistics({ state, getters }) {
+            if (getters.canPlay && state.subscribeSuccess) {
+                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
+            }
         },
         async getRunningStreams({ state, commit }) {
             state.loadingRunningStreams = true

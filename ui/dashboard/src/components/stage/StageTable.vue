@@ -59,6 +59,9 @@
         🙅‍♀️🙅‍♂️
       </span>
     </template>
+    <template #statistics="{ item }">
+      <PlayerAudienceCounter :stage-url="item.fileLocation" />
+    </template>
     <template #enter="{ item }">
       <router-link
         :to="`/live/${item.fileLocation}`"
@@ -79,6 +82,7 @@ import Modal from "@/components/Modal";
 import Confirm from "@/components/Confirm";
 import Icon from "@/components/Icon";
 import ActionButtons from "./ActionButtons";
+import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import Detail from "./Detail";
 import { displayName } from "@/utils/auth";
 import { stageGraph } from "@/services/graphql";
@@ -87,7 +91,15 @@ import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
 
 export default {
-  components: { DataTable, Modal, ActionButtons, Detail, Confirm, Icon },
+  components: {
+    DataTable,
+    Modal,
+    ActionButtons,
+    Detail,
+    Confirm,
+    Icon,
+    PlayerAudienceCounter,
+  },
   props: { data: Array },
   setup: () => {
     const headers = [
@@ -111,6 +123,12 @@ export default {
         title: "Detail",
         description: "Duplicate/Manage stage",
         slot: "detail",
+        align: "center",
+      },
+      {
+        title: "Statistics",
+        description: "Players and audiences counter",
+        slot: "statistics",
         align: "center",
       },
       {
