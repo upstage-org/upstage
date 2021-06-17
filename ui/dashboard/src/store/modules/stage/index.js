@@ -761,7 +761,7 @@ export default {
             await dispatch('sendStatistics')
         },
         async sendStatistics({ state, getters }) {
-            if (getters.canPlay && state.subscribeSuccess) {
+            if (state.subscribeSuccess) {
                 await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
             }
         },
