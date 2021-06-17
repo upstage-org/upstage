@@ -63,12 +63,8 @@ export default {
     const store = useStore();
     const dot = ref();
     const status = computed(() => store.state.stage.status);
-    const players = computed(() =>
-      store.state.stage.sessions.filter((s) => s.isPlayer)
-    );
-    const audiences = computed(() =>
-      store.state.stage.sessions.filter((s) => !s.isPlayer)
-    );
+    const players = computed(() => store.getters["stage/players"]);
+    const audiences = computed(() => store.getters["stage/audiences"]);
     const replaying = inject("replaying");
 
     onMounted(() => {

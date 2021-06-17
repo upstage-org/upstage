@@ -1,7 +1,7 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
-import mqtt from '@/services/mqtt'
+import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } from './reusable';
@@ -11,6 +11,8 @@ import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak } from '@/services/speech';
 import { nmsService } from "@/services/rest";
 import anime from 'animejs';
+
+const mqtt = buildClient()
 
 export default {
     namespaced: true,
@@ -127,6 +129,12 @@ export default {
         canPlay(state) {
             return state.model.permission && state.model.permission !== 'audience'
         },
+        players(state) {
+            return state.sessions.filter((s) => s.isPlayer)
+        },
+        audiences(state) {
+            return state.sessions.filter((s) => !s.isPlayer)
+        }
     },
     mutations: {
         SET_MODEL(state, model) {
@@ -403,18 +411,19 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit }) {
+        subscribe({ commit, dispatch }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
                 [TOPICS.REACTION]: { qos: 2 },
-                [TOPICS.COUNTER]: { qos: 2 }
+                [TOPICS.COUNTER]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
+                dispatch('sendStatistics')
             })
         },
         async disconnect({ dispatch }) {
@@ -744,11 +753,17 @@ export default {
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
-        async leaveStage({ state, commit }) {
+        async leaveStage({ state, commit, dispatch }) {
             const id = state.session
             state.session = null
             commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
+            await dispatch('sendStatistics')
+        },
+        async sendStatistics({ state, getters }) {
+            if (state.subscribeSuccess) {
+                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
+            }
         },
         async getRunningStreams({ state, commit }) {
             state.loadingRunningStreams = true

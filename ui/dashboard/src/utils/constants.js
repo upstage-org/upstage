@@ -5,6 +5,7 @@ export const TOPICS = {
   AUDIO: "audio",
   REACTION: "reaction",
   COUNTER: "counter",
+  STATISTICS: "statistics",
 }
 
 export const BOARD_ACTIONS = {
