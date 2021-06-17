@@ -42,7 +42,7 @@
         />
       </h1>
       <h2 class="subtitle">
-        Pres <strong>New</strong> button to create a new future stage. Click
+        Click <strong>New</strong> button to create a new future stage. Click
         <strong>Search</strong> button for search form to find Stage
       </h2>
       <Skeleton v-if="loading" />
