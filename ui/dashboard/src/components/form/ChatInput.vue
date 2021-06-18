@@ -53,6 +53,7 @@ import { computed, ref } from "vue";
 import anime from "animejs";
 import Icon from "@/components/Icon";
 import ElasticInput from "@/components/form/ElasticInput";
+import { useStore } from "vuex";
 
 export default {
   props: ["loading", "modelValue", "pickerOnly", "style", "className"],
@@ -61,6 +62,8 @@ export default {
   setup: (props, { emit }) => {
     const input = ref();
     const isPicking = ref(false);
+    const store = useStore();
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
 
     const handleEmoji = ({ detail: { unicode } }) => {
       if (props.pickerOnly) {
@@ -96,19 +99,24 @@ export default {
         if (props.modelValue.startsWith("!")) {
           return "shout";
         }
+        if (canPlay.value && props.modelValue.startsWith("-")) {
+          return "audience";
+        }
       }
       return "speak";
     });
     const dynamicClass = computed(() => {
       return {
         think: "has-background-info-light has-text-info",
-        shout: "has-background-danger has-text-white",
+        shout: "has-background-danger-light has-text-danger",
+        audience: "has-background-dark has-text-light",
       }[behavior.value];
     });
     const dynamicTooltip = computed(() => {
       return {
         think: "Think",
         shout: "Shout",
+        audience: "Audience simulation",
       }[behavior.value];
     });
 
