@@ -454,9 +454,10 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, state, getters }, message) {
+        sendChat({ rootGetters, getters }, message) {
             if (!message) return;
             const user = rootGetters["user/chatname"];
+            let isPlayer = getters["canPlay"]
             let behavior = "speak"
             if (message.startsWith(":")) {
                 behavior = "think";
@@ -466,12 +467,15 @@ export default {
                 behavior = "shout"
                 message = message.substr(1).toUpperCase()
             }
+            if (isPlayer && message.startsWith("-")) {
+                message = message.substr(1)
+                isPlayer = false
+            }
             const payload = {
                 user,
                 message: message,
                 behavior,
-                color: state.chat.color.text,
-                backgroundColor: state.chat.color.bg,
+                isPlayer,
                 at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
