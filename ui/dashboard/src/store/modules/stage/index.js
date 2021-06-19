@@ -456,7 +456,7 @@ export default {
         },
         sendChat({ rootGetters, getters }, message) {
             if (!message) return;
-            const user = rootGetters["user/chatname"];
+            let user = rootGetters["user/chatname"];
             let isPlayer = getters["canPlay"]
             let behavior = "speak"
             if (message.startsWith(":")) {
@@ -469,6 +469,11 @@ export default {
             }
             if (isPlayer && message.startsWith("-")) {
                 message = message.substr(1)
+                const fakeName = message.split(' ')[0]
+                if (fakeName) {
+                    user = fakeName
+                    message = message.substr(fakeName.length).trim()
+                }
                 isPlayer = false
             }
             const payload = {

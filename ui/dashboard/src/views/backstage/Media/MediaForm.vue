@@ -9,7 +9,11 @@
       <Tabs :items="tabs">
         <template #preview>
           <div class="preview">
-            <Asset v-if="!media.isRTMP" :asset="media" />
+            <Asset
+              v-if="!media.isRTMP"
+              :asset="media"
+              @detect-size="updateMediaSize"
+            />
             <template v-else>
               <RTMPStream controls :src="media.src" />
               <Field
@@ -181,12 +185,19 @@ export default {
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice, isRTMP, src } = form;
+        const { id, multi, frames, voice, isRTMP, src, w, h } = form;
         const payload = {
           id,
           name,
           mediaType,
-          description: JSON.stringify({ multi, frames, voice, isRTMP }),
+          description: JSON.stringify({
+            multi,
+            frames,
+            voice,
+            isRTMP,
+            w,
+            h,
+          }),
           fileLocation: src,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
@@ -259,6 +270,16 @@ export default {
 
     const closeModal = inject("closeModal");
 
+    const updateMediaSize = ({ width, height }) => {
+      if (width > height) {
+        form.w = 100;
+        form.h = (100 * height) / width;
+      } else {
+        form.h = 100;
+        form.w = (100 * width) / height;
+      }
+    };
+
     return {
       form,
       loading,
@@ -270,6 +291,7 @@ export default {
       availableStages,
       displayName,
       closeModal,
+      updateMediaSize,
     };
   },
 };

@@ -59,16 +59,10 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      if (props.real) {
-        if (
-          props.ghost &&
-          confirm("Are you sure you want to remove this ghost player?")
-        ) {
-          store.dispatch("stage/deleteObject", props.data);
-        }
-      } else {
-        e.dataTransfer.setData("text", JSON.stringify({ object: props.data }));
-      }
+      e.dataTransfer.setData(
+        "text",
+        JSON.stringify({ object: props.data, isReal: props.real })
+      );
     };
 
     const dragend = () => {
