@@ -66,7 +66,9 @@ export default {
     const drop = (e) => {
       const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
       if (isReal) {
-        if (confirm("Are you sure you want to avatar?")) {
+        if (
+          confirm("Are you sure you want to take this object out of the stage?")
+        ) {
           store.dispatch("stage/deleteObject", object);
         }
       } else {

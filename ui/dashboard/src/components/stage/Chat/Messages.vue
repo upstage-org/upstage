@@ -18,7 +18,7 @@
       <span
         class="tag message"
         :style="{
-          'font-size': '.85714em',
+          'font-size': '1em',
         }"
         :class="messageClass[item.behavior]"
         :title="time(item.at)"
