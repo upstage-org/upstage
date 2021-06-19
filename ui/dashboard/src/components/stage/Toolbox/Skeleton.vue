@@ -49,7 +49,7 @@ import Icon from "@/components/Icon";
 import SavedDrawing from "./tools/Draw/SavedDrawing";
 
 export default {
-  props: ["data", "real"],
+  props: ["data", "real", "ghost"],
   components: { Image, Icon, SavedDrawing },
   setup: (props) => {
     const store = useStore();
@@ -60,7 +60,10 @@ export default {
 
     const dragstart = (e) => {
       if (props.real) {
-        if (confirm("Are you sure you want to remove this ghost player?")) {
+        if (
+          props.ghost &&
+          confirm("Are you sure you want to remove this ghost player?")
+        ) {
           store.dispatch("stage/deleteObject", props.data);
         }
       } else {
