@@ -54,7 +54,7 @@ export default {
         resizable: true,
         rotatable: true,
         origin: false,
-        keepRatio: true,
+        keepRatio: false,
       });
 
       const sendMovement = (target, { left, top }) => {
