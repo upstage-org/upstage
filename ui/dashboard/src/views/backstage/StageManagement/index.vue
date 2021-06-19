@@ -67,7 +67,7 @@
       </div>
       <div class="column">
         <div class="pt-4 pr-4 pb-4">
-          <Skeleton v-if="!!id && loading" />
+          <Loading v-if="!!id && loading" />
           <router-view v-else />
         </div>
       </div>
@@ -79,10 +79,10 @@
 import { provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 export default {
   props: ["id"],
-  components: { Skeleton },
+  components: { Loading },
   setup: (props) => {
     const { nodes, loading, fetch, data } = useRequest(stageGraph.getStage);
     const stage = useFirst(nodes);

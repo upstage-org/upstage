@@ -45,7 +45,7 @@
         Click <strong>New</strong> button to create a new future stage. Click
         <strong>Search</strong> button for search form to find Stage
       </h2>
-      <Skeleton v-if="loading" />
+      <Loading v-if="loading" />
       <StageTable v-else :data="stageList" />
     </div>
   </section>
@@ -59,14 +59,14 @@ import Dropdown from "@/components/form/Dropdown";
 import Switch from "@/components/form/Switch";
 import { computed, provide } from "@vue/runtime-core";
 import { useOwners } from "@/services/graphql/composable";
-import Skeleton from "@/components/Skeleton.vue";
+import Loading from "@/components/Loading.vue";
 import { includesIgnoreCase } from "@/utils/common";
 import { displayName } from "@/utils/auth";
 import Breadcrumb from "@/components/Breadcrumb";
 import { useStore } from "vuex";
 
 export default {
-  components: { StageTable, Field, Switch, Dropdown, Skeleton, Breadcrumb },
+  components: { StageTable, Field, Switch, Dropdown, Loading, Breadcrumb },
   setup: () => {
     const store = useStore();
     const isGuest = computed(() => store.getters["user/isGuest"]);

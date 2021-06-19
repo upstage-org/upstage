@@ -59,12 +59,15 @@ export default {
     const topbarPosition = ref({});
 
     const dragstart = (e) => {
-      e.dataTransfer.setData(
-        "text",
-        JSON.stringify({ object: props.data, isReal: props.real })
-      );
-      store.commit("stage/SET_ACTIVE_MOVABLE", props.data.id);
+      if (props.real) {
+        if (confirm("Are you sure you want to remove this ghost player?")) {
+          store.dispatch("stage/deleteObject", props.data);
+        }
+      } else {
+        e.dataTransfer.setData("text", JSON.stringify({ object: props.data }));
+      }
     };
+
     const dragend = () => {
       if (props.real) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);

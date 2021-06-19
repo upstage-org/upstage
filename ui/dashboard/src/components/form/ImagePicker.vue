@@ -17,7 +17,7 @@
           <MediaUpload />
         </div>
       </div>
-      <Skeleton v-if="loading" />
+      <Loading v-if="loading" />
       <div v-else class="columns is-multiline">
         <div class="column is-3" v-for="item in availableImages" :key="item">
           <div class="card-image clickable" @click="select(item, closeModal)">
@@ -31,7 +31,7 @@
 
 <script>
 import Modal from "@/components/Modal";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import Asset from "@/components/Asset";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
@@ -40,7 +40,7 @@ import { computed, provide } from "@vue/runtime-core";
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue"],
-  components: { Modal, Skeleton, Asset, MediaUpload },
+  components: { Modal, Loading, Asset, MediaUpload },
   setup: (props, { emit }) => {
     const {
       loading,
