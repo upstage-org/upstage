@@ -10,7 +10,7 @@
           having to download and install any additional software. UpStage is
           available free to anyone who would like to use it.
         </h2>
-        <Skeleton v-if="loading" />
+        <Loading v-if="loading" />
         <div v-else class="links columns my-4">
           <div class="column">
             <router-link
@@ -57,13 +57,13 @@
 import config from "@/../vue.config";
 import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import { absolutePath } from "@/utils/common";
 import PlayerAudienceCounter from "@/components/stage/PlayerAudienceCounter";
 
 export default {
   name: "Home",
-  components: { Skeleton, PlayerAudienceCounter },
+  components: { Loading, PlayerAudienceCounter },
   setup: () => {
     const store = useStore();
 

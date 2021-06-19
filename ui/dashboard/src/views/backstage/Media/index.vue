@@ -10,7 +10,7 @@
   <div class="columns">
     <div class="column is-3">
       <aside class="menu box has-background-light mx-4">
-        <Skeleton v-if="loadingTypes" />
+        <Loading v-if="loadingTypes" />
         <template v-else>
           <p class="menu-label">Media Name</p>
           <p>
@@ -63,7 +63,7 @@
     </div>
     <div class="column is-9">
       <div class="pt-4 pr-4 pb-4">
-        <Skeleton v-if="loading" />
+        <Loading v-if="loading" />
         <MediaList v-else />
       </div>
     </div>
@@ -73,7 +73,7 @@
 <script>
 import MediaList from "./MediaList";
 import MediaUpload from "./MediaUpload";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import Field from "@/components/form/Field";
 import { computed, provide, reactive } from "@vue/runtime-core";
 import { stageGraph } from "@/services/graphql";
@@ -83,7 +83,7 @@ import Breadcrumb from "@/components/Breadcrumb";
 import { useStore } from "vuex";
 
 export default {
-  components: { MediaList, MediaUpload, Skeleton, Field, Breadcrumb },
+  components: { MediaList, MediaUpload, Loading, Field, Breadcrumb },
   setup: () => {
     const store = useStore();
     const isGuest = computed(() => store.getters["user/isGuest"]);

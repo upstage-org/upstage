@@ -103,16 +103,14 @@ export default {
     const voices = getVoiceList();
     const variants = getVariantList();
     const parameters = reactive(
-      props.modelValue
-        ? props.modelValue
-        : currentAvatar.value?.voice ?? {
-            voice: getDefaultVoice(),
-            pitch: 50,
-            speed: 175,
-            amplitude: 100,
-            variant: getDefaultVariant(),
-          }
+      props.modelValue ? props.modelValue : currentAvatar.value?.voice
     );
+    if (!parameters.voice) {
+      parameters.voice = getDefaultVoice();
+    }
+    if (!parameters.variant) {
+      parameters.variant = getDefaultVariant();
+    }
     const test = ref("Welcome to UpStage!");
     const testVoice = () => {
       avatarSpeak({ voice: parameters }, test.value);

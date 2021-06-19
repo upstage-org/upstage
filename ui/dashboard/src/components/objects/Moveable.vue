@@ -54,7 +54,7 @@ export default {
         resizable: true,
         rotatable: true,
         origin: false,
-        keepRatio: true,
+        keepRatio: false,
       });
 
       const sendMovement = (target, { left, top }) => {
@@ -180,9 +180,11 @@ export default {
       }
     };
 
-    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const activeMovable = computed(
+      () => store.state.stage.activeMovable === props.object.id
+    );
     watch(activeMovable, (val) => {
-      showControls(val === props.object.id);
+      showControls(val);
     });
 
     watch(isDragging, (val) => {

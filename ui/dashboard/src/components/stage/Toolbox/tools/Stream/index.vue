@@ -12,7 +12,7 @@
     </Skeleton>
   </div>
   <div v-if="loading">
-    <LoadingSkeleton height="64px" />
+    <Loading height="64px" />
   </div>
   <div v-else @click="fetchRunningStreams">
     <div class="icon is-large">
@@ -28,11 +28,11 @@ import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
-import LoadingSkeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import OBSInstruction from "@/views/backstage/Media/OBSInstruction";
 
 export default {
-  components: { Skeleton, Icon, RTMPStream, LoadingSkeleton, OBSInstruction },
+  components: { Skeleton, Icon, RTMPStream, Loading, OBSInstruction },
   setup: () => {
     const store = useStore();
     const streams = computed(() => store.state.stage.tools.streams);

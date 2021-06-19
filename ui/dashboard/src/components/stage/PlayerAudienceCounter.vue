@@ -1,5 +1,5 @@
 <template>
-  <Skeleton v-if="loading" height="24px" />
+  <Loading v-if="loading" height="24px" />
   <span v-else class="tag is-dark is-small">
     <span class="icon">
       <i class="fas fa-user"></i>
@@ -13,11 +13,11 @@
 </template>
 
 <script>
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import { useCounter } from "./composable";
 export default {
   props: ["stageUrl"],
-  components: { Skeleton },
+  components: { Loading },
   setup(props) {
     const [players, audiences, loading] = useCounter(props.stageUrl);
     return { players, audiences, loading };

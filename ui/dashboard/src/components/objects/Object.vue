@@ -1,5 +1,18 @@
 <template>
-  <div ref="el" tabindex="0" @keyup.delete="deleteObject" @dblclick="hold">
+  <div
+    ref="el"
+    tabindex="0"
+    @keyup.delete="deleteObject"
+    @dblclick="hold"
+    :style="
+      activeMovable
+        ? {
+            position: 'relative',
+            'z-index': 1,
+          }
+        : {}
+    "
+  >
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -148,6 +161,9 @@ export default {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };
+    const activeMovable = computed(
+      () => store.state.stage.activeMovable === props.object.id
+    );
 
     return {
       el,
@@ -162,6 +178,7 @@ export default {
       holdable,
       controlable,
       sliderMode,
+      activeMovable,
     };
   },
 };
