@@ -65,15 +65,18 @@ export default {
 
     const drop = (e) => {
       const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
-      if (e.clientX > 0 && e.clientY > 0) {
-        store.dispatch(
-          isReal ? "stage/shapeObject" : "stage/placeObjectOnStage",
-          {
+      if (isReal) {
+        if (confirm("Are you sure you want to avatar?")) {
+          store.dispatch("stage/deleteObject", object);
+        }
+      } else {
+        if (e.clientX > 0 && e.clientY > 0) {
+          store.dispatch("stage/placeObjectOnStage", {
             ...object,
             x: e.clientX - 50 - stageSize.value.left,
             y: e.clientY - 50 - stageSize.value.top,
-          }
-        );
+          });
+        }
       }
     };
 
