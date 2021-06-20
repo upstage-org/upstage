@@ -26,7 +26,7 @@ from config.settings import FLASK_HOST,FLASK_PORT, ENV_TYPE
 from config.signals import add_signals
 
 from auth.fernet_crypto import encrypt
-from user.models import User,PLAYER
+from user.models import User,PLAYER,ADMIN
 
 # System user(s)
 def create_some_users():
