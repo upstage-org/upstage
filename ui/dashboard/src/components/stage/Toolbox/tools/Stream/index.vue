@@ -11,19 +11,21 @@
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
-  <div v-if="loading">
-    <Loading height="64px" />
-  </div>
-  <div v-else @click="fetchRunningStreams">
-    <div class="icon is-large">
-      <Icon src="refresh.svg" size="36" />
+  <template v-if="autoDetect">
+    <div v-if="loading">
+      <Loading height="64px" />
     </div>
-    <span class="tag is-light is-block">Refresh</span>
-  </div>
+    <div v-else @click="fetchRunningStreams">
+      <div class="icon is-large">
+        <Icon src="refresh.svg" size="36" />
+      </div>
+      <span class="tag is-light is-block">Refresh</span>
+    </div>
+  </template>
 </template>
 
 <script>
-import { computed, onMounted } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
 import Icon from "@/components/Icon";
@@ -40,9 +42,21 @@ export default {
     const fetchRunningStreams = () => {
       store.dispatch("stage/getRunningStreams");
     };
-    onMounted(fetchRunningStreams);
 
-    return { streams, loading, fetchRunningStreams };
+    const autoDetect = computed(
+      () => store.state.stage.tools.config.streaming?.autoDetect
+    );
+    watch(
+      autoDetect,
+      (val) => {
+        if (val) {
+          fetchRunningStreams();
+        }
+      },
+      { immediate: true }
+    );
+
+    return { streams, loading, fetchRunningStreams, autoDetect };
   },
 };
 </script>

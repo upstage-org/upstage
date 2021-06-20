@@ -2,7 +2,7 @@
   <SaveButton
     class="mb-4"
     :loading="saving"
-    @click="saveLayout"
+    @click="saveCustomization"
     :disabled="!selectedRatio.width || !selectedRatio.height"
   />
   <h3 class="title">
@@ -68,6 +68,15 @@
       />
     </HorizontalField>
   </div>
+  <h3 class="title">Streaming</h3>
+  <div>
+    <HorizontalField title="Auto detect">
+      <Switch
+        v-model="streaming.autoDetect"
+        label="Auto detect for live streams"
+      />
+    </HorizontalField>
+  </div>
 </template>
 
 <script>
@@ -80,9 +89,10 @@ import { notification } from "@/utils/notification";
 import { capitalize, inject } from "@vue/runtime-core";
 import HorizontalField from "@/components/form/HorizontalField";
 import Dropdown from "@/components/form/Dropdown";
+import Switch from "@/components/form/Switch";
 
 export default {
-  components: { Selectable, SaveButton, HorizontalField, Dropdown },
+  components: { Selectable, SaveButton, HorizontalField, Dropdown, Switch },
   setup: () => {
     const stage = inject("stage");
     const config = useAttribute(stage, "config", true).value ?? {
@@ -93,14 +103,22 @@ export default {
       animations: {
         bubble: "fade",
       },
+      streaming: {
+        autoDetect: false,
+      },
     };
 
     const selectedRatio = reactive(config.ratio);
     const animations = reactive(config.animations);
+    const streaming = reactive(config.streaming);
 
     const { loading: saving, save } = useMutation(stageGraph.saveStageConfig);
-    const saveLayout = async () => {
-      const config = JSON.stringify({ ratio: selectedRatio, animations });
+    const saveCustomization = async () => {
+      const config = JSON.stringify({
+        ratio: selectedRatio,
+        animations,
+        streaming,
+      });
       await save(
         () => notification.success("Layout saved successfully!"),
         stage.value.id,
@@ -108,7 +126,14 @@ export default {
       );
     };
 
-    return { selectedRatio, saving, saveLayout, animations, capitalize };
+    return {
+      selectedRatio,
+      saving,
+      saveCustomization,
+      animations,
+      capitalize,
+      streaming,
+    };
   },
 };
 </script>
