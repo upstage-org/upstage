@@ -4,7 +4,7 @@ import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -42,11 +42,7 @@ export default {
             audios: [],
             streams: [],
             shapes: [],
-            config: {
-                animateDuration: 1000,
-                reactionDuration: 5000,
-                ratio: 16 / 9,
-            }
+            config: getDefaultStageConfig(),
         },
         settingPopup: {
             isActive: false,
@@ -193,6 +189,7 @@ export default {
             state.tools.backdrops = []
             state.tools.audios = []
             state.tools.streams = [];
+            state.tools.config = getDefaultStageConfig()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
