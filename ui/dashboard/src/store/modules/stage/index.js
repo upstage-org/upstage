@@ -508,6 +508,7 @@ export default {
                 h: 100,
                 opacity: 1,
                 moveSpeed: 2000,
+                voice: {},
                 ...data,
                 id: uuidv4(),
             }
