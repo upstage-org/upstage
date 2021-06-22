@@ -29,7 +29,6 @@ export default {
       if (el) {
         el.addEventListener("ended", function () {
           const audio = audios[refs.indexOf(el)];
-          console.log(audio.loop);
           if (audio.loop) {
             el.currentTime = 0;
             el.play();

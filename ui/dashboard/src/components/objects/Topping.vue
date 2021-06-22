@@ -119,8 +119,8 @@ export default {
         return {};
       }
       const length = props.object.speak.message.length;
-      const width = Math.sqrt(length * 3);
-      const height = Math.max(2.5, width * 0.75);
+      const width = Math.sqrt(length * 2.5);
+      const height = Math.max(2.5, width * 0.8);
       return { width: width + "rem", height: height + "rem" };
     });
 
