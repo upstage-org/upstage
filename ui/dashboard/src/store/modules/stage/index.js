@@ -482,7 +482,7 @@ export default {
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
-            if (avatar) {
+            if (avatar && isPlayer) {
                 mqtt.sendMessage(TOPICS.BOARD, {
                     type: BOARD_ACTIONS.SPEAK,
                     avatar,

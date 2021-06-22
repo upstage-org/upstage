@@ -1,29 +1,9 @@
-<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" inkscape:version="0.48.3.1 r9886" sodipodi:version="0.32" version="1.1" inkscape:output_extension="org.inkscape.output.svg.inkscape" sodipodi:docname="_svgclean2.svg" width="476.21678400028" height="431.8181826669702" style=""><rect id="backgroundrect" width="100%" height="100%" x="0" y="0" fill="none" stroke="none"/>
-  <defs id="defs550">
-    <filter id="filter4788" inkscape:collect="always" color-interpolation-filters="sRGB">
-      <feGaussianBlur id="feGaussianBlur4790" stdDeviation="6.5473177" inkscape:collect="always"/>
-    </filter>
-  </defs>
-  <sodipodi:namedview id="base" inkscape:window-width="674" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="0" inkscape:zoom="0.7725" showgrid="false" inkscape:current-layer="svg548" inkscape:cx="496.12461" inkscape:cy="-358.05862" inkscape:window-height="645"/>
-  
-  
-  <metadata id="metadata9">
-    <rdf:RDF>
-      <cc:Work>
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
-        <dc:publisher>
-          <cc:Agent rdf:about="http://openclipart.org/">
-            <dc:title>Openclipart</dc:title>
-          </cc:Agent>
-        </dc:publisher>
-      </cc:Work>
-      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
-        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
-        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
-        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
-      </cc:License>
-    </rdf:RDF>
-  </metadata>
-<g class="currentLayer" style=""><title>Layer 1</title><path id="path801" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccccccccccccccccccccc" style="filter:url(#filter4788);fill-rule:evenodd;stroke-width:2.5;fill:#000000;fill-opacity:.49804" d="m212.63 278.58 37.17 155.89 25.18-158.29 64.76 34.78c15.59-14.39 29.98-29.98 45.56-40.77 20.39 5.99 73.15 19.18 81.55 22.78l-20.39-68.35 31.18-55.16-31.18-52.76 14.39-76.749-79.14 21.589-63.56-41.974-79.14 53.964-74.35-49.168-56.36 50.368-82.738-14.39 34.775 69.55-40.771 64.75 40.771 41.97-25.182 82.74 76.745-32.38 46.77 49.17 53.96-57.56z"/><path id="path592" inkscape:connector-curvature="0" sodipodi:nodetypes="ccccccccccccccccccccccc" style="stroke-linejoin:round;fill-rule:evenodd;stroke:#000000;stroke-width:10;fill:#ffffff" d="m198.06 264.02 37.18 155.89 25.18-158.29 64.75 34.77c15.59-14.39 29.98-29.97 45.57-40.77 20.39 6 73.15 19.19 81.54 22.79l-20.38-68.35 31.18-55.16-31.18-52.77 14.39-76.742-79.15 21.58-63.55-41.97-79.14 53.958-74.35-49.161-56.363 50.361-82.741-14.387 34.775 69.549-40.771 64.76 40.771 41.97-25.182 82.74 76.748-32.38 46.76 49.17 53.96-57.56z"/></g></svg>
+<svg width="237.02" height="194.42" xmlns="http://www.w3.org/2000/svg" version="1.0">
+ <metadata>image/svg+xmlOpenclipartcomic clouds 62006-12-26T00:00:00bubble, clip art, clipart, comic, speech,http://openclipart.org/detail/3484/-by--3484SRDbubbleclip artclipartcomicspeech</metadata>
+
+ <g>
+  <title>Layer 1</title>
+  <g id="layer1"/>
+  <path fill="#fff" stroke="#000000" stroke-width="6" d="m233.49246,99.32552l-24.5878,12.50681c-5.54948,12.23761 -5.09897,18.47523 -10.64846,30.71284l-34.29086,-7.8758l-45.67778,58.17102l21.03571,-50.4404l-53.61696,9.30645l-16.64936,-19.40666l-43.28227,5.80674l-6.01414,-36.166l-17.26809,-23.83534l12.78296,-23.73159l-9.42154,-27.63989l36.07663,-0.15995l22.09877,-20.81154l37.4562,11.1925l31.28538,-14.24825l43.34106,14.35642l37.45924,-14.25631l7.21267,31.69232l11.70765,19.81702l-12.80828,18.41102l13.80927,26.59859z" id="svg_1"/>
+ </g>
+</svg>
