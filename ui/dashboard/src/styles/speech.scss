@@ -8,7 +8,7 @@ blockquote.bubble {
     padding-left: calc(5%);
     padding-right: calc(5%);
     padding-top: calc(10% - 5px);
-    padding-bottom: 20%;
+    padding-bottom: calc(20% - 5px);
     margin-top: -80%;
     transform: translateX(-50%);
 }
