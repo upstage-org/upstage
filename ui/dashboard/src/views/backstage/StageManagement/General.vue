@@ -1,4 +1,31 @@
 <template>
+  <div class="columns">
+    <div class="column" align="right">
+      <template v-if="stage.id">
+        <button
+          class="button ml-2 is-primary"
+          :class="{ 'is-loading': loading }"
+          @click="updateStage"
+          :disabled="!shortNameValid"
+        >
+          Save Stage
+        </button>
+        <SweepStage />
+        <button class="button ml-2 is-dark">Hide From Stage List</button>
+        <button class="button ml-2 is-danger">Delete Stage</button>
+      </template>
+      <template v-else>
+        <button
+          class="button ml-2 is-primary"
+          :class="{ 'is-loading': loading }"
+          @click="createStage"
+          :disabled="!shortNameValid"
+        >
+          Create Stage
+        </button>
+      </template>
+    </div>
+  </div>
   <div>
     <div class="field is-horizontal">
       <div class="field-label is-normal">
@@ -103,43 +130,6 @@
       </div>
       <div class="field-body">
         <ImagePicker v-model="form.cover" />
-      </div>
-    </div>
-
-    <div class="field is-horizontal">
-      <div class="field-label">
-        <!-- Left empty for spacing -->
-      </div>
-      <div class="field-body">
-        <div class="field">
-          <div class="control">
-            <template v-if="stage.id">
-              <button
-                class="button mr-2 mt-2 is-primary"
-                :class="{ 'is-loading': loading }"
-                @click="updateStage"
-                :disabled="!shortNameValid"
-              >
-                Save Stage
-              </button>
-              <SweepStage />
-              <button class="button mr-2 mt-2 is-dark">
-                Hide From Stage List
-              </button>
-              <button class="button mr-2 mt-2 is-danger">Delete Stage</button>
-            </template>
-            <template v-else>
-              <button
-                class="button mr-2 mt-2 is-primary"
-                :class="{ 'is-loading': loading }"
-                @click="createStage"
-                :disabled="!shortNameValid"
-              >
-                Create Stage
-              </button>
-            </template>
-          </div>
-        </div>
       </div>
     </div>
   </div>

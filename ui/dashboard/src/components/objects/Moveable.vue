@@ -46,99 +46,96 @@ export default {
 
     const store = useStore();
     const config = store.getters["stage/config"];
-    let moveable;
+    const moveable = new Moveable(document.body, {
+      draggable: true,
+      resizable: true,
+      rotatable: true,
+      origin: false,
+    });
 
-    onMounted(() => {
-      moveable = new Moveable(document.body, {
-        draggable: true,
-        resizable: true,
-        rotatable: true,
-        origin: false,
+    const sendMovement = (target, { left, top }) => {
+      target.style.left = `${props.object.x}px`;
+      target.style.top = `${props.object.y}px`;
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        x: left,
+        y: top,
+      });
+    };
+    moveable
+      .on("dragStart", () => {
+        isDragging.value = true;
+      })
+      .on("drag", ({ target, left, top }) => {
+        emit("update:active", false);
+        target.style.left = `${left}px`;
+        target.style.top = `${top}px`;
+      })
+      .on("dragEnd", ({ lastEvent, target }) => {
+        if (lastEvent) {
+          sendMovement(target, lastEvent);
+          store.commit("stage/SET_ACTIVE_MOVABLE", null);
+        }
+        isDragging.value = false;
       });
 
-      const sendMovement = (target, { left, top }) => {
-        target.style.left = `${props.object.x}px`;
-        target.style.top = `${props.object.y}px`;
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          x: left,
-          y: top,
-        });
-      };
-      moveable
-        .on("dragStart", () => {
-          isDragging.value = true;
-        })
-        .on("drag", ({ target, left, top }) => {
-          emit("update:active", false);
-          target.style.left = `${left}px`;
-          target.style.top = `${top}px`;
-        })
-        .on("dragEnd", ({ lastEvent, target }) => {
-          if (lastEvent) {
-            sendMovement(target, lastEvent);
-          }
-          isDragging.value = false;
-        });
-
-      const sendResize = (target, { width, height, left, top }) => {
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          x: left,
-          y: top,
-          w: width,
-          h: height,
-        });
-      };
-      moveable
-        .on("resizeStart", () => {
-          isDragging.value = true;
-        })
-        .on("resize", ({ target, width, height, drag: { left, top } }) => {
-          emit("update:active", false);
-          target.style.width = `${width}px`;
-          target.style.height = `${height}px`;
-          target.style.left = `${left}px`;
-          target.style.top = `${top}px`;
-        })
-        .on(
-          "resizeEnd",
-          ({
-            target,
-            lastEvent: {
-              width,
-              height,
-              drag: { left, top },
-            },
-          }) => {
-            sendResize(target, { left, top, width, height });
-            isDragging.value = false;
-            emit("update:active", true);
-          }
-        );
-
-      const sendRotation = (target, rotate) => {
-        target.style.transform = `rotate(${props.object.rotate}deg)`;
-        store.dispatch("stage/shapeObject", {
-          ...props.object,
-          rotate,
-        });
-      };
-      moveable
-        .on("rotateStart", (e) => {
-          e.set(props.object.rotate ?? 0);
-          isDragging.value = true;
-        })
-        .on("rotate", ({ target, rotate }) => {
-          emit("update:active", false);
-          target.style.transform = `rotate(${rotate}deg)`;
-        })
-        .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
-          sendRotation(target, rotate);
+    const sendResize = (target, { width, height, left, top }) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        x: left,
+        y: top,
+        w: width,
+        h: height,
+      });
+    };
+    moveable
+      .on("resizeStart", () => {
+        isDragging.value = true;
+      })
+      .on("resize", ({ target, width, height, drag: { left, top } }) => {
+        emit("update:active", false);
+        target.style.width = `${width}px`;
+        target.style.height = `${height}px`;
+        target.style.left = `${left}px`;
+        target.style.top = `${top}px`;
+      })
+      .on(
+        "resizeEnd",
+        ({
+          target,
+          lastEvent: {
+            width,
+            height,
+            drag: { left, top },
+          },
+        }) => {
+          sendResize(target, { left, top, width, height });
           isDragging.value = false;
           emit("update:active", true);
-        });
-    });
+        }
+      );
+
+    const sendRotation = (target, rotate) => {
+      target.style.transform = `rotate(${props.object.rotate}deg)`;
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        rotate,
+      });
+    };
+    moveable
+      .on("rotateStart", (e) => {
+        e.set(props.object.rotate ?? 0);
+        isDragging.value = true;
+      })
+      .on("rotate", ({ target, rotate }) => {
+        emit("update:active", false);
+        target.style.transform = `rotate(${rotate}deg)`;
+      })
+      .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
+        sendRotation(target, rotate);
+        isDragging.value = false;
+        emit("update:active", true);
+      });
 
     const showControls = (isShowing, e) => {
       if (moveable) {
@@ -167,8 +164,13 @@ export default {
       }
     };
 
-    const clickInside = () => {
+    const activeMovable = computed(
+      () => store.state.stage.activeMovable === props.object.id
+    );
+
+    const clickInside = (e) => {
       if (props.controlable) {
+        showControls(true, e);
         store.commit("stage/SET_ACTIVE_MOVABLE", props.object.id);
       }
     };
@@ -178,19 +180,13 @@ export default {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
     };
-
-    const activeMovable = computed(
-      () => store.state.stage.activeMovable === props.object.id
+    watch(
+      activeMovable,
+      (val) => {
+        showControls(val);
+      },
+      { immediate: true }
     );
-    watch(activeMovable, (val) => {
-      showControls(val);
-    });
-
-    watch(isDragging, (val) => {
-      if (!val) {
-        store.commit("stage/SET_ACTIVE_MOVABLE", null);
-      }
-    });
 
     let animation;
     watch(

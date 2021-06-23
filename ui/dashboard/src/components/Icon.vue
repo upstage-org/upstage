@@ -1,5 +1,8 @@
 <template>
-  <img :src="path" :style="{ width: size + 'px', height: size + 'px' }" />
+  <img
+    :src="path"
+    :style="{ width: (width ?? size) + 'px', height: (height ?? size) + 'px' }"
+  />
 </template>
 
 <script>
@@ -13,6 +16,8 @@ export default {
       type: Number,
       default: 16,
     },
+    width: Number,
+    height: Number,
   },
   setup: (props) => {
     const path = computed(() => `${config.publicPath}icons/${props.src}`);

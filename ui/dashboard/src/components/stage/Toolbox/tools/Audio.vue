@@ -24,7 +24,7 @@
           <div class="field has-addons menu-group px-4 my-2">
             <p class="control menu-group-title">
               <span class="panel-icon pt-1">
-                <Icon src="45degpositive.svg" />
+                <Icon src="loop.svg" />
               </span>
             </p>
             <p class="control menu-group-item">

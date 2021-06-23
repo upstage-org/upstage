@@ -29,6 +29,7 @@
       >
         <component
           v-for="object in objects"
+          :id="object.id"
           :key="object.id"
           :is="object.type ?? 'avatar'"
           :object="object"
@@ -89,7 +90,11 @@ export default {
         translateY: [-200, 0],
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
-        complete,
+        complete: () => {
+          store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
+          console.log(el.id);
+          complete();
+        },
       });
     };
     const avatarLeave = (el, complete) => {

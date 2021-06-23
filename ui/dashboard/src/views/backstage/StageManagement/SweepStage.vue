@@ -1,5 +1,5 @@
 <template>
-  <button class="button mr-2 mt-2 is-warning" @click="sweep">
+  <button class="button ml-2 is-warning" @click="sweep">
     <template v-if="status">
       <button class="button is-warning is-loading"></button>
       <span>{{ status }}</span>
