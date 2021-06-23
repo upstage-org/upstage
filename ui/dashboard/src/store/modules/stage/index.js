@@ -517,7 +517,9 @@ export default {
                 commit('PUSH_STREAM_HOST', object);
             }
             if (data.type === 'avatar' || data.type === 'drawing') {
-                dispatch("user/setAvatarId", object.id, { root: true });
+                dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
+                    commit("SET_ACTIVE_MOVABLE", null)
+                });
             }
             return object;
         },
