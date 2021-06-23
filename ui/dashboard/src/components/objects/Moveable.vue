@@ -183,7 +183,6 @@ export default {
     watch(
       activeMovable,
       (val) => {
-        console.log(val, store.state.stage.activeMovable, props.object.id);
         showControls(val);
       },
       { immediate: true }
