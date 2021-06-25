@@ -250,12 +250,35 @@ export default {
             deserializeObject(object);
             const model = state.board.objects.find(o => o.id === id);
             if (model) {
+                const deltaX = object.x - model.x
+                const deltaY = object.y - model.y
+                const deltaW = object.w / model.w
+                const deltaH = object.h / model.h
+                const deltaRotate = object.rotate - model.rotate
+                const costumes = state.board.objects.filter(o => o.wornBy === id)
+                if (costumes.length) {
+                    costumes.forEach(costume => {
+                        costume.moveSpeed = object.moveSpeed
+                        costume.opacity = object.opacity
+                        costume.liveAction = object.liveAction
+                        const offsetX = costume.x - model.x
+                        const offsetY = costume.y - model.y
+                        costume.x += deltaX + offsetX * deltaW - offsetX
+                        costume.y += deltaY + offsetY * deltaH - offsetY
+                        costume.w *= deltaW
+                        costume.h *= deltaH
+                        costume.rotate += deltaRotate
+                    })
+                }
                 Object.assign(model, object);
             }
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
             state.board.objects = state.board.objects.filter(o => o.id !== id);
+            state.board.objects.filter(o => o.wornBy === id).forEach(costume => {
+                costume.wornBy = null
+            })
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
             const { id } = avatar;
@@ -509,6 +532,7 @@ export default {
                 opacity: 1,
                 moveSpeed: 2000,
                 voice: {},
+                rotate: 0,
                 ...data,
                 id: uuidv4(),
             }
@@ -523,7 +547,7 @@ export default {
             }
             return object;
         },
-        shapeObject({ commit }, object) {
+        shapeObject({ commit, state }, object) {
             if (object.liveAction) {
                 if (object.published) {
                     mqtt.sendMessage(TOPICS.BOARD, {
@@ -537,7 +561,15 @@ export default {
                         object: serializeObject(object)
                     })
                 }
-
+                state.board.objects.filter(o => o.wornBy === object.id).forEach(costume => {
+                    if (!costume.published) {
+                        costume.published = true
+                        mqtt.sendMessage(TOPICS.BOARD, {
+                            type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
+                            object: serializeObject(costume)
+                        })
+                    }
+                })
             } else {
                 commit('UPDATE_OBJECT', serializeObject(object))
             }
