@@ -118,6 +118,5 @@ export default {
   position: absolute;
   transform: rotate(270deg) translateX(-100%);
   transform-origin: left;
-  z-index: 20;
 }
 </style>
