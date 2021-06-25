@@ -14,6 +14,20 @@
         <span>Hold this avatar</span>
       </a>
     </template>
+    <template v-else>
+      <a v-if="isWearing" class="panel-block" @click="takeOffCostume">
+        <span class="panel-icon">
+          <Icon src="clear.svg" />
+        </span>
+        <span>Remove from avatar</span>
+      </a>
+      <a v-else-if="currentAvatar" class="panel-block" @click="wearCostume">
+        <span class="panel-icon">
+          <Icon src="props.svg" />
+        </span>
+        <span>Add to avatar</span>
+      </a>
+    </template>
     <a class="panel-block" @click="bringToFront">
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
@@ -199,6 +213,31 @@ export default {
         .then(props.closeMenu);
     };
 
+    const isWearing = inject("isWearing");
+    const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
+
+    const wearCostume = () => {
+      if (currentAvatar.value) {
+        store
+          .dispatch("stage/shapeObject", {
+            ...props.object,
+            wornBy: currentAvatar.value.id,
+          })
+          .then(props.closeMenu);
+      }
+    };
+
+    const takeOffCostume = () => {
+      if (isWearing.value) {
+        store
+          .dispatch("stage/shapeObject", {
+            ...props.object,
+            wornBy: null,
+          })
+          .then(props.closeMenu);
+      }
+    };
+
     return {
       switchFrame,
       holdAvatar,
@@ -210,6 +249,10 @@ export default {
       toggleAutoplayFrames,
       changeSliderMode,
       openVoiceSetting,
+      wearCostume,
+      takeOffCostume,
+      currentAvatar,
+      isWearing,
       isHolding,
       holdable,
     };

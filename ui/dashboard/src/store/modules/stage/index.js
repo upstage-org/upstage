@@ -389,7 +389,7 @@ export default {
                 state.audioPlayers[index] = {}
             }
             Object.assign(state.audioPlayers[index], status)
-        }
+        },
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -779,6 +779,6 @@ export default {
             const streams = await nmsService.getStreams()
             commit('PUSH_RUNNING_STREAMS', streams)
             state.loadingRunningStreams = false
-        }
+        },
     },
 };
