@@ -90,6 +90,7 @@ exec(hstr)
 # Reset this based on imported local config values
 SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}'.format(DB_USER,DB_PASSWD,DB_HOST,DB_PORT,DB_NAME)
 #SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://{0}:{1}@{2}:{3}/{4}'.format(DB_USER,DB_PASSWD,DB_HOST,DB_PORT,DB_NAME)
+NGINX_CONFIG_FILE = 'system/dev/dev_app1_nginx_upstage.conf'
 
 if __name__ == '__main__':
     print("Copy-paste this secret:{}".format(secrets.token_urlsafe(64)))
