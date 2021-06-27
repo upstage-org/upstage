@@ -51,7 +51,6 @@ export default {
       resizable: true,
       rotatable: true,
       origin: false,
-      keepRatio: true,
     });
 
     const sendMovement = (target, { left, top }) => {
@@ -146,7 +145,7 @@ export default {
               target: el.value,
             },
             () => {
-              if (e) {
+              if (e && props.object.type !== "text") {
                 moveable.dragStart(e);
               }
             }

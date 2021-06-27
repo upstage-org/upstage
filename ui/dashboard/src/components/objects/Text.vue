@@ -65,6 +65,7 @@ export default {
 <style>
 p[contenteditable] {
   outline: none;
+  pointer-events: all;
 }
 .show-text {
   white-space: nowrap;
