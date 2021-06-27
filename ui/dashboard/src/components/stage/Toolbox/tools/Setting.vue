@@ -11,6 +11,12 @@
     </div>
     <span class="tag is-light is-block">Show chat</span>
   </div>
+  <div @click="clearChat">
+    <div class="icon is-large">
+      <Icon src="erase.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Clear chat</span>
+  </div>
   <div>
     <div class="icon is-large">
       <ColorPicker
@@ -27,6 +33,7 @@ import Icon from "@/components/Icon";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
 import { computed } from "@vue/runtime-core";
+import { notification } from "@/utils/notification";
 export default {
   components: { Icon, ColorPicker },
   setup: () => {
@@ -39,12 +46,24 @@ export default {
       store.dispatch("stage/showChatBox", value);
     };
 
+    const clearChat = () => {
+      store.dispatch("stage/clearChat").then(() => {
+        notification.success("Chat cleared successfully!");
+      });
+    };
+
     const backdropColor = computed(() => store.state.stage.backdropColor);
     const sendBackdropColor = (color) => {
       store.dispatch("stage/setBackdropColor", color);
     };
 
-    return { showChat, chatVisibility, sendBackdropColor, backdropColor };
+    return {
+      showChat,
+      chatVisibility,
+      clearChat,
+      sendBackdropColor,
+      backdropColor,
+    };
   },
 };
 </script>

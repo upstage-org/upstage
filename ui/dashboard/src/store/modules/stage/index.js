@@ -235,6 +235,9 @@ export default {
             }
             state.chat.messages.push(message)
         },
+        CLEAR_CHAT(state) {
+            state.chat.messages.length = 0
+        },
         PUSH_OBJECT(state, object) {
             const { id } = object;
             deserializeObject(object);
@@ -514,16 +517,20 @@ export default {
             }
         },
         handleChatMessage({ commit }, { message }) {
-            const model = {
-                user: 'Anonymous',
-                color: "#000000"
-            };
-            if (typeof message === "object") {
-                Object.assign(model, message)
+            if (message.clear) {
+                commit('CLEAR_CHAT')
             } else {
-                model.message = message;
+                const model = {
+                    user: 'Anonymous',
+                    color: "#000000"
+                };
+                if (typeof message === "object") {
+                    Object.assign(model, message)
+                } else {
+                    model.message = message;
+                }
+                commit('PUSH_CHAT_MESSAGE', model)
             }
-            commit('PUSH_CHAT_MESSAGE', model)
         },
         placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
@@ -811,6 +818,9 @@ export default {
             const streams = await nmsService.getStreams()
             commit('PUSH_RUNNING_STREAMS', streams)
             state.loadingRunningStreams = false
+        },
+        clearChat() {
+            mqtt.sendMessage(TOPICS.CHAT, { clear: true })
         },
     },
 };
