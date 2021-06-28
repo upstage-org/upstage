@@ -1,11 +1,4 @@
 <template>
-  <button
-    class="button ml-2 is-warning"
-    @click="clearChat"
-    :class="{ 'is-loading': clearing }"
-  >
-    Clear Chat
-  </button>
   <button class="button ml-2 is-warning" @click="sweep">
     <template v-if="status">
       <button class="button is-warning is-loading"></button>
@@ -56,25 +49,7 @@ export default {
       }
     };
 
-    const clearing = ref(false);
-    const clearChat = async () => {
-      clearing.value = true;
-      await new Promise((resolve) => {
-        mqttClient.connect().on("connect", () => {
-          const topicChat = namespaceTopic(
-            TOPICS.CHAT,
-            stage.value.fileLocation
-          );
-          mqttClient
-            .sendMessage(topicChat, { clear: true }, true)
-            .then(resolve);
-        });
-      });
-      clearing.value = false;
-      notification.success(`Chat cleared successfully!`);
-    };
-
-    return { status, sweep, clearChat, clearing };
+    return { status, sweep };
   },
 };
 </script>

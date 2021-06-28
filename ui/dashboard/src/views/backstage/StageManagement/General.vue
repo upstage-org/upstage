@@ -10,6 +10,7 @@
         >
           Save Stage
         </button>
+        <ClearChat />
         <SweepStage />
         <button class="button ml-2 is-dark">Hide From Stage List</button>
         <button class="button ml-2 is-danger">Delete Stage</button>
@@ -155,11 +156,18 @@ import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
 import { displayName } from "@/utils/auth";
 import { debounce } from "@/utils/common";
+import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
 import { useStore } from "vuex";
 
 export default {
-  components: { Field, SweepStage, MultiTransferColumn, ImagePicker },
+  components: {
+    Field,
+    ClearChat,
+    SweepStage,
+    MultiTransferColumn,
+    ImagePicker,
+  },
   setup: () => {
     const store = useStore();
     const router = useRouter();
