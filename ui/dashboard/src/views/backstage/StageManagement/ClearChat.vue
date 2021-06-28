@@ -38,7 +38,7 @@ export default {
       });
       clearing.value = false;
       notification.success(`Chat cleared successfully!`);
-      refresh();
+      refresh(stage.value.id);
     };
 
     return { clearChat, clearing };
