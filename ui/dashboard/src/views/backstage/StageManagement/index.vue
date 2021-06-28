@@ -84,9 +84,12 @@ export default {
   props: ["id"],
   components: { Loading },
   setup: (props) => {
-    const { nodes, loading, fetch, data } = useRequest(stageGraph.getStage);
+    const { nodes, loading, fetch, data, refresh } = useRequest(
+      stageGraph.getStage
+    );
     const stage = useFirst(nodes);
     provide("stage", stage);
+    provide("refresh", refresh);
     watch(
       () => props.id,
       () => {
