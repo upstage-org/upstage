@@ -16,6 +16,13 @@
       <span style="float: left">
         <MediaEdit :media="item" />
       </span>
+      <a
+        class="button is-light is-small"
+        :href="absolutePath(item.fileLocation)"
+        :download="item.name"
+      >
+        <Icon src="save.svg" />
+      </a>
       <Confirm
         @confirm="(complete) => deleteMedia(item, complete)"
         :loading="loading"
@@ -104,7 +111,13 @@ export default {
       complete();
     };
 
-    return { mediaList, absolutePath, headers, deleteMedia, loading };
+    return {
+      mediaList,
+      absolutePath,
+      headers,
+      deleteMedia,
+      loading,
+    };
   },
 };
 </script>
