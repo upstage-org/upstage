@@ -31,7 +31,7 @@ export default {
     const stage = inject("stage");
 
     const time = (value) => {
-      return moment(value).fromNow();
+      return moment(value).format("YYYY-MM-DD");
     };
 
     const tabs = computed(() => {
@@ -67,7 +67,7 @@ export default {
           if (begin === end) {
             tab.label = `${begin}`;
           } else {
-            tab.label = `${end} - ${begin}`;
+            tab.label = `${end} ➜ ${begin}`;
           }
         }
       });
