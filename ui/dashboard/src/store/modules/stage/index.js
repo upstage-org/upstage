@@ -295,13 +295,16 @@ export default {
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
             if (model) {
-                model.speak = speak;
-                if (state.status === 'LIVE' || state.replay.isReplaying) {
-                    avatarSpeak(model);
+                speak.hash = hash(speak)
+                if (model.speak?.hash !== speak.hash) {
+                    model.speak = speak;
+                    if (state.status === 'LIVE' || state.replay.isReplaying) {
+                        avatarSpeak(model);
+                    }
+                    setTimeout(() => {
+                        if (model.speak?.message === speak.message) { model.speak = null }
+                    }, 1000 + speak.message.split(' ').length * 1000);
                 }
-                setTimeout(() => {
-                    if (model.speak?.message === speak.message) { model.speak = null }
-                }, 1000 + speak.message.split(' ').length * 1000);
             }
         },
         SET_PRELOADING_STATUS(state, status) {
