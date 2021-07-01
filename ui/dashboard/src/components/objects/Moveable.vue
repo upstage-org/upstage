@@ -5,6 +5,7 @@
       position: 'absolute',
       opacity: object.opacity * (isDragging ? 0.5 : 1),
       filter: `grayscale(${object.liveAction ? 0 : 1})`,
+      'transform-origin': transformOrigin,
     }"
     @mousedown="clickInside"
     v-click-outside="clickOutside"
@@ -234,7 +235,20 @@ export default {
       moveable.destroy();
     });
 
-    return { el, isDragging, clickInside, clickOutside };
+    const transformOrigin = computed(() => {
+      const wearer = store.state.stage.board.objects.find(
+        (a) => a.id === props.object.wornBy
+      );
+      if (wearer) {
+        return `${wearer.x + wearer.w / 2 - props.object.x}px ${
+          wearer.y + wearer.h / 2 - props.object.y
+        }px`;
+      } else {
+        return "center";
+      }
+    });
+
+    return { el, isDragging, clickInside, clickOutside, transformOrigin };
   },
 };
 </script>
