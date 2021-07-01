@@ -266,16 +266,8 @@ export default {
                         costume.liveAction = object.liveAction
                         const offsetX = costume.x - model.x
                         const offsetY = costume.y - model.y
-
-                        const distanceX = costume.x + costume.w / 2 - model.x - model.w / 2
-                        const distanceY = costume.y + costume.h / 2 - model.y - model.h / 2
-
-                        const radiants = object.rotate * (Math.PI / 180)
-                        const newDistanceX = Math.sqrt((distanceX * distanceX + distanceY * distanceY) / (1 + Math.pow(Math.tan(radiants), 2)))
-                        const newDistanceY = newDistanceX * Math.tan(radiants)
-
-                        costume.x += deltaX + offsetX * deltaW - offsetX - distanceX + newDistanceX * (distanceX > 0 ? 1 : -1)
-                        costume.y += deltaY + offsetY * deltaH - offsetY - distanceY + newDistanceY * (distanceY > 0 ? 1 : -1)
+                        costume.x += deltaX + offsetX * deltaW - offsetX
+                        costume.y += deltaY + offsetY * deltaH - offsetY
                         costume.w *= deltaW
                         costume.h *= deltaH
                         costume.rotate += deltaRotate

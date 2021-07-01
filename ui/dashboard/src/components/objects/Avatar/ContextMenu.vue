@@ -221,6 +221,7 @@ export default {
         store
           .dispatch("stage/shapeObject", {
             ...props.object,
+            rotate: 0,
             wornBy: currentAvatar.value.id,
           })
           .then(props.closeMenu);
