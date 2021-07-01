@@ -11,7 +11,7 @@
       <p
         ref="el"
         :style="object"
-        class="has-text-centered"
+        class="has-text-centered show-text"
         contenteditable="true"
         @keyup.delete.prevent.stop
         @keyup="liveTyping"
@@ -65,5 +65,10 @@ export default {
 <style>
 p[contenteditable] {
   outline: none;
+  pointer-events: all;
+}
+.show-text {
+  white-space: nowrap;
+  cursor: text;
 }
 </style>

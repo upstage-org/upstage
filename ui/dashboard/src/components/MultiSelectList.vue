@@ -4,7 +4,7 @@
       <div class="column">
         <div class="box">
           <p v-if="titles" class="title is-5">{{ titles[0] }}</p>
-          <Skeleton v-if="loading" />
+          <Loading v-if="loading" />
           <div v-else class="columns is-multiline">
             <div
               class="column item is-3"
@@ -38,7 +38,7 @@
       <div class="column">
         <div class="box">
           <p v-if="titles" class="title is-5">{{ titles[1] }}</p>
-          <Skeleton v-if="loading" />
+          <Loading v-if="loading" />
           <div v-else class="columns is-multiline">
             <template v-for="item in modelValue" :key="item">
               <div
@@ -62,7 +62,7 @@
 </template>
 
 <script>
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import Selectable from "@/components/Selectable";
 
 export default {
@@ -80,7 +80,7 @@ export default {
     },
   },
   emits: ["update:modelValue"],
-  components: { Skeleton, Selectable },
+  components: { Loading, Selectable },
   setup: (props, { emit }) => {
     const remove = (item) => {
       emit(

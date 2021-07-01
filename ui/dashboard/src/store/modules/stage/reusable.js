@@ -54,3 +54,11 @@ export function unnamespaceTopic(topicName) {
     const namespace = configs.MQTT_NAMESPACE;
     return topicName.substring(namespace.length + url.length + 2);
 }
+
+export function getDefaultStageConfig() {
+    return {
+        animateDuration: 1000,
+        reactionDuration: 5000,
+        ratio: 16 / 9,
+    }
+}

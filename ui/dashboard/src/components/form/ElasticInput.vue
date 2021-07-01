@@ -47,6 +47,7 @@ export default {
 textarea {
   padding: 8px;
   resize: none;
+  overflow: hidden;
 }
 textarea[rows="1"] {
   height: 40px;

@@ -17,17 +17,23 @@
     <input
       :id="id"
       type="checkbox"
-      :class="`switch ${className ?? 'is-rounded is-success'}`"
       v-bind="$attrs"
       :checked="modelValue"
       @input="$emit('update:modelValue', $event.target.checked)"
+      style="display: none"
     />
-    <label :for="id" :class="{ 'is-loading': loading }">{{ label }}</label>
+    <label class="clickable" :for="id" :class="{ 'is-loading': loading }">
+      <Icon v-if="modelValue" src="toggle_on.svg" size="36" height="24" />
+      <Icon v-else src="toggle_off.svg" size="36" height="24" />
+      {{ label }}
+    </label>
   </div>
 </template>
 
 <script>
 import { v4 as uuidv4 } from "uuid";
+import Icon from "@/components/Icon.vue";
+
 export default {
   props: [
     "className",
@@ -38,6 +44,7 @@ export default {
     "loading",
   ],
   emits: ["update:modelValue"],
+  components: { Icon },
   setup: () => {
     const id = uuidv4();
     return { id };

@@ -5,6 +5,7 @@ export const TOPICS = {
   AUDIO: "audio",
   REACTION: "reaction",
   COUNTER: "counter",
+  STATISTICS: "statistics",
 }
 
 export const BOARD_ACTIONS = {
@@ -22,6 +23,7 @@ export const BOARD_ACTIONS = {
 export const BACKGROUND_ACTIONS = {
   CHANGE_BACKGROUND: 'changeBackground',
   SET_CHAT_VISIBILITY: 'setChatVisibility',
+  CLEAR_CHAT: 'clearChat',
   SET_BACKDROP_COLOR: 'setBackdropColor'
 }
 

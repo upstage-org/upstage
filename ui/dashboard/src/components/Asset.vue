@@ -4,7 +4,12 @@
     <RTMPStream v-if="meta.isRTMP" :src="asset.fileLocation"></RTMPStream>
     <video v-else controls :src="src"></video>
   </template>
-  <img v-else :src="src" style="max-width: 100%; max-height: 100%" />
+  <img
+    v-else
+    :src="src"
+    style="max-width: 100%; max-height: 100%"
+    @load="handleLoad"
+  />
 </template>
 
 <script>
@@ -14,8 +19,9 @@ import RTMPStream from "@/components/RTMPStream";
 
 export default {
   props: ["asset"],
+  emits: ["detectSize"],
   components: { RTMPStream },
-  setup: (props) => {
+  setup: (props, { emit }) => {
     if (props.asset.assetType) {
       Object.assign(props.asset, { mediaType: props.asset.assetType.name });
     }
@@ -28,8 +34,14 @@ export default {
       }
       return {};
     });
+    const handleLoad = (e) => {
+      emit("detectSize", {
+        width: e.target.width,
+        height: e.target.height,
+      });
+    };
 
-    return { src, meta };
+    return { src, meta, handleLoad };
   },
 };
 </script>

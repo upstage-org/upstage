@@ -49,7 +49,7 @@ import Icon from "@/components/Icon";
 import SavedDrawing from "./tools/Draw/SavedDrawing";
 
 export default {
-  props: ["data", "real"],
+  props: ["data", "real", "ghost"],
   components: { Image, Icon, SavedDrawing },
   setup: (props) => {
     const store = useStore();
@@ -63,8 +63,8 @@ export default {
         "text",
         JSON.stringify({ object: props.data, isReal: props.real })
       );
-      store.commit("stage/SET_ACTIVE_MOVABLE", props.data.id);
     };
+
     const dragend = () => {
       if (props.real) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);

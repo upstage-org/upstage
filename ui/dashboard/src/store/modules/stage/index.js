@@ -1,16 +1,18 @@
 import moment from 'moment'
 import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
-import mqtt from '@/services/mqtt'
+import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak } from '@/services/speech';
 import { nmsService } from "@/services/rest";
 import anime from 'animejs';
+
+const mqtt = buildClient()
 
 export default {
     namespaced: true,
@@ -40,11 +42,7 @@ export default {
             audios: [],
             streams: [],
             shapes: [],
-            config: {
-                animateDuration: 1000,
-                reactionDuration: 5000,
-                ratio: 16 / 9,
-            }
+            config: getDefaultStageConfig(),
         },
         settingPopup: {
             isActive: false,
@@ -74,7 +72,8 @@ export default {
             interval: null,
             speed: 32
         },
-        loadingRunningStreams: false
+        loadingRunningStreams: false,
+        audioPlayers: []
     },
     getters: {
         ready(state) {
@@ -126,6 +125,12 @@ export default {
         canPlay(state) {
             return state.model.permission && state.model.permission !== 'audience'
         },
+        players(state) {
+            return state.sessions.filter((s) => s.isPlayer)
+        },
+        audiences(state) {
+            return state.sessions.filter((s) => !s.isPlayer)
+        }
     },
     mutations: {
         SET_MODEL(state, model) {
@@ -184,6 +189,7 @@ export default {
             state.tools.backdrops = []
             state.tools.audios = []
             state.tools.streams = [];
+            state.tools.config = getDefaultStageConfig()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
@@ -229,6 +235,9 @@ export default {
             }
             state.chat.messages.push(message)
         },
+        CLEAR_CHAT(state) {
+            state.chat.messages.length = 0
+        },
         PUSH_OBJECT(state, object) {
             const { id } = object;
             deserializeObject(object);
@@ -244,24 +253,50 @@ export default {
             deserializeObject(object);
             const model = state.board.objects.find(o => o.id === id);
             if (model) {
+                const deltaX = object.x - model.x
+                const deltaY = object.y - model.y
+                const deltaW = object.w / model.w
+                const deltaH = object.h / model.h
+                const deltaRotate = object.rotate - model.rotate
+                const costumes = state.board.objects.filter(o => o.wornBy === id)
+                if (costumes.length) {
+                    costumes.forEach(costume => {
+                        costume.moveSpeed = object.moveSpeed
+                        costume.opacity = object.opacity
+                        costume.liveAction = object.liveAction
+                        const offsetX = costume.x - model.x
+                        const offsetY = costume.y - model.y
+                        costume.x += deltaX + offsetX * deltaW - offsetX
+                        costume.y += deltaY + offsetY * deltaH - offsetY
+                        costume.w *= deltaW
+                        costume.h *= deltaH
+                        costume.rotate += deltaRotate
+                    })
+                }
                 Object.assign(model, object);
             }
         },
         DELETE_OBJECT(state, object) {
             const { id } = object;
             state.board.objects = state.board.objects.filter(o => o.id !== id);
+            state.board.objects.filter(o => o.wornBy === id).forEach(costume => {
+                costume.wornBy = null
+            })
         },
         SET_OBJECT_SPEAK(state, { avatar, speak }) {
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
             if (model) {
-                model.speak = speak;
-                if (state.status === 'LIVE' || state.replay.isReplaying) {
-                    avatarSpeak(model);
+                speak.hash = hash(speak)
+                if (model.speak?.hash !== speak.hash) {
+                    model.speak = speak;
+                    if (state.status === 'LIVE' || state.replay.isReplaying) {
+                        avatarSpeak(model);
+                    }
+                    setTimeout(() => {
+                        if (model.speak?.message === speak.message) { model.speak = null }
+                    }, 1000 + speak.message.split(' ').length * 1000);
                 }
-                setTimeout(() => {
-                    if (model.speak?.message === speak.message) { model.speak = null }
-                }, 1000 + speak.message.split(' ').length * 1000);
             }
         },
         SET_PRELOADING_STATUS(state, status) {
@@ -270,6 +305,7 @@ export default {
         UPDATE_AUDIO(state, audio) {
             const model = state.tools.audios.find(a => a.src === audio.src);
             if (model) {
+                audio.changed = true
                 Object.assign(model, audio);
             }
         },
@@ -376,7 +412,13 @@ export default {
         },
         SET_ACTIVE_MOVABLE(state, id) {
             state.activeMovable = id
-        }
+        },
+        UPDATE_AUDIO_PLAYER_STATUS(state, { index, ...status }) {
+            if (!state.audioPlayers[index]) {
+                state.audioPlayers[index] = {}
+            }
+            Object.assign(state.audioPlayers[index], status)
+        },
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -395,18 +437,19 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit }) {
+        subscribe({ commit, dispatch }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
                 [TOPICS.BACKGROUND]: { qos: 2 },
                 [TOPICS.AUDIO]: { qos: 2 },
                 [TOPICS.REACTION]: { qos: 2 },
-                [TOPICS.COUNTER]: { qos: 2 }
+                [TOPICS.COUNTER]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
+                dispatch('sendStatistics')
             })
         },
         async disconnect({ dispatch }) {
@@ -437,9 +480,10 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, state, getters }, message) {
+        sendChat({ rootGetters, getters }, message) {
             if (!message) return;
-            const user = rootGetters["user/chatname"];
+            let user = rootGetters["user/chatname"];
+            let isPlayer = getters["canPlay"]
             let behavior = "speak"
             if (message.startsWith(":")) {
                 behavior = "think";
@@ -449,17 +493,25 @@ export default {
                 behavior = "shout"
                 message = message.substr(1).toUpperCase()
             }
+            if (isPlayer && message.startsWith("-")) {
+                message = message.substr(1)
+                const fakeName = message.split(' ')[0]
+                if (fakeName) {
+                    user = fakeName
+                    message = message.substr(fakeName.length).trim()
+                }
+                isPlayer = false
+            }
             const payload = {
                 user,
                 message: message,
                 behavior,
-                color: state.chat.color.text,
-                backgroundColor: state.chat.color.bg,
+                isPlayer,
                 at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
-            if (avatar) {
+            if (avatar && isPlayer) {
                 mqtt.sendMessage(TOPICS.BOARD, {
                     type: BOARD_ACTIONS.SPEAK,
                     avatar,
@@ -468,16 +520,20 @@ export default {
             }
         },
         handleChatMessage({ commit }, { message }) {
-            const model = {
-                user: 'Anonymous',
-                color: "#000000"
-            };
-            if (typeof message === "object") {
-                Object.assign(model, message)
+            if (message.clear) {
+                commit('CLEAR_CHAT')
             } else {
-                model.message = message;
+                const model = {
+                    user: 'Anonymous',
+                    color: "#000000"
+                };
+                if (typeof message === "object") {
+                    Object.assign(model, message)
+                } else {
+                    model.message = message;
+                }
+                commit('PUSH_CHAT_MESSAGE', model)
             }
-            commit('PUSH_CHAT_MESSAGE', model)
         },
         placeObjectOnStage({ commit, dispatch }, data) {
             const object = {
@@ -485,6 +541,8 @@ export default {
                 h: 100,
                 opacity: 1,
                 moveSpeed: 2000,
+                voice: {},
+                rotate: 0,
                 ...data,
                 id: uuidv4(),
             }
@@ -493,11 +551,13 @@ export default {
                 commit('PUSH_STREAM_HOST', object);
             }
             if (data.type === 'avatar' || data.type === 'drawing') {
-                dispatch("user/setAvatarId", object.id, { root: true });
+                dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
+                    commit("SET_ACTIVE_MOVABLE", null)
+                });
             }
             return object;
         },
-        shapeObject({ commit }, object) {
+        shapeObject({ commit, state }, object) {
             if (object.liveAction) {
                 if (object.published) {
                     mqtt.sendMessage(TOPICS.BOARD, {
@@ -511,7 +571,15 @@ export default {
                         object: serializeObject(object)
                     })
                 }
-
+                state.board.objects.filter(o => o.wornBy === object.id).forEach(costume => {
+                    if (!costume.published) {
+                        costume.published = true
+                        mqtt.sendMessage(TOPICS.BOARD, {
+                            type: BOARD_ACTIONS.PLACE_OBJECT_ON_STAGE,
+                            object: serializeObject(costume)
+                        })
+                    }
+                })
             } else {
                 commit('UPDATE_OBJECT', serializeObject(object))
             }
@@ -621,12 +689,7 @@ export default {
                     break;
             }
         },
-        playAudio(_, audio) {
-            audio.isPlaying = true;
-            mqtt.sendMessage(TOPICS.AUDIO, audio)
-        },
-        pauseAudio(_, audio) {
-            audio.isPlaying = false;
+        updateAudioStatus(_, audio) {
             mqtt.sendMessage(TOPICS.AUDIO, audio)
         },
         handleAudioMessage({ commit }, { message }) {
@@ -741,17 +804,26 @@ export default {
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
         },
-        async leaveStage({ state, commit }) {
+        async leaveStage({ state, commit, dispatch }) {
             const id = state.session
             state.session = null
             commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
+            await dispatch('sendStatistics')
+        },
+        async sendStatistics({ state, getters }) {
+            if (state.subscribeSuccess) {
+                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
+            }
         },
         async getRunningStreams({ state, commit }) {
             state.loadingRunningStreams = true
             const streams = await nmsService.getStreams()
             commit('PUSH_RUNNING_STREAMS', streams)
             state.loadingRunningStreams = false
-        }
+        },
+        clearChat() {
+            mqtt.sendMessage(TOPICS.CHAT, { clear: true })
+        },
     },
 };

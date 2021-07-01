@@ -21,7 +21,7 @@
   </section>
   <div class="container-fluid">
     <div class="columns">
-      <div class="column is-narrow">
+      <div class="column is-3">
         <aside class="menu box has-background-light mx-4">
           <ul class="menu-list">
             <li>
@@ -37,7 +37,7 @@
             </li>
             <template v-if="id">
               <li>
-                <router-link to="layout" exact-active-class="is-active"
+                <router-link to="customization" exact-active-class="is-active"
                   >Customization</router-link
                 >
               </li>
@@ -65,9 +65,9 @@
           </ul>
         </aside>
       </div>
-      <div class="column">
+      <div class="column is-9">
         <div class="pt-4 pr-4 pb-4">
-          <Skeleton v-if="!!id && loading" />
+          <Loading v-if="!!id && loading" />
           <router-view v-else />
         </div>
       </div>
@@ -79,14 +79,17 @@
 import { provide, watch } from "vue";
 import { useFirst, useRequest } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 export default {
   props: ["id"],
-  components: { Skeleton },
+  components: { Loading },
   setup: (props) => {
-    const { nodes, loading, fetch, data } = useRequest(stageGraph.getStage);
+    const { nodes, loading, fetch, data, refresh } = useRequest(
+      stageGraph.getStage
+    );
     const stage = useFirst(nodes);
     provide("stage", stage);
+    provide("refresh", refresh);
     watch(
       () => props.id,
       () => {

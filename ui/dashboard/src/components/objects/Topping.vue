@@ -42,6 +42,7 @@ import { useStore } from "vuex";
 import anime from "animejs";
 import Icon from "@/components/Icon";
 import Linkify from "@/components/Linkify";
+import { outOfViewportPosition } from "@/utils/common";
 export default {
   props: ["object", "active"],
   components: { Icon, Linkify },
@@ -55,6 +56,38 @@ export default {
     const config = computed(() => store.getters["stage/config"]);
 
     const enter = (el, complete) => {
+      let pos = outOfViewportPosition(el);
+      let count = 0;
+      while (pos && count < 5) {
+        if (pos === "top") {
+          anime({
+            targets: el,
+            translateY: props.object.h + el.getBoundingClientRect().height,
+            translateX: -props.object.h / 2,
+            rotate: 180,
+          });
+          anime({
+            targets: el.firstElementChild,
+            rotate: 180,
+          });
+        }
+        if (pos === "left") {
+          anime({
+            targets: el,
+            translateX: -el.getBoundingClientRect().left - props.object.w / 2,
+          });
+        }
+        if (pos === "right") {
+          anime({
+            targets: el,
+            translateX:
+              (window.innerWidth || document.documentElement.clientWidth) -
+              el.getBoundingClientRect().right,
+          });
+        }
+        pos = outOfViewportPosition(el);
+        count++;
+      }
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({
@@ -119,8 +152,8 @@ export default {
         return {};
       }
       const length = props.object.speak.message.length;
-      const width = Math.sqrt(length * 3);
-      const height = Math.max(2.5, width * 0.75);
+      const width = Math.sqrt(length * 2.5);
+      const height = Math.max(2.5, width * 0.8);
       return { width: width + "rem", height: height + "rem" };
     });
 

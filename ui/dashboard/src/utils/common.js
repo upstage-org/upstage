@@ -156,3 +156,30 @@ export function linkify(inputText) {
 export function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+export function isElementInViewport(el) {
+  const rect = el.getBoundingClientRect();
+  return (
+    rect.top >= 0 &&
+    rect.left >= 0 &&
+    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
+    rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+  );
+}
+
+export function outOfViewportPosition(el) {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < 0) {
+    return 'top'
+  }
+  if (rect.left < 0) {
+    return 'left'
+  }
+  if (rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
+    return 'bottom'
+  }
+  if (rect.right > (window.innerWidth || document.documentElement.clientWidth)) {
+    return 'right'
+  }
+  return false
+}

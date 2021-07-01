@@ -10,7 +10,6 @@ any additional software. UpStage is available free to anyone who would like to u
 .. toctree::
    :maxdepth: 3
    
-   user_manual
    installation_manual
    developer_manual
    glossary

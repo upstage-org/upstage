@@ -1,5 +1,18 @@
 <template>
-  <div ref="el" tabindex="0" @keyup.delete="deleteObject" @dblclick="hold">
+  <div
+    ref="el"
+    tabindex="0"
+    @keyup.delete="deleteObject"
+    @dblclick="hold"
+    :style="
+      activeMovable
+        ? {
+            position: 'relative',
+            'z-index': 1,
+          }
+        : {}
+    "
+  >
     <ContextMenu
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
@@ -45,7 +58,7 @@
           </div>
         </Moveable>
       </template>
-      <template #context="slotProps" v-if="controlable">
+      <template #context="slotProps" v-if="controlable || isWearing">
         <slot
           name="menu"
           v-bind="slotProps"
@@ -99,7 +112,9 @@ export default {
     );
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const controlable = computed(() => {
-      return holdable.value ? isHolding.value : canPlay.value;
+      return holdable.value
+        ? isHolding.value
+        : canPlay.value && !props.object.wornBy;
     });
     provide("holdable", holdable);
 
@@ -148,6 +163,14 @@ export default {
         store.dispatch("user/setAvatarId", props.object.id);
       }
     };
+    const activeMovable = computed(
+      () => store.state.stage.activeMovable === props.object.id
+    );
+
+    const isWearing = computed(
+      () => store.getters["stage/currentAvatar"]?.id === props.object.wornBy
+    );
+    provide("isWearing", isWearing);
 
     return {
       el,
@@ -162,6 +185,8 @@ export default {
       holdable,
       controlable,
       sliderMode,
+      activeMovable,
+      isWearing,
     };
   },
 };

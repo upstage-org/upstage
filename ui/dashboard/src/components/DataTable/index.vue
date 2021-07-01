@@ -1,5 +1,5 @@
 <template>
-  <Skeleton v-if="loading" />
+  <Loading v-if="loading" />
   <div v-else>
     <table class="table">
       <thead>
@@ -85,7 +85,7 @@
 
 <script>
 import { useQuery } from "@/services/graphql/composable";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import { computed } from "@vue/runtime-core";
 import moment from "moment";
 import Pagination from "./Pagination.vue";
@@ -107,7 +107,7 @@ export default {
       type: Array,
     },
   },
-  components: { Skeleton, Pagination },
+  components: { Loading, Pagination },
   setup: (props) => {
     if (props.data) {
       return {

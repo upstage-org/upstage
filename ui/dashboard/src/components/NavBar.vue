@@ -61,7 +61,7 @@
         <div class="navbar-item has-dropdown is-hoverable">
           <a class="navbar-link is-arrowless"> Stage </a>
           <div class="navbar-dropdown">
-            <Skeleton v-if="loadingStages" />
+            <Loading v-if="loadingStages" />
             <template v-else>
               <router-link
                 v-for="stage in liveStages"
@@ -103,10 +103,10 @@ import { computed, ref } from "vue";
 import { loggedIn, logout } from "@/utils/auth";
 import Logo from "./Logo";
 import { useStore } from "vuex";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 
 export default {
-  components: { Logo, Skeleton },
+  components: { Logo, Loading },
   setup() {
     const store = useStore();
     const expanded = ref(false);

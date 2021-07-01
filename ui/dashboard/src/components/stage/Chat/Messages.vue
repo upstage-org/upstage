@@ -6,19 +6,20 @@
     </div>
   </div>
   <div v-else>
-    <p v-for="item in messages" :key="item">
+    <p
+      v-for="item in messages"
+      :key="item"
+      :style="{ opacity: item.isPlayer ? 1 : 0.5 }"
+    >
       <small style="font-size: 1em">
-        <b>{{ item.user }}: </b>
+        <b v-if="item.isPlayer">{{ item.user }}: </b>
+        <span v-else>{{ item.user }}: </span>
       </small>
       <span
         class="tag message"
-        :style="
-          'background-color: ' +
-          item.backgroundColor +
-          '; color: ' +
-          item.color +
-          '; font-size: .85714em'
-        "
+        :style="{
+          'font-size': '1em',
+        }"
         :class="messageClass[item.behavior]"
         :title="time(item.at)"
       >
@@ -38,7 +39,7 @@ export default {
     return {
       messageClass: {
         think: "has-text-info has-background-info-light",
-        shout: "has-background-danger has-text-white",
+        shout: "has-text-danger",
       },
     };
   },

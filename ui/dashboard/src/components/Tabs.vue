@@ -8,7 +8,7 @@
         @click="tab = item.key"
       >
         <a>
-          <span class="icon is-small">
+          <span v-if="item.icon" class="icon is-small">
             <i :class="item.icon" aria-hidden="true"></i>
           </span>
           <span>{{ item.label }}</span>
@@ -16,8 +16,10 @@
       </li>
     </ul>
   </div>
-  <div v-for="item in items" :key="item.key" v-show="tab === item.key">
-    <slot :name="item.key"></slot>
+  <div v-for="item in items" :key="item.key">
+    <template v-if="tab === item.key">
+      <slot :name="item.key"></slot>
+    </template>
   </div>
 </template>
 

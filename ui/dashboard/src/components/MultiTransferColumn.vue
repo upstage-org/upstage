@@ -70,6 +70,7 @@ export default {
       type: Function,
       default: (item) => item,
     },
+    renderKeywords: Function,
   },
   emits: ["update:modelValue"],
   setup: (props, { emit }) => {
@@ -80,10 +81,8 @@ export default {
       if (!searchs[column]) {
         return true;
       }
-      return includesIgnoreCase(
-        props.renderLabel(props.data[item]),
-        searchs[column]
-      );
+      const transform = props.renderKeywords ?? props.renderLabel;
+      return includesIgnoreCase(transform(props.data[item]), searchs[column]);
     };
 
     const shouldVisible = (item, column) => {

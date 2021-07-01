@@ -10,7 +10,7 @@
           having to download and install any additional software. UpStage is
           available free to anyone who would like to use it.
         </h2>
-        <Skeleton v-if="loading" />
+        <Loading v-if="loading" />
         <div v-else class="links columns my-4">
           <div class="column">
             <router-link
@@ -20,6 +20,10 @@
               class="link my-4"
               :style="backgroundImage(stage.cover, 'live-stage.png')"
             >
+              <PlayerAudienceCounter
+                :stage-url="stage.fileLocation"
+                class="counter"
+              />
               <span>{{ stage.name }}</span>
             </router-link>
           </div>
@@ -53,12 +57,13 @@
 import config from "@/../vue.config";
 import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
-import Skeleton from "@/components/Skeleton";
+import Loading from "@/components/Loading";
 import { absolutePath } from "@/utils/common";
+import PlayerAudienceCounter from "@/components/stage/PlayerAudienceCounter";
 
 export default {
   name: "Home",
-  components: { Skeleton },
+  components: { Loading, PlayerAudienceCounter },
   setup: () => {
     const store = useStore();
 
@@ -107,6 +112,7 @@ export default {
   }
   .link {
     @include textShadow;
+    position: relative;
     font-weight: bold;
     font-size: 25px;
     border: 1px solid $black;
@@ -123,6 +129,12 @@ export default {
     span {
       display: table-cell;
       vertical-align: middle;
+    }
+    .counter {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      width: auto !important;
     }
   }
 }

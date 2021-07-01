@@ -10,6 +10,8 @@ from event_archive.models import Event
 
 @reacts_to_anything
 def record_event(topic, payload, timestamp):
+    if topic.endswith('statistics'):
+        return # Statistic should be in realtime, record it just make our event archive heavier
     session = None
     try:
         session = build_pg_session()

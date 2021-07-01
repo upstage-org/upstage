@@ -36,6 +36,13 @@ export const useShape = (video, object) => {
         img.src = src;
     })
 
+    const resizeCanvas = () => {
+        canvas.width = object.w;
+        canvas.height = object.h;
+    }
+    watch(() => object.w, resizeCanvas)
+    watch(() => object.h, resizeCanvas)
+
     watch(() => object.shape, async () => {
         const { shape } = object;
         const r = Math.min(object.w, object.h) / 2;

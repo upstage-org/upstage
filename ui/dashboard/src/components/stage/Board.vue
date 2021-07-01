@@ -29,6 +29,7 @@
       >
         <component
           v-for="object in objects"
+          :id="object.id"
           :key="object.id"
           :is="object.type ?? 'avatar'"
           :object="object"
@@ -65,15 +66,20 @@ export default {
 
     const drop = (e) => {
       const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
-      if (e.clientX > 0 && e.clientY > 0) {
-        store.dispatch(
-          isReal ? "stage/shapeObject" : "stage/placeObjectOnStage",
-          {
+      if (isReal) {
+        if (
+          confirm("Are you sure you want to take this object out of the stage?")
+        ) {
+          store.dispatch("stage/deleteObject", object);
+        }
+      } else {
+        if (e.clientX > 0 && e.clientY > 0) {
+          store.dispatch("stage/placeObjectOnStage", {
             ...object,
             x: e.clientX - 50 - stageSize.value.left,
             y: e.clientY - 50 - stageSize.value.top,
-          }
-        );
+          });
+        }
       }
     };
 
@@ -84,7 +90,11 @@ export default {
         translateY: [-200, 0],
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
-        complete,
+        complete: () => {
+          store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
+          console.log(el.id);
+          complete();
+        },
       });
     };
     const avatarLeave = (el, complete) => {
