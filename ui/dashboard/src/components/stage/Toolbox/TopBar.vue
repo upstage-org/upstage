@@ -22,6 +22,7 @@ import Stream from "./tools/Stream/index";
 import Text from "./tools/Text";
 import Setting from "./tools/Setting";
 import Depth from "./tools/Depth";
+import Curtain from "./tools/Curtain";
 
 export default {
   props: ["tool"],
@@ -35,6 +36,7 @@ export default {
     Text,
     Setting,
     Depth,
+    Curtain,
   },
   setup: () => {
     const bar = ref();

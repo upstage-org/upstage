@@ -20,6 +20,7 @@ export default {
         preloading: true,
         model: null,
         background: null,
+        curtain: null,
         backdropColor: '#ebffee',
         status: 'OFFLINE',
         subscribeSuccess: false,
@@ -42,6 +43,7 @@ export default {
             audios: [],
             streams: [],
             shapes: [],
+            curtains: [],
             config: getDefaultStageConfig(),
         },
         settingPopup: {
@@ -98,6 +100,7 @@ export default {
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
                 .concat(state.tools.shapes.map(b => b.src))
+                .concat(state.tools.curtains.map(b => b.src))
             return assets;
         },
         audios(state) {
@@ -352,6 +355,9 @@ export default {
         PUSH_SHAPES(state, shapes) {
             state.tools.shapes = shapes;
         },
+        PUSH_CURTAINS(state, curtains) {
+            state.tools.curtains = curtains;
+        },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
         },
@@ -419,6 +425,9 @@ export default {
             }
             Object.assign(state.audioPlayers[index], status)
         },
+        SET_CURTAIN(state, curtain) {
+            state.curtain = curtain
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -674,6 +683,9 @@ export default {
         setBackdropColor(action, color) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_BACKDROP_COLOR, color })
         },
+        drawCurtain(action, curtain) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.DRAW_CURTAIN, curtain })
+        },
         handleBackgroundMessage({ commit }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
@@ -684,6 +696,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_BACKDROP_COLOR:
                     commit('SET_BACKDROP_COLOR', message.color)
+                    break;
+                case BACKGROUND_ACTIONS.DRAW_CURTAIN:
+                    commit('SET_CURTAIN', message.curtain)
                     break;
                 default:
                     break;
@@ -726,10 +741,11 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const { stage, shapes } = await stageGraph.loadStage(url, recordId)
+            const { stage, shapes, curtains } = await stageGraph.loadStage(url, recordId)
             if (stage) {
                 commit('SET_MODEL', stage);
                 commit('PUSH_SHAPES', shapes)
+                commit('PUSH_CURTAINS', curtains)
                 const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {
