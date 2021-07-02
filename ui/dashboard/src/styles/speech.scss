@@ -20,6 +20,7 @@ blockquote.think {
     font-style: italic;
 }
 blockquote.shout {
+    padding-top: calc(12.5% - 5px);
     background-image: url(../assets/shout.svg);
     font-weight: bold;
 }

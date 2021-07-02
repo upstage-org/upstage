@@ -37,6 +37,15 @@
       </transition-group>
     </div>
   </section>
+  <transition @enter="curtainEnter" @leave="curtainLeave">
+    <img
+      v-if="curtain"
+      :key="curtain"
+      :src="curtain"
+      class="curtain"
+      :style="{ opacity: canPlay ? 0.5 : 1 }"
+    />
+  </transition>
 </template>
 
 <script>
@@ -109,6 +118,23 @@ export default {
     };
 
     const backdropColor = computed(() => store.state.stage.backdropColor);
+    const curtain = computed(() => store.state.stage.curtain);
+
+    const curtainEnter = (el, complete) => {
+      anime({
+        targets: el,
+        scaleY: [0, 1],
+        complete,
+      });
+    };
+    const curtainLeave = (el, complete) => {
+      anime({
+        targets: el,
+        scaleY: 0,
+        complete,
+      });
+    };
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
 
     return {
       objects,
@@ -118,6 +144,10 @@ export default {
       stageSize,
       background,
       backdropColor,
+      curtain,
+      curtainEnter,
+      curtainLeave,
+      canPlay,
     };
   },
 };
@@ -127,5 +157,14 @@ export default {
 #board {
   position: fixed;
   background-size: cover;
+}
+.curtain {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: top;
 }
 </style>

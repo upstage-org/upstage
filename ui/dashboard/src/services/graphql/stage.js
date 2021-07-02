@@ -143,16 +143,28 @@ export default {
             fileLocation
           }
         }
-      }
+      },
+      curtains: assetList(assetType: "curtain") {
+        edges {
+          node {
+            name
+            fileLocation
+          }
+        }
+      },
     }
     ${stageFragment}
-  `, { fileLocation, performanceId }).then(response => ({
-    stage: response.stageList.edges[0]?.node,
-    shapes: response.shapes.edges.map(edge => ({
+  `, { fileLocation, performanceId }).then(response => {
+    const path = edge => ({
       name: edge.node.name,
       src: absolutePath(edge.node.fileLocation)
-    }))
-  })),
+    })
+    return {
+      stage: response.stageList.edges[0]?.node,
+      shapes: response.shapes.edges.map(path),
+      curtains: response.curtains.edges.map(path)
+    }
+  }),
   loadPermission: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {
