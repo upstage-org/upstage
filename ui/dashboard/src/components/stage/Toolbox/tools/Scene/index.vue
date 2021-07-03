@@ -1,10 +1,5 @@
 <template>
-  <div @click="create" class="is-pulled-left">
-    <div class="icon is-large">
-      <Icon src="new.svg" size="36" />
-    </div>
-    <span class="tag is-light is-block">Blank Scene</span>
-  </div>
+  <BlankScene />
   <Scene v-for="scene in scenes" :key="scene.id" :scene="scene" />
   <div v-if="saving">
     <Loading height="64px" />
@@ -26,16 +21,14 @@ import { cropImageFromCanvas } from "@/utils/canvas";
 import { ref } from "@vue/reactivity";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
-import { computed } from "@vue/runtime-core";
+import { computed, provide } from "@vue/runtime-core";
 import Scene from "./Scene";
+import BlankScene from "./BlankScene";
 
 export default {
-  components: { Icon, Loading, Scene },
+  components: { Icon, Loading, BlankScene, Scene },
   setup: () => {
     const store = useStore();
-    const newScene = () => {
-      console.log(store);
-    };
 
     const saving = ref(false);
     const saveScene = async () => {
@@ -74,10 +67,11 @@ export default {
         saving.value = false;
       }
     };
+    provide("saveScene", saveScene);
 
     const scenes = computed(() => store.state.stage.model.scenes);
 
-    return { newScene, saveScene, saving, scenes };
+    return { saveScene, saving, scenes };
   },
 };
 </script>

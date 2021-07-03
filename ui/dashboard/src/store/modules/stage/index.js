@@ -430,8 +430,15 @@ export default {
             state.curtain = curtain
         },
         REPLACE_SCENE(state, { payload }) {
+            anime({
+                targets: "#live-stage",
+                filter: ['brightness(0)', 'brightness(1)'],
+                easing: 'linear',
+                duration: 3000
+            });
             state.activeMovable = null
             const snapshot = JSON.parse(payload)
+            console.log(snapshot)
             Object.keys(snapshot).forEach(key => {
                 state[key] = snapshot[key]
             })
@@ -700,6 +707,9 @@ export default {
         switchScene(action, scene) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SWITCH_SCENE, scene })
         },
+        blankScene() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.BLANK_SCENE })
+        },
         handleBackgroundMessage({ commit, dispatch }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
@@ -719,6 +729,16 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SWITCH_SCENE:
                     dispatch('replaceScene', message.scene)
+                    break;
+                case BACKGROUND_ACTIONS.BLANK_SCENE:
+                    commit("REPLACE_SCENE", {
+                        payload: JSON.stringify({
+                            background: null,
+                            curtain: null,
+                            board: { objects: [] },
+                            audioPlayers: [],
+                        }),
+                    });
                     break;
                 default:
                     break;
@@ -802,12 +822,6 @@ export default {
             const scene = state.model.scenes.find(s => s.id == sceneId)
             if (scene) {
                 commit('REPLACE_SCENE', scene)
-                anime({
-                    targets: "#live-stage",
-                    filter: ['brightness(0)', 'brightness(1)'],
-                    easing: 'linear',
-                    duration: 3000
-                });
             } else {
                 setTimeout(() => dispatch('replaceScenes', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
             }

@@ -27,7 +27,8 @@ export const BACKGROUND_ACTIONS = {
   SET_BACKDROP_COLOR: 'setBackdropColor',
   DRAW_CURTAIN: 'drawCurtain',
   LOAD_SCENES: 'loadScenes',
-  SWITCH_SCENE: 'switchScene'
+  SWITCH_SCENE: 'switchScene',
+  BLANK_SCENE: 'blankScene'
 }
 
 export const ROLES = {
