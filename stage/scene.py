@@ -61,13 +61,12 @@ class DeleteScene(graphene.Mutation):
     message = graphene.String()
 
     class Arguments:
-        id = graphene.ID(
+        id = graphene.Int(
             required=True, description="ID of the scene to be deleted.")
 
     @jwt_required()
     def mutate(self, info, id):
         with ScopedSession() as local_db_session:
-            id = from_global_id(id)[1]
             scene = local_db_session.query(SceneModel).filter(
                 SceneModel.id == id).first()
             if scene:
@@ -82,4 +81,4 @@ class DeleteScene(graphene.Mutation):
             else:
                 return DeleteScene(success=False, message="Scene not found!")
 
-        return Scene(success=True, message="Scene deleted successfully!")
+        return DeleteScene(success=True, message="Scene deleted successfully!")

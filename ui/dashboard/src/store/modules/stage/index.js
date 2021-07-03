@@ -428,6 +428,13 @@ export default {
         },
         SET_CURTAIN(state, curtain) {
             state.curtain = curtain
+        },
+        REPLACE_SCENE(state, { payload }) {
+            state.activeMovable = null
+            const snapshot = JSON.parse(payload)
+            Object.keys(snapshot).forEach(key => {
+                state[key] = snapshot[key]
+            })
         }
     },
     actions: {
@@ -690,6 +697,9 @@ export default {
         loadScenes() {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.LOAD_SCENES })
         },
+        switchScene(action, scene) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SWITCH_SCENE, scene })
+        },
         handleBackgroundMessage({ commit, dispatch }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
@@ -706,6 +716,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.LOAD_SCENES:
                     dispatch('reloadScenes')
+                    break;
+                case BACKGROUND_ACTIONS.SWITCH_SCENE:
+                    dispatch('replaceScene', message.scene)
                     break;
                 default:
                     break;
@@ -779,6 +792,24 @@ export default {
             const scenes = await stageGraph.loadScenes(state.model.fileLocation)
             if (scenes) {
                 state.model.scenes = scenes
+            }
+        },
+        replaceScene({ state, commit, dispatch }, sceneId) {
+            anime({
+                targets: "#live-stage",
+                filter: 'brightness(0)'
+            });
+            const scene = state.model.scenes.find(s => s.id == sceneId)
+            if (scene) {
+                commit('REPLACE_SCENE', scene)
+                anime({
+                    targets: "#live-stage",
+                    filter: ['brightness(0)', 'brightness(1)'],
+                    easing: 'linear',
+                    duration: 3000
+                });
+            } else {
+                setTimeout(() => dispatch('replaceScenes', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {

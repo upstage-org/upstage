@@ -3,8 +3,9 @@
     <div class="icon is-large">
       <Icon src="new.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">New</span>
+    <span class="tag is-light is-block">Blank Scene</span>
   </div>
+  <Scene v-for="scene in scenes" :key="scene.id" :scene="scene" />
   <div v-if="saving">
     <Loading height="64px" />
   </div>
@@ -14,15 +15,11 @@
     </div>
     <span class="tag is-light is-block">Save Scene</span>
   </div>
-  <div v-for="scene in scenes" :key="scene.id">
-    <Image :src="scene.scenePreview" />
-  </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
-import Image from "@/components/Image";
 import Loading from "@/components/Loading";
 import html2canvas from "html2canvas";
 import { cropImageFromCanvas } from "@/utils/canvas";
@@ -30,9 +27,10 @@ import { ref } from "@vue/reactivity";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { computed } from "@vue/runtime-core";
+import Scene from "./Scene";
 
 export default {
-  components: { Icon, Image, Loading },
+  components: { Icon, Loading, Scene },
   setup: () => {
     const store = useStore();
     const newScene = () => {

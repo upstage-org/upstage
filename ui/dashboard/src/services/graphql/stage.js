@@ -344,4 +344,12 @@ export default {
       }
     }
   `, variables),
+  deleteScene: (id) => client.request(gql`
+    mutation DeleteScene($id: Int!) {
+      deleteScene(id: $id) {
+        success
+        message
+      }
+    }  
+  `, { id }),
 }
