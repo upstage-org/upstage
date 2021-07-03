@@ -3,6 +3,8 @@ from datetime import datetime
 import os
 import sys
 
+from sqlalchemy.sql.sqltypes import Boolean
+
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir,'..'))
 if projdir not in sys.path:
@@ -80,18 +82,15 @@ class Scene(Base,db.Model):
     __tablename__ = "scene"
     id = Column(BigInteger, primary_key=True)
     name = Column(Text, nullable=False)
-    scene_order = Column(Integer, index=True, nullable=False, default=0)
-    owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
-    description = Column(Text, nullable=False)
+    scene_order = Column(Integer, index=True, nullable=True, default=0)
+    scene_preview = Column(Text, nullable=True)
+    payload = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
-    expires_on = Column(DateTime, nullable=False, default=None)
-    parent_stage_id = Column(Integer, ForeignKey(ParentStage.id), nullable=False, default=0)
-    # A scene can only belong to one performance. They shouldn't be reused, although
-    # maybe we should let them be copied?
-    performance_config_id = Column(Integer, ForeignKey(PerformanceConfig.id), nullable=False, default=0)
+    active = Column(Boolean, nullable=False, default=True)
+    owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
+    stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
     owner = relationship(User, foreign_keys=[owner_id])
-    parent_stage = relationship(ParentStage, foreign_keys=[parent_stage_id])
-    performance_config = relationship(PerformanceConfig, foreign_keys=[performance_config_id])
+    stage = relationship(Stage, foreign_keys=[stage_id])
 
 class PerformanceMQTTConfig(Base,db.Model):
     # This holds the MQTT server configuration for one performance, to make connecting easier.
