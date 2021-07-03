@@ -23,6 +23,7 @@ import Text from "./tools/Text";
 import Setting from "./tools/Setting";
 import Depth from "./tools/Depth";
 import Curtain from "./tools/Curtain";
+import Scene from "./tools/Scene";
 
 export default {
   props: ["tool"],
@@ -37,6 +38,7 @@ export default {
     Setting,
     Depth,
     Curtain,
+    Scene,
   },
   setup: () => {
     const bar = ref();

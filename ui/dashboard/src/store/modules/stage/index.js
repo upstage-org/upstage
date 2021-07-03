@@ -75,7 +75,8 @@ export default {
             speed: 32
         },
         loadingRunningStreams: false,
-        audioPlayers: []
+        audioPlayers: [],
+        scenes: []
     },
     getters: {
         ready(state) {
@@ -686,7 +687,10 @@ export default {
         drawCurtain(action, curtain) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.DRAW_CURTAIN, curtain })
         },
-        handleBackgroundMessage({ commit }, { message }) {
+        loadScenes() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.LOAD_SCENES })
+        },
+        handleBackgroundMessage({ commit, dispatch }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
                     commit('SET_BACKGROUND', message.background);
@@ -699,6 +703,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.DRAW_CURTAIN:
                     commit('SET_CURTAIN', message.curtain)
+                    break;
+                case BACKGROUND_ACTIONS.LOAD_SCENES:
+                    dispatch('reloadScenes')
                     break;
                 default:
                     break;
@@ -766,6 +773,12 @@ export default {
             const permission = await stageGraph.loadPermission(state.model.fileLocation)
             if (permission) {
                 state.model.permission = permission
+            }
+        },
+        async reloadScenes({ state }) {
+            const scenes = await stageGraph.loadScenes(state.model.fileLocation)
+            if (scenes) {
+                state.model.scenes = scenes
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {

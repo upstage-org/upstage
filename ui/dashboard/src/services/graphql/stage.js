@@ -53,6 +53,16 @@ export const assetFragment = gql`
   }
 `
 
+
+export const sceneFragment = gql`
+  fragment sceneFragment on Scene {
+    id
+    name
+    payload
+    scenePreview
+  }
+`
+
 export default {
   createStage: async (variables) => {
     let result = await client.request(gql`
@@ -133,6 +143,9 @@ export default {
               payload
               mqttTimestamp
             }
+            scenes {
+              ...sceneFragment
+            }
           }
         }
       }
@@ -154,6 +167,7 @@ export default {
       },
     }
     ${stageFragment}
+    ${sceneFragment}
   `, { fileLocation, performanceId }).then(response => {
     const path = edge => ({
       name: edge.node.name,
@@ -176,6 +190,20 @@ export default {
       }
     }
   `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.permission),
+  loadScenes: (fileLocation) => client.request(gql`
+    query ListStage($fileLocation: String) {
+      stageList(fileLocation: $fileLocation) {
+        edges {
+          node {
+            scenes {
+              ...sceneFragment
+            }
+          }
+        }
+      }
+    }
+    ${sceneFragment}
+  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.scenes),
   uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
@@ -309,4 +337,11 @@ export default {
       }
     }
   `, { id }),
+  saveScene: (variables) => client.request(gql`
+    mutation SaveScene($stageId: Int!, $payload: String, $preview: String) {
+      saveScene(stageId: $stageId, payload: $payload, preview: $preview) {
+        id
+      }
+    }
+  `, variables),
 }

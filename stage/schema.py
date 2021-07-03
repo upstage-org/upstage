@@ -1,9 +1,10 @@
 # -*- coding: iso8859-15 -*-
+from stage.scene import DeleteScene, SaveScene, Scene
 from user.user_utils import current_user
 from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
 import performance_config.models
-from performance_config.models import ParentStage, Performance as PerformanceModel
+from performance_config.models import ParentStage, Performance as PerformanceModel, Scene as SceneModel
 from stage.asset import Asset, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
@@ -74,6 +75,8 @@ class Stage(SQLAlchemyObjectType):
         Event, description="All chat sent by players and audiences")
     permission = graphene.String(description="Player access to this stage")
     media = graphene.List(Media, description="Media assigned to this stage")
+    scenes = graphene.List(
+        Scene, description="Saved stage scenes", performance_id=graphene.Int())
 
     class Meta:
         model = StageModel
@@ -127,6 +130,15 @@ class Stage(SQLAlchemyObjectType):
             'src': x.child_asset.file_location,
             'description': x.child_asset.description
         } for x in self.assets.all()]
+
+    def resolve_scenes(self, info, performance_id=None):
+        query = DBSession.query(SceneModel)\
+            .filter(SceneModel.stage_id == self.db_id)\
+            .order_by(SceneModel.scene_order.asc())
+        if not performance_id:  # Only fetch disabled scene in performance replay
+            query = query.filter(SceneModel.active == True)
+        scenes = query.all()
+        return scenes
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -345,6 +357,8 @@ class Mutation(graphene.ObjectType):
     deleteMedia = DeleteMedia.Field()
     assignMedia = AssignMedia.Field()
     assignStages = AssignStages.Field()
+    saveScene = SaveScene.Field()
+    deleteScene = DeleteScene.Field()
 
 
 class Query(graphene.ObjectType):

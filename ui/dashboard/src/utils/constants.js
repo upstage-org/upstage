@@ -25,7 +25,9 @@ export const BACKGROUND_ACTIONS = {
   SET_CHAT_VISIBILITY: 'setChatVisibility',
   CLEAR_CHAT: 'clearChat',
   SET_BACKDROP_COLOR: 'setBackdropColor',
-  DRAW_CURTAIN: 'drawCurtain'
+  DRAW_CURTAIN: 'drawCurtain',
+  LOAD_SCENES: 'loadScenes',
+  SWITCH_SCENE: 'switchScene'
 }
 
 export const ROLES = {
