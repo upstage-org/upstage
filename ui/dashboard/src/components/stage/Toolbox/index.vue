@@ -10,7 +10,7 @@
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
       <PanelItem name="Setting" icon="rotation-slider.svg" />
-      <PanelItem name="Curtain" icon="multi-frame.svg" />
+      <PanelItem name="Curtain" icon="curtain.svg" />
       <PanelItem name="Depth" icon="multi-frame.svg" />
       <a class="panel-block stage-scene-toggle">
         <span>
