@@ -438,7 +438,7 @@ export default {
             });
             state.activeMovable = null
             const snapshot = JSON.parse(payload)
-            console.log(snapshot)
+            snapshot.board.objects.forEach(deserializeObject)
             Object.keys(snapshot).forEach(key => {
                 state[key] = snapshot[key]
             })
@@ -734,7 +734,6 @@ export default {
                     commit("REPLACE_SCENE", {
                         payload: JSON.stringify({
                             background: null,
-                            curtain: null,
                             board: { objects: [] },
                             audioPlayers: [],
                         }),

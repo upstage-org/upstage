@@ -24,6 +24,7 @@ import { stageGraph } from "@/services/graphql";
 import { computed, provide } from "@vue/runtime-core";
 import Scene from "./Scene";
 import BlankScene from "./BlankScene";
+import { takeSnapshotFromStage } from "@/store/modules/stage/reusable";
 
 export default {
   components: { Icon, Loading, BlankScene, Scene },
@@ -39,25 +40,7 @@ export default {
         const canvas = await html2canvas(el, { scale: 200 / width });
         const preview = cropImageFromCanvas(canvas)?.src;
         const stageId = store.state.stage.model.dbId;
-        const {
-          background,
-          curtain,
-          backdropColor,
-          board,
-          settings,
-          tools,
-          audioPlayers,
-        } = store.state.stage;
-        const payload = JSON.stringify({
-          background,
-          curtain,
-          backdropColor,
-          board,
-          settings,
-          tools,
-          audioPlayers,
-        });
-
+        const payload = takeSnapshotFromStage();
         const { save } = useMutation(stageGraph.saveScene);
         await save("Scene saved successfully!", { stageId, payload, preview });
         store.dispatch("stage/loadScenes");
