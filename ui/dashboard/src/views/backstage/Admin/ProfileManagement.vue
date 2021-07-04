@@ -3,7 +3,7 @@
     <template #action="{ item, displayName, refresh }">
       <Modal>
         <template #trigger>
-          <i class="fas fa-pen clickable"></i>
+          <Icon src="edit.svg" class="clickable" />
         </template>
         <template #header>{{ displayName }}'s profile</template>
         <template #content>
@@ -17,10 +17,11 @@
 <script>
 import UserTable from "./UserTable";
 import Modal from "@/components/Modal";
+import Icon from "@/components/Icon";
 import ProfileForm from "@/components/ProfileForm";
 
 export default {
-  components: { UserTable, Modal, ProfileForm },
+  components: { UserTable, Modal, Icon, ProfileForm },
 };
 </script>
 

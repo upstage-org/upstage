@@ -1,0 +1,70 @@
+<template>
+  <BlankScene />
+  <Scene v-for="scene in scenes" :key="scene.id" :scene="scene" />
+  <div v-if="saving">
+    <Loading height="64px" />
+  </div>
+  <div v-else @click="saveScene" class="is-pulled-left">
+    <div class="icon is-large">
+      <Icon src="save.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Save Scene</span>
+  </div>
+</template>
+
+<script>
+import { useStore } from "vuex";
+import Icon from "@/components/Icon";
+import Loading from "@/components/Loading";
+import html2canvas from "html2canvas";
+import { cropImageFromCanvas } from "@/utils/canvas";
+import { ref } from "@vue/reactivity";
+import { useMutation } from "@/services/graphql/composable";
+import { stageGraph } from "@/services/graphql";
+import { computed, provide } from "@vue/runtime-core";
+import Scene from "./Scene";
+import BlankScene from "./BlankScene";
+import { takeSnapshotFromStage } from "@/store/modules/stage/reusable";
+
+export default {
+  components: { Icon, Loading, BlankScene, Scene },
+  setup: () => {
+    const store = useStore();
+
+    const saving = ref(false);
+    const saveScene = async () => {
+      try {
+        saving.value = true;
+        const el = document.querySelector("#board");
+        const { width } = el.getBoundingClientRect();
+        const canvas = await html2canvas(el, { scale: 200 / width });
+        const preview = cropImageFromCanvas(canvas)?.src;
+        const stageId = store.state.stage.model.dbId;
+        const payload = takeSnapshotFromStage();
+        const { save } = useMutation(stageGraph.saveScene);
+        await save("Scene saved successfully!", { stageId, payload, preview });
+        store.dispatch("stage/loadScenes");
+      } catch (error) {
+        console.log(error);
+      } finally {
+        saving.value = false;
+      }
+    };
+    provide("saveScene", saveScene);
+
+    const scenes = computed(() => store.state.stage.model.scenes);
+
+    return { saveScene, saving, scenes };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@/styles/mixins.scss";
+.fas.fa-plus {
+  @include gradientText(#30ac45, #6fb1fc);
+}
+video {
+  height: 100%;
+}
+</style>

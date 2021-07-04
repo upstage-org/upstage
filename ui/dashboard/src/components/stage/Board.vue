@@ -101,7 +101,6 @@ export default {
         easing: "easeInOutQuad",
         complete: () => {
           store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
-          console.log(el.id);
           complete();
         },
       });

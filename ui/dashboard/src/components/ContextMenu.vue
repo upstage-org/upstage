@@ -1,5 +1,5 @@
 <template>
-  <div @contextmenu.prevent="openMenu">
+  <div @contextmenu.prevent="openMenu" :style="style">
     <slot name="trigger" />
   </div>
   <teleport to="body">
@@ -48,6 +48,7 @@ export default {
       type: Number,
       default: 1,
     },
+    style: Object,
   },
   setup: (props) => {
     const isActive = ref(props.active);

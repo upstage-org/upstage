@@ -75,7 +75,8 @@ export default {
             speed: 32
         },
         loadingRunningStreams: false,
-        audioPlayers: []
+        audioPlayers: [],
+        scenes: []
     },
     getters: {
         ready(state) {
@@ -427,6 +428,20 @@ export default {
         },
         SET_CURTAIN(state, curtain) {
             state.curtain = curtain
+        },
+        REPLACE_SCENE(state, { payload }) {
+            anime({
+                targets: "#live-stage",
+                filter: ['brightness(0)', 'brightness(1)'],
+                easing: 'linear',
+                duration: 3000
+            });
+            state.activeMovable = null
+            const snapshot = JSON.parse(payload)
+            snapshot.board.objects.forEach(deserializeObject)
+            Object.keys(snapshot).forEach(key => {
+                state[key] = snapshot[key]
+            })
         }
     },
     actions: {
@@ -686,7 +701,16 @@ export default {
         drawCurtain(action, curtain) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.DRAW_CURTAIN, curtain })
         },
-        handleBackgroundMessage({ commit }, { message }) {
+        loadScenes() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.LOAD_SCENES })
+        },
+        switchScene(action, scene) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SWITCH_SCENE, scene })
+        },
+        blankScene() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.BLANK_SCENE })
+        },
+        handleBackgroundMessage({ commit, dispatch }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
                     commit('SET_BACKGROUND', message.background);
@@ -699,6 +723,21 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.DRAW_CURTAIN:
                     commit('SET_CURTAIN', message.curtain)
+                    break;
+                case BACKGROUND_ACTIONS.LOAD_SCENES:
+                    dispatch('reloadScenes')
+                    break;
+                case BACKGROUND_ACTIONS.SWITCH_SCENE:
+                    dispatch('replaceScene', message.scene)
+                    break;
+                case BACKGROUND_ACTIONS.BLANK_SCENE:
+                    commit("REPLACE_SCENE", {
+                        payload: JSON.stringify({
+                            background: null,
+                            board: { objects: [] },
+                            audioPlayers: [],
+                        }),
+                    });
                     break;
                 default:
                     break;
@@ -766,6 +805,24 @@ export default {
             const permission = await stageGraph.loadPermission(state.model.fileLocation)
             if (permission) {
                 state.model.permission = permission
+            }
+        },
+        async reloadScenes({ state }) {
+            const scenes = await stageGraph.loadScenes(state.model.fileLocation)
+            if (scenes) {
+                state.model.scenes = scenes
+            }
+        },
+        replaceScene({ state, commit, dispatch }, sceneId) {
+            anime({
+                targets: "#live-stage",
+                filter: 'brightness(0)'
+            });
+            const scene = state.model.scenes.find(s => s.id == sceneId)
+            if (scene) {
+                commit('REPLACE_SCENE', scene)
+            } else {
+                setTimeout(() => dispatch('replaceScenes', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {

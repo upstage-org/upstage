@@ -27,7 +27,7 @@
     </template>
     <template #download="{ item }">
       <button class="button is-light is-small" @click="downloadChatLog(item)">
-        <i class="fas fa-lg fa-download has-text-primary" />
+        <Icon src="download.svg" />
       </button>
     </template>
   </DataTable>
@@ -37,12 +37,13 @@
 import Messages from "@/components/stage/Chat/Messages";
 import DataTable from "@/components/DataTable";
 import Modal from "@/components/Modal";
+import Icon from "@/components/Icon";
 import ClearChat from "./ClearChat";
 import { computed, inject } from "@vue/runtime-core";
 import moment from "moment";
 
 export default {
-  components: { Messages, DataTable, ClearChat, Modal },
+  components: { Messages, DataTable, ClearChat, Modal, Icon },
   setup: () => {
     const stage = inject("stage");
 

@@ -12,15 +12,10 @@
       <PanelItem name="Setting" icon="rotation-slider.svg" />
       <PanelItem name="Curtain" icon="curtain.svg" />
       <PanelItem name="Depth" icon="multi-frame.svg" />
-      <a class="panel-block stage-scene-toggle">
+      <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
         <span>
-          <Icon
-            v-if="isStage"
-            size="36"
-            @click="isStage = false"
-            src="stage.svg"
-          />
-          <Icon v-else size="36" @click="isStage = true" src="scene.svg" />
+          <Icon v-if="isScene" size="36" src="stage.svg" />
+          <Icon v-else size="36" src="scene.svg" />
         </span>
       </a>
     </div>
@@ -28,7 +23,7 @@
 </template>
 
 <script>
-import { provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
 import Icon from "@/components/Icon";
@@ -59,7 +54,7 @@ export default {
 
     waitToCollapse();
 
-    const isStage = ref(true);
+    const isScene = computed(() => tool.value === "Scene");
 
     return {
       tool,
@@ -67,7 +62,7 @@ export default {
       collapsed,
       expand,
       waitToCollapse,
-      isStage,
+      isScene,
     };
   },
 };
