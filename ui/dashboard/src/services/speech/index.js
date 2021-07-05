@@ -1,6 +1,6 @@
 import { getDefaultVoice, isValidVoice } from "./voice";
 
-const { loadVoice, speak } = window.meSpeak
+const { loadVoice, speak, stop } = window.meSpeak
 
 export const avatarSpeak = (avatar, message = avatar.speak.message) => {
     const params = {}
@@ -25,8 +25,9 @@ export const avatarSpeak = (avatar, message = avatar.speak.message) => {
             loadVoice(getDefaultVoice(), callback)
         }
     }
-
 }
+
+export const stopSpeaking = stop
 
 export const cleanEmoji = message => {
     return message.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '');
