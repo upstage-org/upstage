@@ -68,7 +68,7 @@ export default {
     };
 
     const play = () => {
-      store.dispatch("stage/replayRecord");
+      store.dispatch("stage/replayRecord", timestamp.value.current);
     };
 
     const pause = () => {
