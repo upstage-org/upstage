@@ -61,6 +61,7 @@ export default {
   components: { Avatar, Prop: Avatar, Stream, Drawing, Text },
   setup: () => {
     const store = useStore();
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
     const background = computed(() => {
       const background = store.state.stage.background ?? {};
       if (background.multi && background.currentFrame) {
@@ -100,7 +101,9 @@ export default {
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
         complete: () => {
-          store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
+          if (canPlay.value) {
+            store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
+          }
           complete();
         },
       });
@@ -133,7 +136,6 @@ export default {
         complete,
       });
     };
-    const canPlay = computed(() => store.getters["stage/canPlay"]);
 
     return {
       objects,

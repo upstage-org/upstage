@@ -76,7 +76,8 @@ export default {
         },
         loadingRunningStreams: false,
         audioPlayers: [],
-        scenes: []
+        scenes: [],
+        isSavingScene: false
     },
     getters: {
         ready(state) {
@@ -442,6 +443,9 @@ export default {
             Object.keys(snapshot).forEach(key => {
                 state[key] = snapshot[key]
             })
+        },
+        SET_SAVING_SCENE(state, value) {
+            state.isSavingScene = value
         }
     },
     actions: {

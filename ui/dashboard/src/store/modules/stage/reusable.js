@@ -73,7 +73,7 @@ export function takeSnapshotFromStage() {
         audioPlayers,
     } = store.state.stage;
     const board = Object.assign({}, originalBoard)
-    board.objects = originalBoard.objects.map(serializeObject)
+    board.objects = originalBoard.objects.filter(o => o.liveAction).map(serializeObject)
     const payload = JSON.stringify({
         background,
         backdropColor,

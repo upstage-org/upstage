@@ -16,45 +16,25 @@
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import Loading from "@/components/Loading";
-import html2canvas from "html2canvas";
-import { cropImageFromCanvas } from "@/utils/canvas";
-import { ref } from "@vue/reactivity";
-import { useMutation } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
-import { computed, provide } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
 import Scene from "./Scene";
 import BlankScene from "./BlankScene";
-import { takeSnapshotFromStage } from "@/store/modules/stage/reusable";
 
 export default {
   components: { Icon, Loading, BlankScene, Scene },
   setup: () => {
     const store = useStore();
 
-    const saving = ref(false);
-    const saveScene = async () => {
-      try {
-        saving.value = true;
-        const el = document.querySelector("#board");
-        const { width } = el.getBoundingClientRect();
-        const canvas = await html2canvas(el, { scale: 200 / width });
-        const preview = cropImageFromCanvas(canvas)?.src;
-        const stageId = store.state.stage.model.dbId;
-        const payload = takeSnapshotFromStage();
-        const { save } = useMutation(stageGraph.saveScene);
-        await save("Scene saved successfully!", { stageId, payload, preview });
-        store.dispatch("stage/loadScenes");
-      } catch (error) {
-        console.log(error);
-      } finally {
-        saving.value = false;
-      }
-    };
-    provide("saveScene", saveScene);
+    const saving = computed(() => store.state.stage.isSavingScene);
 
     const scenes = computed(() => store.state.stage.model.scenes);
+    const saveScene = () => {
+      store.dispatch("stage/openSettingPopup", {
+        type: "SaveScene",
+      });
+    };
 
-    return { saveScene, saving, scenes };
+    return { saving, scenes, saveScene };
   },
 };
 </script>
