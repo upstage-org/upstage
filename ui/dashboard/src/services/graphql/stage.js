@@ -338,8 +338,8 @@ export default {
     }
   `, { id }),
   saveScene: (variables) => client.request(gql`
-    mutation SaveScene($stageId: Int!, $payload: String, $preview: String) {
-      saveScene(stageId: $stageId, payload: $payload, preview: $preview) {
+    mutation SaveScene($stageId: Int!, $payload: String, $preview: String, $name: String) {
+      saveScene(stageId: $stageId, payload: $payload, preview: $preview, name: $name) {
         id
       }
     }

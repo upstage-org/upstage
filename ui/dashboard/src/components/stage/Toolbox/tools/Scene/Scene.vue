@@ -2,7 +2,8 @@
   <div @click="switchScene">
     <ContextMenu style="height: 100%">
       <template #trigger>
-        <Image :src="scene.scenePreview" />
+        <Image :src="scene.scenePreview" style="height: auto" />
+        <span class="tag is-light is-block">{{ scene.name }}</span>
       </template>
       <template #context>
         <a class="panel-block has-text-danger" @click="deleteScene">
