@@ -8,7 +8,7 @@ import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, g
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
-import { avatarSpeak } from '@/services/speech';
+import { avatarSpeak, stopSpeaking } from '@/services/speech';
 import { nmsService } from "@/services/rest";
 import anime from 'animejs';
 
@@ -283,14 +283,14 @@ export default {
                 costume.wornBy = null
             })
         },
-        SET_OBJECT_SPEAK(state, { avatar, speak }) {
+        SET_OBJECT_SPEAK(state, { avatar, speak, mute }) {
             const { id } = avatar;
             let model = state.board.objects.find(o => o.id === id);
             if (model) {
                 speak.hash = hash(speak)
                 if (model.speak?.hash !== speak.hash) {
                     model.speak = speak;
-                    if (state.status === 'LIVE' || state.replay.isReplaying) {
+                    if (!mute && (state.status === 'LIVE' || state.replay.isReplaying)) {
                         avatarSpeak(model);
                     }
                     setTimeout(() => {
@@ -758,7 +758,16 @@ export default {
                 message: JSON.parse(payload),
             })
         },
+        replicateEvent({ dispatch }, { topic, payload }) {
+            const message = JSON.parse(payload)
+            message.mute = true
+            dispatch("handleMessage", {
+                topic: unnamespaceTopic(topic),
+                message,
+            })
+        },
         async replayRecord({ state, dispatch, commit }, timestamp) {
+            stopSpeaking()
             await dispatch('pauseReplay');
             const current = timestamp ? Number(timestamp) : state.replay.timestamp.begin
             state.replay.timestamp.current = current
@@ -773,10 +782,14 @@ export default {
                 }
             }, 1000 / speed)
             events.forEach(event => {
-                const timer = setTimeout(() => {
-                    dispatch('replayEvent', event);
-                }, (event.mqttTimestamp - current) * 100 / speed)
-                state.replay.timers.push(timer)
+                if (event.mqttTimestamp - current >= 0) {
+                    const timer = setTimeout(() => {
+                        dispatch('replayEvent', event);
+                    }, (event.mqttTimestamp - current) * 100 / speed)
+                    state.replay.timers.push(timer)
+                } else {
+                    dispatch('replicateEvent', event);
+                }
             });
         },
         pauseReplay({ state }) {
