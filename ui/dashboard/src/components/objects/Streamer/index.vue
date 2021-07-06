@@ -28,7 +28,7 @@
             <p class="control menu-group-item">
               <button class="button is-light" @click="clip(null)">
                 <div class="icon">
-                  <i class="fas fa-ban"></i>
+                  <i class="fas fa-square"></i>
                 </div>
               </button>
             </p>
@@ -39,29 +39,24 @@
                 </div>
               </button>
             </p>
-            <p
-              class="control menu-group-item"
-              v-for="shape in shapes"
-              :key="shape.src"
-              @click="clip(shape.src)"
-              :title="shape.name"
-            >
-              <button class="button is-light">
-                <img style="height: 100%" :src="shape.src" />
-              </button>
-            </p>
           </div>
         </div>
       </template>
+      <template #render>
+        <Loading v-if="loading" height="100%" />
+        <video
+          v-show="!loading"
+          ref="video"
+          :src="object.url"
+          preload="auto"
+          @loadeddata="loadeddata"
+          @ended="stream.isPlaying = false"
+          :style="{
+            'border-radius': stream.shape === 'circle' ? '100%' : 0,
+          }"
+        ></video>
+      </template>
     </Object>
-    <video
-      ref="video"
-      :src="object.url"
-      preload="auto"
-      @loadeddata="loadeddata"
-      @ended="stream.isPlaying = false"
-      style="display: none"
-    ></video>
   </div>
 </template>
 
@@ -69,12 +64,12 @@
 import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
-import { useFlv, useShape } from "./composable";
+import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
-import loading from "@/assets/loading.svg";
+import Loading from "@/components/Loading.vue";
 
 export default {
-  components: { Object },
+  components: { Object, Loading },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
@@ -99,7 +94,9 @@ export default {
       }
     );
 
+    const loading = ref(true);
     const loadeddata = () => {
+      loading.value = false;
       synchronize();
     };
 
@@ -107,8 +104,6 @@ export default {
       const fullUrl = computed(() => getSubsribeLink(props.object.url));
       useFlv(video, fullUrl);
     }
-    const { src } = useShape(video, stream);
-    watch(src, () => (stream.src = src.value));
 
     const playStream = ({ closeMenu }) => {
       store
@@ -143,6 +138,7 @@ export default {
       pauseStream,
       clip,
       shapes,
+      loading,
     };
   },
 };
