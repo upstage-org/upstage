@@ -17,7 +17,7 @@
       :pad-left="-stageSize.left"
       :pad-top="-stageSize.top"
       :pad-right="250"
-      opacity="0.8"
+      :opacity="0.8"
     >
       <template #trigger>
         <div
@@ -168,7 +168,9 @@ export default {
     );
 
     const isWearing = computed(
-      () => store.getters["stage/currentAvatar"]?.id === props.object.wornBy
+      () =>
+        props.object.wornBy &&
+        store.getters["stage/currentAvatar"]?.id === props.object.wornBy
     );
     provide("isWearing", isWearing);
 

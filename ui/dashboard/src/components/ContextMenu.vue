@@ -6,7 +6,7 @@
     <transition :css="false" @enter="contextAppear">
       <div
         class="card"
-        v-if="isActive"
+        v-if="$slots.context && isActive"
         v-click-outside="closeMenu"
         :style="{
           position: 'fixed',

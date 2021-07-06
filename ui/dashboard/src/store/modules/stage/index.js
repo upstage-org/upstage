@@ -77,7 +77,8 @@ export default {
         loadingRunningStreams: false,
         audioPlayers: [],
         scenes: [],
-        isSavingScene: false
+        isSavingScene: false,
+        isLoadingScenes: false
     },
     getters: {
         ready(state) {
@@ -812,10 +813,12 @@ export default {
             }
         },
         async reloadScenes({ state }) {
+            state.isLoadingScenes = true
             const scenes = await stageGraph.loadScenes(state.model.fileLocation)
             if (scenes) {
                 state.model.scenes = scenes
             }
+            state.isLoadingScenes = false
         },
         replaceScene({ state, commit, dispatch }, sceneId) {
             anime({
@@ -826,7 +829,9 @@ export default {
             if (scene) {
                 commit('REPLACE_SCENE', scene)
             } else {
-                setTimeout(() => dispatch('replaceScenes', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
+                if (state.isLoadingScenes) {
+                    setTimeout(() => dispatch('replaceScene', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
+                }
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {
