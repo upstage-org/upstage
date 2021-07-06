@@ -153,7 +153,7 @@ export default {
       }
       let length = props.object.speak.message.length;
       if (["think", "shout"].includes(props.object.speak.behavior)) {
-        length *= 1.2;
+        length *= 1.4;
       }
       const width = Math.sqrt(length * 2.5);
       const height = Math.max(2.5, width * 0.8);
