@@ -52,12 +52,15 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .on-switch-label {
   pointer-events: none;
   position: absolute;
   color: white;
   z-index: 1;
   top: 2px;
+}
+img {
+  vertical-align: middle;
 }
 </style>

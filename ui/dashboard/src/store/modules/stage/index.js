@@ -42,10 +42,9 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
-            shapes: [],
             curtains: [],
-            config: getDefaultStageConfig(),
         },
+        config: getDefaultStageConfig(),
         settingPopup: {
             isActive: false,
         },
@@ -94,7 +93,7 @@ export default {
             }));
         },
         config(state) {
-            return state.tools.config;
+            return state.config;
         },
         preloadableAssets(state) {
             const assets = []
@@ -102,7 +101,6 @@ export default {
                 .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
-                .concat(state.tools.shapes.map(b => b.src))
                 .concat(state.tools.curtains.map(b => b.src))
             return assets;
         },
@@ -174,8 +172,8 @@ export default {
                 }
                 const config = useAttribute({ value: model }, 'config', true).value;
                 if (config) {
-                    Object.assign(state.tools.config, config)
-                    state.tools.config.ratio = config.ratio.width / config.ratio.height
+                    Object.assign(state.config, config)
+                    state.config.ratio = config.ratio.width / config.ratio.height
                 }
                 const cover = useAttribute({ value: model }, 'cover', false).value;
                 state.model.cover = cover && absolutePath(cover)
@@ -195,7 +193,7 @@ export default {
             state.tools.backdrops = []
             state.tools.audios = []
             state.tools.streams = [];
-            state.tools.config = getDefaultStageConfig()
+            state.config = getDefaultStageConfig()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
@@ -355,9 +353,6 @@ export default {
         PUSH_RUNNING_STREAMS(state, streams) {
             state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
         },
-        PUSH_SHAPES(state, shapes) {
-            state.tools.shapes = shapes;
-        },
         PUSH_CURTAINS(state, curtains) {
             state.tools.curtains = curtains;
         },
@@ -378,7 +373,7 @@ export default {
             });
             setTimeout(() => {
                 state.reactions.shift();
-            }, state.tools.config.reactionDuration);
+            }, state.config.reactionDuration);
         },
         UPDATE_VIEWPORT(state, viewport) {
             state.viewport = viewport;
@@ -785,10 +780,9 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const { stage, shapes, curtains } = await stageGraph.loadStage(url, recordId)
+            const { stage, curtains } = await stageGraph.loadStage(url, recordId)
             if (stage) {
                 commit('SET_MODEL', stage);
-                commit('PUSH_SHAPES', shapes)
                 commit('PUSH_CURTAINS', curtains)
                 const { events } = stage
                 if (recordId) {

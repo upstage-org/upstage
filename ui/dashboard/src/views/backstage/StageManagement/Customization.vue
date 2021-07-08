@@ -67,6 +67,21 @@
         :render-label="capitalize"
       />
     </HorizontalField>
+    <HorizontalField title="Curtain">
+      <Dropdown
+        v-model="animations.curtain"
+        :data="[
+          { value: 'drop', label: 'Drops down and lifts up' },
+          { value: 'fade', label: 'Fades in and out' },
+          {
+            value: 'close',
+            label: 'Closes from the sides in and opens from the middle out',
+          },
+        ]"
+        :render-value="(item) => item.value"
+        :render-label="(item) => item.label"
+      />
+    </HorizontalField>
   </div>
   <h3 class="title">Streaming</h3>
   <div>
@@ -102,6 +117,7 @@ export default {
       },
       animations: {
         bubble: "fade",
+        curtain: "drop",
       },
       streaming: {
         autoDetect: false,

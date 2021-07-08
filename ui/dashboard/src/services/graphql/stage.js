@@ -149,14 +149,6 @@ export default {
           }
         }
       }
-      shapes: assetList(assetType: "shape") {
-        edges {
-          node {
-            name
-            fileLocation
-          }
-        }
-      },
       curtains: assetList(assetType: "curtain") {
         edges {
           node {
@@ -175,7 +167,6 @@ export default {
     })
     return {
       stage: response.stageList.edges[0]?.node,
-      shapes: response.shapes.edges.map(path),
       curtains: response.curtains.edges.map(path)
     }
   }),
