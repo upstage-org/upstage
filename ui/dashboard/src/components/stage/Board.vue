@@ -37,15 +37,7 @@
       </transition-group>
     </div>
   </section>
-  <transition @enter="curtainEnter" @leave="curtainLeave">
-    <img
-      v-if="curtain"
-      :key="curtain"
-      :src="curtain"
-      class="curtain"
-      :style="{ opacity: canPlay ? 0.5 : 1 }"
-    />
-  </transition>
+  <Curtain />
 </template>
 
 <script>
@@ -55,10 +47,11 @@ import Avatar from "@/components/objects/Avatar/index";
 import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
 import Text from "@/components/objects/Text";
+import Curtain from "@/components/stage/Curtain";
 import anime from "animejs";
 
 export default {
-  components: { Avatar, Prop: Avatar, Stream, Drawing, Text },
+  components: { Avatar, Prop: Avatar, Stream, Drawing, Text, Curtain },
   setup: () => {
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
@@ -120,22 +113,6 @@ export default {
     };
 
     const backdropColor = computed(() => store.state.stage.backdropColor);
-    const curtain = computed(() => store.state.stage.curtain);
-
-    const curtainEnter = (el, complete) => {
-      anime({
-        targets: el,
-        scaleY: [0, 1],
-        complete,
-      });
-    };
-    const curtainLeave = (el, complete) => {
-      anime({
-        targets: el,
-        scaleY: 0,
-        complete,
-      });
-    };
 
     return {
       objects,
@@ -145,9 +122,6 @@ export default {
       stageSize,
       background,
       backdropColor,
-      curtain,
-      curtainEnter,
-      curtainLeave,
       canPlay,
     };
   },

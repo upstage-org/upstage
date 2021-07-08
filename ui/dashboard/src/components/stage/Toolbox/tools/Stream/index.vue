@@ -44,7 +44,7 @@ export default {
     };
 
     const autoDetect = computed(
-      () => store.state.stage.tools.config.streaming?.autoDetect
+      () => store.state.stage.config.streaming?.autoDetect
     );
     watch(
       autoDetect,
