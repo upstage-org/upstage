@@ -61,9 +61,9 @@
       <div class="icon is-large">
         <Icon size="36" src="play.svg" />
       </div>
-      <div class="audio-name tag is-light is-block" :title="audio.file">
+      <span class="audio-name tag is-light is-block" :title="audio.file">
         {{ audio.name }}
-      </div>
+      </span>
     </div>
   </div>
 </template>
