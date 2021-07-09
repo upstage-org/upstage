@@ -46,6 +46,37 @@ nav {
 }
 #Texttool {
     overflow: visible !important;
+    @include differentiatedToolbar(hsl(206, 70%, 96%));
+}
+#Backdroptool {
+    @include differentiatedToolbar(hsl(347, 90%, 96%));
+}
+#Avatarstool {
+    @include differentiatedToolbar(hsl(142, 52%, 96%));
+}
+#Propstool {
+    @include differentiatedToolbar(hsl(48, 100%, 96%));
+}
+#Streamtool {
+    @include differentiatedToolbar(hsl(347, 90%, 96%));
+}
+#Drawtool {
+    @include differentiatedToolbar(hsl(142, 52%, 96%));
+}
+#Audiotool {
+    @include differentiatedToolbar(hsl(171, 100%, 96%));
+}
+#Settingtool {
+    @include differentiatedToolbar(hsl(0, 0%, 86%));
+}
+#Curtaintool {
+    @include differentiatedToolbar(#363636);
+    span.tag {
+        color: white;
+    }
+}
+#Depthtool {
+    @include differentiatedToolbar(#fdedf6);
 }
 .is-loading {
     position: relative;

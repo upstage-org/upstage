@@ -19,3 +19,8 @@
     text-shadow: -3px 0 $primary;
     text-transform: uppercase;
 }
+@mixin differentiatedToolbar($color) {
+    > div, > div span.tag {
+        background-color: $color !important;
+    }
+}
