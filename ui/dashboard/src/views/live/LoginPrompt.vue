@@ -5,20 +5,20 @@
       <LoginForm v-if="showLoginForm" @success="onLoginSuccess" />
       <div v-else class="card">
         <header class="card-header">
-          <p class="card-header-title">Welcome to UpStage!</p>
+          <p class="card-header-title">Click anywhere to enter the stage</p>
         </header>
         <div class="card-content">
           <div class="content">
+            <label class="label" style="font-weight: normal">
+              Choose a nickname if you want one:
+            </label>
             <InputButtonPostfix
               v-model="nickname"
-              placeholder="Choose a nickname"
+              placeholder="Guest"
               icon="fas fa-sign-in-alt"
+              title="Choose a nickname"
               @ok="enterAsAudience"
             />
-            <p class="help">
-              Click anywhere to enter the stage. Choose a nickname if you want
-              one.
-            </p>
           </div>
         </div>
       </div>
