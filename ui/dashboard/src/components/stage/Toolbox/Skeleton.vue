@@ -31,6 +31,14 @@
       }"
       v-html="data.content"
     ></p>
+    <div
+      :title="`Stream key: ${data.name}`"
+      class="is-fullwidth"
+      v-else-if="data.type === 'stream'"
+    >
+      <Icon src="stream.svg" size="36" />
+      <span class="tag is-light is-block stream-key">{{ data.name }}</span>
+    </div>
     <Image v-else :src="data.src" />
     <Icon
       v-if="data.multi"
@@ -137,5 +145,10 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.stream-key {
+  width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>
