@@ -70,13 +70,13 @@ nav {
     @include differentiatedToolbar(hsl(0, 0%, 86%));
 }
 #Curtaintool {
+    @include differentiatedToolbar(#fdedf6);
+}
+#Depthtool {
     @include differentiatedToolbar(#363636);
     span.tag {
         color: white;
     }
-}
-#Depthtool {
-    @include differentiatedToolbar(#fdedf6);
 }
 .is-loading {
     position: relative;

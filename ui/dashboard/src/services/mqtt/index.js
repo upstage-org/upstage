@@ -51,10 +51,7 @@ export default function buildClient() {
         this.client.publish(
           topic,
           message,
-          {
-            qos: 1,
-            retain: true
-          },
+          { qos: 1 },
           (error, res) => {
             if (error) {
               reject(error)

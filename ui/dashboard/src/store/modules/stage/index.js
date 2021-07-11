@@ -451,8 +451,9 @@ export default {
             const client = mqtt.connect();
             client.on("connect", () => {
                 commit('SET_STATUS', 'LIVE')
-                dispatch('subscribe');
-                dispatch('joinStage');
+                dispatch('reloadMissingEvents')
+                dispatch('subscribe')
+                dispatch('joinStage')
             });
             client.on("error", () => {
                 commit('SET_STATUS', 'OFFLINE')
@@ -813,6 +814,17 @@ export default {
                 state.model.scenes = scenes
             }
             state.isLoadingScenes = false
+        },
+        async reloadMissingEvents({ state, dispatch }) {
+            const events = await stageGraph.loadEvents(state.model.fileLocation)
+            if (events) {
+                let i = state.model.events.length
+                while (events.length > i) {
+                    dispatch('replayEvent', events[i])
+                    i++
+                }
+                state.model.events = events
+            }
         },
         replaceScene({ state, commit, dispatch }, sceneId) {
             anime({
