@@ -118,6 +118,8 @@ export default {
   height: fit-content;
 }
 .container-fluid {
+  padding-top: 1px;
+  padding-bottom: 1em;
   overflow: hidden;
 }
 </style>

@@ -4,7 +4,7 @@
     <div class="panel-body">
       <PanelItem name="Backdrop" icon="backdrop.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
-      <PanelItem name="Props" icon="props.svg" />
+      <PanelItem name="Props" icon="prop.svg" />
       <PanelItem name="Audio" icon="audio.svg" />
       <PanelItem name="Stream" icon="stream.svg" />
       <PanelItem name="Draw" icon="draw.svg" />

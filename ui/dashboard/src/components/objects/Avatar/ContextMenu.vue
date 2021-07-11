@@ -23,7 +23,7 @@
       </a>
       <a v-else-if="currentAvatar" class="panel-block" @click="wearCostume">
         <span class="panel-icon">
-          <Icon src="props.svg" />
+          <Icon src="prop.svg" />
         </span>
         <span>Add to avatar</span>
       </a>
