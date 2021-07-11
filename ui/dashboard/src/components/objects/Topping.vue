@@ -4,7 +4,8 @@
       class="avatar-topping"
       :style="{
         left: stageSize.left + object.x + object.w / 2 + 'px',
-        top: stageSize.top + object.y - 30 + 'px',
+        top:
+          stageSize.top + object.y - (object.holder && canPlay ? 30 : 0) + 'px',
       }"
       @click="openChatBox"
     >
@@ -152,7 +153,10 @@ export default {
         return {};
       }
       let length = props.object.speak.message.length;
-      if (["think", "shout"].includes(props.object.speak.behavior)) {
+      if (length < 5) {
+        length = 5;
+      }
+      if (["shout"].includes(props.object.speak.behavior)) {
         length *= 1.4;
       }
       const width = Math.sqrt(length * 2.5);
