@@ -222,7 +222,7 @@ export default {
 
     const tabs = computed(() => {
       const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
-      if (!["shape", "curtain"].includes(form.mediaType)) {
+      if (!["curtain"].includes(form.mediaType)) {
         res.push({
           key: "stages",
           label: "Stage",

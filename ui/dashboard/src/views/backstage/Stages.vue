@@ -16,31 +16,30 @@
   </section>
   <section class="section">
     <div class="container">
-      <h1 class="title">
-        Stages
-        <Switch
-          v-model="filter.mine"
-          :label="
-            filter.mine ? 'Show my stages only' : 'Show stages created by: '
-          "
-        />
-        <Dropdown
-          v-if="!filter.mine"
-          class="ml-2"
-          v-model="filter.owner"
-          :data="owners.concat({ displayName: 'All players' })"
-          :render-value="(item) => item.id"
-          :render-label="displayName"
-          placeholder="Stage owner"
-        />
-        <Field
-          class="ml-2"
-          style="width: 200px; display: inline-block; vertical-align: top"
-          v-model="filter.keyword"
-          right="fas fa-search"
-          placeholder="Stage name"
-        />
-      </h1>
+      <h1 class="title mr-2" style="display: inline">Stages</h1>
+
+      <Switch
+        v-model="filter.mine"
+        :label="
+          filter.mine ? 'Show my stages only' : 'Show stages created by: '
+        "
+      />
+      <Dropdown
+        v-if="!filter.mine"
+        class="ml-2"
+        v-model="filter.owner"
+        :data="owners.concat({ displayName: 'All players' })"
+        :render-value="(item) => item.id"
+        :render-label="displayName"
+        placeholder="Stage owner"
+      />
+      <Field
+        class="ml-2"
+        style="width: 200px; display: inline-block; vertical-align: top"
+        v-model="filter.keyword"
+        right="fas fa-search"
+        placeholder="Stage name"
+      />
       <h2 class="subtitle">
         Click <strong>New</strong> button to create a new future stage. Click
         <strong>Search</strong> button for search form to find Stage

@@ -2,10 +2,18 @@
   <div class="columns">
     <div class="column">
       <Dropdown
-        :data="mediaTypes"
-        :renderLabel="(item) => item.label"
-        :renderValue="(item) => item.value"
-        v-model="filter.type"
+        v-model="filter.owner"
+        :data="owners.concat({ displayName: 'All players' })"
+        :render-value="(item) => item.id"
+        :render-label="displayName"
+        placeholder="Stage owner"
+      />
+      <Field
+        class="ml-2"
+        style="width: 200px; display: inline-block; vertical-align: top"
+        v-model="filter.keyword"
+        right="fas fa-search"
+        placeholder="Media name"
       />
     </div>
     <div class="column">
@@ -17,25 +25,31 @@
     :loading="loading"
     :titles="['Available Media', 'Selected Media']"
     :data="filteredMediaList"
+    :column-class="() => 'is-12'"
     v-model="selectedMedia"
   >
     <template #render="{ item }">
-      <span class="tag is-light is-small type-tag">
-        {{ item.assetType.name[0].toUpperCase() }}
-      </span>
-      <div class="card-image">
-        <Asset :asset="item" />
+      <div class="mx-3 my-1">
+        <div class="columns">
+          <div class="column is-narrow media-preview">
+            <Asset :asset="item" show-type />
+          </div>
+          <div class="type-icon">
+            <Icon :src="item.mediaType + '.svg'" />
+          </div>
+          <div class="column">{{ item.name }}</div>
+          <div class="column has-text-right has-text-grey-dark">
+            <small>created by</small> {{ displayName(item.owner) }}
+          </div>
+        </div>
       </div>
-      <header class="card-header">
-        <p class="card-header-title">{{ item.name }}</p>
-      </header>
     </template>
   </MultiSelectList>
 
   <teleport to="#media-menu">
     <ul>
       <li
-        v-for="type in mediaTypes.slice(1)"
+        v-for="type in mediaTypes"
         :key="type.value"
         @click="filter.type = type.value"
       >
@@ -52,13 +66,24 @@ import MultiSelectList from "@/components/MultiSelectList";
 import Asset from "@/components/Asset";
 import SaveButton from "@/components/form/SaveButton";
 import Dropdown from "@/components/form/Dropdown";
+import Field from "@/components/form/Field";
+import Icon from "@/components/Icon";
 import { stageGraph } from "@/services/graphql";
-import { useMutation, useQuery } from "@/services/graphql/composable";
+import {
+  useMutation,
+  useOwners,
+  useQuery,
+} from "@/services/graphql/composable";
 import { reactive, ref } from "@vue/reactivity";
-import { computed, inject, watchEffect } from "@vue/runtime-core";
+import { computed, inject, watch, watchEffect } from "@vue/runtime-core";
+import { displayName } from "@/utils/auth";
+import { includesIgnoreCase } from "@/utils/common";
+import { useStore } from "vuex";
+
 export default {
-  components: { MultiSelectList, Asset, SaveButton, Dropdown },
+  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field },
   setup: () => {
+    const store = useStore();
     const stage = inject("stage");
     const selectedMedia = ref([]);
     const { loading, data } = useQuery(stageGraph.assignableMedia);
@@ -114,7 +139,23 @@ export default {
       if (filter.type) {
         list = list.filter((media) => media.assetType.name === filter.type);
       }
+      if (filter.owner) {
+        list = list.filter((media) => media.owner.id === filter.owner);
+      }
+      if (filter.keyword) {
+        list = list.filter((media) =>
+          includesIgnoreCase(media.name, filter.keyword)
+        );
+      }
       return list;
+    });
+
+    const owners = useOwners(mediaList);
+    watch(owners, (val) => {
+      const current = store.getters["user/currentUserId"];
+      if (val.find((owner) => owner.id === current)) {
+        filter.owner = current;
+      }
     });
 
     return {
@@ -126,10 +167,26 @@ export default {
       mediaTypes,
       filter,
       filteredMediaList,
+      displayName,
+      owners,
     };
   },
 };
 </script>
 
 <style>
+.media-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 5px;
+  overflow: hidden;
+}
+.type-icon {
+  align-self: center;
+  padding: 0 16px;
+}
 </style>

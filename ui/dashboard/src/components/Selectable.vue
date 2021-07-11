@@ -38,6 +38,7 @@ export default {
     height: 100%;
     top: 0;
     left: 0;
+    border-radius: 5px;
     background-color: rgba($color: $primary, $alpha: 0.5);
 
     &.danger {
