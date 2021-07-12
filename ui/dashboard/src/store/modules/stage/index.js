@@ -825,7 +825,7 @@ export default {
             state.isLoadingScenes = false
         },
         async reloadMissingEvents({ state, dispatch }) {
-            const lastEventId = state.model.events[state.model.events.length - 1].id
+            const lastEventId = state.model.events[state.model.events.length - 1]?.id ?? 0
             const events = await stageGraph.loadEvents(state.model.fileLocation, lastEventId)
             if (events) {
                 events.forEach(event => dispatch('replicateEvent', event))
