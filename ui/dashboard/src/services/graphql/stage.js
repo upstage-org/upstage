@@ -195,12 +195,12 @@ export default {
     }
     ${sceneFragment}
   `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.scenes),
-  loadEvents: (fileLocation) => client.request(gql`
-    query ListStage($fileLocation: String) {
+  loadEvents: (fileLocation, cursor) => client.request(gql`
+    query ListStage($fileLocation: String, $cursor: Int) {
       stageList(fileLocation: $fileLocation) {
         edges {
           node {
-            events {
+            events(cursor: $cursor) {
               id
               topic
               payload
@@ -210,7 +210,7 @@ export default {
         }
       }
     }
-  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.events),
+  `, { fileLocation, cursor }).then(response => response.stageList.edges[0]?.node?.events),
   uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {

@@ -68,7 +68,7 @@ class Performance(SQLAlchemyObjectType):
 class Stage(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     events = graphene.List(
-        Event, description="Archived events of this performance", performance_id=graphene.Int())
+        Event, description="Archived events of this performance", performance_id=graphene.Int(), cursor=graphene.Int())
     performances = graphene.List(
         Performance, description="Recorded performances")
     chats = graphene.List(
@@ -84,9 +84,10 @@ class Stage(SQLAlchemyObjectType):
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
 
-    def resolve_events(self, info, performance_id=None):
+    def resolve_events(self, info, performance_id=None, cursor=0):
         events = DBSession.query(EventModel)\
             .filter(EventModel.performance_id == performance_id)\
+            .filter(EventModel.id > cursor)\
             .filter(EventModel.topic.like("%/{}/%".format(self.file_location)))\
             .order_by(EventModel.mqtt_timestamp.asc())\
             .all()

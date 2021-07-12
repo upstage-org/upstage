@@ -458,6 +458,15 @@ export default {
             client.on("error", () => {
                 commit('SET_STATUS', 'OFFLINE')
             });
+            client.on("close", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
+            client.on("disconnect", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
+            client.on("offline", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
             mqtt.receiveMessage((payload) => {
                 dispatch('handleMessage', payload);
             })
@@ -816,14 +825,11 @@ export default {
             state.isLoadingScenes = false
         },
         async reloadMissingEvents({ state, dispatch }) {
-            const events = await stageGraph.loadEvents(state.model.fileLocation)
+            const lastEventId = state.model.events[state.model.events.length - 1]?.id ?? 0
+            const events = await stageGraph.loadEvents(state.model.fileLocation, lastEventId)
             if (events) {
-                let i = state.model.events.length
-                while (events.length > i) {
-                    dispatch('replayEvent', events[i])
-                    i++
-                }
-                state.model.events = events
+                events.forEach(event => dispatch('replicateEvent', event))
+                state.model.events = state.model.events.concat(events)
             }
         },
         replaceScene({ state, commit, dispatch }, sceneId) {
