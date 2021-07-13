@@ -5,9 +5,9 @@
     class="audio has-text-centered"
     :class="{ 'is-playing': audio.isPlaying }"
   >
-    <template v-if="audio.isPlaying">
-      <ContextMenu>
-        <template #trigger>
+    <ContextMenu>
+      <template #trigger>
+        <template v-if="audio.isPlaying">
           <div class="icon is-large" @click="togglePlaying(audio)">
             <Icon size="36" src="pause.svg" />
           </div>
@@ -19,52 +19,54 @@
             @change="seek(audio, $event)"
             type="range"
           />
+          <span v-if="i < 10" class="wattermark">{{ i + 1 }}</span>
         </template>
-        <template #context>
-          <div class="field has-addons menu-group px-4 my-2">
-            <p class="control menu-group-title">
-              <span class="panel-icon pt-1">
-                <Icon src="loop.svg" />
-              </span>
-            </p>
-            <p class="control menu-group-item">
-              <Switch
-                :modelValue="audio.loop"
-                @update:modelValue="
-                  toggleLoop(audio, $event, audioPlayers[i]?.currentTime)
-                "
-              />
-            </p>
+        <div v-else @click="togglePlaying(audio)">
+          <div class="icon is-large">
+            <Icon size="36" src="play.svg" />
           </div>
-          <div class="field has-addons menu-group px-4 my-2">
-            <p class="control menu-group-title">
-              <span class="panel-icon pt-1">
-                <Icon src="voice-setting.svg" />
-              </span>
-            </p>
-            <p class="control menu-group-item">
-              <input
-                class="slider is-fullwidth is-primary my-0"
-                step="0.01"
-                min="0"
-                max="1"
-                :value="audio.volume ?? 1"
-                @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
-                type="range"
-              />
-            </p>
-          </div>
-        </template>
-      </ContextMenu>
-    </template>
-    <div v-else @click="togglePlaying(audio)">
-      <div class="icon is-large">
-        <Icon size="36" src="play.svg" />
-      </div>
-      <span class="audio-name tag is-light is-block" :title="audio.file">
-        {{ audio.name }}
-      </span>
-    </div>
+          <span class="audio-name tag is-light is-block" :title="audio.file">
+            {{ audio.name }}
+          </span>
+          <span v-if="i < 10" class="wattermark">{{ i + 1 }}</span>
+        </div>
+      </template>
+      <template #context>
+        <div class="field has-addons menu-group px-4 my-2">
+          <p class="control menu-group-title">
+            <span class="panel-icon pt-1">
+              <Icon src="loop.svg" />
+            </span>
+          </p>
+          <p class="control menu-group-item">
+            <Switch
+              :modelValue="audio.loop"
+              @update:modelValue="
+                toggleLoop(audio, $event, audioPlayers[i]?.currentTime)
+              "
+            />
+          </p>
+        </div>
+        <div class="field has-addons menu-group px-4 my-2">
+          <p class="control menu-group-title">
+            <span class="panel-icon pt-1">
+              <Icon src="voice-setting.svg" />
+            </span>
+          </p>
+          <p class="control menu-group-item">
+            <input
+              class="slider is-fullwidth is-primary my-0"
+              step="0.01"
+              min="0"
+              max="1"
+              :value="audio.volume ?? 1"
+              @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
+              type="range"
+            />
+          </p>
+        </div>
+      </template>
+    </ContextMenu>
   </div>
 </template>
 
@@ -73,7 +75,7 @@ import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import ContextMenu from "@/components/ContextMenu";
 import Switch from "@/components/form/Switch";
-import { computed } from "@vue/runtime-core";
+import { computed, onUnmounted } from "@vue/runtime-core";
 
 export default {
   components: { Icon, ContextMenu, Switch },
@@ -101,6 +103,23 @@ export default {
       audio.currentTime = currentTime;
       store.dispatch("stage/updateAudioStatus", audio);
     };
+
+    const playSoundShortcut = (e) => {
+      if (!e) e = window.event;
+      if (isFinite(e.key)) {
+        const i = e.key - 1;
+        if (audios.value.length > i && i >= 0) {
+          togglePlaying(audios.value[i]);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", playSoundShortcut);
+
+    onUnmounted(() => {
+      window.removeEventListener("keydown", playSoundShortcut);
+    });
+
     return { audios, togglePlaying, toggleLoop, setVolume, audioPlayers, seek };
   },
 };
@@ -124,5 +143,11 @@ export default {
 }
 .audio.is-playing {
   width: 200px !important;
+}
+.wattermark {
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  opacity: 0.5;
 }
 </style>
