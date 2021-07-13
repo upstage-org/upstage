@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { watch } from "vue";
+import { onMounted, watch } from "vue";
 import { useStore } from "vuex";
 export default {
   setup: () => {
@@ -50,7 +50,8 @@ export default {
         });
       }
     };
-    watch(audios, () => {
+
+    const handleAudioChange = () => {
       audios.forEach((audio, i) => {
         if (audio.changed) {
           refs[i].currentTime = audio.currentTime ?? 0;
@@ -66,7 +67,10 @@ export default {
           audio.changed = false;
         }
       });
-    });
+    };
+
+    watch(audios, handleAudioChange);
+    onMounted(handleAudioChange);
 
     return { audios, setRef };
   },

@@ -69,7 +69,6 @@ export function takeSnapshotFromStage() {
         backdropColor,
         board: originalBoard,
         settings,
-        tools,
         audioPlayers,
     } = store.state.stage;
     const board = Object.assign({}, originalBoard)
@@ -79,7 +78,6 @@ export function takeSnapshotFromStage() {
         backdropColor,
         board,
         settings,
-        tools,
         audioPlayers,
     });
     return payload
