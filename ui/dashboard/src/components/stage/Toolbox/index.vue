@@ -12,6 +12,7 @@
       <PanelItem name="Setting" icon="rotation-slider.svg" />
       <PanelItem name="Curtain" icon="curtain.svg" />
       <PanelItem name="Depth" icon="multi-frame.svg" />
+      <PlayerChat />
       <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
         <span>
           <Icon v-if="isScene" size="36" src="stage.svg" />
@@ -26,10 +27,11 @@
 import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
+import PlayerChat from "./PlayerChat";
 import Icon from "@/components/Icon";
 
 export default {
-  components: { TopBar, PanelItem, Icon },
+  components: { TopBar, PanelItem, PlayerChat, Icon },
   setup: () => {
     const tool = ref();
     const changeTool = (newTool) => {

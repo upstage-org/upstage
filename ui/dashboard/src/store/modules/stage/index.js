@@ -77,7 +77,8 @@ export default {
         audioPlayers: [],
         scenes: [],
         isSavingScene: false,
-        isLoadingScenes: false
+        isLoadingScenes: false,
+        showPlayerChat: true
     },
     getters: {
         ready(state) {
@@ -444,6 +445,9 @@ export default {
         },
         SET_SAVING_SCENE(state, value) {
             state.isSavingScene = value
+        },
+        SET_SHOW_PLAYER_CHAT(state, value) {
+            state.showPlayerChat = value
         }
     },
     actions: {
