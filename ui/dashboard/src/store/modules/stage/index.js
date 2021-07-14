@@ -434,11 +434,13 @@ export default {
                 duration: 3000
             });
             state.activeMovable = null
-            const snapshot = JSON.parse(payload)
-            snapshot.board.objects.forEach(deserializeObject)
-            Object.keys(snapshot).forEach(key => {
-                state[key] = snapshot[key]
-            })
+            if (payload) {
+                const snapshot = JSON.parse(payload)
+                snapshot.board.objects.forEach(deserializeObject)
+                Object.keys(snapshot).forEach(key => {
+                    state[key] = snapshot[key]
+                })
+            }
         },
         SET_SAVING_SCENE(state, value) {
             state.isSavingScene = value
@@ -843,6 +845,8 @@ export default {
             } else {
                 if (state.isLoadingScenes) {
                     setTimeout(() => dispatch('replaceScene', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
+                } else {
+                    commit('REPLACE_SCENE', { payload: null })
                 }
             }
         },
