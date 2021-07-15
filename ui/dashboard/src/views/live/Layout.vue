@@ -7,6 +7,7 @@
       <ConnectionStatus />
       <Toolbox v-if="canPlay" />
       <Chat />
+      <PlayerChat v-if="canPlay" />
       <AudioPlayer />
       <LoginPrompt />
       <SettingPopup />
@@ -18,6 +19,7 @@
 import Logo from "@/components/Logo";
 import SettingPopup from "@/components/stage/SettingPopup";
 import Chat from "@/components/stage/Chat/index";
+import PlayerChat from "@/components/stage/Chat/PlayerChat";
 import Toolbox from "@/components/stage/Toolbox";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
@@ -34,6 +36,7 @@ export default {
     LoginPrompt,
     SettingPopup,
     Chat,
+    PlayerChat,
     Toolbox,
     Board,
     AudioPlayer,

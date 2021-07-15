@@ -20,10 +20,12 @@ export default {
     const message = ref("");
     const sendChat = () => {
       if (message.value.trim()) {
-        store.dispatch("stage/sendChat", message.value).then(() => {
-          message.value = "";
-          emit("close");
-        });
+        store
+          .dispatch("stage/sendChat", { message: message.value })
+          .then(() => {
+            message.value = "";
+            emit("close");
+          });
       }
     };
 

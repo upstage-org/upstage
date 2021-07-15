@@ -1,21 +1,20 @@
 <template>
   <transition :css="false" @enter="enter" @leave="leave">
     <div
-      id="chatbox"
-      v-show="chatVisibility"
+      id="player-chatbox"
+      ref="theChatbox"
+      v-show="playerChatVisibility"
       class="card is-light"
-      :class="{ collapsed }"
+      :class="{ collapsed, 'is-movingable': isMovingable }"
       :style="{
         opacity,
         fontSize,
-        width: `calc(20% + ${fontSize} + ${fontSize})`,
       }"
     >
       <div class="actions">
-        <Reaction v-if="collapsed" />
         <button
           class="chat-setting button is-rounded is-light"
-          @click="collapsed = !collapsed"
+          @click="minimizeToToolbox"
         >
           <span class="icon">
             <Icon v-if="collapsed" src="maximize.svg" size="20" />
@@ -24,10 +23,11 @@
         </button>
         <button
           class="chat-setting button is-rounded is-light"
-          @click="openChatSetting"
+          :class="{ 'is-primary': isMovingable }"
+          @click="toggleMoveable"
         >
           <span class="icon">
-            <Icon src="setting.svg" size="32" />
+            <Icon src="prop.svg" size="20" />
           </span>
         </button>
       </div>
@@ -36,30 +36,12 @@
       </div>
       <footer class="card-footer">
         <div class="card-footer-item">
-          <div v-if="!collapsed" class="is-fullwidth my-1 reaction-bar">
-            <Reaction :custom-emoji="true" />
-            <div class="font-size-controls">
-              <button
-                class="button is-small is-rounded mx-1"
-                :key="encrease - fontSize"
-                @click="increateFontSize()"
-              >
-                ➕
-              </button>
-              <button
-                class="button is-small is-rounded mx-1"
-                :key="decrease - fontSize"
-                @click="decreaseFontSize()"
-              >
-                ➖
-              </button>
-            </div>
-          </div>
           <div class="control has-icons-right is-fullwidth">
             <ChatInput
-              v-model="message"
+              v-model="chat.privateMessage"
               placeholder="Type message"
               :loading="loadingUser"
+              :disabled="isMovingable"
               @submit="sendChat"
             />
           </div>
@@ -75,22 +57,20 @@ import anime from "animejs";
 import { useStore } from "vuex";
 import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
-import Reaction from "./Reaction";
 import Messages from "./Messages";
+import Moveable from "moveable";
 
 export default {
-  components: { ChatInput, Reaction, Icon, Messages },
+  components: { ChatInput, Icon, Messages },
   setup: () => {
+    const theChatbox = ref();
     const theContent = ref();
     const store = useStore();
-    const chatVisibility = computed(
-      () => store.state.stage.settings.chatVisibility
-    );
 
-    const messages = computed(() => store.state.stage.chat.messages);
+    const messages = computed(() => store.state.stage.chat.privateMessages);
     const loadingUser = computed(() => store.state.user.loadingUser);
-    const message = ref("");
-    const collapsed = ref(false);
+    const chat = store.state.stage.chat;
+    const message = computed(() => store.state.stage.chat.privateMessage);
     const scrollToEnd = () => {
       anime({
         targets: theContent.value,
@@ -99,19 +79,18 @@ export default {
       });
     };
     const sendChat = () => {
+      console.log(message.value);
       if (message.value.trim() && !loadingUser.value) {
-        store.dispatch("stage/sendChat", { message: message.value });
-        message.value = "";
+        store.dispatch("stage/sendChat", {
+          message: message.value,
+          isPrivate: true,
+        });
+        chat.privateMessage = "";
         scrollToEnd();
       }
     };
     watch(messages.value, scrollToEnd);
     onMounted(scrollToEnd);
-
-    const openChatSetting = () =>
-      store.dispatch("stage/openSettingPopup", {
-        type: "ChatParameters",
-      });
 
     const opacity = computed(() => store.state.stage.chat.opacity);
     const fontSize = computed(() => store.state.stage.chat.fontSize);
@@ -119,70 +98,103 @@ export default {
     const enter = (el, complete) => {
       anime({
         targets: el,
-        scale: [0, 1],
-        translateY: [-200, 0],
-        complete,
+        scaleY: [0, 1],
+        translateX: [-200, 0],
+        complete: () => {
+          scrollToEnd();
+          complete();
+        },
       });
     };
     const leave = (el, complete) => {
       anime({
         targets: el,
-        scale: 0,
-        translateY: -200,
+        scaleY: 0,
+        translateX: -200,
         easing: "easeInOutExpo",
         complete,
       });
     };
 
-    const increateFontSize = () => {
-      let incValue = fontSize.value?.replace("px", "");
-      incValue++;
-      const parameters = {
-        opacity: store.state.stage.chat.opacity,
-        fontSize: `${incValue}px`,
-      };
-      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    const moveable = new Moveable(document.body, {
+      draggable: true,
+      resizable: true,
+      origin: false,
+    });
+
+    onMounted(() => {
+      moveable.on("drag", ({ target, left, top, height }) => {
+        target.style.left = `${left}px`;
+        if (
+          top + height + 8 <
+          (window.innerHeight || document.documentElement.clientHeight)
+        ) {
+          target.style.top = `${top}px`;
+        }
+      });
+      moveable.on(
+        "resize",
+        ({ target, width, height, drag: { left, top } }) => {
+          console.log(width, height);
+          if (width > 100) {
+            target.style.width = `${width}px`;
+          }
+          if (height > 120) {
+            target.style.height = `${height}px`;
+          }
+          target.style.left = `${left}px`;
+          target.style.top = `${top}px`;
+        }
+      );
+    });
+
+    const isMovingable = ref(false);
+    const toggleMoveable = () => {
+      moveable.setState({
+        target: isMovingable.value ? null : theChatbox.value,
+      });
+      isMovingable.value = !isMovingable.value;
     };
 
-    const decreaseFontSize = () => {
-      let decValue = fontSize.value?.replace("px", "");
-      decValue > 1 && decValue--;
-      const parameters = {
-        opacity: store.state.stage.chat.opacity,
-        fontSize: `${decValue}px`,
-      };
-      store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+    const playerChatVisibility = computed(
+      () => store.state.stage.showPlayerChat
+    );
+    const minimizeToToolbox = () => {
+      store.dispatch("stage/showPlayerChat", false);
+      moveable.setState({ target: null });
+      isMovingable.value = false;
     };
 
     return {
       messages,
       message,
       sendChat,
+      theChatbox,
       theContent,
       loadingUser,
-      openChatSetting,
-      collapsed,
       opacity,
       fontSize,
-      chatVisibility,
+      playerChatVisibility,
       enter,
       leave,
-      increateFontSize,
-      decreaseFontSize,
+      toggleMoveable,
+      isMovingable,
+      minimizeToToolbox,
+      chat,
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
-#chatbox {
+#player-chatbox {
   display: flex;
   flex-direction: column;
   position: fixed;
-  min-width: 250px;
-  height: calc(100% - 135px);
+  left: 56px;
   bottom: 16px;
-  right: 16px;
+  height: 200px;
+  max-width: unset;
   overflow: visible;
   z-index: 3;
 
@@ -194,21 +206,8 @@ export default {
   }
   .card-footer-item {
     flex-wrap: wrap;
-    padding-top: 0;
-  }
-
-  &.collapsed {
-    height: 108px;
-    .card-content {
-      padding-top: 20px;
-      height: 0;
-      > div {
-        display: none;
-      }
-    }
-    .card-footer-item {
-      padding-top: 6px;
-    }
+    padding-top: 6px;
+    padding-bottom: 6px;
   }
 
   .actions {
@@ -224,18 +223,6 @@ export default {
   }
   .control.has-icons-right .input {
     padding-right: 50px !important;
-  }
-}
-.reaction-bar {
-  height: 30px;
-  position: relative;
-  .font-size-controls {
-    position: absolute;
-    top: 0;
-    right: 0;
-    .button.is-rounded {
-      width: 16px;
-    }
   }
 }
 </style>
