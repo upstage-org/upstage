@@ -578,7 +578,7 @@ export default {
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
-            if (avatar && isPlayer) {
+            if (avatar && isPlayer && !isPrivate) {
                 mqtt.sendMessage(TOPICS.BOARD, {
                     type: BOARD_ACTIONS.SPEAK,
                     avatar,
