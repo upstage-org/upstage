@@ -21,7 +21,7 @@ export default {
         model: null,
         background: null,
         curtain: null,
-        backdropColor: '#ebffee',
+        backdropColor: 'white',
         status: 'OFFLINE',
         subscribeSuccess: false,
         activeMovable: null,
@@ -189,6 +189,7 @@ export default {
                 clearInterval(state.background.interval);
             }
             state.background = null;
+            state.backdropColor = 'white';
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
@@ -928,7 +929,7 @@ export default {
         },
         async sendStatistics({ state, getters }) {
             if (state.subscribeSuccess) {
-                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
+                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length }, false, true);
             }
         },
         async getRunningStreams({ state, commit }) {
