@@ -84,13 +84,17 @@ export default {
 
   .panel-icon {
     width: 1.5em;
-    filter: grayscale(100%);
+    img {
+      filter: grayscale(100%);
+    }
   }
   .panel-block.is-active,
   .panel-block:hover {
     border: none;
     .panel-icon {
-      filter: none;
+      img {
+        filter: none;
+      }
       transform: scale(1.5);
     }
   }

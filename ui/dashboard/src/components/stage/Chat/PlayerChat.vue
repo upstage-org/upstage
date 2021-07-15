@@ -38,7 +38,7 @@
         <div class="card-footer-item">
           <div class="control has-icons-right is-fullwidth">
             <ChatInput
-              v-model="message"
+              v-model="chat.privateMessage"
               placeholder="Type message"
               :loading="loadingUser"
               :disabled="isMovingable"
@@ -67,9 +67,10 @@ export default {
     const theContent = ref();
     const store = useStore();
 
-    const messages = computed(() => store.state.stage.chat.messages);
+    const messages = computed(() => store.state.stage.chat.privateMessages);
     const loadingUser = computed(() => store.state.user.loadingUser);
-    const message = ref("");
+    const chat = store.state.stage.chat;
+    const message = computed(() => store.state.stage.chat.privateMessage);
     const scrollToEnd = () => {
       anime({
         targets: theContent.value,
@@ -78,9 +79,13 @@ export default {
       });
     };
     const sendChat = () => {
+      console.log(message.value);
       if (message.value.trim() && !loadingUser.value) {
-        store.dispatch("stage/sendChat", message.value);
-        message.value = "";
+        store.dispatch("stage/sendChat", {
+          message: message.value,
+          isPrivate: true,
+        });
+        chat.privateMessage = "";
         scrollToEnd();
       }
     };
@@ -93,16 +98,19 @@ export default {
     const enter = (el, complete) => {
       anime({
         targets: el,
-        scale: [0, 1],
-        translateY: [-200, 0],
-        complete,
+        scaleY: [0, 1],
+        translateX: [-200, 0],
+        complete: () => {
+          scrollToEnd();
+          complete();
+        },
       });
     };
     const leave = (el, complete) => {
       anime({
         targets: el,
-        scale: 0,
-        translateY: -200,
+        scaleY: 0,
+        translateX: -200,
         easing: "easeInOutExpo",
         complete,
       });
@@ -152,7 +160,7 @@ export default {
       () => store.state.stage.showPlayerChat
     );
     const minimizeToToolbox = () => {
-      store.commit("stage/SET_SHOW_PLAYER_CHAT", false);
+      store.dispatch("stage/showPlayerChat", false);
       moveable.setState({ target: null });
       isMovingable.value = false;
     };
@@ -172,6 +180,7 @@ export default {
       toggleMoveable,
       isMovingable,
       minimizeToToolbox,
+      chat,
     };
   },
 };

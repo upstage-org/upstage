@@ -7,6 +7,9 @@
   >
     <span class="panel-icon">
       <Icon src="chat.svg" />
+      <span v-if="unread" class="unread tag is-danger is-small">{{
+        unread
+      }}</span>
     </span>
   </a>
 </template>
@@ -21,13 +24,20 @@ export default {
     const store = useStore();
     const showPlayerChat = computed(() => store.state.stage.showPlayerChat);
     const togglePlayerChat = () => {
-      store.commit("stage/SET_SHOW_PLAYER_CHAT", !showPlayerChat.value);
+      store.dispatch("stage/showPlayerChat", !showPlayerChat.value);
     };
+    const unread = computed(
+      () => store.getters["stage/unreadPrivateMessageCount"]
+    );
 
-    return { showPlayerChat, togglePlayerChat };
+    return { showPlayerChat, togglePlayerChat, unread };
   },
 };
 </script>
 
-<style>
+<style scoped>
+.unread {
+  position: relative;
+  top: -16px;
+}
 </style>

@@ -100,7 +100,7 @@ export default {
     };
     const sendChat = () => {
       if (message.value.trim() && !loadingUser.value) {
-        store.dispatch("stage/sendChat", message.value);
+        store.dispatch("stage/sendChat", { message: message.value });
         message.value = "";
         scrollToEnd();
       }

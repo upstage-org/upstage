@@ -27,6 +27,8 @@ export default {
         activeMovable: null,
         chat: {
             messages: [],
+            privateMessages: [],
+            privateMessage: '',
             color: randomMessageColor(),
             opacity: 0.9,
             fontSize: '14px',
@@ -78,7 +80,8 @@ export default {
         scenes: [],
         isSavingScene: false,
         isLoadingScenes: false,
-        showPlayerChat: true
+        showPlayerChat: false,
+        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0
     },
     getters: {
         ready(state) {
@@ -135,6 +138,9 @@ export default {
         },
         audiences(state) {
             return state.sessions.filter((s) => !s.isPlayer)
+        },
+        unreadPrivateMessageCount(state) {
+            return state.chat.privateMessages.filter(m => m.at > state.lastSeenPrivateMessage).length
         }
     },
     mutations: {
@@ -200,6 +206,7 @@ export default {
             state.board.drawings = [];
             state.board.texts = [];
             state.chat.messages = [];
+            state.chat.privateMessages = [];
             state.chat.color = randomColor();
         },
         SET_BACKGROUND(state, background) {
@@ -240,6 +247,14 @@ export default {
                 return
             }
             state.chat.messages.push(message)
+        },
+        PUSH_PLAYER_CHAT_MESSAGE(state, message) {
+            message.hash = hash(message)
+            const lastMessage = state.chat.privateMessages[state.chat.privateMessages.length - 1]
+            if (lastMessage && (lastMessage.hash === message.hash)) {
+                return
+            }
+            state.chat.privateMessages.push(message)
         },
         CLEAR_CHAT(state) {
             state.chat.messages.length = 0
@@ -449,6 +464,16 @@ export default {
         },
         SET_SHOW_PLAYER_CHAT(state, value) {
             state.showPlayerChat = value
+        },
+        TAG_PLAYER(state, player) {
+            state.chat.privateMessage += `@${player.nickname.trim()}`
+        },
+        SEEN_PRIVATE_MESSAGES(state) {
+            const length = state.chat.privateMessages.length
+            if (length > 0) {
+                state.lastSeenPrivateMessage = state.chat.privateMessages[length - 1].at
+                localStorage.setItem('lastSeenPrivateMessage', state.lastSeenPrivateMessage)
+            }
         }
     },
     actions: {
@@ -521,7 +546,7 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, getters }, message) {
+        sendChat({ rootGetters, getters }, { message, isPrivate }) {
             if (!message) return;
             let user = rootGetters["user/chatname"];
             let isPlayer = getters["canPlay"]
@@ -548,6 +573,7 @@ export default {
                 message: message,
                 behavior,
                 isPlayer,
+                isPrivate,
                 at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
@@ -560,7 +586,7 @@ export default {
                 })
             }
         },
-        handleChatMessage({ commit }, { message }) {
+        handleChatMessage({ commit, state, rootGetters, dispatch }, { message }) {
             if (message.clear) {
                 commit('CLEAR_CHAT')
             } else {
@@ -573,7 +599,21 @@ export default {
                 } else {
                     model.message = message;
                 }
-                commit('PUSH_CHAT_MESSAGE', model)
+                if (message.isPrivate) {
+                    commit('PUSH_PLAYER_CHAT_MESSAGE', model)
+                    if (message.at > state.lastSeenPrivateMessage) {
+                        if (state.showPlayerChat) {
+                            commit('SEEN_PRIVATE_MESSAGES')
+                        } else {
+                            const nickname = rootGetters['user/nickname'];
+                            if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
+                                dispatch('showPlayerChat', true)
+                            }
+                        }
+                    }
+                } else {
+                    commit('PUSH_CHAT_MESSAGE', model)
+                }
             }
         },
         placeObjectOnStage({ commit, dispatch }, data) {
@@ -941,5 +981,11 @@ export default {
         clearChat() {
             mqtt.sendMessage(TOPICS.CHAT, { clear: true })
         },
+        showPlayerChat({ commit }, visible) {
+            commit('SET_SHOW_PLAYER_CHAT', visible)
+            if (visible) {
+                commit("SEEN_PRIVATE_MESSAGES");
+            }
+        }
     },
 };

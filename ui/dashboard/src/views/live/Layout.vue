@@ -6,8 +6,8 @@
       <Board />
       <ConnectionStatus />
       <Toolbox v-if="canPlay" />
-      <PlayerChat v-if="canPlay" />
       <Chat />
+      <PlayerChat v-if="canPlay" />
       <AudioPlayer />
       <LoginPrompt />
       <SettingPopup />

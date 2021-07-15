@@ -25,9 +25,9 @@ export default {
     };
     watch(
       () => props.modelValue,
-      (value) => {
+      () => {
         el.value.style.height = "40px";
-        if (value) {
+        if (props.modelValue && el.value.scrollHeight) {
           el.value.style.height = el.value.scrollHeight + "px";
         }
       }
