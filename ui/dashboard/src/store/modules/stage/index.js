@@ -791,6 +791,7 @@ export default {
                     commit("REPLACE_SCENE", {
                         payload: JSON.stringify({
                             background: null,
+                            backdropColor: 'white',
                             board: { objects: [] },
                             audioPlayers: [],
                         }),
