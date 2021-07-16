@@ -94,9 +94,7 @@ export default {
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
         complete: () => {
-          if (canPlay.value) {
-            store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
-          }
+          store.dispatch("stage/autoFocusMoveable", el.id);
           complete();
         },
       });

@@ -99,7 +99,7 @@
 </template>
 
 <script>
-import { computed, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { useDrawable } from "./composable";
 import ColorPicker from "@/components/form/ColorPicker";
@@ -130,7 +130,10 @@ export default {
       history,
     } = useDrawable();
     const create = () => {
+      store.commit("stage/SET_ACTIVE_MOVABLE", null);
       store.commit("stage/UPDATE_IS_DRAWING", true);
+      currentDrawing.value = null;
+      clearCanvas(true);
     };
     const cancel = () => {
       store.commit("stage/UPDATE_IS_DRAWING", false);
@@ -143,7 +146,7 @@ export default {
           store
             .dispatch("stage/addDrawing", { ...area, commands: history })
             .then((drawing) => {
-              currentDrawing.value = drawing;
+              currentDrawing.value = drawing.id;
             });
         }
       }
@@ -153,18 +156,36 @@ export default {
     };
 
     const liveDrawing = ref(false);
+    watch(liveDrawing, (value) => {
+      if (value && !currentDrawing.value) {
+        save();
+      }
+    });
+
     watch(history, (value) => {
       if (liveDrawing.value) {
         if (currentDrawing.value) {
+          const drawing = store.getters["stage/objects"].find(
+            (o) => o.id === currentDrawing.value
+          );
           store.dispatch("stage/shapeObject", {
-            ...currentDrawing.value,
+            ...drawing,
             ...getDrawedArea(),
             commands: value,
+            liveAction: true,
           });
         } else {
           save();
         }
       }
+    });
+
+    onMounted(() => {
+      store.commit("stage/UPDATE_IS_DRAWING", true);
+    });
+
+    onUnmounted(() => {
+      store.commit("stage/UPDATE_IS_DRAWING", false);
     });
 
     return {

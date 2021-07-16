@@ -51,7 +51,7 @@ export default {
             isActive: false,
         },
         preferences: {
-            isDrawing: true,
+            isDrawing: false,
             text: {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
@@ -792,7 +792,11 @@ export default {
                         payload: JSON.stringify({
                             background: null,
                             backdropColor: 'white',
-                            board: { objects: [] },
+                            board: {
+                                objects: [],
+                                drawings: [],
+                                texts: [],
+                            },
                             audioPlayers: [],
                         }),
                     });
@@ -814,10 +818,11 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        addDrawing({ commit, dispatch }, drawing) {
+        async addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
-            return dispatch('placeObjectOnStage', drawing);
+            drawing = await dispatch('placeObjectOnStage', drawing);
+            return drawing
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';
@@ -986,6 +991,11 @@ export default {
             commit('SET_SHOW_PLAYER_CHAT', visible)
             if (visible) {
                 commit("SEEN_PRIVATE_MESSAGES");
+            }
+        },
+        autoFocusMoveable({ commit, getters, state }, id) {
+            if (getters.canPlay && !state.preferences.isDrawing && !state.replay.isReplaying) {
+                commit('SET_ACTIVE_MOVABLE', id)
             }
         }
     },
