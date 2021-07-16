@@ -29,17 +29,20 @@ import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
 import PlayerChat from "./PlayerChat";
 import Icon from "@/components/Icon";
+import { useStore } from "vuex";
 
 export default {
   components: { TopBar, PanelItem, PlayerChat, Icon },
   setup: () => {
     const tool = ref();
+    const store = useStore();
     const changeTool = (newTool) => {
       if (tool.value === newTool) {
         tool.value = undefined;
       } else {
         tool.value = newTool;
       }
+      store.commit("stage/SET_ACTIVE_MOVABLE", null);
     };
     provide("tool", tool);
     provide("changeTool", changeTool);

@@ -224,20 +224,21 @@ export const useDrawable = () => {
 }
 
 export const useRelativeCommands = drawing => computed(() => {
-    if (!drawing.commands) {
+    if (!drawing.value.commands) {
         return []
     }
-    const ratio = Math.min(drawing.w / drawing.original.w, drawing.h / drawing.original.h);
-    return drawing.commands.map(command => ({
+    const { commands, original, w, h } = drawing.value
+    const ratio = Math.min(w / original.w, h / original.h);
+    return commands.map(command => ({
         ...command,
         size: command.size * ratio,
-        x: (command.x - drawing.original.x) * ratio,
-        y: (command.y - drawing.original.y) * ratio,
+        x: (command.x - original.x) * ratio,
+        y: (command.y - original.y) * ratio,
         lines: command.lines.map(line => ({
-            x: (line.x - drawing.original.x) * ratio,
-            y: (line.y - drawing.original.y) * ratio,
-            fromX: (line.fromX - drawing.original.x) * ratio,
-            fromY: (line.fromY - drawing.original.y) * ratio,
+            x: (line.x - original.x) * ratio,
+            y: (line.y - original.y) * ratio,
+            fromX: (line.fromX - original.x) * ratio,
+            fromY: (line.fromY - original.y) * ratio,
         }))
     }))
 })
@@ -248,15 +249,15 @@ export const useDrawing = (drawing) => {
 
     const draw = async (newDrawing, oldDrawing) => {
         const { value: canvas } = el;
-        canvas.width = drawing.w;
-        canvas.height = drawing.h;
+        canvas.width = drawing.value.w;
+        canvas.height = drawing.value.h;
         const ctx = canvas.getContext("2d");
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         for (let i = 0; i < commands.value.length; i++) {
             const command = commands.value[i];
             let shouldAnimate = true;
             if (newDrawing && oldDrawing) {
-                if (i < oldDrawing.commands.length - 1) {
+                if (i < oldDrawing.commands.length) {
                     shouldAnimate = false
                 }
             }
