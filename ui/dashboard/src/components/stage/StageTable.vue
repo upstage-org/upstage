@@ -3,18 +3,6 @@
     <template #name="{ item }">
       <span class="has-text-weight-bold">{{ item.name }}</span>
     </template>
-    <template #detail="{ item }">
-      <Modal>
-        <template #trigger>
-          <button class="button is-light is-small">
-            <i class="fas fa-lg fa-eye has-text-primary" />
-          </button>
-        </template>
-        <template #header>Stage Detail</template>
-        <template #content><Detail :stage="item" /></template>
-        <template #footer><ActionButtons :stage="item" /></template>
-      </Modal>
-    </template>
     <template #manage="{ item }">
       <template
         v-if="
@@ -28,13 +16,7 @@
         >
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
-        <router-link
-          :to="`/backstage/stage-management/${item.id}/`"
-          class="button is-light is-small"
-          data-tooltip="Duplicate stage"
-        >
-          <i class="fa fa-lg fa-clone has-text-warning"></i>
-        </router-link>
+        <DuplicateStage :stage="item" />
         <Confirm
           v-if="item.permission === 'owner' || isAdmin"
           @confirm="(complete) => deleteStage(item, complete)"
@@ -78,12 +60,10 @@
 
 <script>
 import DataTable from "@/components/DataTable/index";
-import Modal from "@/components/Modal";
 import Confirm from "@/components/Confirm";
 import Icon from "@/components/Icon";
-import ActionButtons from "./ActionButtons";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
-import Detail from "./Detail";
+import DuplicateStage from "./DuplicateStage.vue";
 import { displayName } from "@/utils/auth";
 import { stageGraph } from "@/services/graphql";
 import { useMutation } from "@/services/graphql/composable";
@@ -93,12 +73,10 @@ import { useStore } from "vuex";
 export default {
   components: {
     DataTable,
-    Modal,
-    ActionButtons,
-    Detail,
     Confirm,
     Icon,
     PlayerAudienceCounter,
+    DuplicateStage,
   },
   props: { data: Array },
   setup: () => {
@@ -114,18 +92,6 @@ export default {
         render: (item) => displayName(item.owner),
       },
       {
-        title: "Access",
-        description: "Your permited access to this stage",
-        render: (item) =>
-          item.permission[0].toUpperCase() + item.permission.substr(1),
-      },
-      {
-        title: "Detail",
-        description: "Duplicate/Manage stage",
-        slot: "detail",
-        align: "center",
-      },
-      {
         title: "Statistics",
         description: "Players and audiences counter",
         slot: "statistics",
@@ -135,6 +101,12 @@ export default {
         title: "Manage Stage",
         slot: "manage",
         align: "center",
+      },
+      {
+        title: "Access",
+        description: "Your permited access to this stage",
+        render: (item) =>
+          item.permission[0].toUpperCase() + item.permission.substr(1),
       },
       {
         title: "",

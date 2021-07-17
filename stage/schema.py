@@ -1,4 +1,6 @@
 # -*- coding: iso8859-15 -*-
+import re
+from sqlalchemy.orm.session import make_transient
 from stage.scene import DeleteScene, SaveScene, Scene
 from user.user_utils import current_user
 from flask_jwt_extended.utils import get_jwt_identity
@@ -15,7 +17,7 @@ from event_archive.models import Event as EventModel
 from config.settings import VERSION
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from graphene import relay
-from graphql_relay.node.node import from_global_id
+from graphql_relay.node.node import from_global_id, to_global_id
 from sqlalchemy import desc
 from user.models import ADMIN, SUPER_ADMIN
 import graphene
@@ -310,7 +312,7 @@ class SweepStage(graphene.Mutation):
 
 
 class DeleteStage(graphene.Mutation):
-    """Mutation to sweep a stage."""
+    """Mutation to delete a stage."""
     success = graphene.Boolean()
 
     class Arguments:
@@ -348,6 +350,66 @@ class DeleteStage(graphene.Mutation):
         return DeleteStage(success=True)
 
 
+class DuplicateStage(graphene.Mutation):
+    """Mutation to duplicate a stage."""
+    success = graphene.Boolean()
+    new_stage_id = graphene.ID()
+
+    class Arguments:
+        id = graphene.ID(
+            required=True, description="Global Id of the stage to be duplicated.")
+        name = graphene.String(
+            required=True, description="New name of the duplicated stage")
+
+    @jwt_required()
+    def mutate(self, info, id, name):
+        with ScopedSession() as local_db_session:
+            code, error, user, timezone = current_user()
+            id = from_global_id(id)[1]
+            stage = local_db_session.query(StageModel).filter(
+                StageModel.id == id).first()
+            if stage:
+                local_db_session.expunge(stage)
+                make_transient(stage)
+                original_stage_id = id
+                stage.id = None
+                stage.name = name
+                stage.owner_id = user.id
+                shortname = re.sub(
+                    '\s+', '-', re.sub('[^A-Za-z0-9 ]+', '', name)).lower()
+
+                suffix = ""
+                while True:
+                    existedStages = DBSession.query(StageModel).filter(
+                        StageModel.file_location == f"{shortname}{suffix}").first()
+                    if existedStages:
+                        suffix = int(suffix or 0) + 1
+                    else:
+                        break
+                stage.file_location = f"{shortname}{suffix}"
+                local_db_session.add(stage)
+                local_db_session.flush()
+                new_stage_id = stage.id
+
+                # Clone media and attributes, player accesses,...
+                for ps in local_db_session.query(ParentStage).filter(ParentStage.stage_id == original_stage_id).all():
+                    local_db_session.add(ParentStage(
+                        stage_id=new_stage_id,
+                        child_asset_id=ps.child_asset_id
+                    ))
+                for attribute in local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage_id == original_stage_id).all():
+                    local_db_session.add(StageAttributeModel(
+                        stage_id=new_stage_id,
+                        name=attribute.name,
+                        description=attribute.description
+                    ))
+                local_db_session.flush()
+                local_db_session.commit()
+                return DuplicateStage(success=True, new_stage_id=to_global_id('Stage', new_stage_id))
+            else:
+                raise Exception("Stage not found!")
+
+
 class Mutation(graphene.ObjectType):
     createStage = CreateStage.Field()
     updateStage = UpdateStage.Field()
@@ -360,6 +422,7 @@ class Mutation(graphene.ObjectType):
     assignStages = AssignStages.Field()
     saveScene = SaveScene.Field()
     deleteScene = DeleteScene.Field()
+    duplicateStage = DuplicateStage.Field()
 
 
 class Query(graphene.ObjectType):

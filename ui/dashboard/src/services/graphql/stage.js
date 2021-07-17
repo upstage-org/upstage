@@ -359,4 +359,12 @@ export default {
       }
     }  
   `, { id }),
+  duplicateStage: ({ id, name }) => client.request(gql`
+    mutation duplicateStage($id: ID!, $name: String!) {
+      duplicateStage(id: $id, name: $name) {
+        success,
+        newStageId
+      }
+    }
+  `, { id, name }),
 }

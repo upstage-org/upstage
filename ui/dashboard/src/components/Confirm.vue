@@ -9,20 +9,24 @@
     </template>
     <template #footer="{ closeModal }">
       <button class="button is-dark" @click="active = false">
-        <span class="icon">
-          <i class="fas fa-times"></i>
-        </span>
-        <span>No</span>
+        <slot name="no">
+          <span class="icon">
+            <i class="fas fa-times"></i>
+          </span>
+          <span>No</span>
+        </slot>
       </button>
       <SaveButton
         class="is-dark"
         @click="$emit('confirm', closeModal)"
         :loading="loading"
       >
-        <span class="icon">
-          <i class="fas fa-check"></i>
-        </span>
-        <span>Yes</span>
+        <slot name="yes">
+          <span class="icon">
+            <i class="fas fa-check"></i>
+          </span>
+          <span>Yes</span>
+        </slot>
       </SaveButton>
     </template>
   </Modal>
