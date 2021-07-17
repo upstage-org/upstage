@@ -48,9 +48,6 @@
       </div>
     </template>
   </div>
-  <p class="help">
-    (Click on an item to move it to next column, right click to remove it)
-  </p>
 </template>
 
 <script>
