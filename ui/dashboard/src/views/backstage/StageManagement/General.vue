@@ -85,6 +85,10 @@
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Player access</label>
+        <p class="help">
+          Click on a player's name to move them to the column to the right. Use
+          a right-click to move them back to the left.
+        </p>
       </div>
       <div class="field-body" style="flex-wrap: wrap">
         <MultiTransferColumn
