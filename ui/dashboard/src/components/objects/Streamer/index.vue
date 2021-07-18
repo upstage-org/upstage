@@ -48,6 +48,7 @@
           v-show="!loading"
           ref="video"
           :src="object.url"
+          :muted="isHost"
           preload="auto"
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
@@ -55,6 +56,13 @@
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
+        <div
+          v-if="isHost"
+          data-tooltip="Your stream is locally muted by default because you are the host."
+          class="mute-icon"
+        >
+          <i class="fas fa-volume-mute has-text-danger"></i>
+        </div>
       </template>
     </Object>
   </div>
@@ -130,6 +138,11 @@ export default {
       });
     };
 
+    console.log(props.object, store.state.stage.session);
+    const isHost = computed(
+      () => store.state.stage.session === props.object.hostId
+    );
+
     return {
       video,
       stream,
@@ -139,10 +152,16 @@ export default {
       clip,
       shapes,
       loading,
+      isHost,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
+.mute-icon {
+  position: absolute;
+  bottom: 0;
+  right: 8px;
+}
 </style>
