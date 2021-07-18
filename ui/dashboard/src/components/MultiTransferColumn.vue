@@ -137,7 +137,7 @@ export default {
 
     const moveAll = (from, to) => {
       for (let i = 0; i < props.data.length; i++) {
-        if ((positions[i] ?? 0) === from) {
+        if ((positions[i] ?? 0) === from && shouldVisible(i, from)) {
           positions[i] = to;
         }
       }
