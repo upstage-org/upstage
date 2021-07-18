@@ -60,7 +60,6 @@ export default {
         settings: {
             chatVisibility: true,
         },
-        hosts: [],
         reactions: [],
         viewport: getViewport(),
         sessions: [],
@@ -364,9 +363,6 @@ export default {
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
         },
-        PUSH_STREAM_HOST(state, stream) {
-            state.hosts.push(stream);
-        },
         PUSH_RUNNING_STREAMS(state, streams) {
             state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
         },
@@ -616,7 +612,7 @@ export default {
                 }
             }
         },
-        placeObjectOnStage({ commit, dispatch }, data) {
+        placeObjectOnStage({ commit, dispatch, state }, data) {
             const object = {
                 w: 100,
                 h: 100,
@@ -627,10 +623,10 @@ export default {
                 ...data,
                 id: uuidv4(),
             }
-            commit('PUSH_OBJECT', serializeObject(object));
             if (object.type === 'stream') {
-                commit('PUSH_STREAM_HOST', object);
+                object.hostId = state.session
             }
+            commit('PUSH_OBJECT', serializeObject(object));
             if (data.type === 'avatar' || data.type === 'drawing') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
