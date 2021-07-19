@@ -37,8 +37,8 @@
             </li>
             <template v-if="id">
               <li>
-                <router-link to="customization" exact-active-class="is-active"
-                  >Customization</router-link
+                <router-link to="customisation" exact-active-class="is-active"
+                  >Customisation</router-link
                 >
               </li>
               <li id="media-menu">

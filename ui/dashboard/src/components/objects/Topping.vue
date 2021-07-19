@@ -89,11 +89,14 @@ export default {
         pos = outOfViewportPosition(el);
         count++;
       }
+      const duration = config.value?.animations?.bubbleSpeed ?? 1000;
+      console.log(config.value?.animations?.bubbleSpeed)
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({
             targets: el,
             opacity: [0, 1],
+            duration,
             complete,
           });
           break;
@@ -104,6 +107,7 @@ export default {
             scale: [0, 1],
             rotate: [180, 0],
             translateX: [0, "-50%"],
+            duration,
             complete,
           });
           break;
@@ -115,11 +119,13 @@ export default {
     };
 
     const leave = (el, complete) => {
+      const duration = config.value?.animations?.bubbleSpeed ?? 1000;
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({
             targets: el,
             opacity: 0,
+            duration,
             complete,
           });
           break;
@@ -129,6 +135,7 @@ export default {
             targets: el,
             scale: [1, 0],
             rotate: [0, 180],
+            duration,
             complete,
           });
           break;

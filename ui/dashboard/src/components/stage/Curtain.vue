@@ -20,10 +20,13 @@ export default {
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const curtain = computed(() => store.state.stage.curtain);
     const config = computed(() => store.getters["stage/config"]);
-    const duration = 3000;
+    const curtainSpeed = computed(
+      () => config.value?.animations?.curtainSpeed ?? 3000
+    );
 
     const curtainEnter = (el, complete) => {
       let anotherCurtain; // Needed for close and open animation
+      const duration = curtainSpeed.value;
       switch (config.value?.animations?.curtain) {
         case "fade":
           anime({
@@ -61,6 +64,7 @@ export default {
     };
     const curtainLeave = (el, complete) => {
       let anotherCurtain;
+      const duration = curtainSpeed.value;
       switch (config.value?.animations?.curtain) {
         case "fade":
           anime({

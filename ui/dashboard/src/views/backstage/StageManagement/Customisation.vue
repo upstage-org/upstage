@@ -2,7 +2,7 @@
   <SaveButton
     class="mb-4"
     :loading="saving"
-    @click="saveCustomization"
+    @click="saveCustomisation"
     :disabled="!selectedRatio.width || !selectedRatio.height"
   />
   <h3 class="title">
@@ -67,6 +67,21 @@
         :render-label="capitalize"
       />
     </HorizontalField>
+    <HorizontalField title="Appear/disappear speed">
+      <div class="speed-slider">
+        <span class="mr-2">Slow</span>
+        <input
+          class="slider is-fullwidth"
+          step="0.01"
+          min="0.1"
+          max="1"
+          :value="1000 / animations.bubbleSpeed"
+          @change="animations.bubbleSpeed = 1000 / $event.target.value"
+          type="range"
+        />
+        <span class="ml-2">Fast</span>
+      </div>
+    </HorizontalField>
     <HorizontalField title="Curtain">
       <Dropdown
         v-model="animations.curtain"
@@ -81,6 +96,21 @@
         :render-value="(item) => item.value"
         :render-label="(item) => item.label"
       />
+    </HorizontalField>
+    <HorizontalField title="Appear/disappear speed">
+      <div class="speed-slider">
+        <span class="mr-2">Slow</span>
+        <input
+          class="slider is-fullwidth"
+          step="0.01"
+          min="0.1"
+          max="1"
+          :value="1000 / animations.curtainSpeed"
+          @change="animations.curtainSpeed = 1000 / $event.target.value"
+          type="range"
+        />
+        <span class="ml-2">Fast</span>
+      </div>
     </HorizontalField>
   </div>
   <h3 class="title">Streaming</h3>
@@ -118,6 +148,8 @@ export default {
       animations: {
         bubble: "fade",
         curtain: "drop",
+        bubbleSpeed: 1000,
+        curtainSpeed: 1000,
       },
       streaming: {
         autoDetect: false,
@@ -129,7 +161,7 @@ export default {
     const streaming = reactive(config.streaming);
 
     const { loading: saving, save } = useMutation(stageGraph.saveStageConfig);
-    const saveCustomization = async () => {
+    const saveCustomisation = async () => {
       const config = JSON.stringify({
         ratio: selectedRatio,
         animations,
@@ -145,7 +177,7 @@ export default {
     return {
       selectedRatio,
       saving,
-      saveCustomization,
+      saveCustomisation,
       animations,
       capitalize,
       streaming,
@@ -174,5 +206,9 @@ export default {
     width: 50px;
     text-align: center;
   }
+}
+.speed-slider {
+  display: flex;
+  align-items: center;
 }
 </style>

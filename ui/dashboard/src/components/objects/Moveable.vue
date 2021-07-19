@@ -176,7 +176,6 @@ export default {
     };
 
     const clickOutside = (e) => {
-      console.log("click outside");
       if ((!e || e.target.id === "board") && props.controlable) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
