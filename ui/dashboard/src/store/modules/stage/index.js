@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -20,12 +20,15 @@ export default {
         preloading: true,
         model: null,
         background: null,
-        backdropColor: '#ebffee',
+        curtain: null,
+        backdropColor: COLORS.DEFAULT_BACKDROP,
         status: 'OFFLINE',
         subscribeSuccess: false,
         activeMovable: null,
         chat: {
             messages: [],
+            privateMessages: [],
+            privateMessage: '',
             color: randomMessageColor(),
             opacity: 0.9,
             fontSize: '14px',
@@ -41,14 +44,14 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
-            shapes: [],
-            config: getDefaultStageConfig(),
+            curtains: [],
         },
+        config: getDefaultStageConfig(),
         settingPopup: {
             isActive: false,
         },
         preferences: {
-            isDrawing: true,
+            isDrawing: false,
             text: {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
@@ -57,7 +60,6 @@ export default {
         settings: {
             chatVisibility: true,
         },
-        hosts: [],
         reactions: [],
         viewport: getViewport(),
         sessions: [],
@@ -73,7 +75,12 @@ export default {
             speed: 32
         },
         loadingRunningStreams: false,
-        audioPlayers: []
+        audioPlayers: [],
+        scenes: [],
+        isSavingScene: false,
+        isLoadingScenes: false,
+        showPlayerChat: false,
+        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0
     },
     getters: {
         ready(state) {
@@ -89,7 +96,7 @@ export default {
             }));
         },
         config(state) {
-            return state.tools.config;
+            return state.config;
         },
         preloadableAssets(state) {
             const assets = []
@@ -97,7 +104,7 @@ export default {
                 .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
                 .concat(state.tools.backdrops.map(b => b.src))
-                .concat(state.tools.shapes.map(b => b.src))
+                .concat(state.tools.curtains.map(b => b.src))
             return assets;
         },
         audios(state) {
@@ -130,6 +137,9 @@ export default {
         },
         audiences(state) {
             return state.sessions.filter((s) => !s.isPlayer)
+        },
+        unreadPrivateMessageCount(state) {
+            return state.chat.privateMessages.filter(m => m.at > state.lastSeenPrivateMessage).length
         }
     },
     mutations: {
@@ -168,8 +178,8 @@ export default {
                 }
                 const config = useAttribute({ value: model }, 'config', true).value;
                 if (config) {
-                    Object.assign(state.tools.config, config)
-                    state.tools.config.ratio = config.ratio.width / config.ratio.height
+                    Object.assign(state.config, config)
+                    state.config.ratio = config.ratio.width / config.ratio.height
                 }
                 const cover = useAttribute({ value: model }, 'cover', false).value;
                 state.model.cover = cover && absolutePath(cover)
@@ -184,16 +194,18 @@ export default {
                 clearInterval(state.background.interval);
             }
             state.background = null;
+            state.backdropColor = COLORS.DEFAULT_BACKDROP;
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
             state.tools.audios = []
             state.tools.streams = [];
-            state.tools.config = getDefaultStageConfig()
+            state.config = getDefaultStageConfig()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
             state.chat.messages = [];
+            state.chat.privateMessages = [];
             state.chat.color = randomColor();
         },
         SET_BACKGROUND(state, background) {
@@ -234,6 +246,14 @@ export default {
                 return
             }
             state.chat.messages.push(message)
+        },
+        PUSH_PLAYER_CHAT_MESSAGE(state, message) {
+            message.hash = hash(message)
+            const lastMessage = state.chat.privateMessages[state.chat.privateMessages.length - 1]
+            if (lastMessage && (lastMessage.hash === message.hash)) {
+                return
+            }
+            state.chat.privateMessages.push(message)
         },
         CLEAR_CHAT(state) {
             state.chat.messages.length = 0
@@ -343,14 +363,11 @@ export default {
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
         },
-        PUSH_STREAM_HOST(state, stream) {
-            state.hosts.push(stream);
-        },
         PUSH_RUNNING_STREAMS(state, streams) {
             state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
         },
-        PUSH_SHAPES(state, shapes) {
-            state.tools.shapes = shapes;
+        PUSH_CURTAINS(state, curtains) {
+            state.tools.curtains = curtains;
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -369,7 +386,7 @@ export default {
             });
             setTimeout(() => {
                 state.reactions.shift();
-            }, state.tools.config.reactionDuration);
+            }, state.config.reactionDuration);
         },
         UPDATE_VIEWPORT(state, viewport) {
             state.viewport = viewport;
@@ -419,6 +436,41 @@ export default {
             }
             Object.assign(state.audioPlayers[index], status)
         },
+        SET_CURTAIN(state, curtain) {
+            state.curtain = curtain
+        },
+        REPLACE_SCENE(state, { payload }) {
+            anime({
+                targets: "#live-stage",
+                filter: ['brightness(0)', 'brightness(1)'],
+                easing: 'linear',
+                duration: 3000
+            });
+            state.activeMovable = null
+            if (payload) {
+                const snapshot = JSON.parse(payload)
+                snapshot.board.objects.forEach(deserializeObject)
+                Object.keys(snapshot).forEach(key => {
+                    state[key] = snapshot[key]
+                })
+            }
+        },
+        SET_SAVING_SCENE(state, value) {
+            state.isSavingScene = value
+        },
+        SET_SHOW_PLAYER_CHAT(state, value) {
+            state.showPlayerChat = value
+        },
+        TAG_PLAYER(state, player) {
+            state.chat.privateMessage += `@${player.nickname.trim()}`
+        },
+        SEEN_PRIVATE_MESSAGES(state) {
+            const length = state.chat.privateMessages.length
+            if (length > 0) {
+                state.lastSeenPrivateMessage = state.chat.privateMessages[length - 1].at
+                localStorage.setItem('lastSeenPrivateMessage', state.lastSeenPrivateMessage)
+            }
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -427,10 +479,20 @@ export default {
             const client = mqtt.connect();
             client.on("connect", () => {
                 commit('SET_STATUS', 'LIVE')
-                dispatch('subscribe');
-                dispatch('joinStage');
+                dispatch('reloadMissingEvents')
+                dispatch('subscribe')
+                dispatch('joinStage')
             });
             client.on("error", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
+            client.on("close", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
+            client.on("disconnect", () => {
+                commit('SET_STATUS', 'OFFLINE')
+            });
+            client.on("offline", () => {
                 commit('SET_STATUS', 'OFFLINE')
             });
             mqtt.receiveMessage((payload) => {
@@ -480,7 +542,7 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, getters }, message) {
+        sendChat({ rootGetters, getters }, { message, isPrivate }) {
             if (!message) return;
             let user = rootGetters["user/chatname"];
             let isPlayer = getters["canPlay"]
@@ -507,11 +569,12 @@ export default {
                 message: message,
                 behavior,
                 isPlayer,
+                isPrivate,
                 at: +new Date()
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
-            if (avatar && isPlayer) {
+            if (avatar && isPlayer && !isPrivate) {
                 mqtt.sendMessage(TOPICS.BOARD, {
                     type: BOARD_ACTIONS.SPEAK,
                     avatar,
@@ -519,7 +582,7 @@ export default {
                 })
             }
         },
-        handleChatMessage({ commit }, { message }) {
+        handleChatMessage({ commit, state, rootGetters, dispatch }, { message }) {
             if (message.clear) {
                 commit('CLEAR_CHAT')
             } else {
@@ -532,10 +595,24 @@ export default {
                 } else {
                     model.message = message;
                 }
-                commit('PUSH_CHAT_MESSAGE', model)
+                if (message.isPrivate) {
+                    commit('PUSH_PLAYER_CHAT_MESSAGE', model)
+                    if (message.at > state.lastSeenPrivateMessage) {
+                        if (state.showPlayerChat) {
+                            commit('SEEN_PRIVATE_MESSAGES')
+                        } else {
+                            const nickname = rootGetters['user/nickname'];
+                            if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
+                                dispatch('showPlayerChat', true)
+                            }
+                        }
+                    }
+                } else {
+                    commit('PUSH_CHAT_MESSAGE', model)
+                }
             }
         },
-        placeObjectOnStage({ commit, dispatch }, data) {
+        placeObjectOnStage({ commit, dispatch, state }, data) {
             const object = {
                 w: 100,
                 h: 100,
@@ -546,10 +623,10 @@ export default {
                 ...data,
                 id: uuidv4(),
             }
-            commit('PUSH_OBJECT', serializeObject(object));
             if (object.type === 'stream') {
-                commit('PUSH_STREAM_HOST', object);
+                object.hostId = state.session
             }
+            commit('PUSH_OBJECT', serializeObject(object));
             if (data.type === 'avatar' || data.type === 'drawing') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
@@ -674,7 +751,19 @@ export default {
         setBackdropColor(action, color) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_BACKDROP_COLOR, color })
         },
-        handleBackgroundMessage({ commit }, { message }) {
+        drawCurtain(action, curtain) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.DRAW_CURTAIN, curtain })
+        },
+        loadScenes() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.LOAD_SCENES })
+        },
+        switchScene(action, scene) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SWITCH_SCENE, scene })
+        },
+        blankScene() {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.BLANK_SCENE })
+        },
+        handleBackgroundMessage({ commit, dispatch }, { message }) {
             switch (message.type) {
                 case BACKGROUND_ACTIONS.CHANGE_BACKGROUND:
                     commit('SET_BACKGROUND', message.background);
@@ -684,6 +773,29 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_BACKDROP_COLOR:
                     commit('SET_BACKDROP_COLOR', message.color)
+                    break;
+                case BACKGROUND_ACTIONS.DRAW_CURTAIN:
+                    commit('SET_CURTAIN', message.curtain)
+                    break;
+                case BACKGROUND_ACTIONS.LOAD_SCENES:
+                    dispatch('reloadScenes')
+                    break;
+                case BACKGROUND_ACTIONS.SWITCH_SCENE:
+                    dispatch('replaceScene', message.scene)
+                    break;
+                case BACKGROUND_ACTIONS.BLANK_SCENE:
+                    commit("REPLACE_SCENE", {
+                        payload: JSON.stringify({
+                            background: null,
+                            backdropColor: COLORS.DEFAULT_BACKDROP,
+                            board: {
+                                objects: [],
+                                drawings: [],
+                                texts: [],
+                            },
+                            audioPlayers: [],
+                        }),
+                    });
                     break;
                 default:
                     break;
@@ -702,10 +814,11 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        addDrawing({ commit, dispatch }, drawing) {
+        async addDrawing({ commit, dispatch }, drawing) {
             drawing.type = 'drawing';
             commit('PUSH_DRAWING', drawing);
-            return dispatch('placeObjectOnStage', drawing);
+            drawing = await dispatch('placeObjectOnStage', drawing);
+            return drawing
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';
@@ -726,10 +839,10 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const { stage, shapes } = await stageGraph.loadStage(url, recordId)
+            const { stage, curtains } = await stageGraph.loadStage(url, recordId)
             if (stage) {
                 commit('SET_MODEL', stage);
-                commit('PUSH_SHAPES', shapes)
+                commit('PUSH_CURTAINS', curtains)
                 const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {
@@ -750,6 +863,38 @@ export default {
             const permission = await stageGraph.loadPermission(state.model.fileLocation)
             if (permission) {
                 state.model.permission = permission
+            }
+        },
+        async reloadScenes({ state }) {
+            state.isLoadingScenes = true
+            const scenes = await stageGraph.loadScenes(state.model.fileLocation)
+            if (scenes) {
+                state.model.scenes = scenes
+            }
+            state.isLoadingScenes = false
+        },
+        async reloadMissingEvents({ state, dispatch }) {
+            const lastEventId = state.model.events[state.model.events.length - 1]?.id ?? 0
+            const events = await stageGraph.loadEvents(state.model.fileLocation, lastEventId)
+            if (events) {
+                events.forEach(event => dispatch('replicateEvent', event))
+                state.model.events = state.model.events.concat(events)
+            }
+        },
+        replaceScene({ state, commit, dispatch }, sceneId) {
+            anime({
+                targets: "#live-stage",
+                filter: 'brightness(0)'
+            });
+            const scene = state.model.scenes.find(s => s.id == sceneId)
+            if (scene) {
+                commit('REPLACE_SCENE', scene)
+            } else {
+                if (state.isLoadingScenes) {
+                    setTimeout(() => dispatch('replaceScene', sceneId), 1000) // If the scene is not loaded completely, retry after 1 second
+                } else {
+                    commit('REPLACE_SCENE', { payload: null })
+                }
             }
         },
         replayEvent({ dispatch }, { topic, payload }) {
@@ -826,7 +971,7 @@ export default {
         },
         async sendStatistics({ state, getters }) {
             if (state.subscribeSuccess) {
-                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length });
+                await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length }, false, true);
             }
         },
         async getRunningStreams({ state, commit }) {
@@ -838,5 +983,16 @@ export default {
         clearChat() {
             mqtt.sendMessage(TOPICS.CHAT, { clear: true })
         },
+        showPlayerChat({ commit }, visible) {
+            commit('SET_SHOW_PLAYER_CHAT', visible)
+            if (visible) {
+                commit("SEEN_PRIVATE_MESSAGES");
+            }
+        },
+        autoFocusMoveable({ commit, getters, state }, id) {
+            if (getters.canPlay && !state.preferences.isDrawing && !state.replay.isReplaying) {
+                commit('SET_ACTIVE_MOVABLE', id)
+            }
+        }
     },
 };

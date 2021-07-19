@@ -75,7 +75,6 @@ export default {
       .on("dragEnd", ({ lastEvent, target }) => {
         if (lastEvent) {
           sendMovement(target, lastEvent);
-          store.commit("stage/SET_ACTIVE_MOVABLE", null);
         }
         isDragging.value = false;
       });
@@ -202,11 +201,9 @@ export default {
           moveSpeed,
           opacity,
         } = props.object;
-        if (isDragging.value) {
-          return;
+        if (animation) {
+          animation.pause(true);
         }
-        animation?.pause(true);
-
         animation = anime({
           targets: el.value,
           left,
@@ -217,6 +214,7 @@ export default {
           opacity,
           ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
+          update: () => moveable.updateRect(),
         });
       },
       { deep: true }

@@ -14,6 +14,7 @@ from graphql_relay.node.node import from_global_id
 import graphene
 from base64 import b64decode
 from flask_jwt_extended import jwt_required, get_jwt_identity
+import json
 
 absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
@@ -177,6 +178,13 @@ class DeleteMedia(graphene.Mutation):
                     absolutePath, storagePath, asset.file_location)
                 local_db_session.query(ParentStage).filter(
                     ParentStage.child_asset_id == id).delete(synchronize_session=False)
+
+                for multiframe_media in local_db_session.query(AssetModel).filter(AssetModel.description.like(f"%{asset.file_location}%")).all():
+                    attributes = json.loads(multiframe_media.description)
+                    attributes['frames'].remove(asset.file_location)
+                    multiframe_media.description = json.dumps(attributes)
+                    local_db_session.commit()
+
                 local_db_session.delete(asset)
                 local_db_session.flush()
                 local_db_session.commit()

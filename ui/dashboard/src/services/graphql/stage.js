@@ -53,6 +53,16 @@ export const assetFragment = gql`
   }
 `
 
+
+export const sceneFragment = gql`
+  fragment sceneFragment on Scene {
+    id
+    name
+    payload
+    scenePreview
+  }
+`
+
 export default {
   createStage: async (variables) => {
     let result = await client.request(gql`
@@ -133,26 +143,33 @@ export default {
               payload
               mqttTimestamp
             }
+            scenes {
+              ...sceneFragment
+            }
           }
         }
       }
-      shapes: assetList(assetType: "shape") {
+      curtains: assetList(assetType: "curtain") {
         edges {
           node {
             name
             fileLocation
           }
         }
-      }
+      },
     }
     ${stageFragment}
-  `, { fileLocation, performanceId }).then(response => ({
-    stage: response.stageList.edges[0]?.node,
-    shapes: response.shapes.edges.map(edge => ({
+    ${sceneFragment}
+  `, { fileLocation, performanceId }).then(response => {
+    const path = edge => ({
       name: edge.node.name,
       src: absolutePath(edge.node.fileLocation)
-    }))
-  })),
+    })
+    return {
+      stage: response.stageList.edges[0]?.node,
+      curtains: response.curtains.edges.map(path)
+    }
+  }),
   loadPermission: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {
@@ -164,6 +181,36 @@ export default {
       }
     }
   `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.permission),
+  loadScenes: (fileLocation) => client.request(gql`
+    query ListStage($fileLocation: String) {
+      stageList(fileLocation: $fileLocation) {
+        edges {
+          node {
+            scenes {
+              ...sceneFragment
+            }
+          }
+        }
+      }
+    }
+    ${sceneFragment}
+  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.scenes),
+  loadEvents: (fileLocation, cursor) => client.request(gql`
+    query ListStage($fileLocation: String, $cursor: Int) {
+      stageList(fileLocation: $fileLocation) {
+        edges {
+          node {
+            events(cursor: $cursor) {
+              id
+              topic
+              payload
+              mqttTimestamp
+            }
+          }
+        }
+      }
+    }
+  `, { fileLocation, cursor }).then(response => response.stageList.edges[0]?.node?.events),
   uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
@@ -297,4 +344,27 @@ export default {
       }
     }
   `, { id }),
+  saveScene: (variables) => client.request(gql`
+    mutation SaveScene($stageId: Int!, $payload: String, $preview: String, $name: String) {
+      saveScene(stageId: $stageId, payload: $payload, preview: $preview, name: $name) {
+        id
+      }
+    }
+  `, variables),
+  deleteScene: (id) => client.request(gql`
+    mutation DeleteScene($id: Int!) {
+      deleteScene(id: $id) {
+        success
+        message
+      }
+    }  
+  `, { id }),
+  duplicateStage: ({ id, name }) => client.request(gql`
+    mutation duplicateStage($id: ID!, $name: String!) {
+      duplicateStage(id: $id, name: $name) {
+        success,
+        newStageId
+      }
+    }
+  `, { id, name }),
 }

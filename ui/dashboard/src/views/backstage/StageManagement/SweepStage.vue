@@ -14,7 +14,7 @@ import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import buildClient from "@/services/mqtt";
-import { TOPICS } from "@/utils/constants";
+import { BACKGROUND_ACTIONS, TOPICS } from "@/utils/constants";
 import { namespaceTopic } from "@/store/modules/stage/reusable";
 
 const mqttClient = buildClient();
@@ -28,17 +28,18 @@ export default {
     });
     const sweep = async () => {
       try {
-        status.value = "Sweeping...";
+        status.value = "Sweeping archived events...";
         await mutation();
-        status.value = "Clearing broker retained messages...";
+        status.value = "Send live stage sweeping signal...";
         await new Promise((resolve) => {
           mqttClient.connect().on("connect", () => {
-            const promisese = Object.keys(TOPICS)
-              .map((key) =>
-                namespaceTopic(TOPICS[key], stage.value.fileLocation)
+            mqttClient
+              .sendMessage(
+                namespaceTopic(TOPICS.BACKGROUND, stage.value.fileLocation),
+                { type: BACKGROUND_ACTIONS.BLANK_SCENE },
+                true
               )
-              .map((topic) => mqttClient.sendMessage(topic, undefined, true));
-            Promise.all(promisese).then(resolve);
+              .then(resolve);
           });
         });
         notification.success(`${stage.value.name} swept successfully!`);

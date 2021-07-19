@@ -31,7 +31,7 @@
       <Dropdown
         v-model="options.fontFamily"
         :data="fontFamilies"
-        style="position: fixed;"
+        style="position: fixed"
       >
         <template #option="{ label }">
           <span :style="{ 'font-family': label }">{{ label }}</span>
@@ -133,6 +133,27 @@ export default {
       "Brush Script MT",
       "Lucida Bright",
       "Copperplate",
+      "Roboto", // Opensource fonts
+      "Open Sans",
+      "Lato",
+      "Roboto Condensed",
+      "Oswald",
+      "Poppins",
+      "Roboto Mono",
+      "PT Sans",
+      "Ubuntu",
+      "Playfair Display",
+      "PT Serif",
+      "Fira Sans",
+      "Bebas Neue",
+      "Anton",
+      "Lobster",
+      "Varela Round",
+      "Arvo",
+      "Pacifico",
+      "Asap",
+      "Overpass",
+      "Abril Fatface",
     ];
     const changeFontSize = (value) => {
       options.fontSize = value.replace(/^\D+/g, "") + "px";

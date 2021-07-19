@@ -4,22 +4,19 @@
     <div class="panel-body">
       <PanelItem name="Backdrop" icon="backdrop.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
-      <PanelItem name="Props" icon="props.svg" />
+      <PanelItem name="Props" icon="prop.svg" />
       <PanelItem name="Audio" icon="audio.svg" />
       <PanelItem name="Stream" icon="stream.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
       <PanelItem name="Setting" icon="rotation-slider.svg" />
+      <PanelItem name="Curtain" icon="curtain.svg" />
       <PanelItem name="Depth" icon="multi-frame.svg" />
-      <a class="panel-block stage-scene-toggle">
+      <PlayerChat />
+      <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
         <span>
-          <Icon
-            v-if="isStage"
-            size="36"
-            @click="isStage = false"
-            src="stage.svg"
-          />
-          <Icon v-else size="36" @click="isStage = true" src="scene.svg" />
+          <Icon v-if="isScene" size="36" src="stage.svg" />
+          <Icon v-else size="36" src="scene.svg" />
         </span>
       </a>
     </div>
@@ -27,21 +24,25 @@
 </template>
 
 <script>
-import { provide, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
+import PlayerChat from "./PlayerChat";
 import Icon from "@/components/Icon";
+import { useStore } from "vuex";
 
 export default {
-  components: { TopBar, PanelItem, Icon },
+  components: { TopBar, PanelItem, PlayerChat, Icon },
   setup: () => {
     const tool = ref();
+    const store = useStore();
     const changeTool = (newTool) => {
       if (tool.value === newTool) {
         tool.value = undefined;
       } else {
         tool.value = newTool;
       }
+      store.commit("stage/SET_ACTIVE_MOVABLE", null);
     };
     provide("tool", tool);
     provide("changeTool", changeTool);
@@ -58,7 +59,7 @@ export default {
 
     waitToCollapse();
 
-    const isStage = ref(true);
+    const isScene = computed(() => tool.value === "Scene");
 
     return {
       tool,
@@ -66,7 +67,7 @@ export default {
       collapsed,
       expand,
       waitToCollapse,
-      isStage,
+      isScene,
     };
   },
 };
@@ -86,13 +87,17 @@ export default {
 
   .panel-icon {
     width: 1.5em;
-    filter: grayscale(100%);
+    img {
+      filter: grayscale(100%);
+    }
   }
   .panel-block.is-active,
   .panel-block:hover {
     border: none;
     .panel-icon {
-      filter: none;
+      img {
+        filter: none;
+      }
       transform: scale(1.5);
     }
   }

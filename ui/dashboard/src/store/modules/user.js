@@ -96,6 +96,9 @@ export default {
         const avatar = rootState.stage.board.objects.find(o => o.id === state.avatarId);
         return avatar;
       }
+    },
+    currentUserId(state) {
+      return state.user.id
     }
   },
 };

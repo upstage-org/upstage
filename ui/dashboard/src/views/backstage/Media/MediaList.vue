@@ -21,7 +21,7 @@
         :href="absolutePath(item.fileLocation)"
         :download="item.name"
       >
-        <Icon src="save.svg" />
+        <Icon src="download.svg" />
       </a>
       <Confirm
         @confirm="(complete) => deleteMedia(item, complete)"

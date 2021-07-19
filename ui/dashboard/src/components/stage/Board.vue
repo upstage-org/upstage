@@ -37,6 +37,7 @@
       </transition-group>
     </div>
   </section>
+  <Curtain />
 </template>
 
 <script>
@@ -46,12 +47,14 @@ import Avatar from "@/components/objects/Avatar/index";
 import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
 import Text from "@/components/objects/Text";
+import Curtain from "@/components/stage/Curtain";
 import anime from "animejs";
 
 export default {
-  components: { Avatar, Prop: Avatar, Stream, Drawing, Text },
+  components: { Avatar, Prop: Avatar, Stream, Drawing, Text, Curtain },
   setup: () => {
     const store = useStore();
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
     const background = computed(() => {
       const background = store.state.stage.background ?? {};
       if (background.multi && background.currentFrame) {
@@ -91,8 +94,7 @@ export default {
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
         complete: () => {
-          store.commit("stage/SET_ACTIVE_MOVABLE", el.id);
-          console.log(el.id);
+          store.dispatch("stage/autoFocusMoveable", el.id);
           complete();
         },
       });
@@ -118,6 +120,7 @@ export default {
       stageSize,
       background,
       backdropColor,
+      canPlay,
     };
   },
 };
@@ -127,5 +130,14 @@ export default {
 #board {
   position: fixed;
   background-size: cover;
+}
+.curtain {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: top;
 }
 </style>

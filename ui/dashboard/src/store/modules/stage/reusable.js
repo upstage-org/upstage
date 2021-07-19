@@ -62,3 +62,23 @@ export function getDefaultStageConfig() {
         ratio: 16 / 9,
     }
 }
+
+export function takeSnapshotFromStage() {
+    const {
+        background,
+        backdropColor,
+        board: originalBoard,
+        settings,
+        audioPlayers,
+    } = store.state.stage;
+    const board = Object.assign({}, originalBoard)
+    board.objects = originalBoard.objects.filter(o => o.liveAction).map(serializeObject)
+    const payload = JSON.stringify({
+        background,
+        backdropColor,
+        board,
+        settings,
+        audioPlayers,
+    });
+    return payload
+}

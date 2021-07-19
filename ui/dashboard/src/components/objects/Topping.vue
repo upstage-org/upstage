@@ -4,7 +4,8 @@
       class="avatar-topping"
       :style="{
         left: stageSize.left + object.x + object.w / 2 + 'px',
-        top: stageSize.top + object.y - 30 + 'px',
+        top:
+          stageSize.top + object.y - (object.holder && canPlay ? 30 : 0) + 'px',
       }"
       @click="openChatBox"
     >
@@ -88,11 +89,14 @@ export default {
         pos = outOfViewportPosition(el);
         count++;
       }
+      const duration = config.value?.animations?.bubbleSpeed ?? 1000;
+      console.log(config.value?.animations?.bubbleSpeed)
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({
             targets: el,
             opacity: [0, 1],
+            duration,
             complete,
           });
           break;
@@ -103,6 +107,7 @@ export default {
             scale: [0, 1],
             rotate: [180, 0],
             translateX: [0, "-50%"],
+            duration,
             complete,
           });
           break;
@@ -114,11 +119,13 @@ export default {
     };
 
     const leave = (el, complete) => {
+      const duration = config.value?.animations?.bubbleSpeed ?? 1000;
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({
             targets: el,
             opacity: 0,
+            duration,
             complete,
           });
           break;
@@ -128,6 +135,7 @@ export default {
             targets: el,
             scale: [1, 0],
             rotate: [0, 180],
+            duration,
             complete,
           });
           break;
@@ -151,7 +159,13 @@ export default {
       if (!props.object.speak?.message) {
         return {};
       }
-      const length = props.object.speak.message.length;
+      let length = props.object.speak.message.length;
+      if (length < 5) {
+        length = 5;
+      }
+      if (["shout"].includes(props.object.speak.behavior)) {
+        length *= 1.4;
+      }
       const width = Math.sqrt(length * 2.5);
       const height = Math.max(2.5, width * 0.8);
       return { width: width + "rem", height: height + "rem" };

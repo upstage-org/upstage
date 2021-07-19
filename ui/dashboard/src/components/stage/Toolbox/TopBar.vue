@@ -3,6 +3,7 @@
     <div
       ref="bar"
       class="card-content"
+      :class="{ 'is-compact': compact }"
       :id="tool + 'tool'"
       @wheel="horizontalScroll"
     >
@@ -12,7 +13,7 @@
 </template>
 
 <script>
-import { ref } from "vue";
+import { onUnmounted, ref } from "vue";
 import Avatars from "./tools/Avatars";
 import Backdrop from "./tools/Backdrop";
 import Props from "./tools/Props";
@@ -22,6 +23,8 @@ import Stream from "./tools/Stream/index";
 import Text from "./tools/Text";
 import Setting from "./tools/Setting";
 import Depth from "./tools/Depth";
+import Curtain from "./tools/Curtain";
+import Scene from "./tools/Scene";
 
 export default {
   props: ["tool"],
@@ -35,6 +38,8 @@ export default {
     Text,
     Setting,
     Depth,
+    Curtain,
+    Scene,
   },
   setup: () => {
     const bar = ref();
@@ -42,7 +47,26 @@ export default {
       bar.value.scrollLeft += e.deltaY * 10;
       bar.value.scrollLeft += e.deltaX;
     };
-    return { horizontalScroll, bar };
+
+    const compact = ref(false);
+
+    const toggleCompact = (e) => {
+      if (!e) e = window.event;
+      if (e.shiftKey) {
+        compact.value = true;
+      } else {
+        compact.value = false;
+      }
+    };
+    window.addEventListener("keydown", toggleCompact);
+    window.addEventListener("keyup", toggleCompact);
+
+    onUnmounted(() => {
+      window.removeEventListener("keydown", toggleCompact);
+      window.removeEventListener("keyup", toggleCompact);
+    });
+
+    return { horizontalScroll, bar, compact };
   },
 };
 </script>
@@ -72,6 +96,10 @@ export default {
     padding-top: 12px;
     min-height: min-content;
     white-space: nowrap;
+
+    &.is-compact {
+      width: 100%;
+    }
 
     > div {
       position: relative;

@@ -1,40 +1,91 @@
 <template>
-  <Tabs v-if="tabs.length" :items="tabs">
-    <template v-for="tab in tabs" :key="tab.key" v-slot:[tab.key]>
-      <Messages :messages="tab.messages" />
-      <teleport to="#main-content .hero-body .title">
-        <span style="float: right">
-          <button class="button ml-2 is-light" @click="downloadChatLog(tab)">
-            <span>Save Chat</span>
+  <teleport to="#main-content .hero-body .title">
+    <span style="float: right">
+      <button class="button ml-2 is-light" @click="downloadChatLog()">
+        <span>Save All Chat</span>
+      </button>
+      <ClearChat />
+    </span>
+  </teleport>
+
+  <DataTable :data="sessions" :headers="headers">
+    <template #view="{ item }">
+      <Modal>
+        <template #trigger>
+          <button class="button is-light is-small">
+            <i class="fas fa-lg fa-eye has-text-primary" />
           </button>
-          <button class="button ml-2 is-light" @click="downloadChatLog()">
-            <span>Save All Chat</span>
-          </button>
-          <ClearChat />
-        </span>
-      </teleport>
+        </template>
+        <template #header>
+          Chats from {{ date(item.begin) }}
+          <span v-if="item.begin !== item.end"> to {{ date(item.end) }}</span>
+        </template>
+        <template #content>
+          <Messages :messages="item.messages" />
+        </template>
+      </Modal>
     </template>
-  </Tabs>
-  <Messages v-else :messages="[]" />
+    <template #download="{ item }">
+      <button class="button is-light is-small" @click="downloadChatLog(item)">
+        <Icon src="download.svg" />
+      </button>
+    </template>
+  </DataTable>
 </template>
 
 <script>
 import Messages from "@/components/stage/Chat/Messages";
-import Tabs from "@/components/Tabs.vue";
+import DataTable from "@/components/DataTable";
+import Modal from "@/components/Modal";
+import Icon from "@/components/Icon";
 import ClearChat from "./ClearChat";
 import { computed, inject } from "@vue/runtime-core";
 import moment from "moment";
 
 export default {
-  components: { Messages, Tabs, ClearChat },
+  components: { Messages, DataTable, ClearChat, Modal, Icon },
   setup: () => {
     const stage = inject("stage");
 
-    const time = (value) => {
+    const date = (value) => {
       return moment(value).format("YYYY-MM-DD");
     };
 
-    const tabs = computed(() => {
+    const ago = (value) => {
+      return moment(value).fromNow();
+    };
+
+    const headers = [
+      {
+        title: "From",
+        key: "begin",
+        render: ({ begin }) => (begin ? date(begin) : "Now"),
+      },
+      {
+        title: "To",
+        key: "end",
+        render: ({ end }) => (end ? date(end) : "Now"),
+      },
+      {
+        title: "Cleared On",
+        description:
+          "The first row is blank because these chat was not cleared",
+        key: "clearedOn",
+        render: ({ end }) => (end ? ago(end) : ""),
+      },
+      {
+        title: "View",
+        slot: "view",
+        align: "center",
+      },
+      {
+        title: "Download",
+        slot: "download",
+        align: "center",
+      },
+    ];
+
+    const sessions = computed(() => {
       let res = [
         {
           key: 0,
@@ -56,19 +107,14 @@ export default {
           }
         });
       }
-      res = res.filter((tab, i) => i === res.length - 1 || tab.messages.length);
+      res = res.filter(
+        (session, i) => i === res.length - 1 || session.messages.length
+      );
       res.reverse();
-      res.forEach((tab) => {
-        if (tab.messages.length === 0) {
-          tab.label = "now";
-        } else {
-          const begin = time(tab.messages[0].at);
-          const end = time(tab.messages[tab.messages.length - 1].at);
-          if (begin === end) {
-            tab.label = `${begin}`;
-          } else {
-            tab.label = `${end} ➜ ${begin}`;
-          }
+      res.forEach((session) => {
+        if (session.messages.length) {
+          session.begin = session.messages[0].at;
+          session.end = session.messages[session.messages.length - 1].at;
         }
       });
       return res;
@@ -91,23 +137,25 @@ export default {
       return textFile;
     };
 
-    const downloadChatLog = (tab) => {
+    const downloadChatLog = (session) => {
       const link = document.createElement("a");
       let content = [];
 
-      if (tab) {
+      if (session) {
         link.setAttribute(
           "download",
-          `[Chat] ${stage.value.name} (${tab.label}).txt`
+          `[Chat] ${stage.value.name} (${
+            session.end ? date(session.end) : "Now"
+          }).txt`
         );
-        content = tab.messages.map(
+        content = session.messages.map(
           (item) => `${item.user}: ${item.message}\r\n`
         );
       } else {
         link.setAttribute("download", `[Chat] ${stage.value.name}.txt`);
-        tabs.value.forEach((tab) => {
+        sessions.value.forEach((session) => {
           content = content.concat(
-            tab.messages.map((item) => `${item.user}: ${item.message}\r\n`)
+            session.messages.map((item) => `${item.user}: ${item.message}\r\n`)
           );
         });
         link.href = makeTextFile(content);
@@ -122,7 +170,7 @@ export default {
         document.body.removeChild(link);
       });
     };
-    return { tabs, downloadChatLog };
+    return { sessions, downloadChatLog, headers, date };
   },
 };
 </script>

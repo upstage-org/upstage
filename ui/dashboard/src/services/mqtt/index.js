@@ -38,7 +38,7 @@ export default function buildClient() {
         );
       })
     },
-    sendMessage(topic, payload, namespaced) {
+    sendMessage(topic, payload, namespaced, retain = false) {
       if (!namespaced) {
         topic = namespaceTopic(topic);
       }
@@ -46,15 +46,11 @@ export default function buildClient() {
       if (typeof payload === "object") {
         message = JSON.stringify(payload);
       }
-      console.log(topic, message)
       return new Promise((resolve, reject) => {
         this.client.publish(
           topic,
           message,
-          {
-            qos: 1,
-            retain: true
-          },
+          { qos: 1, retain },
           (error, res) => {
             if (error) {
               reject(error)

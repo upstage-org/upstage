@@ -1,12 +1,12 @@
 <template>
-  <div @contextmenu.prevent="openMenu">
+  <div @contextmenu.prevent="openMenu" :style="style">
     <slot name="trigger" />
   </div>
   <teleport to="body">
     <transition :css="false" @enter="contextAppear">
       <div
         class="card"
-        v-if="isActive"
+        v-if="$slots.context && isActive"
         v-click-outside="closeMenu"
         :style="{
           position: 'fixed',
@@ -48,6 +48,7 @@ export default {
       type: Number,
       default: 1,
     },
+    style: Object,
   },
   setup: (props) => {
     const isActive = ref(props.active);
