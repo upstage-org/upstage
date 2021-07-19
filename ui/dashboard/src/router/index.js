@@ -150,9 +150,9 @@ const routes = [
             component: () => import('../views/backstage/StageManagement/General.vue'),
           },
           {
-            name: 'Stage Customization',
-            path: 'customization',
-            component: () => import('../views/backstage/StageManagement/Customization.vue'),
+            name: 'Stage Customisation',
+            path: 'customisation',
+            component: () => import('../views/backstage/StageManagement/Customisation.vue'),
           },
           {
             name: 'Stage Media',

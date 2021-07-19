@@ -2,7 +2,7 @@
   <SaveButton
     class="mb-4"
     :loading="saving"
-    @click="saveCustomization"
+    @click="saveCustomisation"
     :disabled="!selectedRatio.width || !selectedRatio.height"
   />
   <h3 class="title">
@@ -129,7 +129,7 @@ export default {
     const streaming = reactive(config.streaming);
 
     const { loading: saving, save } = useMutation(stageGraph.saveStageConfig);
-    const saveCustomization = async () => {
+    const saveCustomisation = async () => {
       const config = JSON.stringify({
         ratio: selectedRatio,
         animations,
@@ -145,7 +145,7 @@ export default {
     return {
       selectedRatio,
       saving,
-      saveCustomization,
+      saveCustomisation,
       animations,
       capitalize,
       streaming,
