@@ -39,3 +39,7 @@ export const ROLES = {
   CREATOR: 16,
   SUPER_ADMIN: 32,
 }
+
+export const COLORS = {
+  DEFAULT_BACKDROP: '#30ac45'
+}

@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -21,7 +21,7 @@ export default {
         model: null,
         background: null,
         curtain: null,
-        backdropColor: 'white',
+        backdropColor: COLORS.DEFAULT_BACKDROP,
         status: 'OFFLINE',
         subscribeSuccess: false,
         activeMovable: null,
@@ -194,7 +194,7 @@ export default {
                 clearInterval(state.background.interval);
             }
             state.background = null;
-            state.backdropColor = 'white';
+            state.backdropColor = COLORS.DEFAULT_BACKDROP;
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
@@ -787,7 +787,7 @@ export default {
                     commit("REPLACE_SCENE", {
                         payload: JSON.stringify({
                             background: null,
-                            backdropColor: 'white',
+                            backdropColor: COLORS.DEFAULT_BACKDROP,
                             board: {
                                 objects: [],
                                 drawings: [],

@@ -2,11 +2,12 @@
   <transition @leave="leave">
     <section
       v-if="!ready || !clicked"
-      class="hero is-fullheight is-fullwidth"
+      class="hero is-fullheight is-fullwidth cover-image"
       :class="{ replaying }"
       @click="clicked = true"
       :style="{
         'background-image': model && model.cover && `url(${model.cover})`,
+        'background-color': backdropColor,
       }"
     >
       <div class="hero-body">
@@ -101,6 +102,7 @@ export default {
         complete,
       });
     };
+    const backdropColor = computed(() => store.state.stage.backdropColor);
 
     return {
       model,
@@ -112,6 +114,7 @@ export default {
       ready,
       clicked,
       leave,
+      backdropColor,
     };
   },
 };
@@ -124,8 +127,9 @@ export default {
   overflow: hidden;
 }
 section {
-  background-color: #30ac45;
-  background-size: cover !important;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
   text-shadow: black 0px 0px 3px;
   position: absolute;
   z-index: 20000;
