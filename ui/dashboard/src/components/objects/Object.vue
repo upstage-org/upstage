@@ -58,14 +58,16 @@
           </div>
         </Moveable>
       </template>
-      <template #context="slotProps" v-if="controlable || isWearing">
-        <slot
-          name="menu"
-          v-bind="slotProps"
-          :slider-mode="sliderMode"
-          :set-slider-mode="(mode) => (sliderMode = mode)"
-          :keep-active="() => (active = true)"
-        />
+      <template #context="slotProps">
+        <div v-if="isWearing || controlable">
+          <slot
+            name="menu"
+            v-bind="slotProps"
+            :slider-mode="sliderMode"
+            :set-slider-mode="(mode) => (sliderMode = mode)"
+            :keep-active="() => (active = true)"
+          />
+        </div>
       </template>
     </ContextMenu>
   </div>
