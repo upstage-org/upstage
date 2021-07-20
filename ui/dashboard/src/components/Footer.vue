@@ -9,9 +9,11 @@
 </template>
 
 <script>
+import { versionAlias } from "../../package.json";
+
 export default {
   setup: () => {
-    return { release: process.env.VUE_APP_GIT_BRANCH };
+    return { release: versionAlias };
   },
 };
 </script>
