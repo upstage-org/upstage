@@ -214,12 +214,14 @@ export default {
                     if (state.background?.interval) {
                         clearInterval(state.background.interval);
                     }
+                    if (!state.background || state.background.id !== background.id) { // Not playing animation if only opacity change
+                        anime({
+                            targets: "#board",
+                            opacity: [0, 1],
+                            duration: 5000,
+                        });
+                    }
                     state.background = background
-                    anime({
-                        targets: "#board",
-                        opacity: [0, 1],
-                        duration: 5000,
-                    });
                     if (background.multi && background.speed > 0) {
                         const { speed, frames } = state.background;
                         state.background.interval = setInterval(() => {
