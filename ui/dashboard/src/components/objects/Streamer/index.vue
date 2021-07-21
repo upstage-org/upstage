@@ -48,7 +48,7 @@
           v-show="!loading"
           ref="video"
           :src="object.url"
-          :muted="isHost"
+          :muted="isHost && localMuted"
           preload="auto"
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
@@ -56,13 +56,14 @@
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
-        <div
+        <button
           v-if="isHost"
-          data-tooltip="Your stream is locally muted by default because you are the host."
-          class="mute-icon"
+          class="button is-small mute-icon clickable"
+          @mousedown="toggleMuted"
         >
-          <i class="fas fa-volume-mute has-text-danger"></i>
-        </div>
+          <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
+          <i v-else class="fas fa-volume-up has-text-primary"></i>
+        </button>
       </template>
     </Object>
   </div>
@@ -138,10 +139,15 @@ export default {
       });
     };
 
-    console.log(props.object, store.state.stage.session);
     const isHost = computed(
       () => store.state.stage.session === props.object.hostId
     );
+
+    const localMuted = ref(true);
+    const toggleMuted = () => {
+      console.log("alo");
+      localMuted.value = !localMuted.value;
+    };
 
     return {
       video,
@@ -153,15 +159,23 @@ export default {
       shapes,
       loading,
       isHost,
+      localMuted,
+      toggleMuted,
     };
   },
 };
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .mute-icon {
   position: absolute;
-  bottom: 0;
+  width: 24px;
+  height: 20px;
+  bottom: 8px;
   right: 8px;
+
+  &:hover {
+    transform: scale(1.2);
+  }
 }
 </style>

@@ -143,6 +143,7 @@ export default {
           moveable.setState(
             {
               target: el.value,
+              keepRatio: props.object.type === "stream",
             },
             () => {
               if (e && props.object.type !== "text") {
@@ -214,7 +215,13 @@ export default {
           opacity,
           ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
-          update: () => moveable.updateRect(),
+          update: () => {
+            try {
+              moveable.updateRect();
+            } catch (error) {
+              console.log(error);
+            }
+          },
         });
       },
       { deep: true }

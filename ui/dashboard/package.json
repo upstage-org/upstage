@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "4.6.0",
-  "versionAlias": "6-5C",
+  "version": "4.7.0",
+  "versionAlias": "7-A39",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
