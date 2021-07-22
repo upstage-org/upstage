@@ -219,7 +219,7 @@ export default {
             try {
               moveable.updateRect();
             } catch (error) {
-              console.log(error);
+              console.log("Object deleted while moving!");
             }
           },
         });
