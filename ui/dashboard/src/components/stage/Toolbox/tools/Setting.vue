@@ -17,6 +17,13 @@
     </div>
     <span class="tag is-light is-block">Clear chat</span>
   </div>
+  <div @click="toggleChatPosition">
+    <div class="icon is-large">
+      <Icon v-if="chatPosition === 'right'" src="right-chat.png" size="36" />
+      <Icon v-else src="left-chat.png" size="36" />
+    </div>
+    <span class="tag is-light is-block">Chat Position</span>
+  </div>
   <div>
     <div class="icon is-large">
       <ColorPicker
@@ -57,12 +64,22 @@ export default {
       store.dispatch("stage/setBackdropColor", color);
     };
 
+    const chatPosition = computed(() => store.state.stage.chatPosition);
+    const toggleChatPosition = () => {
+      store.dispatch(
+        "stage/setChatPosition",
+        chatPosition.value === "left" ? "right" : "left"
+      );
+    };
+
     return {
       showChat,
       chatVisibility,
       clearChat,
       sendBackdropColor,
       backdropColor,
+      chatPosition,
+      toggleChatPosition,
     };
   },
 };

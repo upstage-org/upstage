@@ -69,7 +69,7 @@
               step="0.01"
               min="0"
               max="1"
-              :value="background.opacity ?? 1"
+              :value="opacity(background)"
               @input="adjustOpacity(background, $event.target.value, true)"
               @change="adjustOpacity(background, $event.target.value, false)"
               type="range"
@@ -141,6 +141,16 @@ export default {
       }
     };
 
+    const opacity = (background) => {
+      if (background.id === currentBackground.value.id) {
+        background.opacity = currentBackground.value.opacity;
+      }
+      if (background.opacity) {
+        return background.opacity;
+      }
+      return 1;
+    };
+
     return {
       backgrounds,
       setBackground,
@@ -149,6 +159,7 @@ export default {
       toggleAutoplayFrames,
       switchBackdropFrame,
       adjustOpacity,
+      opacity,
     };
   },
 };
