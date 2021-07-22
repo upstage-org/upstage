@@ -2,6 +2,7 @@
   <transition :css="false" @enter="enter" @leave="leave">
     <div
       id="chatbox"
+      :key="chatPosition"
       v-show="chatVisibility"
       class="card is-light"
       :class="{ collapsed }"
@@ -9,6 +10,7 @@
         opacity,
         fontSize,
         width: `calc(20% + ${fontSize} + ${fontSize})`,
+        left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
       }"
     >
       <div class="actions">
@@ -129,7 +131,6 @@ export default {
         targets: el,
         scale: 0,
         translateY: -200,
-        easing: "easeInOutExpo",
         complete,
       });
     };
@@ -153,6 +154,8 @@ export default {
       };
       store.commit("stage/SET_CHAT_PARAMETERS", parameters);
     };
+    const chatPosition = computed(() => store.state.stage.chatPosition);
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
 
     return {
       messages,
@@ -169,6 +172,8 @@ export default {
       leave,
       increateFontSize,
       decreaseFontSize,
+      chatPosition,
+      canPlay,
     };
   },
 };

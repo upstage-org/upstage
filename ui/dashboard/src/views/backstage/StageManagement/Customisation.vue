@@ -5,123 +5,155 @@
     @click="saveCustomisation"
     :disabled="!selectedRatio.width || !selectedRatio.height"
   />
-  <h3 class="title">
-    Stage Ratio
-    <span v-if="selectedRatio">
-      : {{ selectedRatio.width }}/{{ selectedRatio.height }}
-    </span>
-  </h3>
-  <div class="columns">
-    <div class="column">
-      <Selectable
-        :selected="selectedRatio.width == 4 && selectedRatio.height == 3"
-        @select="
-          selectedRatio.width = 4;
-          selectedRatio.height = 3;
-        "
-      >
-        <div class="box size-option" style="padding-bottom: 75%">
-          <div>4/3</div>
-        </div>
-      </Selectable>
-    </div>
-    <div class="column">
-      <Selectable
-        :selected="selectedRatio.width == 16 && selectedRatio.height == 9"
-        @select="
-          selectedRatio.width = 16;
-          selectedRatio.height = 9;
-        "
-      >
-        <div class="box size-option" style="padding-bottom: 56.25%">
-          <div>16/9</div>
-        </div>
-      </Selectable>
-    </div>
-    <div class="column">
-      <div
-        class="box size-option has-primary-background"
-        :style="{
-          'padding-bottom': `${
-            (selectedRatio.height * 100) / selectedRatio.width
-          }%`,
-        }"
-      >
+  <table class="is-fullwidth" cellspacing="5">
+    <tr>
+      <td><h3 class="title">Animations</h3></td>
+      <td width="100%">
         <div>
-          <div>Custom ratio:</div>
-          <div class="custom-ratio">
-            <input type="number" v-model="selectedRatio.width" />
-            /
-            <input type="number" v-model="selectedRatio.height" />
+          <HorizontalField title="Speech bubble">
+            <Dropdown
+              v-model="animations.bubble"
+              :data="['fade', 'bounce']"
+              :render-label="capitalize"
+            />
+          </HorizontalField>
+          <HorizontalField title="Speed">
+            <div class="speed-slider">
+              <span class="mr-2">Slow</span>
+              <input
+                class="slider is-fullwidth"
+                step="0.01"
+                min="0.1"
+                max="1"
+                :value="1000 / animations.bubbleSpeed"
+                @change="animations.bubbleSpeed = 1000 / $event.target.value"
+                type="range"
+              />
+              <span class="ml-2">Fast</span>
+            </div>
+          </HorizontalField>
+          <HorizontalField title="Curtain">
+            <Dropdown
+              v-model="animations.curtain"
+              :data="[
+                { value: 'drop', label: 'Drops down and lifts up' },
+                { value: 'fade', label: 'Fades in and out' },
+                {
+                  value: 'close',
+                  label:
+                    'Closes from the sides in and opens from the middle out',
+                },
+              ]"
+              :render-value="(item) => item.value"
+              :render-label="(item) => item.label"
+            />
+          </HorizontalField>
+          <HorizontalField title="Speed">
+            <div class="speed-slider">
+              <span class="mr-2">Slow</span>
+              <input
+                class="slider is-fullwidth"
+                step="0.01"
+                min="0.1"
+                max="1"
+                :value="1000 / animations.curtainSpeed"
+                @change="animations.curtainSpeed = 1000 / $event.target.value"
+                type="range"
+              />
+              <span class="ml-2">Fast</span>
+            </div>
+          </HorizontalField>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h3 class="title">Streaming</h3>
+      </td>
+      <td>
+        <div>
+          <HorizontalField title="Auto detect">
+            <Switch
+              v-model="streaming.autoDetect"
+              label="Auto detect for live streams"
+            />
+          </HorizontalField>
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <h3 class="title">
+          Stage Ratio
+          <span v-if="selectedRatio">
+            : {{ selectedRatio.width }}/{{ selectedRatio.height }}
+          </span>
+        </h3>
+      </td>
+      <td>
+        <div class="columns">
+          <div class="column is-3">
+            <Selectable
+              :selected="selectedRatio.width == 4 && selectedRatio.height == 3"
+              @select="
+                selectedRatio.width = 4;
+                selectedRatio.height = 3;
+              "
+            >
+              <div class="box size-option" style="padding-bottom: 75%">
+                <div>4/3</div>
+              </div>
+            </Selectable>
+          </div>
+          <div class="column is-3">
+            <Selectable
+              :selected="selectedRatio.width == 16 && selectedRatio.height == 9"
+              @select="
+                selectedRatio.width = 16;
+                selectedRatio.height = 9;
+              "
+            >
+              <div class="box size-option" style="padding-bottom: 56.25%">
+                <div>16/9</div>
+              </div>
+            </Selectable>
+          </div>
+          <div class="column is-3">
+            <Selectable
+              :selected="selectedRatio.width == 2 && selectedRatio.height == 1"
+              @select="
+                selectedRatio.width = 2;
+                selectedRatio.height = 1;
+              "
+            >
+              <div class="box size-option" style="padding-bottom: 50%">
+                <div>2/1</div>
+              </div>
+            </Selectable>
+          </div>
+          <div class="column is-3">
+            <div
+              class="box size-option has-primary-background"
+              :style="{
+                'padding-bottom': `${
+                  (selectedRatio.height * 100) / selectedRatio.width
+                }%`,
+              }"
+            >
+              <div>
+                <div>Custom ratio:</div>
+                <div class="custom-ratio">
+                  <input type="number" v-model="selectedRatio.width" />
+                  /
+                  <input type="number" v-model="selectedRatio.height" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-  <h3 class="title">Animations</h3>
-  <div>
-    <HorizontalField title="Speech bubble">
-      <Dropdown
-        v-model="animations.bubble"
-        :data="['fade', 'bounce']"
-        :render-label="capitalize"
-      />
-    </HorizontalField>
-    <HorizontalField title="Appear/disappear speed">
-      <div class="speed-slider">
-        <span class="mr-2">Slow</span>
-        <input
-          class="slider is-fullwidth"
-          step="0.01"
-          min="0.1"
-          max="1"
-          :value="1000 / animations.bubbleSpeed"
-          @change="animations.bubbleSpeed = 1000 / $event.target.value"
-          type="range"
-        />
-        <span class="ml-2">Fast</span>
-      </div>
-    </HorizontalField>
-    <HorizontalField title="Curtain">
-      <Dropdown
-        v-model="animations.curtain"
-        :data="[
-          { value: 'drop', label: 'Drops down and lifts up' },
-          { value: 'fade', label: 'Fades in and out' },
-          {
-            value: 'close',
-            label: 'Closes from the sides in and opens from the middle out',
-          },
-        ]"
-        :render-value="(item) => item.value"
-        :render-label="(item) => item.label"
-      />
-    </HorizontalField>
-    <HorizontalField title="Appear/disappear speed">
-      <div class="speed-slider">
-        <span class="mr-2">Slow</span>
-        <input
-          class="slider is-fullwidth"
-          step="0.01"
-          min="0.1"
-          max="1"
-          :value="1000 / animations.curtainSpeed"
-          @change="animations.curtainSpeed = 1000 / $event.target.value"
-          type="range"
-        />
-        <span class="ml-2">Fast</span>
-      </div>
-    </HorizontalField>
-  </div>
-  <h3 class="title">Streaming</h3>
-  <div>
-    <HorizontalField title="Auto detect">
-      <Switch
-        v-model="streaming.autoDetect"
-        label="Auto detect for live streams"
-      />
-    </HorizontalField>
-  </div>
+      </td>
+    </tr>
+  </table>
 </template>
 
 <script>
@@ -206,9 +238,16 @@ export default {
     width: 50px;
     text-align: center;
   }
+  white-space: nowrap;
 }
 .speed-slider {
   display: flex;
   align-items: center;
+}
+.title {
+  white-space: nowrap;
+}
+td {
+  padding: 8px;
 }
 </style>

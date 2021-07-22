@@ -24,6 +24,7 @@ export const BACKGROUND_ACTIONS = {
   CHANGE_BACKGROUND: 'changeBackground',
   SET_CHAT_VISIBILITY: 'setChatVisibility',
   CLEAR_CHAT: 'clearChat',
+  SET_CHAT_POSITION: 'setChatPosition',
   SET_BACKDROP_COLOR: 'setBackdropColor',
   DRAW_CURTAIN: 'drawCurtain',
   LOAD_SCENES: 'loadScenes',
