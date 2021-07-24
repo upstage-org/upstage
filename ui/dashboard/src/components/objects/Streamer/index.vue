@@ -70,12 +70,13 @@
 </template>
 
 <script>
-import { computed, reactive, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
+import { nmsService } from "@/services/rest";
 
 export default {
   components: { Object, Loading },
@@ -148,6 +149,14 @@ export default {
       console.log("alo");
       localMuted.value = !localMuted.value;
     };
+
+    onMounted(async () => {
+      const streams = await nmsService.getStreams();
+      if (!streams.some((s) => s.url === props.object.url)) {
+        // Delete stream because it is not running anymore
+        store.dispatch("stage/deleteObject", props.object);
+      }
+    });
 
     return {
       video,
