@@ -11,7 +11,6 @@
     <span class="panel-icon">
       <Icon :src="icon" />
     </span>
-    {{ label ?? name }}
   </a>
 </template>
 
@@ -26,4 +25,10 @@ export default {
 </script>
 
 <style>
+.panel-block {
+  padding: 0 !important;
+}
+.panel-icon {
+  margin: auto;
+}
 </style>
