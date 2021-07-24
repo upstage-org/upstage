@@ -1,24 +1,27 @@
 <template>
   <TopBar :tool="tool" />
-  <nav id="toolbox" :class="{ collapsed }" class="panel">
+  <nav id="toolbox" class="panel">
     <div class="panel-body">
+      <PanelItem name="Audio" icon="audio.svg" />
+      <hr />
       <PanelItem name="Backdrop" icon="backdrop.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
-      <PanelItem name="Audio" icon="audio.svg" />
       <PanelItem name="Stream" icon="stream.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
-      <PanelItem name="Setting" icon="rotation-slider.svg" />
-      <PanelItem name="Curtain" icon="curtain.svg" />
+      <hr />
       <PanelItem name="Depth" icon="multi-frame.svg" />
-      <PlayerChat />
+      <PanelItem name="Curtain" icon="curtain.svg" />
       <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
         <span>
           <Icon v-if="isScene" size="36" src="stage.svg" />
           <Icon v-else size="36" src="scene.svg" />
         </span>
       </a>
+      <hr />
+      <PanelItem name="Setting" icon="rotation-slider.svg" />
+      <PlayerChat />
     </div>
   </nav>
 </template>
@@ -47,42 +50,26 @@ export default {
     provide("tool", tool);
     provide("changeTool", changeTool);
 
-    const collapsed = ref(true);
-    const timer = ref();
-    const expand = () => {
-      collapsed.value = false;
-      clearTimeout(timer.value);
-    };
-    const waitToCollapse = () => {
-      timer.value = setTimeout(() => (collapsed.value = true), 1000);
-    };
-
-    waitToCollapse();
-
     const isScene = computed(() => tool.value === "Scene");
 
     return {
       tool,
       changeTool,
-      collapsed,
-      expand,
-      waitToCollapse,
       isScene,
     };
   },
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 #toolbox {
   position: fixed;
-  width: 15%;
-  min-width: 200px;
-  left: 16px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background-color: white;
   opacity: 0.9;
   transition: transform 0.5s;
-  top: 120px;
   z-index: 2;
 
   .panel-icon {
@@ -102,30 +89,10 @@ export default {
     }
   }
   .stage-scene-toggle {
-    height: 62px;
-    > span {
-      position: absolute;
-      right: 0px;
-      bottom: 8px;
-    }
+    padding-top: 8px;
   }
-
-  &.collapsed {
-    transform: translateX(-90%);
-    .panel-icon {
-      position: absolute;
-      right: 0;
-    }
-    .fa-angle-right {
-      display: none;
-    }
-  }
-
-  .dropdown-menu {
-    position: fixed;
-    left: 216px;
-    top: initial;
-    z-index: 100;
+  hr {
+    margin: 0;
   }
 }
 </style>
