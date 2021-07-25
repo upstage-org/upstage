@@ -114,13 +114,15 @@ class UpdateMedia(graphene.Mutation):
             required=True, description="Name of the media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        base64 = graphene.String(
+            description="Base64 encoded content of the uploading media")
         file_location = graphene.String(description="File src")
         description = graphene.String(
             description="JSON serialized metadata of the media")
         id = graphene.ID(description="ID of the media")
 
     @jwt_required()
-    def mutate(self, info, name, media_type, file_location=None, description=None, id=None):
+    def mutate(self, info, name, media_type, base64=None, file_location=None, description=None, id=None):
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -145,6 +147,13 @@ class UpdateMedia(graphene.Mutation):
                 asset.description = description
                 if file_location:
                     asset.file_location = file_location
+
+                if base64:
+                    # Replace image content
+                    mediaDirectory = os.path.join(
+                        absolutePath, storagePath, asset.file_location)
+                    with open(mediaDirectory, "wb") as fh:
+                        fh.write(b64decode(base64.split(',')[1]))
 
             local_db_session.flush()
             local_db_session.commit()

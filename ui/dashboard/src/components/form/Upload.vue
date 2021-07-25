@@ -1,5 +1,5 @@
 <template>
-  <div style="display: inline-block" class="file">
+  <div class="file">
     <label class="file-label has-tooltip-right" :data-tooltip="tooltip">
       <input
         :id="id"
@@ -25,7 +25,7 @@
     </label>
   </div>
 
-  <template v-if="file">
+  <template v-if="preview && file">
     <img v-if="isImage" :src="modelValue" alt="Preview" />
     <div v-else class="box has-text-centered">
       <i class="fas fa-file"></i>
@@ -44,6 +44,8 @@ export default {
     modelValue: String,
     id: String,
     initialFile: Object,
+    type: String,
+    preview: Boolean,
   },
   emits: ["update:modelValue", "change"],
   setup: (props, { emit }) => {
@@ -63,9 +65,15 @@ export default {
     const videoExtensions = ".mp4,.webm,.opgg,.3gp,.flv";
     const accept = computed(() => {
       let extensions = [];
-      extensions.push(imageExtensions);
-      extensions.push(audioExtensions);
-      extensions.push(videoExtensions);
+      if (props.type === "image" || !props.type) {
+        extensions.push(imageExtensions);
+      }
+      if (props.type === "audio" || !props.type) {
+        extensions.push(audioExtensions);
+      }
+      if (props.type === "video" || !props.type) {
+        extensions.push(videoExtensions);
+      }
       return extensions.join(",");
     });
 
@@ -112,9 +120,9 @@ export default {
       const reader = new FileReader();
       reader.readAsDataURL(e.target.files[0]);
       reader.onload = () => {
-        emit("update:modelValue", reader.result);
         file.value = e.target.files[0];
         if (valid.value) {
+          emit("update:modelValue", reader.result);
           emit("change", file.value, type.value);
         } else {
           emit("change", null);

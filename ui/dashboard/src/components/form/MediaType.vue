@@ -2,7 +2,7 @@
   <Dropdown
     title="Type"
     v-model="mediaType"
-    :data="['avatar', 'prop', 'backdrop', 'audio', 'stream', 'curtain']"
+    :data="data ?? ['avatar', 'prop', 'backdrop', 'audio', 'stream', 'curtain']"
     :render-label="titleCase"
     :is-up="isUp"
   />
@@ -15,7 +15,7 @@ import Dropdown from "./Dropdown";
 import { titleCase } from "@/utils/common";
 
 export default {
-  props: ["modelValue", "isUp"],
+  props: ["modelValue", "isUp", "data"],
   emits: ["update:modelValue"],
   components: { Dropdown },
   setup: (props, { emit }) => {

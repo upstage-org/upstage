@@ -321,8 +321,8 @@ export default {
     ${assetFragment}
   `),
   updateMedia: (variables) => client.request(gql`
-    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String) {
-      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation) {
+    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String, $base64: String) {
+      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation, base64: $base64) {
         asset {
           id
         }

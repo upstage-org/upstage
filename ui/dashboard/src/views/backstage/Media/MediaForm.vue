@@ -9,11 +9,21 @@
       <Tabs :items="tabs">
         <template #preview>
           <div class="preview">
-            <Asset
-              v-if="!media.isRTMP"
-              :asset="media"
-              @detect-size="updateMediaSize"
-            />
+            <div v-if="!media.isRTMP">
+              <Asset :asset="media" @detect-size="updateMediaSize" />
+              <Upload
+                v-if="!active"
+                v-model="form.base64"
+                :type="fileType"
+                :preview="false"
+                @change="handleFileChange"
+              >
+                <span>Replace</span>
+                <span class="icon">
+                  <i class="fas fa-retweet"></i>
+                </span>
+              </Upload>
+            </div>
             <template v-else>
               <RTMPStream controls :src="media.src" />
               <Field
@@ -89,7 +99,12 @@
       <div class="column is-narrow">
         <Field horizontal label="Media Type">
           <button v-if="media.isRTMP" class="button" disabled>Stream</button>
-          <MediaType v-else v-model="form.mediaType" is-up />
+          <MediaType
+            v-else
+            v-model="form.mediaType"
+            :data="availableTypes"
+            is-up
+          />
         </Field>
       </div>
       <div class="column is-narrow">
@@ -110,6 +125,7 @@ import Field from "@/components/form/Field";
 import MediaType from "@/components/form/MediaType";
 import SaveButton from "@/components/form/SaveButton";
 import Switch from "@/components/form/Switch";
+import Upload from "@/components/form/Upload.vue";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
@@ -132,6 +148,7 @@ export default {
     VoiceParameters,
     RTMPStream,
     OBSInstruction,
+    Upload,
   },
   props: {
     media: Object,
@@ -190,6 +207,7 @@ export default {
           id,
           name,
           mediaType,
+          base64,
           description: JSON.stringify({
             multi,
             frames,
@@ -214,10 +232,22 @@ export default {
     const { nodes: allMedia, loading: loadingAllMedia } = useQuery(
       stageGraph.mediaList
     );
+    const fileType = computed(() => {
+      if (["avatar", "prop", "backdrop", "curtain"].includes(form.mediaType)) {
+        return "image";
+      }
+      if (["audio"].includes(form.mediaType)) {
+        return "audio";
+      }
+      if (["stream"].includes(form.mediaType)) {
+        return "video";
+      }
+    });
     const availableTypes = computed(() => {
-      if (form.fileType === "image") return ["avatar", "prop", "backdrop"];
-      if (form.fileType === "audio") return ["audio"];
-      if (form.fileType === "video") return ["stream"];
+      const type = form.fileType ?? fileType.value;
+      if (type === "image") return ["avatar", "prop", "backdrop", "curtain"];
+      if (type === "audio") return ["audio"];
+      if (type === "video") return ["stream"];
     });
 
     const tabs = computed(() => {
@@ -292,6 +322,7 @@ export default {
       displayName,
       closeModal,
       updateMediaSize,
+      fileType,
     };
   },
 };
@@ -302,6 +333,10 @@ export default {
   white-space: nowrap;
   margin: auto;
   margin-right: 10px;
+}
+
+:deep(.file) {
+  justify-content: center;
 }
 
 .close-modal {
