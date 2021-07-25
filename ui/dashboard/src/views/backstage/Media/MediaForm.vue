@@ -43,21 +43,30 @@
           </div>
         </template>
         <template #copyright>
-          <MultiTransferColumn
-            :columns="[
-              'Audience access only',
-              'Player access',
-              'Player and edit access',
-            ]"
-            :data="users"
-            :renderLabel="displayName"
-            :renderValue="(item) => item.dbId"
-            :renderKeywords="
-              (item) =>
-                `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
-            "
-            v-model="playerAccess"
-          />
+          <HorizontalField title="Copyright Level">
+            <Dropdown
+              v-model="form.copyrightLevel"
+              :data="copyrightLevels"
+              :render-label="(item) => item.name"
+              :render-value="(item) => item.value"
+              :render-description="(item) => item.description"
+            />
+          </HorizontalField>
+          <HorizontalField v-show="[1, 2].includes(form.copyrightLevel)">
+            <div style="margin-right: 32px">
+              <MultiTransferColumn
+                :columns="['No access', 'Readonly access', 'Editor access']"
+                :data="users"
+                :renderLabel="displayName"
+                :renderValue="(item) => item.dbId"
+                :renderKeywords="
+                  (item) =>
+                    `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
+                "
+                v-model="playerAccess"
+              />
+            </div>
+          </HorizontalField>
         </template>
         <template #stages>
           <MultiSelectList
@@ -134,7 +143,7 @@
 <script>
 import { reactive, ref } from "@vue/reactivity";
 import { useMutation, useQuery } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
+import { stageGraph, userGraph } from "@/services/graphql";
 import { computed, inject, watch } from "@vue/runtime-core";
 import { notification } from "@/utils/notification";
 import HorizontalField from "@/components/form/HorizontalField";
@@ -142,7 +151,8 @@ import Field from "@/components/form/Field";
 import MediaType from "@/components/form/MediaType";
 import SaveButton from "@/components/form/SaveButton";
 import Switch from "@/components/form/Switch";
-import Upload from "@/components/form/Upload.vue";
+import Upload from "@/components/form/Upload";
+import Dropdown from "@/components/form/Dropdown";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
@@ -152,6 +162,7 @@ import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParam
 import { displayName } from "@/utils/auth";
 import { getPublishLink } from "@/utils/streaming";
 import OBSInstruction from "./OBSInstruction";
+import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
 
 export default {
   components: {
@@ -168,6 +179,7 @@ export default {
     OBSInstruction,
     Upload,
     MultiTransferColumn,
+    Dropdown,
   },
   props: {
     media: Object,
@@ -199,7 +211,14 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
-        const { name, base64, mediaType, filename } = form;
+        const {
+          name,
+          base64,
+          mediaType,
+          filename,
+          copyrightLevel,
+          playerAccess,
+        } = form;
         let message = "Media updated successfully!";
         if (!form.id) {
           if (form.isRTMP) {
@@ -207,6 +226,8 @@ export default {
               name,
               mediaType,
               fileLocation: form.src,
+              copyrightLevel,
+              playerAccess,
             });
             Object.assign(form, response.updateMedia.asset);
           } else {
@@ -236,6 +257,8 @@ export default {
             h,
           }),
           fileLocation: src,
+          copyrightLevel,
+          playerAccess,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
@@ -332,6 +355,15 @@ export default {
       }
     };
 
+    const copyrightLevels = MEDIA_COPYRIGHT_LEVELS;
+    const { nodes: users } = useQuery(userGraph.userList);
+    const playerAccess = ref(
+      form.playerAccess ? JSON.parse(form.playerAccess) : []
+    );
+    watch(playerAccess, (val) => {
+      form.playerAccess = JSON.stringify(val);
+    });
+
     return {
       form,
       loading,
@@ -345,6 +377,9 @@ export default {
       closeModal,
       updateMediaSize,
       fileType,
+      copyrightLevels,
+      users,
+      playerAccess,
     };
   },
 };

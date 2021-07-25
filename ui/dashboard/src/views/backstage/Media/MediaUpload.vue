@@ -61,6 +61,7 @@ export default {
           fileType: type,
           filename: file.name,
           stages: [],
+          copyrightLevel: 0,
         };
       }
     };

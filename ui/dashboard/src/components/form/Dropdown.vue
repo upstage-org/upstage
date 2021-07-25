@@ -34,7 +34,13 @@
             :class="{ 'is-active': modelValue === renderValue(item) }"
           >
             <slot name="option" :label="renderLabel(item)" :item="item">
-              {{ renderLabel(item) }}
+              <div v-if="renderDescription">
+                <b>{{ renderLabel(item) }}</b>
+                <p style="white-space: normal">
+                  {{ renderDescription(item) }}
+                </p>
+              </div>
+              <template v-else>{{ renderLabel(item) }}</template>
             </slot>
           </a>
         </template>
@@ -59,6 +65,9 @@ export default {
     renderValue: {
       type: Function,
       default: (item) => item,
+    },
+    renderDescription: {
+      type: Function,
     },
     placeholder: String,
     isRight: Boolean,
