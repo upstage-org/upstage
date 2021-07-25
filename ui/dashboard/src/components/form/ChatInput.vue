@@ -24,11 +24,12 @@
     >
       <button
         type="button"
-        class="icon is-right clickable button is-rounded"
+        class="button is-right clickable is-rounded"
         :class="{
           'is-loading': loading,
           'is-primary': !className,
           [className]: true,
+          'picker-only': pickerOnly,
         }"
         :disabled="loading"
         :style="style"
@@ -146,9 +147,13 @@ emoji-picker {
   position: absolute;
   right: 0;
   top: 0;
-
-  > button {
-    height: unset;
+  .button {
+    &.picker-only {
+      padding: 0 15px;
+    }
+    .icon:first-child:last-child {
+      margin: auto;
+    }
   }
 }
 </style>
