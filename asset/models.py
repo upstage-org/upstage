@@ -1,5 +1,6 @@
 # -*- coding: iso8859-15 -*-
 from datetime import datetime
+from licenses.models import AssetLicense
 import os
 import sys
 
@@ -38,6 +39,7 @@ class Asset(Base,db.Model):
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
+    asset_license = relationship(AssetLicense, uselist=False, backref="asset")
     owner = relationship(User, foreign_keys=[owner_id])
     stages = relationship('ParentStage', lazy='dynamic')
 

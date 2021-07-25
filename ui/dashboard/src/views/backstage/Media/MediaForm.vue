@@ -42,6 +42,23 @@
             </template>
           </div>
         </template>
+        <template #copyright>
+          <MultiTransferColumn
+            :columns="[
+              'Audience access only',
+              'Player access',
+              'Player and edit access',
+            ]"
+            :data="users"
+            :renderLabel="displayName"
+            :renderValue="(item) => item.dbId"
+            :renderKeywords="
+              (item) =>
+                `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
+            "
+            v-model="playerAccess"
+          />
+        </template>
         <template #stages>
           <MultiSelectList
             :loading="loadingAllMedia"
@@ -130,6 +147,7 @@ import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
 import RTMPStream from "@/components/RTMPStream";
+import MultiTransferColumn from "@/components/MultiTransferColumn";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
 import { getPublishLink } from "@/utils/streaming";
@@ -149,6 +167,7 @@ export default {
     RTMPStream,
     OBSInstruction,
     Upload,
+    MultiTransferColumn,
   },
   props: {
     media: Object,
@@ -251,7 +270,10 @@ export default {
     });
 
     const tabs = computed(() => {
-      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      const res = [
+        { key: "preview", label: "Preview", icon: "fas fa-image" },
+        { key: "copyright", label: "Copyright", icon: "fas fa-copyright" },
+      ];
       if (!["curtain"].includes(form.mediaType)) {
         res.push({
           key: "stages",
