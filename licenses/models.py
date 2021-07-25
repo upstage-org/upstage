@@ -14,7 +14,6 @@ from sqlalchemy.orm import relationship
 
 from config.project_globals import db,Base,metadata,app,api,DBSession
 from user.models import User
-from asset.models import Asset,Stage
 
 
 class StageLicense(Base,db.Model):
@@ -25,19 +24,17 @@ class StageLicense(Base,db.Model):
     '''
     __tablename__ = "stage_license"
     id = Column(BigInteger, primary_key=True)
-    stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
+    stage_id = Column(Integer, ForeignKey('stage.id'), nullable=False, default=0)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     expires_on = Column(DateTime, nullable=True)
     access_path = Column(String, nullable=False, unique=True)
     grant_recursively = Column(Boolean, nullable=False, default=False)
-    stage = relationship(Stage, foreign_keys=[stage_id])
+    stage = relationship('Stage', foreign_keys=[stage_id])
 
 class AssetLicense(Base,db.Model):
     __tablename__ = "asset_license"
     id = Column(BigInteger, primary_key=True)
-    asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
+    asset_id = Column(Integer, ForeignKey('asset.id'), nullable=False, default=0)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
-    expires_on = Column(DateTime, nullable=True)
-    access_path = Column(String, nullable=False, unique=True)
-    grant_recursively = Column(Boolean, nullable=False, default=False)
-    asset = relationship(Asset, foreign_keys=[asset_id])
+    level = Column(Integer, nullable=False, default=0)
+    permissions = Column(String, nullable=True)

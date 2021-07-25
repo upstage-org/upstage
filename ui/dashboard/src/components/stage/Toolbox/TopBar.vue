@@ -120,6 +120,7 @@ export default {
       &:hover,
       &.active {
         cursor: pointer;
+        filter: brightness(1.2);
         background-color: lightgray;
         img {
           -webkit-filter: drop-shadow(5px 5px 5px $dark);

@@ -23,6 +23,9 @@ nav {
     &.shadow:hover {
         @include boxShadow;
     }
+    .icon:first-child:last-child {
+        margin: auto;
+    }
 }
 .card, .panel, .modal-card {
     border-top: $green-bar

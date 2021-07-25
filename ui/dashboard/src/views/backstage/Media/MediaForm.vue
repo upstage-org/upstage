@@ -9,11 +9,21 @@
       <Tabs :items="tabs">
         <template #preview>
           <div class="preview">
-            <Asset
-              v-if="!media.isRTMP"
-              :asset="media"
-              @detect-size="updateMediaSize"
-            />
+            <div v-if="!media.isRTMP">
+              <Asset :asset="media" @detect-size="updateMediaSize" />
+              <Upload
+                v-if="!active"
+                v-model="form.base64"
+                :type="fileType"
+                :preview="false"
+                @change="handleFileChange"
+              >
+                <span>Replace</span>
+                <span class="icon">
+                  <i class="fas fa-retweet"></i>
+                </span>
+              </Upload>
+            </div>
             <template v-else>
               <RTMPStream controls :src="media.src" />
               <Field
@@ -31,6 +41,32 @@
               <OBSInstruction :src="form.src" />
             </template>
           </div>
+        </template>
+        <template #copyright>
+          <HorizontalField title="Copyright Level">
+            <Dropdown
+              v-model="form.copyrightLevel"
+              :data="copyrightLevels"
+              :render-label="(item) => item.name"
+              :render-value="(item) => item.value"
+              :render-description="(item) => item.description"
+            />
+          </HorizontalField>
+          <HorizontalField v-show="[1, 2].includes(form.copyrightLevel)">
+            <div style="margin-right: 32px">
+              <MultiTransferColumn
+                :columns="['No access', 'Readonly access', 'Editor access']"
+                :data="users"
+                :renderLabel="displayName"
+                :renderValue="(item) => item.dbId"
+                :renderKeywords="
+                  (item) =>
+                    `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
+                "
+                v-model="playerAccess"
+              />
+            </div>
+          </HorizontalField>
         </template>
         <template #stages>
           <MultiSelectList
@@ -89,7 +125,12 @@
       <div class="column is-narrow">
         <Field horizontal label="Media Type">
           <button v-if="media.isRTMP" class="button" disabled>Stream</button>
-          <MediaType v-else v-model="form.mediaType" is-up />
+          <MediaType
+            v-else
+            v-model="form.mediaType"
+            :data="availableTypes"
+            is-up
+          />
         </Field>
       </div>
       <div class="column is-narrow">
@@ -102,7 +143,7 @@
 <script>
 import { reactive, ref } from "@vue/reactivity";
 import { useMutation, useQuery } from "@/services/graphql/composable";
-import { stageGraph } from "@/services/graphql";
+import { stageGraph, userGraph } from "@/services/graphql";
 import { computed, inject, watch } from "@vue/runtime-core";
 import { notification } from "@/utils/notification";
 import HorizontalField from "@/components/form/HorizontalField";
@@ -110,14 +151,18 @@ import Field from "@/components/form/Field";
 import MediaType from "@/components/form/MediaType";
 import SaveButton from "@/components/form/SaveButton";
 import Switch from "@/components/form/Switch";
+import Upload from "@/components/form/Upload";
+import Dropdown from "@/components/form/Dropdown";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
 import RTMPStream from "@/components/RTMPStream";
+import MultiTransferColumn from "@/components/MultiTransferColumn";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
 import { getPublishLink } from "@/utils/streaming";
 import OBSInstruction from "./OBSInstruction";
+import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
 
 export default {
   components: {
@@ -132,6 +177,9 @@ export default {
     VoiceParameters,
     RTMPStream,
     OBSInstruction,
+    Upload,
+    MultiTransferColumn,
+    Dropdown,
   },
   props: {
     media: Object,
@@ -163,7 +211,14 @@ export default {
     const save = async () => {
       try {
         loading.value = true;
-        const { name, base64, mediaType, filename } = form;
+        const {
+          name,
+          base64,
+          mediaType,
+          filename,
+          copyrightLevel,
+          playerAccess,
+        } = form;
         let message = "Media updated successfully!";
         if (!form.id) {
           if (form.isRTMP) {
@@ -171,6 +226,8 @@ export default {
               name,
               mediaType,
               fileLocation: form.src,
+              copyrightLevel,
+              playerAccess,
             });
             Object.assign(form, response.updateMedia.asset);
           } else {
@@ -190,6 +247,7 @@ export default {
           id,
           name,
           mediaType,
+          base64,
           description: JSON.stringify({
             multi,
             frames,
@@ -199,6 +257,8 @@ export default {
             h,
           }),
           fileLocation: src,
+          copyrightLevel,
+          playerAccess,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
@@ -214,14 +274,29 @@ export default {
     const { nodes: allMedia, loading: loadingAllMedia } = useQuery(
       stageGraph.mediaList
     );
+    const fileType = computed(() => {
+      if (["avatar", "prop", "backdrop", "curtain"].includes(form.mediaType)) {
+        return "image";
+      }
+      if (["audio"].includes(form.mediaType)) {
+        return "audio";
+      }
+      if (["stream"].includes(form.mediaType)) {
+        return "video";
+      }
+    });
     const availableTypes = computed(() => {
-      if (form.fileType === "image") return ["avatar", "prop", "backdrop"];
-      if (form.fileType === "audio") return ["audio"];
-      if (form.fileType === "video") return ["stream"];
+      const type = form.fileType ?? fileType.value;
+      if (type === "image") return ["avatar", "prop", "backdrop", "curtain"];
+      if (type === "audio") return ["audio"];
+      if (type === "video") return ["stream"];
     });
 
     const tabs = computed(() => {
-      const res = [{ key: "preview", label: "Preview", icon: "fas fa-image" }];
+      const res = [
+        { key: "preview", label: "Preview", icon: "fas fa-image" },
+        { key: "copyright", label: "Copyright", icon: "fas fa-copyright" },
+      ];
       if (!["curtain"].includes(form.mediaType)) {
         res.push({
           key: "stages",
@@ -280,6 +355,15 @@ export default {
       }
     };
 
+    const copyrightLevels = MEDIA_COPYRIGHT_LEVELS;
+    const { nodes: users } = useQuery(userGraph.userList);
+    const playerAccess = ref(
+      form.playerAccess ? JSON.parse(form.playerAccess) : []
+    );
+    watch(playerAccess, (val) => {
+      form.playerAccess = JSON.stringify(val);
+    });
+
     return {
       form,
       loading,
@@ -292,6 +376,10 @@ export default {
       displayName,
       closeModal,
       updateMediaSize,
+      fileType,
+      copyrightLevels,
+      users,
+      playerAccess,
     };
   },
 };
@@ -302,6 +390,10 @@ export default {
   white-space: nowrap;
   margin: auto;
   margin-right: 10px;
+}
+
+:deep(.file) {
+  justify-content: center;
 }
 
 .close-modal {

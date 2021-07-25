@@ -12,11 +12,17 @@
         <span v-if="index < item.stages.length - 1">, </span>
       </span>
     </template>
+    <template #copyright="{ item }">
+      <div :data-tooltip="copyrightLevels[item.copyrightLevel].description">
+        {{ copyrightLevels[item.copyrightLevel].name }}
+      </div>
+    </template>
     <template #manage="{ item }">
-      <span style="float: left">
+      <span v-if="editable(item)" style="float: left">
         <MediaEdit :media="item" />
       </span>
       <a
+        v-if="downloadable(item)"
         class="button is-light is-small"
         :href="absolutePath(item.fileLocation)"
         :download="item.name"
@@ -24,6 +30,7 @@
         <Icon src="download.svg" />
       </a>
       <Confirm
+        v-if="deletable(item)"
         @confirm="(complete) => deleteMedia(item, complete)"
         :loading="loading"
       >
@@ -43,7 +50,7 @@
 </template>
 
 <script>
-import { inject } from "@vue/runtime-core";
+import { computed, inject } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
 import Asset from "@/components/Asset";
 import DataTable from "@/components/DataTable/index";
@@ -55,6 +62,8 @@ import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import MultiframePreview from "./MultiframePreview";
+import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
+import { useStore } from "vuex";
 
 export default {
   components: { Asset, MediaEdit, DataTable, Confirm, MultiframePreview, Icon },
@@ -92,6 +101,11 @@ export default {
         key: "createdOn",
       },
       {
+        title: "Owner",
+        align: "center",
+        slot: "copyright",
+      },
+      {
         title: "Manage Media",
         slot: "manage",
       },
@@ -111,12 +125,24 @@ export default {
       complete();
     };
 
+    const store = useStore();
+    const isAdmin = computed(() => store.getters["user/isAdmin"]);
+    const editable = (item) => ["editor", "owner"].includes(item.permission);
+    const downloadable = (item) =>
+      ["editor", "owner", "readonly"].includes(item.permission);
+    const deletable = (item) =>
+      ["owner"].includes(item.permission) || isAdmin.value;
+
     return {
       mediaList,
       absolutePath,
       headers,
       deleteMedia,
       loading,
+      editable,
+      downloadable,
+      deletable,
+      copyrightLevels: MEDIA_COPYRIGHT_LEVELS,
     };
   },
 };

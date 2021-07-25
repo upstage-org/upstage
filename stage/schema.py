@@ -7,7 +7,7 @@ from flask_jwt_extended.utils import get_jwt_identity
 from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
 import performance_config.models
 from performance_config.models import ParentStage, Performance as PerformanceModel, Scene as SceneModel
-from stage.asset import Asset, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
+from stage.asset import Asset, AssetConnectionField, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
 from utils import graphql_utils
@@ -429,7 +429,7 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
         Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
-    assetList = StageConnectionField(
+    assetList = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())
