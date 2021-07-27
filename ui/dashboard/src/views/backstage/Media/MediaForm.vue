@@ -11,18 +11,20 @@
           <div class="preview">
             <div v-if="!media.isRTMP">
               <Asset :asset="media" @detect-size="updateMediaSize" />
-              <Upload
-                v-if="!active"
-                v-model="form.base64"
-                :type="fileType"
-                :preview="false"
-                @change="handleFileChange"
-              >
-                <span>Replace</span>
-                <span class="icon">
-                  <i class="fas fa-retweet"></i>
-                </span>
-              </Upload>
+              <div class="pb-4">
+                <Upload
+                  v-if="!active"
+                  v-model="form.base64"
+                  :type="fileType"
+                  :preview="false"
+                  @change="handleFileChange"
+                >
+                  <span>Replace</span>
+                  <span class="icon">
+                    <i class="fas fa-retweet"></i>
+                  </span>
+                </Upload>
+              </div>
             </div>
             <template v-else>
               <RTMPStream controls :src="media.src" />
@@ -52,7 +54,7 @@
               :render-description="(item) => item.description"
             />
           </HorizontalField>
-          <HorizontalField v-show="[1, 2].includes(form.copyrightLevel)">
+          <HorizontalField v-show="[2].includes(form.copyrightLevel)">
             <div style="margin-right: 32px">
               <MultiTransferColumn
                 :columns="['No access', 'Readonly access', 'Editor access']"
@@ -103,13 +105,13 @@
               :data="
                 allMedia
                   ?.filter((item) => item.assetType.name !== 'audio')
-                  .map((media) => media.fileLocation)
+                  .map((media) => media.src)
               "
               v-model="form.frames"
               :columnClass="() => 'is-4'"
             >
-              <template #render="{ item: fileLocation }">
-                <Asset :asset="{ fileLocation }" />
+              <template #render="{ item: src }">
+                <Asset :asset="{ src }" />
               </template>
             </MultiSelectList>
           </HorizontalField>
@@ -199,8 +201,8 @@ export default {
     if (form.assetType) {
       form.mediaType = form.assetType.name;
     }
-    if (form.isRTMP && !form.src) {
-      form.src = form.fileLocation;
+    if (form.isRTMP && form.src.includes("?")) {
+      form.src = form.src.split("?")[0];
     }
 
     const { mutation: uploadMedia } = useMutation(stageGraph.uploadMedia);

@@ -5,7 +5,7 @@
         class="clickable"
         v-if="modelValue"
         :asset="{
-          fileLocation: modelValue,
+          src: modelValue,
         }"
       />
       <button v-else class="button">Choose an image</button>
@@ -55,7 +55,7 @@ export default {
     provide("refresh", refresh);
 
     const select = (item, closeModal) => {
-      emit("update:modelValue", item.fileLocation);
+      emit("update:modelValue", item.src);
       closeModal();
     };
 

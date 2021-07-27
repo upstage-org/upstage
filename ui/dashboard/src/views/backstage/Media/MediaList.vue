@@ -24,7 +24,7 @@
       <a
         v-if="downloadable(item)"
         class="button is-light is-small"
-        :href="absolutePath(item.fileLocation)"
+        :href="absolutePath(item.src)"
         :download="item.name"
       >
         <Icon src="download.svg" />

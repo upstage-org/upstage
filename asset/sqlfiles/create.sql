@@ -17,6 +17,7 @@ CREATE TABLE "public"."asset" (
     "description" TEXT default NULL,
     "file_location" TEXT NOT NULL,
     "created_on" timestamp DEFAULT (now() at time zone 'utc'),
+    "updated_on" timestamp DEFAULT (now() at time zone 'utc'),
     PRIMARY KEY ("id"),
     FOREIGN KEY (asset_type_id) REFERENCES asset_type(id),
     FOREIGN KEY (owner_id) REFERENCES upstage_user(id)

@@ -1,7 +1,7 @@
 <template>
   <audio controls v-if="asset.mediaType === 'audio'" :src="src"></audio>
   <template v-else-if="asset.mediaType === 'stream'">
-    <RTMPStream v-if="meta.isRTMP" :src="asset.fileLocation"></RTMPStream>
+    <RTMPStream v-if="meta.isRTMP" :src="asset.src"></RTMPStream>
     <video v-else controls :src="src"></video>
   </template>
   <img
@@ -26,7 +26,7 @@ export default {
       Object.assign(props.asset, { mediaType: props.asset.assetType.name });
     }
     const src = computed(
-      () => props.asset.base64 ?? absolutePath(props.asset.fileLocation)
+      () => props.asset.base64 ?? absolutePath(props.asset.src)
     );
     const meta = computed(() => {
       if (props.asset.description) {
