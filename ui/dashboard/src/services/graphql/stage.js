@@ -48,7 +48,7 @@ export const assetFragment = gql`
       displayName
     }
     createdOn
-    fileLocation
+    src
     dbId
     copyrightLevel
     playerAccess

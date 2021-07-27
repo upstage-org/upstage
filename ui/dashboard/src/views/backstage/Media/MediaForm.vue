@@ -103,13 +103,13 @@
               :data="
                 allMedia
                   ?.filter((item) => item.assetType.name !== 'audio')
-                  .map((media) => media.fileLocation)
+                  .map((media) => media.src)
               "
               v-model="form.frames"
               :columnClass="() => 'is-4'"
             >
-              <template #render="{ item: fileLocation }">
-                <Asset :asset="{ fileLocation }" />
+              <template #render="{ item: src }">
+                <Asset :asset="{ src }" />
               </template>
             </MultiSelectList>
           </HorizontalField>

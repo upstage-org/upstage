@@ -1,3 +1,5 @@
+from datetime import datetime
+import time
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from sqlalchemy.sql.expression import and_, or_
@@ -62,6 +64,7 @@ class AssignedStage(graphene.ObjectType):
 
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    src = graphene.String(description="Logical path of the media")
     stages = graphene.List(
         AssignedStage, description="Stages that this media is assigned to")
     copyright_level = graphene.Int(description="Copyright level")
@@ -75,6 +78,10 @@ class Asset(SQLAlchemyObjectType):
         model.db_id = model.id
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
+
+    def resolve_src(self, info):
+        timestamp = int(time.mktime(self.updated_on.timetuple()))
+        return self.file_location + '?t=' + str(timestamp)
 
     def resolve_stages(self, info):
         return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
@@ -219,6 +226,8 @@ class UpdateMedia(graphene.Mutation):
                 asset.asset_type = asset_type
                 asset.description = description
                 if file_location:
+                    if "?" in file_location:
+                        file_location = file_location[:file_location.index("?")]
                     asset.file_location = file_location
 
                 if base64:
@@ -227,6 +236,7 @@ class UpdateMedia(graphene.Mutation):
                         absolutePath, storagePath, asset.file_location)
                     with open(mediaDirectory, "wb") as fh:
                         fh.write(b64decode(base64.split(',')[1]))
+                    asset.updated_on = datetime.utcnow()
 
                 if asset.asset_license:
                     asset.asset_license.level = copyright_level
