@@ -54,15 +54,15 @@ export const MEDIA_COPYRIGHT_LEVELS = [
   },
   {
     value: 1,
-    name: "🔑 Use with permission",
-    description:
-      "Other players must ask the owner for permission if they want to use the media item",
-  },
-  {
-    value: 2,
     name: "👌 Use with acknowledgement",
     description:
       "Other players can use the media item as long as the owner is acknowledged",
+  },
+  {
+    value: 2,
+    name: "🔑 Use with permission",
+    description:
+      "Other players must ask the owner for permission if they want to use the media item",
   },
   {
     value: 3,

@@ -52,7 +52,7 @@
               :render-description="(item) => item.description"
             />
           </HorizontalField>
-          <HorizontalField v-show="[1, 2].includes(form.copyrightLevel)">
+          <HorizontalField v-show="[2].includes(form.copyrightLevel)">
             <div style="margin-right: 32px">
               <MultiTransferColumn
                 :columns="['No access', 'Readonly access', 'Editor access']"
