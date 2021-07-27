@@ -24,7 +24,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .panel-block {
   padding: 0 !important;
 }
