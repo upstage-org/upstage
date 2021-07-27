@@ -36,7 +36,7 @@
       class="is-fullwidth"
       v-else-if="data.type === 'stream'"
     >
-      <Icon src="stream.svg" size="36" />
+      <Icon src="streams.svg" size="36" />
       <span class="tag is-light is-block stream-key">{{ data.name }}</span>
     </div>
     <Image v-else :src="data.src" />

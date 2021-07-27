@@ -11,18 +11,20 @@
           <div class="preview">
             <div v-if="!media.isRTMP">
               <Asset :asset="media" @detect-size="updateMediaSize" />
-              <Upload
-                v-if="!active"
-                v-model="form.base64"
-                :type="fileType"
-                :preview="false"
-                @change="handleFileChange"
-              >
-                <span>Replace</span>
-                <span class="icon">
-                  <i class="fas fa-retweet"></i>
-                </span>
-              </Upload>
+              <div class="pb-4">
+                <Upload
+                  v-if="!active"
+                  v-model="form.base64"
+                  :type="fileType"
+                  :preview="false"
+                  @change="handleFileChange"
+                >
+                  <span>Replace</span>
+                  <span class="icon">
+                    <i class="fas fa-retweet"></i>
+                  </span>
+                </Upload>
+              </div>
             </div>
             <template v-else>
               <RTMPStream controls :src="media.src" />
@@ -199,8 +201,8 @@ export default {
     if (form.assetType) {
       form.mediaType = form.assetType.name;
     }
-    if (form.isRTMP && !form.src) {
-      form.src = form.fileLocation;
+    if (form.isRTMP && form.src.includes("?")) {
+      form.src = form.src.split("?")[0];
     }
 
     const { mutation: uploadMedia } = useMutation(stageGraph.uploadMedia);

@@ -24,11 +24,21 @@ export default {
 };
 </script>
 
-<style scoped>
-.panel-block {
-  padding: 0 !important;
-}
+<style lang="scss" scoped>
 .panel-icon {
   margin: auto;
+  img {
+    filter: grayscale(100%);
+  }
+}
+.panel-block.is-active,
+.panel-block:hover {
+  border: none;
+  .panel-icon {
+    img {
+      filter: none;
+    }
+    transform: scale(1.5);
+  }
 }
 </style>

@@ -4,23 +4,18 @@
     <div class="panel-body">
       <PanelItem name="Audio" icon="audio.svg" />
       <hr />
-      <PanelItem name="Backdrop" icon="backdrop.svg" />
+      <PanelItem name="Backdrops" icon="backdrops.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
-      <PanelItem name="Stream" icon="stream.svg" />
+      <PanelItem name="Streams" icon="streams.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
       <hr />
       <PanelItem name="Depth" icon="multi-frame.svg" />
       <PanelItem name="Curtain" icon="curtain.svg" />
-      <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
-        <span>
-          <Icon v-if="isScene" size="36" src="stage.svg" />
-          <Icon v-else size="36" src="scene.svg" />
-        </span>
-      </a>
+      <PanelItem name="Scenes" icon="animation-slider.svg" />
       <hr />
-      <PanelItem name="Setting" icon="rotation-slider.svg" />
+      <PanelItem name="Settings" icon="rotation-slider.svg" />
       <PlayerChat />
     </div>
   </nav>
@@ -31,11 +26,10 @@ import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
 import PlayerChat from "./PlayerChat";
-import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 
 export default {
-  components: { TopBar, PanelItem, PlayerChat, Icon },
+  components: { TopBar, PanelItem, PlayerChat },
   setup: () => {
     const tool = ref();
     const store = useStore();
@@ -71,26 +65,6 @@ export default {
   opacity: 0.9;
   transition: transform 0.5s;
   z-index: 2;
-
-  .panel-icon {
-    width: 1.5em;
-    img {
-      filter: grayscale(100%);
-    }
-  }
-  .panel-block.is-active,
-  .panel-block:hover {
-    border: none;
-    .panel-icon {
-      img {
-        filter: none;
-      }
-      transform: scale(1.5);
-    }
-  }
-  .stage-scene-toggle {
-    padding-top: 8px;
-  }
   hr {
     margin: 0;
   }
