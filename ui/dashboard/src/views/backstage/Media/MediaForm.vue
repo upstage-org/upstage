@@ -6,10 +6,36 @@
       @click="closeModal"
     ></button>
     <div class="container-fluid">
+      <footer class="modal-card-foot">
+        <div class="columns is-fullwidth">
+          <div class="column is-narrow">
+            <SaveButton
+              @click="save"
+              :loading="loading"
+              :disabled="!form.name"
+            />
+          </div>
+          <div class="column is-narrow">
+            <Field horizontal label="Media Type">
+              <button v-if="media.isRTMP" class="button" disabled>
+                Stream
+              </button>
+              <MediaType
+                v-else
+                v-model="form.mediaType"
+                :data="availableTypes"
+              />
+            </Field>
+          </div>
+          <div class="column">
+            <Field horizontal v-model="form.name" label="Media Name" />
+          </div>
+        </div>
+      </footer>
       <Tabs :items="tabs">
         <template #preview>
           <div class="preview">
-            <div v-if="!media.isRTMP">
+            <template v-if="!media.isRTMP">
               <Asset :asset="media" @detect-size="updateMediaSize" />
               <div class="pb-4">
                 <Upload
@@ -25,7 +51,7 @@
                   </span>
                 </Upload>
               </div>
-            </div>
+            </template>
             <template v-else>
               <RTMPStream controls :src="media.src" />
               <Field
@@ -119,27 +145,6 @@
       </Tabs>
     </div>
   </section>
-  <footer class="modal-card-foot">
-    <div class="columns is-fullwidth">
-      <div class="column">
-        <Field horizontal v-model="form.name" label="Media Name" />
-      </div>
-      <div class="column is-narrow">
-        <Field horizontal label="Media Type">
-          <button v-if="media.isRTMP" class="button" disabled>Stream</button>
-          <MediaType
-            v-else
-            v-model="form.mediaType"
-            :data="availableTypes"
-            is-up
-          />
-        </Field>
-      </div>
-      <div class="column is-narrow">
-        <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
-      </div>
-    </div>
-  </footer>
 </template>
 
 <script>
@@ -405,9 +410,17 @@ export default {
   z-index: 20;
 }
 
+.modal-card-foot {
+  padding-right: 24px;
+
+  :deep(.field-label) {
+    flex: none;
+  }
+}
+
 .preview {
   text-align: center;
-  height: calc(100vh - 200px);
+  height: calc(100vh - 224px);
   padding: 24px;
 
   .field {

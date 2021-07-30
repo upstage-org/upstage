@@ -1,6 +1,6 @@
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
-    <div class="navbar-menu is-active">
+    <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         &nbsp;
         <router-link class="navbar-item" to="/backstage/stages">
@@ -27,6 +27,17 @@
 
     <div class="navbar-brand">
       <Logo />
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        @click="toggleExpanded"
+      >
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </a>
     </div>
   </nav>
   <div id="main-content">
@@ -39,21 +50,34 @@
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import { useStore } from "vuex";
-import { computed } from "vue";
+import { computed, ref } from "vue";
 export default {
   components: { Footer, Logo },
   setup: () => {
     const store = useStore();
 
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
+    const expanded = ref(false);
+    const toggleExpanded = () => (expanded.value = !expanded.value);
 
-    return { isAdmin };
+    return { isAdmin, expanded, toggleExpanded };
   },
 };
 </script>
 
-<style>
+<style scoped>
 #main-content {
   min-height: calc(100vh - 120px);
+}
+@media screen and (max-width: 1280px) {
+  .navbar-brand {
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }
+  .navbar-menu .navbar-item:first-child {
+    margin-left: 8px;
+    margin-top: 24px;
+  }
 }
 </style>
