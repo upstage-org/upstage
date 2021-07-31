@@ -4,7 +4,7 @@
       <button class="button is-warning is-loading"></button>
       <span>{{ status }}</span>
     </template>
-    <span v-else>Sweep Stage</span>
+    <span v-else><slot>Sweep Stage</slot></span>
   </button>
 </template>
 
@@ -22,6 +22,7 @@ const mqttClient = buildClient();
 export default {
   setup: () => {
     const stage = inject("stage");
+    const refresh = inject("refresh");
     const status = ref();
     const { mutation } = useMutation(stageGraph.sweepStage, {
       id: stage.value.id,
@@ -43,6 +44,9 @@ export default {
           });
         });
         notification.success(`${stage.value.name} swept successfully!`);
+        if (refresh) {
+          refresh(stage.value.id);
+        }
       } catch (error) {
         notification.warning(error);
       } finally {

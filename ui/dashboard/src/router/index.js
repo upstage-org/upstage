@@ -160,20 +160,15 @@ const routes = [
             component: () => import('../views/backstage/StageManagement/Media.vue'),
           },
           {
-            name: 'Chat',
-            path: 'chat',
-            component: () => import('../views/backstage/StageManagement/Chat.vue'),
+            name: 'Archive',
+            path: 'archive',
+            component: () => import('../views/backstage/StageManagement/Archive.vue'),
           },
           {
             name: 'Scenes',
             path: 'scenes',
             component: () => import('../views/backstage/StageManagement/Scenes.vue'),
           },
-          {
-            name: 'Records',
-            path: 'records',
-            component: () => import('../views/backstage/StageManagement/Records.vue'),
-          }
         ]
       }
     ]

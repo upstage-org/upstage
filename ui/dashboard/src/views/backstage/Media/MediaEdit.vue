@@ -1,5 +1,5 @@
 <template>
-  <Modal width="100%" height="100%">
+  <Modal>
     <template #trigger>
       <a class="button is-light is-small">
         <Icon src="edit.svg" />
