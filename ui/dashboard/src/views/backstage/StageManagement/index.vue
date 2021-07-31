@@ -47,13 +47,8 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="chat" exact-active-class="is-active">
-                  Chat
-                </router-link>
-              </li>
-              <li>
-                <router-link to="records" exact-active-class="is-active">
-                  Records
+                <router-link to="replays-chat" exact-active-class="is-active">
+                  Replays and Chat
                 </router-link>
               </li>
               <li>

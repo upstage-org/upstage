@@ -160,8 +160,8 @@ const routes = [
             component: () => import('../views/backstage/StageManagement/Media.vue'),
           },
           {
-            name: 'Chat',
-            path: 'chat',
+            name: 'Replays and Chat',
+            path: 'replays-chat',
             component: () => import('../views/backstage/StageManagement/Chat.vue'),
           },
           {
@@ -169,11 +169,6 @@ const routes = [
             path: 'scenes',
             component: () => import('../views/backstage/StageManagement/Scenes.vue'),
           },
-          {
-            name: 'Records',
-            path: 'records',
-            component: () => import('../views/backstage/StageManagement/Records.vue'),
-          }
         ]
       }
     ]

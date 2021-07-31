@@ -128,6 +128,17 @@ export default {
               id
               createdOn
             }
+            scenes {
+              id
+              name
+              scenePreview
+              createdOn
+              owner {
+                id
+                username
+                displayName
+              }
+            }
           }
         }
       }
