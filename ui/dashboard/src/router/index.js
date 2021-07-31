@@ -160,9 +160,9 @@ const routes = [
             component: () => import('../views/backstage/StageManagement/Media.vue'),
           },
           {
-            name: 'Replays and Chat',
-            path: 'replays-chat',
-            component: () => import('../views/backstage/StageManagement/Chat.vue'),
+            name: 'Archive',
+            path: 'archive',
+            component: () => import('../views/backstage/StageManagement/Archive.vue'),
           },
           {
             name: 'Scenes',

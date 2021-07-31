@@ -122,11 +122,13 @@ export default {
             ...stageFragment
             chats {
               payload
-              created
+              performanceId
             }
             performances {
               id
               createdOn
+              name
+              description
             }
             scenes {
               id
@@ -381,4 +383,18 @@ export default {
       }
     }
   `, { id, name }),
+  deletePerformance: (id) => client.request(gql`
+    mutation DeletePerformance($id: Int!) {
+      deletePerformance(id: $id) {
+        success
+      }
+    }  
+  `, { id }),
+  updatePerformance: (id, name, description) => client.request(gql`
+    mutation updatePerformance($id: Int!, $name: String, $description: String) {
+      updatePerformance(id: $id, name: $name, description: $description) {
+        success
+      }
+    }
+  `, { id, name, description })
 }

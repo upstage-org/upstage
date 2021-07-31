@@ -33,24 +33,24 @@
         </div>
       </footer>
       <Tabs :items="tabs">
+        <template #extras>
+          <Upload
+            v-if="!active"
+            v-model="form.base64"
+            :type="fileType"
+            :preview="false"
+            @change="handleFileChange"
+          >
+            <span class="icon">
+              <i class="fas fa-retweet"></i>
+            </span>
+            <span>Replace</span>
+          </Upload>
+        </template>
         <template #preview>
           <div class="preview">
             <template v-if="!media.isRTMP">
               <Asset :asset="media" @detect-size="updateMediaSize" />
-              <div class="pb-4">
-                <Upload
-                  v-if="!active"
-                  v-model="form.base64"
-                  :type="fileType"
-                  :preview="false"
-                  @change="handleFileChange"
-                >
-                  <span>Replace</span>
-                  <span class="icon">
-                    <i class="fas fa-retweet"></i>
-                  </span>
-                </Upload>
-              </div>
             </template>
             <template v-else>
               <RTMPStream controls :src="media.src" />
@@ -398,9 +398,16 @@ export default {
   margin: auto;
   margin-right: 10px;
 }
-
 :deep(.file) {
   justify-content: center;
+}
+:deep(.file-cta) {
+  background-color: transparent;
+  border-color: transparent;
+}
+:deep(.tab-content) {
+  padding: 16px;
+  padding-top: 0;
 }
 
 .close-modal {
@@ -420,8 +427,6 @@ export default {
 
 .preview {
   text-align: center;
-  height: calc(100vh - 224px);
-  padding: 24px;
 
   .field {
     text-align: left;

@@ -292,7 +292,7 @@ class SweepStage(graphene.Mutation):
                 .filter(EventModel.performance_id == None)\
                 .filter(EventModel.topic.like("%/{}/%".format(stage.file_location)))
 
-            if True: # just test
+            if events.count() > 0:
                 performance = PerformanceModel(stage=stage)
                 local_db_session.add(performance)
                 local_db_session.flush()
