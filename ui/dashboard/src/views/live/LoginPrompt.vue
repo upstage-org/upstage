@@ -117,7 +117,14 @@ export default {
 .modal-close {
   position: relative;
 }
+.modal {
+  zoom: 3;
+}
 .modal-content {
   max-width: 500px;
+  @media only screen and (orientation: portrait) {
+    max-width: unset;
+    width: 100%;
+  }
 }
 </style>

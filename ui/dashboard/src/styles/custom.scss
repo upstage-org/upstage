@@ -177,6 +177,13 @@ div.moveable-control-box {
     }
 }
 @media screen and (max-width: 1280px) {
+    #app {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    .modal-card {
+        width: 100% !important;
+    }
     .navbar-brand {
         .navbar-item {
             margin-right: 0;
