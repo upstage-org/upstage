@@ -68,5 +68,9 @@ export default {
   hr {
     margin: 0;
   }
+  @media only screen and (orientation: portrait) {
+    top: 50px !important;
+    transform: none !important;
+  }
 }
 </style>

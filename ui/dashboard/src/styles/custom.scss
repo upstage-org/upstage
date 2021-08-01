@@ -113,6 +113,20 @@ nav {
 div.moveable-control-box {
     --moveable-color: #{$primary};
 }
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+  ::-webkit-scrollbar-button {
+    background: #ccc;
+    width: 5px;
+}
+  ::-webkit-scrollbar-track-piece {
+    background: #888;
+}
+  ::-webkit-scrollbar-thumb {
+    background: $primary;
+}
 // Desktop only css
 @media screen and (min-width: 1024px) {
     .navbar-start {
@@ -175,18 +189,4 @@ div.moveable-control-box {
             margin-left: 0;
         }
     }
-}
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-  ::-webkit-scrollbar-button {
-    background: #ccc;
-    width: 5px;
-}
-  ::-webkit-scrollbar-track-piece {
-    background: #888;
-}
-  ::-webkit-scrollbar-thumb {
-    background: $primary;
 }

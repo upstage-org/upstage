@@ -126,7 +126,11 @@ export default {
                 left = (window.innerWidth - width) / 2;
             } else {
                 height = width / ratio;
-                top = (window.innerHeight - height) / 2;
+                if (window.innerWidth < window.innerHeight) { // Portrait mobile
+                    top = 0
+                } else {
+                    top = (window.innerHeight - height) / 2;
+                }
             }
             return { width, height, left, top };
         },
