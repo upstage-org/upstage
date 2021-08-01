@@ -10,6 +10,7 @@
         opacity,
         fontSize,
         width: `calc(20% + ${fontSize} + ${fontSize})`,
+        height: `calc(100vh - ${stageSize.height}px - 64px)`,
         left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
       }"
     >
@@ -156,6 +157,7 @@ export default {
     };
     const chatPosition = computed(() => store.state.stage.chatPosition);
     const canPlay = computed(() => store.getters["stage/canPlay"]);
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     return {
       messages,
@@ -174,6 +176,7 @@ export default {
       decreaseFontSize,
       chatPosition,
       canPlay,
+      stageSize,
     };
   },
 };
@@ -185,11 +188,26 @@ export default {
   flex-direction: column;
   position: fixed;
   min-width: 250px;
-  height: calc(100% - 135px);
   bottom: 16px;
   right: 16px;
   overflow: visible;
   z-index: 3;
+  @media only screen and (orientation: landscape) {
+    height: calc(100% - 135px) !important;
+  }
+  @media only screen and (orientation: portrait) {
+    width: calc(100vw - 32px) !important;
+    .actions,
+    .card-content,
+    .card-footer {
+      zoom: 3;
+    }
+    .actions {
+      button:first-child {
+        display: none;
+      }
+    }
+  }
 
   .card-content {
     flex-grow: 1;

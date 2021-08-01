@@ -161,8 +161,34 @@ div.moveable-control-box {
             }
         }
     }
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
+    ::-webkit-scrollbar-button {
+        background: #ccc;
+        width: 5px;
+    }
+    ::-webkit-scrollbar-track-piece {
+        background: #888;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: $primary;
+    }
 }
 @media screen and (max-width: 1280px) {
+    #app {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+    .modal-card {
+        width: 100% !important;
+    }
+    [data-tooltip] {
+        &::before, &::after {
+            content: none !important;
+        }
+    }
     .navbar-brand {
         .navbar-item {
             margin-right: 0;
@@ -175,18 +201,4 @@ div.moveable-control-box {
             margin-left: 0;
         }
     }
-}
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-  ::-webkit-scrollbar-button {
-    background: #ccc;
-    width: 5px;
-}
-  ::-webkit-scrollbar-track-piece {
-    background: #888;
-}
-  ::-webkit-scrollbar-thumb {
-    background: $primary;
 }

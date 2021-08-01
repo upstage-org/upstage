@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="loading" />
-  <div v-else>
+  <div class="table-wrapper" v-else>
     <table class="table">
       <thead>
         <tr>
@@ -188,6 +188,10 @@ export default {
 <style scoped>
 i.fas {
   cursor: pointer;
+}
+.table-wrapper {
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 table {
   width: 100%;
