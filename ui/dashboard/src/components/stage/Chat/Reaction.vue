@@ -15,7 +15,7 @@
       @update:model-value="sendCustomReaction"
     >
       <template #icon>
-        <span class="icon">
+        <span class="icon" data-tooltip="Custom Reactions">
           <Icon src="new.svg" />
         </span>
       </template>

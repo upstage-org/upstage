@@ -19,6 +19,8 @@
         <button
           class="chat-setting button is-rounded is-light"
           @click="collapsed = !collapsed"
+          :data-tooltip="collapsed ? 'Maximize' : 'Minimize'"
+          :key="collapsed"
         >
           <span class="icon">
             <Icon v-if="collapsed" src="maximize.svg" size="20" />
@@ -28,6 +30,7 @@
         <button
           class="chat-setting button is-rounded is-light"
           @click="openChatSetting"
+          data-tooltip="Settings"
         >
           <span class="icon">
             <Icon src="setting.svg" size="32" />
@@ -44,14 +47,14 @@
             <div class="font-size-controls">
               <button
                 class="button is-small is-rounded mx-1"
-                :key="encrease - fontSize"
+                data-tooltip="Increase font size"
                 @click="increateFontSize()"
               >
                 ➕
               </button>
               <button
+                data-tooltip="Decrease font size"
                 class="button is-small is-rounded mx-1"
-                :key="decrease - fontSize"
                 @click="decreaseFontSize()"
               >
                 ➖
@@ -187,7 +190,7 @@ export default {
   display: flex;
   flex-direction: column;
   position: fixed;
-  min-width: 250px;
+  min-width: 300px;
   bottom: 16px;
   right: 16px;
   overflow: visible;
@@ -221,9 +224,9 @@ export default {
   }
 
   &.collapsed {
-    height: 108px;
+    height: 108px !important;
     .card-content {
-      padding-top: 20px;
+      padding: 0;
       height: 0;
       > div {
         display: none;
@@ -231,6 +234,9 @@ export default {
     }
     .card-footer-item {
       padding-top: 6px;
+    }
+    .actions {
+      top: 5px;
     }
   }
 

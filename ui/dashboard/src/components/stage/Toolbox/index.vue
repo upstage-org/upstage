@@ -55,7 +55,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 #toolbox {
   position: fixed;
   left: 0;
@@ -71,6 +71,23 @@ export default {
   @media only screen and (orientation: portrait) {
     top: 50px !important;
     transform: none !important;
+  }
+
+  .panel-icon {
+    margin: auto;
+    img {
+      filter: grayscale(100%);
+    }
+  }
+  .panel-block.is-active,
+  .panel-block:hover {
+    border: none;
+    .panel-icon {
+      img {
+        filter: none;
+      }
+      transform: scale(1.5);
+    }
   }
 }
 </style>

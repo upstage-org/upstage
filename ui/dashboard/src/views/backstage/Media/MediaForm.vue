@@ -417,11 +417,14 @@ export default {
   z-index: 20;
 }
 
-.modal-card-foot {
-  padding-right: 24px;
+.modal-card-body {
+  min-height: 325px;
+  .modal-card-foot {
+    padding-right: 24px;
 
-  :deep(.field-label) {
-    flex: none;
+    :deep(.field-label) {
+      flex: none;
+    }
   }
 }
 
