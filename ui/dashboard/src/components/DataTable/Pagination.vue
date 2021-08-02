@@ -126,4 +126,7 @@ export default {
 </script>
 
 <style>
+.pagination {
+  margin: 0;
+}
 </style>
