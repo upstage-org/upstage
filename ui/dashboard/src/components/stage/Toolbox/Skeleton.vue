@@ -21,7 +21,7 @@
     :title="data.name"
   >
     <slot v-if="$slots.default" />
-    <SavedDrawing v-else-if="data.type === 'drawing'" :drawing="data" />
+    <SavedDrawing v-else-if="data.drawingId" :drawing="data" />
     <p
       v-else-if="data.type === 'text'"
       :style="{
@@ -102,7 +102,7 @@ export default {
     };
 
     const holdable = computed(() =>
-      ["avatar", "drawing"].includes(props.data.type)
+      ["avatar"].includes(props.data.type)
     );
     const hold = () => {
       if (props.real && holdable.value && !props.data.holder) {

@@ -114,6 +114,7 @@ export default {
 
       .tag {
         height: 1.5em;
+        padding: 0;
         box-shadow: none;
       }
 

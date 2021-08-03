@@ -110,7 +110,7 @@ export default {
       () => props.object.holder?.id === store.state.stage.session
     );
     const holdable = computed(() =>
-      ["avatar", "drawing"].includes(props.object.type)
+      ["avatar"].includes(props.object.type)
     );
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const controlable = computed(() => {

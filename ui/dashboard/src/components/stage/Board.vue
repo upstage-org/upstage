@@ -38,7 +38,7 @@
           v-for="object in objects"
           :id="object.id"
           :key="object.id"
-          :is="object.type ?? 'avatar'"
+          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'"
           :object="object"
         />
       </transition-group>

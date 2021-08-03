@@ -364,6 +364,9 @@ export default {
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(cloneDeep(drawing));
         },
+        POP_DRAWING(state, drawingId) {
+            state.board.drawings = state.board.drawings.filter(d => d.drawingId !== drawingId)
+        },
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);
         },
@@ -637,7 +640,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar' || data.type === 'drawing') {
+            if (data.type === 'avatar') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
@@ -673,7 +676,7 @@ export default {
         },
         deleteObject(action, object) {
             object = serializeObject(object)
-            if (object.type === 'drawing') {
+            if (object.drawingId) { // is drawing
                 delete object.commands
             }
             const payload = {
@@ -830,11 +833,9 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        async addDrawing({ commit, dispatch }, drawing) {
-            drawing.type = 'drawing';
+        addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
-            drawing = await dispatch('placeObjectOnStage', drawing);
-            return drawing
+            dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';
