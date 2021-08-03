@@ -108,6 +108,16 @@
       </span>
       <span>Remove</span>
     </a>
+    <a
+      v-if="object.drawingId"
+      class="panel-block has-text-danger"
+      @click="deleteDrawingPermantly"
+    >
+      <span class="panel-icon">
+        <Icon src="remove.svg" />
+      </span>
+      <span>Delete Permantly</span>
+    </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
         <button class="button is-light">
@@ -239,6 +249,11 @@ export default {
       }
     };
 
+    const deleteDrawingPermantly = () => {
+      store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+      store.commit("stage/POP_DRAWING", props.object.drawingId);
+    };
+
     return {
       switchFrame,
       holdAvatar,
@@ -256,6 +271,7 @@ export default {
       isWearing,
       isHolding,
       holdable,
+      deleteDrawingPermantly,
     };
   },
 };

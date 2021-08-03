@@ -15,7 +15,7 @@
 
 <script>
 import Object from "./Object.vue";
-import MenuContent from "./Avatar/ContextMenu"; // Drawing should inherit all of avatar behavior
+import MenuContent from "./Avatar/ContextMenu";
 import { useStore } from "vuex";
 import { useDrawing } from "@/components/stage/Toolbox/tools/Draw/composable";
 import { computed } from "@vue/runtime-core";
@@ -26,9 +26,7 @@ export default {
   setup: (props) => {
     const store = useStore();
 
-    const drawing = computed(() =>
-      store.getters["stage/objects"].find((o) => o.id === props.object.id)
-    );
+    const drawing = computed(() => ({ ...props.object }));
     const { el } = useDrawing(drawing);
 
     return { el, store };

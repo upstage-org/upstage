@@ -248,6 +248,7 @@ export const useDrawing = (drawing) => {
     const commands = useRelativeCommands(drawing)
 
     const draw = async (newDrawing, oldDrawing) => {
+        if (!drawing.value) return
         const { value: canvas } = el;
         canvas.width = drawing.value.w;
         canvas.height = drawing.value.h;
