@@ -14,11 +14,11 @@
       <div class="actions">
         <button
           class="chat-setting button is-rounded is-light"
-          @click="minimizeToToolbox"
+          @click="minimiseToToolbox"
         >
           <span class="icon">
             <Icon v-if="collapsed" src="maximize.svg" size="20" />
-            <Icon v-else src="minimize.svg" size="24" class="mt-4" />
+            <Icon v-else src="minimise.svg" size="24" class="mt-4" />
           </span>
         </button>
         <button
@@ -159,7 +159,7 @@ export default {
     const playerChatVisibility = computed(
       () => store.state.stage.showPlayerChat
     );
-    const minimizeToToolbox = () => {
+    const minimiseToToolbox = () => {
       store.dispatch("stage/showPlayerChat", false);
       moveable.setState({ target: null });
       isMovingable.value = false;
@@ -179,7 +179,7 @@ export default {
       leave,
       toggleMoveable,
       isMovingable,
-      minimizeToToolbox,
+      minimiseToToolbox,
       chat,
     };
   },

@@ -19,12 +19,12 @@
         <button
           class="chat-setting button is-rounded is-light"
           @click="collapsed = !collapsed"
-          :data-tooltip="collapsed ? 'Maximize' : 'Minimize'"
+          :data-tooltip="collapsed ? 'Maximize' : 'Minimise'"
           :key="collapsed"
         >
           <span class="icon">
             <Icon v-if="collapsed" src="maximize.svg" size="20" />
-            <Icon v-else src="minimize.svg" size="24" class="mt-4" />
+            <Icon v-else src="minimise.svg" size="24" class="mt-4" />
           </span>
         </button>
         <button
