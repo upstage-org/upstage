@@ -17,7 +17,7 @@
           @click="minimiseToToolbox"
         >
           <span class="icon">
-            <Icon v-if="collapsed" src="maximize.svg" size="20" />
+            <Icon v-if="collapsed" src="maximise.svg" size="20" />
             <Icon v-else src="minimise.svg" size="24" class="mt-4" />
           </span>
         </button>
