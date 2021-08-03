@@ -2,6 +2,7 @@
   <transition :css="false" @enter="enter" @leave="leave">
     <div
       id="chatbox"
+      :key="chatPosition"
       v-show="chatVisibility"
       class="card is-light"
       :class="{ collapsed }"
@@ -9,6 +10,8 @@
         opacity,
         fontSize,
         width: `calc(20% + ${fontSize} + ${fontSize})`,
+        height: `calc(100vh - ${stageSize.height}px - 64px)`,
+        left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
       }"
     >
       <div class="actions">
@@ -16,15 +19,18 @@
         <button
           class="chat-setting button is-rounded is-light"
           @click="collapsed = !collapsed"
+          :data-tooltip="collapsed ? 'Maximise' : 'Minimise'"
+          :key="collapsed"
         >
           <span class="icon">
-            <Icon v-if="collapsed" src="maximize.svg" size="20" />
-            <Icon v-else src="minimize.svg" size="24" class="mt-4" />
+            <Icon v-if="collapsed" src="maximise.svg" size="20" />
+            <Icon v-else src="minimise.svg" size="24" class="mt-4" />
           </span>
         </button>
         <button
           class="chat-setting button is-rounded is-light"
           @click="openChatSetting"
+          data-tooltip="Settings"
         >
           <span class="icon">
             <Icon src="setting.svg" size="32" />
@@ -41,14 +47,14 @@
             <div class="font-size-controls">
               <button
                 class="button is-small is-rounded mx-1"
-                :key="encrease - fontSize"
+                data-tooltip="Increase font size"
                 @click="increateFontSize()"
               >
                 ➕
               </button>
               <button
+                data-tooltip="Decrease font size"
                 class="button is-small is-rounded mx-1"
-                :key="decrease - fontSize"
                 @click="decreaseFontSize()"
               >
                 ➖
@@ -129,7 +135,6 @@ export default {
         targets: el,
         scale: 0,
         translateY: -200,
-        easing: "easeInOutExpo",
         complete,
       });
     };
@@ -153,6 +158,9 @@ export default {
       };
       store.commit("stage/SET_CHAT_PARAMETERS", parameters);
     };
+    const chatPosition = computed(() => store.state.stage.chatPosition);
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
+    const stageSize = computed(() => store.getters["stage/stageSize"]);
 
     return {
       messages,
@@ -169,6 +177,9 @@ export default {
       leave,
       increateFontSize,
       decreaseFontSize,
+      chatPosition,
+      canPlay,
+      stageSize,
     };
   },
 };
@@ -179,12 +190,27 @@ export default {
   display: flex;
   flex-direction: column;
   position: fixed;
-  min-width: 250px;
-  height: calc(100% - 135px);
+  min-width: 300px;
   bottom: 16px;
   right: 16px;
   overflow: visible;
   z-index: 3;
+  @media only screen and (orientation: landscape) {
+    height: calc(100% - 135px) !important;
+  }
+  @media only screen and (orientation: portrait) {
+    width: calc(100vw - 32px) !important;
+    .actions,
+    .card-content,
+    .card-footer {
+      zoom: 3;
+    }
+    .actions {
+      button:first-child {
+        display: none;
+      }
+    }
+  }
 
   .card-content {
     flex-grow: 1;
@@ -198,9 +224,9 @@ export default {
   }
 
   &.collapsed {
-    height: 108px;
+    height: 108px !important;
     .card-content {
-      padding-top: 20px;
+      padding: 0;
       height: 0;
       > div {
         display: none;
@@ -208,6 +234,9 @@ export default {
     }
     .card-footer-item {
       padding-top: 6px;
+    }
+    .actions {
+      top: 5px;
     }
   }
 

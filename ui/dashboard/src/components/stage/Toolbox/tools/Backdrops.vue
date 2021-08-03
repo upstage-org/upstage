@@ -57,6 +57,25 @@
             </button>
           </p>
         </div>
+        <div class="field has-addons menu-group px-4 my-2">
+          <p class="control menu-group-title">
+            <span class="panel-icon pt-1">
+              <Icon src="opacity-slider.svg" />
+            </span>
+          </p>
+          <p class="control menu-group-item is-fullwidth">
+            <input
+              class="slider is-fullwidth is-primary my-0"
+              step="0.01"
+              min="0"
+              max="1"
+              :value="opacity(background)"
+              @input="adjustOpacity(background, $event.target.value, true)"
+              @change="adjustOpacity(background, $event.target.value, false)"
+              type="range"
+            />
+          </p>
+        </div>
       </template>
     </ContextMenu>
   </div>
@@ -68,6 +87,7 @@ import { computed } from "vue";
 import Image from "@/components/Image";
 import Icon from "@/components/Icon";
 import ContextMenu from "@/components/ContextMenu";
+import { throttle } from "@/utils/common";
 
 export default {
   components: { Image, Icon, ContextMenu },
@@ -108,6 +128,29 @@ export default {
       });
     };
 
+    const setBackgroundThrottled = throttle(setBackground, 100);
+
+    const adjustOpacity = (background, opacity, shouldShrottle) => {
+      background.opacity = opacity;
+      if (background.id === currentBackground.value.id) {
+        if (shouldShrottle) {
+          setBackgroundThrottled(background);
+        } else {
+          setBackground(background);
+        }
+      }
+    };
+
+    const opacity = (background) => {
+      if (background.id === currentBackground.value.id) {
+        background.opacity = currentBackground.value.opacity;
+      }
+      if (background.opacity) {
+        return background.opacity;
+      }
+      return 1;
+    };
+
     return {
       backgrounds,
       setBackground,
@@ -115,6 +158,8 @@ export default {
       changeBackdropSpeed,
       toggleAutoplayFrames,
       switchBackdropFrame,
+      adjustOpacity,
+      opacity,
     };
   },
 };

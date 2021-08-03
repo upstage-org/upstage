@@ -15,31 +15,31 @@
 <script>
 import { onUnmounted, ref } from "vue";
 import Avatars from "./tools/Avatars";
-import Backdrop from "./tools/Backdrop";
+import Backdrops from "./tools/Backdrops";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
-import Stream from "./tools/Stream/index";
+import Streams from "./tools/Streams/index";
 import Text from "./tools/Text";
-import Setting from "./tools/Setting";
+import Settings from "./tools/Settings";
 import Depth from "./tools/Depth";
 import Curtain from "./tools/Curtain";
-import Scene from "./tools/Scene";
+import Scenes from "./tools/Scenes";
 
 export default {
   props: ["tool"],
   components: {
     Avatars,
-    Backdrop,
+    Backdrops,
     Props,
     Audio,
     Draw,
-    Stream,
+    Streams,
     Text,
-    Setting,
+    Settings,
     Depth,
     Curtain,
-    Scene,
+    Scenes,
   },
   setup: () => {
     const bar = ref();
@@ -120,6 +120,7 @@ export default {
       &:hover,
       &.active {
         cursor: pointer;
+        filter: brightness(1.2);
         background-color: lightgray;
         img {
           -webkit-filter: drop-shadow(5px 5px 5px $dark);

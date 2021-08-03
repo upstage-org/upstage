@@ -48,8 +48,11 @@ export const assetFragment = gql`
       displayName
     }
     createdOn
-    fileLocation
+    src
     dbId
+    copyrightLevel
+    playerAccess
+    permission
   }
 `
 
@@ -119,11 +122,24 @@ export default {
             ...stageFragment
             chats {
               payload
-              created
+              performanceId
             }
             performances {
               id
               createdOn
+              name
+              description
+            }
+            scenes {
+              id
+              name
+              scenePreview
+              createdOn
+              owner {
+                id
+                username
+                displayName
+              }
             }
           }
         }
@@ -321,8 +337,8 @@ export default {
     ${assetFragment}
   `),
   updateMedia: (variables) => client.request(gql`
-    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String) {
-      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation) {
+    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String, $base64: String, $copyrightLevel: Int, $playerAccess: String) {
+      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation, base64: $base64, copyrightLevel: $copyrightLevel, playerAccess: $playerAccess) {
         asset {
           id
         }
@@ -367,4 +383,18 @@ export default {
       }
     }
   `, { id, name }),
+  deletePerformance: (id) => client.request(gql`
+    mutation DeletePerformance($id: Int!) {
+      deletePerformance(id: $id) {
+        success
+      }
+    }  
+  `, { id }),
+  updatePerformance: (id, name, description) => client.request(gql`
+    mutation updatePerformance($id: Int!, $name: String, $description: String) {
+      updatePerformance(id: $id, name: $name, description: $description) {
+        success
+      }
+    }
+  `, { id, name, description })
 }

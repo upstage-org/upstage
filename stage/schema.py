@@ -1,25 +1,26 @@
 # -*- coding: iso8859-15 -*-
-import re
-from sqlalchemy.orm.session import make_transient
-from stage.scene import DeleteScene, SaveScene, Scene
-from user.user_utils import current_user
-from flask_jwt_extended.utils import get_jwt_identity
-from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
-import performance_config.models
-from performance_config.models import ParentStage, Performance as PerformanceModel, Scene as SceneModel
-from stage.asset import Asset, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
+from user.models import ADMIN, SUPER_ADMIN
+from sqlalchemy import desc
+from graphql_relay.node.node import from_global_id, to_global_id
+from graphene import relay
+from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
+from config.settings import VERSION
+from event_archive.models import Event as EventModel
+from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
+from flask_graphql import GraphQLView
+from utils import graphql_utils
 from config.project_globals import (DBSession, Base, metadata, engine, get_scoped_session,
                                     app, api, ScopedSession)
-from utils import graphql_utils
-from flask_graphql import GraphQLView
-from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
-from event_archive.models import Event as EventModel
-from config.settings import VERSION
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from graphene import relay
-from graphql_relay.node.node import from_global_id, to_global_id
-from sqlalchemy import desc
-from user.models import ADMIN, SUPER_ADMIN
+from stage.asset import Asset, AssetConnectionField, AssetType, AssignStages, DeleteMedia, UpdateMedia, UploadMedia
+from performance_config.models import ParentStage, Performance as PerformanceModel, Scene as SceneModel
+import performance_config.models
+from flask_jwt_extended.view_decorators import jwt_required, verify_jwt_in_request
+from flask_jwt_extended.utils import get_jwt_identity
+from user.user_utils import current_user
+from stage.scene import DeleteScene, SaveScene, Scene
+from sqlalchemy.orm.session import make_transient
+from stage.performance import Performance, DeletePerformance, UpdatePerformance
+import re
 import graphene
 import sys
 import os
@@ -60,11 +61,6 @@ class Media(graphene.ObjectType):
     type = graphene.String()
     src = graphene.String()
     description = graphene.String()
-
-
-class Performance(SQLAlchemyObjectType):
-    class Meta:
-        model = PerformanceModel
 
 
 class Stage(SQLAlchemyObjectType):
@@ -423,13 +419,15 @@ class Mutation(graphene.ObjectType):
     saveScene = SaveScene.Field()
     deleteScene = DeleteScene.Field()
     duplicateStage = DuplicateStage.Field()
+    updatePerformance = UpdatePerformance.Field()
+    deletePerformance = DeletePerformance.Field()
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
         Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
-    assetList = StageConnectionField(
+    assetList = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())

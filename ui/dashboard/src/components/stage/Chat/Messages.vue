@@ -11,20 +11,25 @@
       :key="item"
       :style="{ opacity: item.isPlayer ? 1 : 0.5 }"
     >
-      <small style="font-size: 1em">
-        <b v-if="item.isPlayer">{{ item.user }}: </b>
-        <span v-else>{{ item.user }}: </span>
-      </small>
-      <span
-        class="tag message"
-        :style="{
-          'font-size': '1em',
-        }"
-        :class="messageClass[item.behavior]"
-        :title="time(item.at)"
-      >
-        <Linkify>{{ item.message }}</Linkify>
-      </span>
+      <template v-if="item.clear">
+        <Divider>Clear Chat</Divider>
+      </template>
+      <template v-else>
+        <small style="font-size: 1em">
+          <b v-if="item.isPlayer">{{ item.user }}: </b>
+          <span v-else>{{ item.user }}: </span>
+        </small>
+        <span
+          class="tag message"
+          :style="{
+            'font-size': '1em',
+          }"
+          :class="messageClass[item.behavior]"
+          :title="time(item.at)"
+        >
+          <Linkify>{{ item.message }}</Linkify>
+        </span>
+      </template>
     </p>
   </div>
 </template>
@@ -32,9 +37,10 @@
 <script>
 import moment from "moment";
 import Linkify from "@/components/Linkify";
+import Divider from "@/components/Divider";
 export default {
   props: ["messages", "style"],
-  components: { Linkify },
+  components: { Linkify, Divider },
   data: function () {
     return {
       messageClass: {

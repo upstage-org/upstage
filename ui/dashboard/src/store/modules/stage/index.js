@@ -22,6 +22,7 @@ export default {
         background: null,
         curtain: null,
         backdropColor: COLORS.DEFAULT_BACKDROP,
+        chatPosition: 'right',
         status: 'OFFLINE',
         subscribeSuccess: false,
         activeMovable: null,
@@ -125,7 +126,11 @@ export default {
                 left = (window.innerWidth - width) / 2;
             } else {
                 height = width / ratio;
-                top = (window.innerHeight - height) / 2;
+                if (window.innerWidth < window.innerHeight) { // Portrait mobile
+                    top = 0
+                } else {
+                    top = (window.innerHeight - height) / 2;
+                }
             }
             return { width, height, left, top };
         },
@@ -214,12 +219,14 @@ export default {
                     if (state.background?.interval) {
                         clearInterval(state.background.interval);
                     }
+                    if (!state.background || state.background.id !== background.id) { // Not playing animation if only opacity change
+                        anime({
+                            targets: "#board",
+                            opacity: [0, 1],
+                            duration: 5000,
+                        });
+                    }
                     state.background = background
-                    anime({
-                        targets: "#board",
-                        opacity: [0, 1],
-                        duration: 5000,
-                    });
                     if (background.multi && background.speed > 0) {
                         const { speed, frames } = state.background;
                         state.background.interval = setInterval(() => {
@@ -420,6 +427,9 @@ export default {
         },
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
+        },
+        SET_CHAT_POSITION(state, position) {
+            state.chatPosition = position
         },
         SET_BACKDROP_COLOR(state, color) {
             state.backdropColor = color
@@ -748,6 +758,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        setChatPosition(action, position) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_POSITION, position })
+        },
         setBackdropColor(action, color) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_BACKDROP_COLOR, color })
         },
@@ -770,6 +783,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_CHAT_POSITION:
+                    commit('SET_CHAT_POSITION', message.position)
                     break;
                 case BACKGROUND_ACTIONS.SET_BACKDROP_COLOR:
                     commit('SET_BACKDROP_COLOR', message.color)

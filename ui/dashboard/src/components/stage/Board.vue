@@ -18,9 +18,16 @@
           'px) translateY(' +
           stageSize.top +
           'px)',
-        'background-image': 'url(' + background + ')',
       }"
     >
+      <img
+        class="background-image"
+        :src="background"
+        :style="{
+          'background-image': 'url(' + background + ')',
+          opacity: backgroundOpacity,
+        }"
+      />
       <transition-group
         name="stage-avatars"
         :css="false"
@@ -63,6 +70,9 @@ export default {
         return background.src;
       }
     });
+    const backgroundOpacity = computed(
+      () => store.state.stage.background?.opacity ?? 1
+    );
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);
@@ -121,6 +131,7 @@ export default {
       background,
       backdropColor,
       canPlay,
+      backgroundOpacity,
     };
   },
 };
@@ -139,5 +150,12 @@ export default {
   width: 100vw;
   height: 100vh;
   transform-origin: top;
+}
+.background-image {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: auto;
 }
 </style>

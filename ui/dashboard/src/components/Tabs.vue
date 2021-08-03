@@ -14,12 +14,15 @@
           <span>{{ item.label }}</span>
         </a>
       </li>
+      <slot name="extras"></slot>
     </ul>
   </div>
-  <div v-for="item in items" :key="item.key">
-    <template v-if="tab === item.key">
-      <slot :name="item.key"></slot>
-    </template>
+  <div class="tab-content">
+    <div :class="`tab-${item.key}`" v-for="item in items" :key="item.key">
+      <template v-if="tab === item.key">
+        <slot :name="item.key"></slot>
+      </template>
+    </div>
   </div>
 </template>
 

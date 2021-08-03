@@ -11,7 +11,6 @@
     <span class="panel-icon">
       <Icon :src="icon" />
     </span>
-    {{ label ?? name }}
   </a>
 </template>
 
@@ -25,5 +24,5 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 </style>

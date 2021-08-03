@@ -55,8 +55,8 @@ class ParentAsset(Base,db.Model):
 class Performance(Base,db.Model):
     __tablename__ = "performance"
     id = Column(BigInteger, primary_key=True)
-    name = Column(String, nullable=False)
-    description = Column(Text, nullable=False)
+    name = Column(String, nullable=True)
+    description = Column(Text, nullable=True)
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
     stage = relationship(Stage, foreign_keys=[stage_id])
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)

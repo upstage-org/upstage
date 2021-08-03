@@ -25,7 +25,7 @@
     </div>
     <button
       v-if="showLoginForm"
-      class="button is-light is-outlined mt-4 has-tooltip-bottom"
+      class="button is-light is-outlined mt-4"
       @click="showLoginForm = false"
     >
       <span class="icon">
@@ -35,9 +35,8 @@
     </button>
     <button
       v-else
-      class="button is-light is-outlined mt-4 has-tooltip-bottom"
+      class="button is-light is-outlined mt-4"
       @click="showLoginForm = true"
-      data-tooltip="Has an account? Please login instead to use the performance tools!"
     >
       <span>Player Login</span>
       <span class="icon">
@@ -120,5 +119,14 @@ export default {
 }
 .modal-content {
   max-width: 500px;
+}
+@media only screen and (orientation: portrait) {
+  .modal {
+    zoom: 3;
+  }
+  .modal-content {
+    max-width: unset;
+    width: 100%;
+  }
 }
 </style>

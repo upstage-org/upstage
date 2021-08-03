@@ -1,3 +1,9 @@
+from datetime import datetime
+import time
+from flask_jwt_extended.view_decorators import verify_jwt_in_request
+from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
+from sqlalchemy.sql.expression import and_, or_
+from licenses.models import AssetLicense
 import os
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
@@ -20,6 +26,36 @@ absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
 
 
+class AssetConnectionField(SQLAlchemyConnectionField):
+    RELAY_ARGS = ['first', 'last', 'before', 'after']
+
+    @classmethod
+    def get_query(cls, model, info, sort=None, **args):
+        query = super(AssetConnectionField, cls).get_query(
+            model, info, sort, **args)
+
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        query = query.filter(or_(
+            AssetModel.asset_license == None,
+            AssetModel.asset_license.has(AssetLicense.level < 3),
+            and_(AssetModel.asset_license.has(AssetLicense.level == 3),
+                 AssetModel.owner_id == user_id)
+        ))
+        for field, value in args.items():
+            if field == 'id':
+                _type, _id = from_global_id(value)
+                query = query.filter(getattr(model, field) == _id)
+            elif field == 'asset_type':
+                query = query.filter(getattr(model, field).has(name=value))
+            elif len(field) > 5 and field[-4:] == 'like':
+                query = query.filter(
+                    getattr(model, field[:-5]).ilike(f"%{value}%"))
+            elif field not in cls.RELAY_ARGS and hasattr(model, field):
+                query = query.filter(getattr(model, field) == value)
+        return query
+
+
 class AssignedStage(graphene.ObjectType):
     id = graphene.Int()
     name = graphene.String()
@@ -28,8 +64,14 @@ class AssignedStage(graphene.ObjectType):
 
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    src = graphene.String(description="Logical path of the media")
     stages = graphene.List(
         AssignedStage, description="Stages that this media is assigned to")
+    copyright_level = graphene.Int(description="Copyright level")
+    playerAccess = graphene.String(
+        description="Users who can access and edit this media")
+    permission = graphene.String(
+        description="What permission the logged in user is granted to this media")
 
     class Meta:
         model = AssetModel
@@ -37,8 +79,43 @@ class Asset(SQLAlchemyObjectType):
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
 
+    def resolve_src(self, info):
+        timestamp = int(time.mktime(self.updated_on.timetuple()))
+        return self.file_location + '?t=' + str(timestamp)
+
     def resolve_stages(self, info):
         return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
+
+    def resolve_copyright_level(self, info):
+        if self.asset_license:
+            return self.asset_license.level
+        return 0
+
+    def resolve_playerAccess(self, info):
+        if self.asset_license and self.asset_license.permissions:
+            return self.asset_license.permissions
+        return "[]"
+
+    def resolve_permission(self, info):
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        if not user_id:
+            return "none"
+        if self.owner_id == user_id:
+            return 'owner'
+        if not self.asset_license or self.asset_license.level == 0:
+            return "editor"
+        if self.asset_license.level == 3:
+            return "none"
+        player_access = self.asset_license.permissions
+        if player_access:
+            accesses = json.loads(player_access)
+            if len(accesses) == 2:
+                if user_id in accesses[0]:
+                    return "readonly"
+                elif user_id in accesses[1]:
+                    return "editor"
+        return "none"
 
 
 class AssetType(SQLAlchemyObjectType):
@@ -99,7 +176,7 @@ class UploadMedia(graphene.Mutation):
             local_db_session.add(asset)
             local_db_session.flush()
             local_db_session.commit()
-            asset = local_db_session.query(AssetModel).options(joinedload(AssetModel.asset_type), joinedload(AssetModel.owner)).filter(
+            asset = local_db_session.query(AssetModel).options(joinedload(AssetModel.asset_type), joinedload(AssetModel.owner), joinedload(AssetModel.asset_license)).filter(
                 AssetModel.id == asset.id).first()
             return UploadMedia(asset=asset)
 
@@ -114,13 +191,18 @@ class UpdateMedia(graphene.Mutation):
             required=True, description="Name of the media")
         media_type = graphene.String(
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        base64 = graphene.String(
+            description="Base64 encoded content of the uploading media")
         file_location = graphene.String(description="File src")
         description = graphene.String(
             description="JSON serialized metadata of the media")
         id = graphene.ID(description="ID of the media")
+        copyright_level = graphene.Int(description="Copyright level")
+        player_access = graphene.String(
+            description="Users who can access and edit this media")
 
     @jwt_required()
-    def mutate(self, info, name, media_type, file_location=None, description=None, id=None):
+    def mutate(self, info, name, media_type, base64=None, file_location=None, description=None, id=None, copyright_level=None, player_access=None):
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -144,7 +226,29 @@ class UpdateMedia(graphene.Mutation):
                 asset.asset_type = asset_type
                 asset.description = description
                 if file_location:
+                    if "?" in file_location:
+                        file_location = file_location[:file_location.index("?")]
                     asset.file_location = file_location
+
+                if base64:
+                    # Replace image content
+                    mediaDirectory = os.path.join(
+                        absolutePath, storagePath, asset.file_location)
+                    with open(mediaDirectory, "wb") as fh:
+                        fh.write(b64decode(base64.split(',')[1]))
+                    asset.updated_on = datetime.utcnow()
+
+                if asset.asset_license:
+                    asset.asset_license.level = copyright_level
+                    asset.asset_license.permissions = player_access
+                else:
+                    asset_license = AssetLicense(
+                        asset_id=asset.id,
+                        level=copyright_level,
+                        permissions=player_access
+                    )
+                    local_db_session.add(asset_license)
+                local_db_session.flush()
 
             local_db_session.flush()
             local_db_session.commit()

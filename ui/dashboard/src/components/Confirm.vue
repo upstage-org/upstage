@@ -8,7 +8,7 @@
       <slot> Are you sure you want to do this? </slot>
     </template>
     <template #footer="{ closeModal }">
-      <button class="button is-dark" @click="active = false">
+      <button v-if="!onlyYes" class="button is-dark" @click="active = false">
         <slot name="no">
           <span class="icon">
             <i class="fas fa-times"></i>
@@ -37,7 +37,7 @@ import { ref } from "@vue/reactivity";
 import Modal from "@/components/Modal";
 import SaveButton from "@/components/form/SaveButton";
 export default {
-  props: ["loading"],
+  props: ["loading", "onlyYes"],
   emits: ["confirm"],
   components: { Modal, SaveButton },
   setup: () => {

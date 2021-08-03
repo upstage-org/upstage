@@ -1,24 +1,22 @@
 <template>
   <TopBar :tool="tool" />
-  <nav id="toolbox" :class="{ collapsed }" class="panel">
+  <nav id="toolbox" class="panel">
     <div class="panel-body">
-      <PanelItem name="Backdrop" icon="backdrop.svg" />
+      <PanelItem name="Audio" icon="audio.svg" />
+      <hr />
+      <PanelItem name="Backdrops" icon="backdrops.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
-      <PanelItem name="Audio" icon="audio.svg" />
-      <PanelItem name="Stream" icon="stream.svg" />
+      <PanelItem name="Streams" icon="streams.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
-      <PanelItem name="Setting" icon="rotation-slider.svg" />
-      <PanelItem name="Curtain" icon="curtain.svg" />
+      <hr />
       <PanelItem name="Depth" icon="multi-frame.svg" />
+      <PanelItem name="Curtain" icon="curtain.svg" />
+      <PanelItem name="Scenes" icon="animation-slider.svg" />
+      <hr />
+      <PanelItem name="Settings" icon="rotation-slider.svg" />
       <PlayerChat />
-      <a class="panel-block stage-scene-toggle" @click="changeTool('Scene')">
-        <span>
-          <Icon v-if="isScene" size="36" src="stage.svg" />
-          <Icon v-else size="36" src="scene.svg" />
-        </span>
-      </a>
     </div>
   </nav>
 </template>
@@ -28,11 +26,10 @@ import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar";
 import PanelItem from "./PanelItem";
 import PlayerChat from "./PlayerChat";
-import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 
 export default {
-  components: { TopBar, PanelItem, PlayerChat, Icon },
+  components: { TopBar, PanelItem, PlayerChat },
   setup: () => {
     const tool = ref();
     const store = useStore();
@@ -47,26 +44,11 @@ export default {
     provide("tool", tool);
     provide("changeTool", changeTool);
 
-    const collapsed = ref(true);
-    const timer = ref();
-    const expand = () => {
-      collapsed.value = false;
-      clearTimeout(timer.value);
-    };
-    const waitToCollapse = () => {
-      timer.value = setTimeout(() => (collapsed.value = true), 1000);
-    };
-
-    waitToCollapse();
-
     const isScene = computed(() => tool.value === "Scene");
 
     return {
       tool,
       changeTool,
-      collapsed,
-      expand,
-      waitToCollapse,
       isScene,
     };
   },
@@ -76,17 +58,23 @@ export default {
 <style lang="scss">
 #toolbox {
   position: fixed;
-  width: 15%;
-  min-width: 200px;
-  left: 16px;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
   background-color: white;
   opacity: 0.9;
   transition: transform 0.5s;
-  top: 120px;
   z-index: 2;
+  hr {
+    margin: 0;
+  }
+  @media only screen and (orientation: portrait) {
+    top: 50px !important;
+    transform: none !important;
+  }
 
   .panel-icon {
-    width: 1.5em;
+    margin: auto;
     img {
       filter: grayscale(100%);
     }
@@ -100,32 +88,6 @@ export default {
       }
       transform: scale(1.5);
     }
-  }
-  .stage-scene-toggle {
-    height: 62px;
-    > span {
-      position: absolute;
-      right: 0px;
-      bottom: 8px;
-    }
-  }
-
-  &.collapsed {
-    transform: translateX(-90%);
-    .panel-icon {
-      position: absolute;
-      right: 0;
-    }
-    .fa-angle-right {
-      display: none;
-    }
-  }
-
-  .dropdown-menu {
-    position: fixed;
-    left: 216px;
-    top: initial;
-    z-index: 100;
   }
 }
 </style>

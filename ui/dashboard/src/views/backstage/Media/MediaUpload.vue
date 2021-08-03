@@ -52,14 +52,18 @@ export default {
     };
 
     const handleFileChange = async (file, type) => {
-      active.value = true;
-      media.value = {
-        name: file.name,
-        base64: base64.value,
-        mediaType: getType(type),
-        filename: file.name,
-        stages: [],
-      };
+      if (file) {
+        active.value = true;
+        media.value = {
+          name: file.name,
+          base64: base64.value,
+          mediaType: getType(type),
+          fileType: type,
+          filename: file.name,
+          stages: [],
+          copyrightLevel: 0,
+        };
+      }
     };
 
     const refresh = inject("refresh");

@@ -2,7 +2,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../views/Home.vue'
 import store from "@/store";
 import config from '../../vue.config';
-import PleaseRotate from '@/utils/pleaserotate';
 
 const routes = [
   {
@@ -160,20 +159,15 @@ const routes = [
             component: () => import('../views/backstage/StageManagement/Media.vue'),
           },
           {
-            name: 'Chat',
-            path: 'chat',
-            component: () => import('../views/backstage/StageManagement/Chat.vue'),
+            name: 'Archive',
+            path: 'archive',
+            component: () => import('../views/backstage/StageManagement/Archive.vue'),
           },
           {
             name: 'Scenes',
             path: 'scenes',
             component: () => import('../views/backstage/StageManagement/Scenes.vue'),
           },
-          {
-            name: 'Records',
-            path: 'records',
-            component: () => import('../views/backstage/StageManagement/Records.vue'),
-          }
         ]
       }
     ]
@@ -209,10 +203,8 @@ router.beforeEach((to, from, next) => {
   }
   if (to.name === 'Live') {
     document.querySelector("meta[name=viewport]").setAttribute("content", "");
-    PleaseRotate.start();
   } else {
     document.querySelector("meta[name=viewport]").setAttribute("content", "width=device-width,initial-scale=1.0");
-    PleaseRotate.stop();
   }
   next();
   document.title = `UpStage ${to.name && '- ' + to.name}`;

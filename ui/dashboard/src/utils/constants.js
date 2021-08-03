@@ -24,6 +24,7 @@ export const BACKGROUND_ACTIONS = {
   CHANGE_BACKGROUND: 'changeBackground',
   SET_CHAT_VISIBILITY: 'setChatVisibility',
   CLEAR_CHAT: 'clearChat',
+  SET_CHAT_POSITION: 'setChatPosition',
   SET_BACKDROP_COLOR: 'setBackdropColor',
   DRAW_CURTAIN: 'drawCurtain',
   LOAD_SCENES: 'loadScenes',
@@ -43,3 +44,30 @@ export const ROLES = {
 export const COLORS = {
   DEFAULT_BACKDROP: '#30ac45'
 }
+
+export const MEDIA_COPYRIGHT_LEVELS = [
+  {
+    value: 0,
+    name: "✅ Copyright free",
+    description:
+      "Can be used by other players in any way without need for permission",
+  },
+  {
+    value: 1,
+    name: "👌 Use with acknowledgement",
+    description:
+      "Other players can use the media item as long as the owner is acknowledged",
+  },
+  {
+    value: 2,
+    name: "🔑 Use with permission",
+    description:
+      "Other players must ask the owner for permission if they want to use the media item",
+  },
+  {
+    value: 3,
+    name: "🔒️ Not shared",
+    description:
+      "Nobody except the owner can user the media item; that is, only the owner can assign it to stages - if it is assigned to a stage then it would be available for players who have access to that stage",
+  },
+]

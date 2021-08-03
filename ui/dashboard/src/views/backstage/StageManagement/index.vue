@@ -47,13 +47,8 @@
                 </router-link>
               </li>
               <li>
-                <router-link to="chat" exact-active-class="is-active">
-                  Chat
-                </router-link>
-              </li>
-              <li>
-                <router-link to="records" exact-active-class="is-active">
-                  Records
+                <router-link to="archive" exact-active-class="is-active">
+                  Archive
                 </router-link>
               </li>
               <li>
