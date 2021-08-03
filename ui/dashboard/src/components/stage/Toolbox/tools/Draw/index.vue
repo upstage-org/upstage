@@ -92,7 +92,22 @@
       <span class="tag is-light is-block">New</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
-      <Skeleton :data="drawing" />
+      <ContextMenu>
+        <template #trigger>
+          <Skeleton :data="drawing" />
+        </template>
+        <template #context>
+          <a
+            class="panel-block has-text-danger"
+            @click="deleteDrawingPermantly(drawing)"
+          >
+            <span class="panel-icon">
+              <Icon src="remove.svg" />
+            </span>
+            <span>Delete Permantly</span>
+          </a>
+        </template>
+      </ContextMenu>
     </div>
   </template>
 </template>
@@ -103,11 +118,12 @@ import { useStore } from "vuex";
 import { useDrawable } from "./composable";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
+import ContextMenu from "@/components/ContextMenu";
 import Skeleton from "../../Skeleton";
 import { v4 as uuidv4 } from "uuid";
 
 export default {
-  components: { Skeleton, ColorPicker, Icon },
+  components: { Skeleton, ColorPicker, Icon, ContextMenu },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);
@@ -158,6 +174,15 @@ export default {
       store.commit("stage/UPDATE_IS_DRAWING", false);
     });
 
+    const deleteDrawingPermantly = (drawing) => {
+      store.commit("stage/POP_DRAWING", drawing.drawingId);
+      store.getters["stage/objects"]
+        .filter((o) => o.drawingId === drawing.drawingId)
+        .forEach((o) => {
+          store.dispatch("stage/deleteObject", o);
+        });
+    };
+
     return {
       isDrawing,
       drawings,
@@ -173,6 +198,7 @@ export default {
       mode,
       cursor,
       stageSize,
+      deleteDrawingPermantly,
     };
   },
 };
