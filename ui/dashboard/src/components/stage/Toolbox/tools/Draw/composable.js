@@ -257,7 +257,7 @@ export const useDrawing = (drawing) => {
         for (let i = 0; i < commands.value.length; i++) {
             const command = commands.value[i];
             let shouldAnimate = true;
-            if (newDrawing && oldDrawing) {
+            if (newDrawing && oldDrawing && oldDrawing.commands) {
                 if (i < oldDrawing.commands.length) {
                     shouldAnimate = false
                 }

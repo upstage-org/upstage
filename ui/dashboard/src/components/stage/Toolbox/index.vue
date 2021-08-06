@@ -9,6 +9,7 @@
       <PanelItem name="Props" icon="prop.svg" />
       <PanelItem name="Streams" icon="streams.svg" />
       <PanelItem name="Draw" icon="draw.svg" />
+      <PanelItem name="Whiteboard" icon="draw.svg" />
       <PanelItem name="Text" icon="text.svg" />
       <hr />
       <PanelItem name="Depth" icon="multi-frame.svg" />

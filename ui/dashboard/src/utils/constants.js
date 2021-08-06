@@ -5,6 +5,7 @@ export const TOPICS = {
   AUDIO: "audio",
   REACTION: "reaction",
   COUNTER: "counter",
+  DRAW: "draw",
   STATISTICS: "statistics",
 }
 
@@ -30,6 +31,10 @@ export const BACKGROUND_ACTIONS = {
   LOAD_SCENES: 'loadScenes',
   SWITCH_SCENE: 'switchScene',
   BLANK_SCENE: 'blankScene'
+}
+
+export const DRAW_ACTIONS = {
+  NEW_LINE: 'newLine',
 }
 
 export const ROLES = {
