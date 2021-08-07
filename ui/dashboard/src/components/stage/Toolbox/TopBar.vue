@@ -19,6 +19,7 @@ import Backdrops from "./tools/Backdrops";
 import Props from "./tools/Props";
 import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
+import Whiteboard from "./tools/Whiteboard";
 import Streams from "./tools/Streams/index";
 import Text from "./tools/Text";
 import Settings from "./tools/Settings";
@@ -40,6 +41,7 @@ export default {
     Depth,
     Curtain,
     Scenes,
+    Whiteboard,
   },
   setup: () => {
     const bar = ref();

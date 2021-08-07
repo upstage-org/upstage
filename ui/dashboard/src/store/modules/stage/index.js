@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS, DRAW_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -38,6 +38,7 @@ export default {
             objects: [],
             drawings: [],
             texts: [],
+            whiteboard: []
         },
         tools: {
             avatars: [],
@@ -145,6 +146,9 @@ export default {
         },
         unreadPrivateMessageCount(state) {
             return state.chat.privateMessages.filter(m => m.at > state.lastSeenPrivateMessage).length
+        },
+        whiteboard(state) {
+            return state.board.whiteboard
         }
     },
     mutations: {
@@ -209,6 +213,7 @@ export default {
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
+            state.board.whiteboard = [];
             state.chat.messages = [];
             state.chat.privateMessages = [];
             state.chat.color = randomColor();
@@ -483,6 +488,25 @@ export default {
                 state.lastSeenPrivateMessage = state.chat.privateMessages[length - 1].at
                 localStorage.setItem('lastSeenPrivateMessage', state.lastSeenPrivateMessage)
             }
+        },
+        UPDATE_WHITEBOARD(state, message) {
+            if (!state.board.whiteboard) {
+                state.board.whiteboard = []
+            }
+            switch (message.type) {
+                case DRAW_ACTIONS.NEW_LINE:
+                    state.board.whiteboard = state.board.whiteboard.concat(message.command)
+                    break;
+                case DRAW_ACTIONS.UNDO:
+                    console.log(message.index)
+                    state.board.whiteboard = state.board.whiteboard.filter((e, i) => i !== message.index)
+                    break;
+                case DRAW_ACTIONS.CLEAR:
+                    state.board.whiteboard = []
+                    break;
+                default:
+                    break;
+            }
         }
     },
     actions: {
@@ -520,6 +544,7 @@ export default {
                 [TOPICS.AUDIO]: { qos: 2 },
                 [TOPICS.REACTION]: { qos: 2 },
                 [TOPICS.COUNTER]: { qos: 2 },
+                [TOPICS.DRAW]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
@@ -550,6 +575,9 @@ export default {
                     break;
                 case TOPICS.COUNTER:
                     dispatch('handleCounterMessage', { message });
+                    break;
+                case TOPICS.DRAW:
+                    dispatch('handleDrawMessage', { message });
                     break;
                 default:
                     break;
@@ -1010,6 +1038,18 @@ export default {
             if (getters.canPlay && !state.preferences.isDrawing && !state.replay.isReplaying) {
                 commit('SET_ACTIVE_MOVABLE', id)
             }
-        }
+        },
+        handleDrawMessage({ commit }, { message }) {
+            commit('UPDATE_WHITEBOARD', message)
+        },
+        sendDrawWhiteboard(action, command) {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.NEW_LINE, command })
+        },
+        sendUndoWhiteboard({ state }) {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.UNDO, index: state.board.whiteboard.length - 1 })
+        },
+        sendClearWhiteboard() {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.CLEAR })
+        },
     },
 };
