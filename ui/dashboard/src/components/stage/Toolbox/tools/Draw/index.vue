@@ -67,13 +67,17 @@
     </div>
     <div class="drawing-tool" @click="save('avatar')">
       <div class="icon is-large">
-        <Icon size="36" src="check.svg" />
+        <Icon size="24" src="check.svg" />
+        &nbsp;
+        <Icon size="24" src="avatar.svg" />
       </div>
       <span class="tag is-light is-block">Save as Avatar</span>
     </div>
     <div class="drawing-tool" @click="save('prop')">
       <div class="icon is-large">
-        <Icon size="36" src="check.svg" />
+        <Icon size="24" src="check.svg" />
+        &nbsp;
+        <Icon size="24" src="prop.svg" />
       </div>
       <span class="tag is-light is-block">Save as Prop</span>
     </div>
@@ -208,7 +212,7 @@ export default {
 .drawing {
   position: fixed;
   z-index: 1000;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: hsla(142, 52%, 96%, 0.8);
 }
 .drawing-tool {
   z-index: 1001;

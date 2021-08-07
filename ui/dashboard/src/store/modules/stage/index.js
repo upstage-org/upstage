@@ -148,7 +148,7 @@ export default {
             return state.chat.privateMessages.filter(m => m.at > state.lastSeenPrivateMessage).length
         },
         whiteboard(state) {
-            return state.board.whiteboard ?? []
+            return state.board.whiteboard
         }
     },
     mutations: {
@@ -213,6 +213,7 @@ export default {
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
+            state.board.whiteboard = [];
             state.chat.messages = [];
             state.chat.privateMessages = [];
             state.chat.color = randomColor();
@@ -492,15 +493,20 @@ export default {
             if (!state.board.whiteboard) {
                 state.board.whiteboard = []
             }
-            console.log(state.board.whiteboard)
             switch (message.type) {
                 case DRAW_ACTIONS.NEW_LINE:
-                    state.board.whiteboard.push(message.command)
+                    state.board.whiteboard = state.board.whiteboard.concat(message.command)
+                    break;
+                case DRAW_ACTIONS.UNDO:
+                    console.log(message.index)
+                    state.board.whiteboard = state.board.whiteboard.filter((e, i) => i !== message.index)
+                    break;
+                case DRAW_ACTIONS.CLEAR:
+                    state.board.whiteboard = []
                     break;
                 default:
                     break;
             }
-
         }
     },
     actions: {
@@ -1036,8 +1042,14 @@ export default {
         handleDrawMessage({ commit }, { message }) {
             commit('UPDATE_WHITEBOARD', message)
         },
-        sendDrawNewLine(action, command) {
+        sendDrawWhiteboard(action, command) {
             mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.NEW_LINE, command })
-        }
+        },
+        sendUndoWhiteboard({ state }) {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.UNDO, index: state.board.whiteboard.length - 1 })
+        },
+        sendClearWhiteboard() {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.CLEAR })
+        },
     },
 };

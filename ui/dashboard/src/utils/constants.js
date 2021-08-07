@@ -35,6 +35,8 @@ export const BACKGROUND_ACTIONS = {
 
 export const DRAW_ACTIONS = {
   NEW_LINE: 'newLine',
+  UNDO: 'undo',
+  CLEAR: 'clear'
 }
 
 export const ROLES = {

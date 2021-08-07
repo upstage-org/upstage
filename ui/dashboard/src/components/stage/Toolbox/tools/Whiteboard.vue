@@ -58,7 +58,7 @@
     </div>
     <span class="tag is-light is-block">Undo</span>
   </div>
-  <div class="drawing-tool" @click="clearCanvas(true)">
+  <div class="drawing-tool" @click="clear">
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
@@ -81,17 +81,8 @@ export default {
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
     });
-    const {
-      el,
-      cursor,
-      clearCanvas,
-      undo,
-      toggleErase,
-      color,
-      size,
-      mode,
-      history,
-    } = useDrawable();
+    const { el, cursor, toggleErase, color, size, mode, history, clearCanvas } =
+      useDrawable();
 
     onMounted(() => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
@@ -103,17 +94,41 @@ export default {
 
     watch(history, (val) => {
       if (history.length) {
-        store.dispatch("stage/sendDrawNewLine", val[0]);
-        history.length = 0;
+        let command = val[0];
+        const ratio = 1 / stageSize.value.height;
+        command = {
+          ...command,
+          size: command.size * ratio,
+          x: command.x * ratio,
+          y: command.y * ratio,
+          lines: command.lines.map((line) => ({
+            x: line.x * ratio,
+            y: line.y * ratio,
+            fromX: line.fromX * ratio,
+            fromY: line.fromY * ratio,
+          })),
+        };
+        store.dispatch("stage/sendDrawWhiteboard", command);
+        clearCanvas(true);
       }
     });
+
+    const undo = () => {
+      store.dispatch("stage/sendUndoWhiteboard");
+      clearCanvas(true);
+    };
+
+    const clear = () => {
+      store.dispatch("stage/sendClearWhiteboard");
+      clearCanvas(true);
+    };
 
     return {
       isDrawing,
       color,
       size,
       el,
-      clearCanvas,
+      clear,
       undo,
       toggleErase,
       mode,
