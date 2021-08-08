@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="loading" />
-  <div class="table-wrapper" v-else>
+  <div :class="{ 'table-wrapper': wrapper }" v-else>
     <table class="table">
       <thead>
         <tr>
@@ -106,6 +106,10 @@ export default {
     data: {
       type: Array,
     },
+    wrapper: {
+      type: Boolean,
+      default: true,
+    },
   },
   components: { Loading, Pagination },
   setup: (props) => {
@@ -192,6 +196,7 @@ i.fas {
 .table-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
+  padding-right: 24px;
 }
 table {
   width: 100%;
