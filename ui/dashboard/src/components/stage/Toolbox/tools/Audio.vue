@@ -75,7 +75,8 @@ import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import ContextMenu from "@/components/ContextMenu";
 import Switch from "@/components/form/Switch";
-import { computed, onUnmounted } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
+import { useShortcut } from "../../composable";
 
 export default {
   components: { Icon, ContextMenu, Switch },
@@ -104,20 +105,13 @@ export default {
       store.dispatch("stage/updateAudioStatus", audio);
     };
 
-    const playSoundShortcut = (e) => {
-      if (!e) e = window.event;
+    useShortcut((e) => {
       if (isFinite(e.key)) {
         const i = e.key - 1;
         if (audios.value.length > i && i >= 0) {
           togglePlaying(audios.value[i]);
         }
       }
-    };
-
-    window.addEventListener("keydown", playSoundShortcut);
-
-    onUnmounted(() => {
-      window.removeEventListener("keydown", playSoundShortcut);
     });
 
     return { audios, togglePlaying, toggleLoop, setVolume, audioPlayers, seek };

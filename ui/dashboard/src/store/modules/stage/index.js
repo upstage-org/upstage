@@ -988,6 +988,26 @@ export default {
             state.replay.timers.forEach(timer => clearTimeout(timer))
             state.replay.timers = []
         },
+        seekForwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current + 10000
+            const nextEvent = state.model.events.find(e => e.mqttTimestamp > current)
+            if (nextEvent) {
+                dispatch('replayRecord', nextEvent.mqttTimestamp)
+            }
+        },
+        seekBackwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current - 10000
+            let event = null
+            for (let i = state.model.events.length - 1; i >= 0; i--) {
+                event = state.model.events[i];
+                if (event.mqttTimestamp < current) {
+                    break;
+                }
+            }
+            if (event) {
+                dispatch('replayRecord', event.mqttTimestamp)
+            }
+        },
         handleCounterMessage({ commit, state }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
             if (message.id === state.session && message.avatarId) {

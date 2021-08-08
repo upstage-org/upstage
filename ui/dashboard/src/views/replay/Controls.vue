@@ -1,7 +1,13 @@
 <template>
-  <div id="replay-controls" class="card is-light">
+  <div v-show="!collapsed" id="replay-controls" class="card is-light">
     <div class="card-body">
       <div class="is-fullwidth my-2 has-text-centered">
+        <button
+          class="button is-primary is-outlined is-rounded reaction is-small m-1"
+          @click="seekBackward"
+        >
+          <i class="fas fa-fast-backward"></i>
+        </button>
         <button
           v-if="isPlaying"
           class="button is-primary is-outlined is-rounded reaction mx-1"
@@ -16,7 +22,33 @@
         >
           <i class="fas fa-play"></i>
         </button>
-        <teleport to="body">
+        <button
+          class="button is-primary is-outlined is-rounded reaction is-small m-1"
+          @click="seekForward"
+        >
+          <i class="fas fa-fast-forward"></i>
+        </button>
+        <Modal width="500px">
+          <template #trigger>
+            <button
+              class="button minimise is-rounded is-light is-small"
+              @click="collapsed = true"
+            >
+              <span class="icon">
+                <Icon src="minimise.svg" size="24" class="mt-4" />
+              </span>
+            </button>
+          </template>
+          <template #header> Tips </template>
+          <template #content>
+            <p>
+              Replay controls are hidden! You can toggle the
+              <code>Esc</code> key to quickly hide the replay controls or bring
+              it back 👌
+            </p>
+          </template>
+        </Modal>
+        <teleport v-if="!collapsed" to="body">
           <Dropdown
             style="position: absolute; left: 24px; bottom: 64px"
             is-up
@@ -42,6 +74,7 @@
           :value="timestamp.current"
           @change="seek"
         />
+        <EventIndicator />
       </div>
       <div class="card-footer-item" style="width: 50px">
         {{ showTimestamp(timestamp.end - timestamp.begin) }}
@@ -52,10 +85,15 @@
 
 <script>
 import Dropdown from "@/components/form/Dropdown";
-import { computed } from "@vue/runtime-core";
+import Icon from "@/components/Icon";
+import Modal from "@/components/Modal";
+import { computed, ref } from "@vue/runtime-core";
 import { useStore } from "vuex";
+import EventIndicator from "./EventIndicator.vue";
+import { useShortcut } from "@/components/stage/composable";
+
 export default {
-  components: { Dropdown },
+  components: { Dropdown, EventIndicator, Icon, Modal },
   setup() {
     const store = useStore();
     const timestamp = computed(() => store.state.stage.replay.timestamp);
@@ -87,6 +125,22 @@ export default {
       play();
     };
 
+    const seekForward = () => {
+      store.dispatch("stage/seekForwardReplay");
+    };
+
+    const seekBackward = () => {
+      store.dispatch("stage/seekBackwardReplay");
+    };
+
+    const collapsed = ref(false);
+
+    useShortcut((e) => {
+      if (e.keyCode == 27) {
+        collapsed.value = !collapsed.value;
+      }
+    });
+
     return {
       timestamp,
       seek,
@@ -97,6 +151,9 @@ export default {
       speed,
       speeds,
       changeSpeed,
+      seekForward,
+      seekBackward,
+      collapsed,
     };
   },
 };
@@ -114,6 +171,17 @@ export default {
   .card-footer-item {
     padding-top: 0;
     padding-bottom: 0;
+    flex-wrap: wrap;
+  }
+  input[type="range"] {
+    &::-webkit-slider-thumb {
+      position: relative;
+      z-index: 100;
+    }
+  }
+  .button.minimise {
+    position: absolute;
+    right: 8px;
   }
 }
 </style>

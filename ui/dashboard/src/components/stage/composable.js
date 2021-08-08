@@ -31,3 +31,16 @@ export const useCounter = (stageUrl) => {
 
     return [players, audiences, loading]
 }
+
+export const useShortcut = (callback) => {
+    const shortcutHandler = (e) => {
+        if (!e) e = window.event;
+        callback(e);
+    };
+
+    window.addEventListener("keydown", shortcutHandler);
+
+    onUnmounted(() => {
+        window.removeEventListener("keydown", shortcutHandler);
+    });
+}
