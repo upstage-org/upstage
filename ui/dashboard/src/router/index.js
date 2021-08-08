@@ -180,7 +180,7 @@ const routes = [
   },
   {
     path: '/replay/:url/:id',
-    name: 'Replay Record',
+    name: 'Replay Recording',
     component: () => import('../views/replay/Layout.vue'),
   },
 ]

@@ -151,6 +151,7 @@ export default {
 #board {
   position: fixed;
   background-size: cover;
+  overflow: hidden;
 }
 .curtain {
   pointer-events: none;

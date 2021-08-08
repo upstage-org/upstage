@@ -956,7 +956,7 @@ export default {
                 message,
             })
         },
-        async replayRecord({ state, dispatch, commit }, timestamp) {
+        async replayRecording({ state, dispatch, commit }, timestamp) {
             stopSpeaking()
             await dispatch('pauseReplay');
             const current = timestamp ? Number(timestamp) : state.replay.timestamp.begin
@@ -987,6 +987,26 @@ export default {
             state.replay.interval = null
             state.replay.timers.forEach(timer => clearTimeout(timer))
             state.replay.timers = []
+        },
+        seekForwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current + 10000
+            const nextEvent = state.model.events.find(e => e.mqttTimestamp > current)
+            if (nextEvent) {
+                dispatch('replayRecording', nextEvent.mqttTimestamp)
+            }
+        },
+        seekBackwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current - 10000
+            let event = null
+            for (let i = state.model.events.length - 1; i >= 0; i--) {
+                event = state.model.events[i];
+                if (event.mqttTimestamp < current) {
+                    break;
+                }
+            }
+            if (event) {
+                dispatch('replayRecording', event.mqttTimestamp)
+            }
         },
         handleCounterMessage({ commit, state }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
