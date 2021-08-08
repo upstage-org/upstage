@@ -1,21 +1,13 @@
 <template>
-  <UserTable
-    action-column="Status"
-    :action-sort="(a, b) => b.active - a.active"
-  >
-    <template #action="{ item }">
-      <Switch
-        v-model="item.active"
-        @update:modelValue="toggleStatus(item)"
-        className="is-rounded is-success"
-        :loading="item.loading"
-      />
-    </template>
-  </UserTable>
+  <Switch
+    v-model="item.active"
+    @update:modelValue="toggleStatus(item)"
+    className="is-rounded is-success"
+    :loading="item.loading"
+  />
 </template>
 
 <script>
-import UserTable from "./UserTable";
 import Switch from "@/components/form/Switch";
 import { userGraph } from "@/services/graphql";
 import { displayName } from "@/utils/auth";
@@ -23,8 +15,9 @@ import { useMutation } from "@/services/graphql/composable";
 import { notification } from "@/utils/notification";
 
 export default {
-  components: { UserTable, Switch },
-  setup: () => {
+  components: { Switch },
+  props: ["user"],
+  setup: (props) => {
     const { mutation: updateUser } = useMutation(userGraph.updateUser);
     const toggleStatus = async (user) => {
       user.loading = true;
@@ -36,7 +29,7 @@ export default {
       );
       user.loading = false;
     };
-    return { toggleStatus };
+    return { toggleStatus, item: props.user };
   },
 };
 </script>

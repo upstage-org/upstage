@@ -1,26 +1,21 @@
 <template>
-  <UserTable action-column="New Role">
-    <template #action="{ item }">
-      <Confirm @confirm="(close) => saveRole(item, close)" :loading="loading">
-        <template #render="{ confirm }">
-          <Dropdown
-            :data="roles"
-            :render-label="(item) => item.label"
-            :render-value="(item) => item.value"
-            :model-value="item.selectedRole ?? item.role"
-            @update:model-value="
-              item.selectedRole = $event;
-              confirm();
-            "
-          />
-        </template>
-      </Confirm>
+  <Confirm @confirm="(close) => saveRole(item, close)" :loading="loading">
+    <template #render="{ confirm }">
+      <Dropdown
+        :data="roles"
+        :render-label="(item) => item.label"
+        :render-value="(item) => item.value"
+        :model-value="item.selectedRole ?? item.role"
+        @update:model-value="
+          item.selectedRole = $event;
+          confirm();
+        "
+      />
     </template>
-  </UserTable>
+  </Confirm>
 </template>
 
 <script>
-import UserTable from "./UserTable";
 import { useMutation } from "@/services/graphql/composable";
 import { userGraph } from "@/services/graphql";
 import Dropdown from "@/components/form/Dropdown";
@@ -30,8 +25,9 @@ import { titleCase } from "@/utils/common";
 import { displayName, displayRole } from "@/utils/auth";
 
 export default {
-  components: { UserTable, Dropdown, Confirm },
-  setup: () => {
+  components: { Dropdown, Confirm },
+  props: ["user"],
+  setup: (props) => {
     const roles = [];
     for (let role in ROLES) {
       roles.push({
@@ -50,7 +46,7 @@ export default {
       );
       close();
     };
-    return { roles, loading, saveRole };
+    return { roles, loading, saveRole, item: props.user };
   },
 };
 </script>

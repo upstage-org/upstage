@@ -1,27 +1,25 @@
 <template>
-  <UserTable action-column="Edit Profile">
-    <template #action="{ item, displayName, refresh }">
-      <Modal>
-        <template #trigger>
-          <Icon src="edit.svg" class="clickable" />
-        </template>
-        <template #header>{{ displayName }}'s profile</template>
-        <template #content>
-          <ProfileForm :profile="item" @success="refresh" />
-        </template>
-      </Modal>
+  <Modal>
+    <template #trigger>
+      <a class="button is-light is-small" data-tooltip="Edit profile">
+        <Icon src="edit.svg" class="clickable" />
+      </a>
     </template>
-  </UserTable>
+    <template #header>{{ displayName }}'s profile</template>
+    <template #content>
+      <ProfileForm :profile="item" @success="refresh" />
+    </template>
+  </Modal>
 </template>
 
 <script>
-import UserTable from "./UserTable";
 import Modal from "@/components/Modal";
 import Icon from "@/components/Icon";
 import ProfileForm from "@/components/ProfileForm";
 
 export default {
-  components: { UserTable, Modal, Icon, ProfileForm },
+  components: { Modal, Icon, ProfileForm },
+  props: ["item", "displayName", "refresh"],
 };
 </script>
 
