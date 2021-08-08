@@ -22,9 +22,12 @@
       @input="$emit('update:modelValue', $event.target.checked)"
       style="display: none"
     />
-    <label class="clickable" :for="id" :class="{ 'is-loading': loading }">
-      <Icon v-if="modelValue" src="toggle_on.svg" size="36" height="24" />
-      <Icon v-else src="toggle_off.svg" size="36" height="24" />
+    <label class="clickable" :for="id">
+      <Loading v-if="loading" height="24px" />
+      <template v-else>
+        <Icon v-if="modelValue" src="toggle_on.svg" size="36" height="24" />
+        <Icon v-else src="toggle_off.svg" size="36" height="24" />
+      </template>
       {{ label }}
     </label>
   </div>
@@ -33,6 +36,7 @@
 <script>
 import { v4 as uuidv4 } from "uuid";
 import Icon from "@/components/Icon.vue";
+import Loading from "@/components/Loading.vue";
 
 export default {
   props: [
@@ -44,7 +48,7 @@ export default {
     "loading",
   ],
   emits: ["update:modelValue"],
-  components: { Icon },
+  components: { Icon, Loading },
   setup: () => {
     const id = uuidv4();
     return { id };

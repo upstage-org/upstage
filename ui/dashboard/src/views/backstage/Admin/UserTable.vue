@@ -1,12 +1,28 @@
 <template>
   <DataTable :query="query" :headers="headers" numbered>
-    <template #action="{ item, refresh }">
-      <slot
-        name="action"
-        :item="item"
-        :display-name="displayName(item)"
-        :refresh="refresh"
-      />
+    <template #status="{ item }">
+      <registration-approval :user="item" />
+    </template>
+    <template #role="{ item }">
+      <switch-role :user="item" />
+    </template>
+    <template #upload-limit="{ item }">
+      <upload-limit :user="item" :display-name="displayName(item)" />
+    </template>
+    <template #actions="{ item, refresh }">
+      <div class="actions">
+        <profile-management
+          :item="item"
+          :display-name="displayName(item)"
+          :refresh="refresh"
+        />
+        <reset-password :user="item" :display-name="displayName(item)" />
+        <delete-user
+          :item="item"
+          :display-name="displayName(item)"
+          :refresh="refresh"
+        />
+      </div>
     </template>
   </DataTable>
 </template>
@@ -14,12 +30,26 @@
 <script>
 import DataTable from "@/components/DataTable/index";
 import { userGraph } from "@/services/graphql";
-import { displayName, displayRole } from "@/utils/auth";
+import { displayName } from "@/utils/auth";
+import RegistrationApproval from "./RegistrationApproval";
+import ResetPassword from "./ResetPassword";
+import SwitchRole from "./SwitchRole";
+import UploadLimit from "./UploadLimit";
+import ProfileManagement from "./ProfileManagement";
+import DeleteUser from "./DeleteUser";
 
 export default {
-  components: { DataTable },
+  components: {
+    DataTable,
+    RegistrationApproval,
+    ResetPassword,
+    SwitchRole,
+    UploadLimit,
+    ProfileManagement,
+    DeleteUser,
+  },
   props: ["actionColumn", "actionSort"],
-  setup: (props) => {
+  setup: () => {
     const query = userGraph.userList;
     const headers = [
       {
@@ -29,18 +59,12 @@ export default {
       },
       {
         title: "Display Name",
-        description: "Name displayed in chat",
         render: (item) => displayName(item),
         sortable: true,
       },
       {
         title: "Email",
         key: "email",
-        sortable: true,
-      },
-      {
-        title: "Role",
-        render: displayRole,
         sortable: true,
       },
       {
@@ -51,10 +75,25 @@ export default {
         defaultSortOrder: false,
       },
       {
-        title: props.actionColumn,
-        slot: "action",
+        title: "Role",
+        slot: "role",
         align: "center",
-        sortable: props.actionSort,
+      },
+      {
+        title: "Status",
+        slot: "status",
+        align: "center",
+        sortable: (a, b) => b.active - a.active,
+      },
+      {
+        title: "Upload Limit",
+        slot: "upload-limit",
+        align: "center",
+      },
+      {
+        title: "",
+        slot: "actions",
+        align: "center",
       },
     ];
     return { query, headers, displayName };
@@ -62,5 +101,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+.actions {
+  display: flex;
+  width: 120px;
+}
 </style>
