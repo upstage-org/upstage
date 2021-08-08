@@ -956,7 +956,7 @@ export default {
                 message,
             })
         },
-        async replayRecord({ state, dispatch, commit }, timestamp) {
+        async replayRecording({ state, dispatch, commit }, timestamp) {
             stopSpeaking()
             await dispatch('pauseReplay');
             const current = timestamp ? Number(timestamp) : state.replay.timestamp.begin
@@ -992,7 +992,7 @@ export default {
             const current = state.replay.timestamp.current + 10000
             const nextEvent = state.model.events.find(e => e.mqttTimestamp > current)
             if (nextEvent) {
-                dispatch('replayRecord', nextEvent.mqttTimestamp)
+                dispatch('replayRecording', nextEvent.mqttTimestamp)
             }
         },
         seekBackwardReplay({ state, dispatch }) {
@@ -1005,7 +1005,7 @@ export default {
                 }
             }
             if (event) {
-                dispatch('replayRecord', event.mqttTimestamp)
+                dispatch('replayRecording', event.mqttTimestamp)
             }
         },
         handleCounterMessage({ commit, state }, { message }) {

@@ -61,7 +61,7 @@
       </div>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item" style="width: 50px">
+      <div class="card-footer-item" style="width: 60px">
         {{ showTimestamp(timestamp.current - timestamp.begin) }}
       </div>
       <div class="card-footer-item">
@@ -76,7 +76,7 @@
         />
         <EventIndicator />
       </div>
-      <div class="card-footer-item" style="width: 50px">
+      <div class="card-footer-item" style="width: 60px">
         {{ showTimestamp(timestamp.end - timestamp.begin) }}
       </div>
     </footer>
@@ -102,11 +102,11 @@ export default {
     const speeds = [0.5, 1, 2, 4, 8, 16, 32];
 
     const seek = (e) => {
-      store.dispatch("stage/replayRecord", e.target.value);
+      store.dispatch("stage/replayRecording", e.target.value);
     };
 
     const play = () => {
-      store.dispatch("stage/replayRecord", timestamp.value.current);
+      store.dispatch("stage/replayRecording", timestamp.value.current);
     };
 
     const pause = () => {
@@ -117,7 +117,12 @@ export default {
       let s = Math.round(t / 10);
       let m = Math.floor(s / 60);
       s = String(s % 60).padStart(2, 0);
-      return `${m}:${s}`;
+      if (m < 60) {
+        return `${m}:${s}`;
+      }
+      let h = Math.floor(m / 60);
+      m = String(m % 60).padStart(2, 0);
+      return `${h}:${m}:${s}`;
     };
 
     const changeSpeed = (speed) => {
