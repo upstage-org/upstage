@@ -8,8 +8,8 @@
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
       <PanelItem name="Streams" icon="streams.svg" />
-      <PanelItem name="Whiteboard" icon="draw.svg" label="Live drawing" />
-      <PanelItem name="Draw" icon="draw.svg" label="Object drawing" />
+      <PanelItem name="Whiteboard" icon="whiteboard.svg" label="Live drawing" />
+      <PanelItem name="Draw" icon="object-drawing.svg" label="Object drawing" />
       <PanelItem name="Text" icon="text.svg" />
       <hr />
       <PanelItem name="Depth" icon="multi-frame.svg" />
