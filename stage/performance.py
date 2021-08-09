@@ -1,3 +1,4 @@
+from asset.models import Stage
 import os
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
@@ -84,3 +85,46 @@ class DeletePerformance(graphene.Mutation):
                 raise Exception("Performance not found!")
 
         return DeletePerformance(success=True)
+
+
+class StartRecording(graphene.Mutation):
+    """Mutation to create a recording performance"""
+    performance = graphene.Field(
+        lambda: Performance, description="Performance created by this mutation.")
+
+    class Arguments:
+        stage_id = graphene.ID(required=True, description="Stage id")
+        name = graphene.String(
+            description="New name of the performance", required=False)
+        description = graphene.String(
+            description="New description of the performance", required=False)
+
+    @jwt_required()
+    def mutate(self, info, stage_id, name=None, description=None):
+        if not name:
+            raise Exception("Please pick a name!")
+
+        current_user_id = get_jwt_identity()
+        with ScopedSession() as local_db_session:
+            id = from_global_id(stage_id)[1]
+            stage = local_db_session.query(
+                Stage).filter(Stage.id == id).first()
+
+            if stage:
+                code, error, user, timezone = current_user()
+                if not user.role in (ADMIN, SUPER_ADMIN):
+                    if not user.id == stage.owner_id:
+                        raise Exception(
+                            "Only stage owner or Admin can start a recording on this stage!")
+            else:
+                raise Exception("Stage does not exist!")
+
+            performance = PerformanceModel(
+                stage=stage, name=name, description=description, recording=True)
+            local_db_session.add(performance)
+            local_db_session.flush()
+            local_db_session.commit()
+
+            performance = local_db_session.query(PerformanceModel).filter(
+                PerformanceModel.id == performance.id).first()
+            return StartRecording(performance=performance)

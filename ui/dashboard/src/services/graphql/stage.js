@@ -108,6 +108,11 @@ export default {
         edges {
           node {
             ...stageFragment
+            activeRecording {
+              id
+              name
+              createdOn
+            }
           }
         }
       }
@@ -396,5 +401,15 @@ export default {
         success
       }
     }
-  `, { id, name, description })
+  `, { id, name, description }),
+  startRecording: (stageId, name, description) => client.request(gql`
+    mutation startRecording($stageId: ID!, $name: String, $description: String) {
+      startRecording(stageId: $stageId, name: $name, description: $description) {
+        performance {
+          id
+          name
+        }
+      }
+    }
+  `, { stageId, name, description })
 }

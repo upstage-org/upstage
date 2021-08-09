@@ -60,7 +60,8 @@ class Performance(Base,db.Model):
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
     stage = relationship(Stage, foreign_keys=[stage_id])
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
-    expires_on = Column(DateTime, nullable=False, default=None)
+    saved_on = Column(DateTime, nullable=True)
+    recording = Column(Boolean, nullable=False, default=False)
 
 class PerformanceConfig(Base,db.Model):
     __tablename__ = "performance_config"
