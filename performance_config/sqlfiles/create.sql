@@ -27,7 +27,8 @@ CREATE TABLE "public"."performance" (
     "description" TEXT NULL,
     "stage_id" integer NOT NULL,
     "created_on" timestamp DEFAULT (now() at time zone 'utc'),
-    "expires_on" timestamp DEFAULT null,
+    "saved_on" timestamp DEFAULT null,
+    "recording" BOOLEAN not null default false,
     FOREIGN KEY (stage_id) REFERENCES stage(id),
     PRIMARY KEY ("id")
 );

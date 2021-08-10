@@ -18,7 +18,8 @@
         {{ item.description }}
       </small>
       <small v-else class="has-text-dark">
-        Auto recorded
+        <span v-if="item.recording">Recorded </span>
+        <span v-else>Auto recorded </span>
         <span v-if="item.chatless">on {{ date(item.createdOn) }}</span>
         <span v-else>
           from {{ date(item.begin) }} to {{ date(item.end) }}
@@ -47,7 +48,7 @@
     <template #replay="{ item }">
       <router-link
         :to="`/replay/${stage.fileLocation}/${item.id}`"
-        class="button is-dark"
+        :class="`button ${item.recording ? 'is-primary' : 'is-dark'}`"
       >
         <i class="fas fa-video"></i>
       </router-link>

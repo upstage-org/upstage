@@ -13,7 +13,7 @@
             class="clickable"
             @click="sort(header)"
           >
-            <abbr :data-tooltip="header.description">
+            <abbr class="has-tooltip-bottom" :data-tooltip="header.description">
               {{ header.title }}
             </abbr>
             &nbsp;

@@ -19,7 +19,7 @@ from flask_jwt_extended.utils import get_jwt_identity
 from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
-from stage.performance import Performance, DeletePerformance, UpdatePerformance
+from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
 import re
 import graphene
 import sys
@@ -75,6 +75,8 @@ class Stage(SQLAlchemyObjectType):
     media = graphene.List(Media, description="Media assigned to this stage")
     scenes = graphene.List(
         Scene, description="Saved stage scenes", performance_id=graphene.Int())
+    active_recording = graphene.Field(
+        Performance, description="Current recording session")
 
     class Meta:
         model = StageModel
@@ -138,6 +140,14 @@ class Stage(SQLAlchemyObjectType):
             query = query.filter(SceneModel.active == True)
         scenes = query.all()
         return scenes
+
+    def resolve_active_recording(self, info):
+        recording = DBSession.query(PerformanceModel)\
+            .filter(PerformanceModel.stage_id == self.db_id)\
+            .filter(PerformanceModel.recording == True)\
+            .filter(PerformanceModel.saved_on == None)\
+            .first()
+        return recording
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -421,6 +431,8 @@ class Mutation(graphene.ObjectType):
     duplicateStage = DuplicateStage.Field()
     updatePerformance = UpdatePerformance.Field()
     deletePerformance = DeletePerformance.Field()
+    startRecording = StartRecording.Field()
+    saveRecording = SaveRecording.Field()
 
 
 class Query(graphene.ObjectType):
