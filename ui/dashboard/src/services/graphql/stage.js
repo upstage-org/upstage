@@ -134,6 +134,7 @@ export default {
               createdOn
               name
               description
+              recording
             }
             scenes {
               id

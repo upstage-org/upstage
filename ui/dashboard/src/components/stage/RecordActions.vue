@@ -1,13 +1,13 @@
 <template>
   <div v-if="saved">
     <router-link
-      :to="`/replay/${stage.fileLocation}/${stage.activeRecording.id}`"
+      :to="`/replay/${stage.fileLocation}/${saved.id}`"
       class="button is-small is-light is-success"
     >
       <span class="icon is-small">
         <i class="fas fa-play"></i>
       </span>
-      <span>{{ stage.activeRecording.name }}</span>
+      <span>{{ saved.name }}</span>
     </router-link>
   </div>
   <div v-else-if="stage.activeRecording" class="field has-addons">
@@ -146,8 +146,11 @@ export default {
     const saveRecording = async () => {
       await saveMutation(() => {
         notification.success("Recording saved successfully!");
-        saved.value = true;
+        saved.value = props.stage.activeRecording;
         clearInterval(interval);
+        Object.assign(props.stage, {
+          activeRecording: null,
+        });
       }, props.stage.activeRecording.id);
     };
 
@@ -168,6 +171,6 @@ export default {
 
 <style scoped>
 .has-addons {
-  justify-content: center;
+  justify-content: center !important;
 }
 </style>
