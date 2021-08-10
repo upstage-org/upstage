@@ -405,11 +405,19 @@ export default {
   startRecording: (stageId, name, description) => client.request(gql`
     mutation startRecording($stageId: ID!, $name: String, $description: String) {
       startRecording(stageId: $stageId, name: $name, description: $description) {
-        performance {
+        recording {
           id
-          name
         }
       }
     }
-  `, { stageId, name, description })
+  `, { stageId, name, description }),
+  saveRecording: (id) => client.request(gql`
+    mutation saveRecording($id: Int!) {
+      saveRecording(id: $id) {
+        recording {
+          id
+        }
+      }
+    }
+  `, { id }),
 }

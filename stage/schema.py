@@ -19,7 +19,7 @@ from flask_jwt_extended.utils import get_jwt_identity
 from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
-from stage.performance import Performance, DeletePerformance, StartRecording, UpdatePerformance
+from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
 import re
 import graphene
 import sys
@@ -432,6 +432,7 @@ class Mutation(graphene.ObjectType):
     updatePerformance = UpdatePerformance.Field()
     deletePerformance = DeletePerformance.Field()
     startRecording = StartRecording.Field()
+    saveRecording = SaveRecording.Field()
 
 
 class Query(graphene.ObjectType):
