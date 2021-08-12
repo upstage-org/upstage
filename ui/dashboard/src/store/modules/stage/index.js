@@ -498,7 +498,6 @@ export default {
                     state.board.whiteboard = state.board.whiteboard.concat(message.command)
                     break;
                 case DRAW_ACTIONS.UNDO:
-                    console.log(message.index)
                     state.board.whiteboard = state.board.whiteboard.filter((e, i) => i !== message.index)
                     break;
                 case DRAW_ACTIONS.CLEAR:

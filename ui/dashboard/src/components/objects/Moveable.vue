@@ -68,7 +68,6 @@ export default {
         isDragging.value = true;
       })
       .on("drag", ({ target, left, top }) => {
-        emit("update:active", false);
         target.style.left = `${left}px`;
         target.style.top = `${top}px`;
       })
@@ -93,7 +92,6 @@ export default {
         isDragging.value = true;
       })
       .on("resize", ({ target, width, height, drag: { left, top } }) => {
-        emit("update:active", false);
         target.style.width = `${width}px`;
         target.style.height = `${height}px`;
         target.style.left = `${left}px`;
@@ -111,7 +109,6 @@ export default {
         }) => {
           sendResize(target, { left, top, width, height });
           isDragging.value = false;
-          emit("update:active", true);
         }
       );
 
@@ -128,13 +125,11 @@ export default {
         isDragging.value = true;
       })
       .on("rotate", ({ target, rotate }) => {
-        emit("update:active", false);
         target.style.transform = `rotate(${rotate}deg)`;
       })
       .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
         sendRotation(target, rotate);
         isDragging.value = false;
-        emit("update:active", true);
       });
 
     const showControls = (isShowing, e) => {
@@ -143,7 +138,7 @@ export default {
           moveable.setState(
             {
               target: el.value,
-              keepRatio: props.object.type === "stream",
+              keepRatio: props.object.type !== "text",
             },
             () => {
               if (e && props.object.type !== "text") {
@@ -219,7 +214,7 @@ export default {
             try {
               moveable.updateRect();
             } catch (error) {
-              console.log("Object deleted while moving!");
+              // pass
             }
           },
         });
