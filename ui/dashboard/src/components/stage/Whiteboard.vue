@@ -1,5 +1,9 @@
 <template>
-  <canvas class="whiteboard" ref="el" :style="{ top: stageSize.top + 'px' }" />
+  <canvas
+    class="whiteboard"
+    ref="el"
+    :style="{ top: stageSize.top + 'px', left: stageSize.left + 'px' }"
+  />
 </template>
 
 <script>

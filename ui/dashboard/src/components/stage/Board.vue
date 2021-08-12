@@ -153,15 +153,6 @@ export default {
   background-size: cover;
   overflow: hidden;
 }
-.curtain {
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  transform-origin: top;
-}
 .background-image {
   position: absolute;
   left: 0;
