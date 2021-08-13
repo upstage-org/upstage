@@ -5,105 +5,112 @@
     class="audio has-text-centered"
     :class="{ 'is-playing': audio.isPlaying }"
   >
-    <ContextMenu>
-      <template #trigger>
-        <template v-if="audio.isPlaying">
-          <div class="icon is-large" @click="togglePlaying(audio)">
-            <Icon size="36" src="pause.svg" />
-          </div>
-          <input
-            class="slider is-fullwidth is-primary mt-0"
-            min="0"
-            :max="audioPlayers[i]?.duration"
-            :value="audioPlayers[i]?.currentTime ?? 0"
-            @change="seek(audio, $event)"
-            type="range"
-          />
-          <span v-if="i < 10" class="wattermark">{{ i + 1 }}</span>
-        </template>
-        <div v-else @click="togglePlaying(audio)">
-          <div class="icon is-large">
-            <Icon size="36" src="play.svg" />
-          </div>
-          <span class="audio-name tag is-light is-block" :title="audio.file">
-            {{ audio.name }}
-          </span>
-          <span v-if="i < 10" class="wattermark">{{ i + 1 }}</span>
+    <div class="audio-name">
+      <span v-if="i < 10">{{ i + 1 }}. </span>
+      <span :title="audio.file">
+        {{ audio.name }}
+      </span>
+    </div>
+    <template v-if="audio.isPlaying">
+      <div class="buttons">
+        <div
+          class="icon"
+          @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
+        >
+          <Icon size="24" src="pause.svg" />
         </div>
-      </template>
-      <template #context>
-        <div class="field has-addons menu-group px-4 my-2">
-          <p class="control menu-group-title">
-            <span class="panel-icon pt-1">
-              <Icon src="loop.svg" />
-            </span>
-          </p>
-          <p class="control menu-group-item">
-            <Switch
-              :modelValue="audio.loop"
-              @update:modelValue="
-                toggleLoop(audio, $event, audioPlayers[i]?.currentTime)
-              "
-            />
-          </p>
+        <div class="icon" @click="stopAudio(audio)">
+          <Icon size="24" src="clear.svg" />
         </div>
-        <div class="field has-addons menu-group px-4 my-2">
-          <p class="control menu-group-title">
-            <span class="panel-icon pt-1">
-              <Icon src="voice-setting.svg" />
-            </span>
-          </p>
-          <p class="control menu-group-item">
-            <input
-              class="slider is-fullwidth is-primary my-0"
-              step="0.01"
-              min="0"
-              max="1"
-              :value="audio.volume ?? 1"
-              @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
-              type="range"
-            />
-          </p>
+        <div
+          class="icon"
+          :class="{ grayscale: !audio.loop }"
+          @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
+        >
+          <Icon size="24" src="loop.svg" />
         </div>
-      </template>
-    </ContextMenu>
+        <div
+          class="icon"
+          :class="{ grayscale: sliderMode === 'volume' }"
+          @click="sliderMode = sliderMode === 'volume' ? 'duration' : 'volume'"
+        >
+          <Icon size="24" src="voice-setting.svg" />
+        </div>
+      </div>
+    </template>
+    <div
+      v-else
+      class="buttons"
+      @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
+    >
+      <div class="icon play-button">
+        <Icon size="24" src="play.svg" />
+      </div>
+    </div>
+    <div class="sliders">
+      <input
+        v-if="sliderMode === 'volume'"
+        class="slider is-fullwidth is-dark my-0"
+        step="0.01"
+        min="0"
+        max="1"
+        :value="audio.volume ?? 1"
+        @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
+        type="range"
+      />
+      <input
+        v-show="sliderMode === 'duration'"
+        class="slider is-fullwidth is-primary mt-0"
+        min="0"
+        :max="audioPlayers[i]?.duration"
+        :value="audioPlayers[i]?.currentTime ?? 0"
+        @change="seek(audio, $event)"
+        type="range"
+      />
+    </div>
   </div>
 </template>
 
 <script>
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
-import ContextMenu from "@/components/ContextMenu";
-import Switch from "@/components/form/Switch";
-import { computed } from "@vue/runtime-core";
+import { computed, ref } from "@vue/runtime-core";
 import { useShortcut } from "../../composable";
 
 export default {
-  components: { Icon, ContextMenu, Switch },
+  components: { Icon },
   setup: () => {
     const store = useStore();
     const audios = computed(() => store.getters["stage/audios"]);
     const audioPlayers = computed(() => store.state.stage.audioPlayers);
 
-    const togglePlaying = (audio) => {
+    const togglePlaying = (audio, currentTime) => {
       audio.isPlaying = !audio.isPlaying;
-      audio.currentTime = 0;
+      audio.currentTime = currentTime;
+      audio.saken = true;
       store.dispatch("stage/updateAudioStatus", audio);
     };
-    const toggleLoop = (audio, loop, currentTime) => {
-      audio.loop = loop;
+    const stopAudio = (audio) => {
+      audio.currentTime = 0;
+      audio.saken = true;
+      audio.isPlaying = false;
+      store.dispatch("stage/updateAudioStatus", audio);
+    };
+    const toggleLoop = (audio, currentTime) => {
+      audio.loop = !audio.loop;
       audio.currentTime = currentTime;
       store.dispatch("stage/updateAudioStatus", audio);
     };
     const seek = (audio, e) => {
       audio.currentTime = e.target.value;
+      audio.saken = true;
       store.dispatch("stage/updateAudioStatus", audio);
     };
-    const setVolume = (audio, e, currentTime) => {
+    const setVolume = (audio, e) => {
       audio.volume = e.target.value;
-      audio.currentTime = currentTime;
       store.dispatch("stage/updateAudioStatus", audio);
     };
+    const sliderMode = ref("duration");
 
     useShortcut((e) => {
       if (isFinite(e.key)) {
@@ -114,13 +121,21 @@ export default {
       }
     });
 
-    return { audios, togglePlaying, toggleLoop, setVolume, audioPlayers, seek };
+    return {
+      audios,
+      togglePlaying,
+      stopAudio,
+      toggleLoop,
+      setVolume,
+      audioPlayers,
+      seek,
+      sliderMode,
+    };
   },
 };
 </script>
 
 <style scoped lang="scss">
-@import "@/styles/mixins.scss";
 .audio-name {
   font-weight: bold;
   font-size: 0.8rem;
@@ -129,19 +144,59 @@ export default {
   overflow-x: hidden;
   text-overflow: ellipsis;
 }
-.fas.fa-play {
-  @include gradientText(#0052d4, #a5fecb);
+.audio {
+  transition-duration: 0.25s;
+
+  .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 0;
+    height: 32px;
+
+    .play-button {
+      height: 36px;
+      img {
+        height: 48px !important;
+      }
+    }
+
+    > * {
+      margin: 4px 8px;
+      display: none;
+      &:first-child {
+        display: block;
+      }
+    }
+  }
+  .sliders {
+    display: none !important;
+    margin-bottom: 0;
+  }
+  &:hover {
+    width: 250px !important;
+    .sliders {
+      display: block !important;
+    }
+    .buttons {
+      > * {
+        display: block;
+      }
+      .play-button {
+        height: 32px;
+        img {
+          height: 24px !important;
+        }
+      }
+    }
+  }
+  &.is-playing {
+    .sliders {
+      display: block !important;
+    }
+  }
 }
-.fas.fa-pause {
-  @include gradientText(#ffb347, #a83279);
-}
-.audio.is-playing {
-  width: 200px !important;
-}
-.wattermark {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  opacity: 0.5;
+.grayscale {
+  filter: grayscale(1);
 }
 </style>
