@@ -12,7 +12,11 @@
   </div>
   <div v-else-if="stage.activeRecording" class="field has-addons">
     <p class="control">
-      <button @click="saveRecording" class="button is-small is-light is-danger">
+      <button
+        @click="saveRecording"
+        class="button is-small is-light is-danger"
+        data-tooltip="Stop recording"
+      >
         <Loading v-if="saving" height="24px" />
         <span v-else class="icon is-small">
           <i class="fas fa-stop"></i>
@@ -49,6 +53,12 @@
         placeholder="Give your recording a name"
         required
       />
+      <p>
+        <i class="fas fa-exclamation-triangle has-text-warning"></i>
+        By starting a recording, you acknowledge that the stage
+        <span class="has-text-danger">will be cleared!</span> You might wish to
+        save your scene before proceed.
+      </p>
       <template #no> Cancel </template>
       <template #yes>
         <span class="mr-2">
@@ -87,6 +97,8 @@ import humanizeDuration from "humanize-duration";
 import moment from "moment";
 import { useStore } from "vuex";
 import { notification } from "@/utils/notification";
+import { useClearStage } from "./composable";
+
 export default {
   components: { Confirm, Field, Icon, Loading },
   props: ["stage"],
@@ -98,11 +110,17 @@ export default {
       name: "",
     });
 
-    const { loading, save } = useMutation(stageGraph.startRecording);
+    const clearStage = useClearStage(props.stage.fileLocation);
+
+    const loading = ref(false);
+    const { save } = useMutation(stageGraph.startRecording);
     const startRecording = async (complete) => {
+      loading.value = true;
+      await clearStage();
       await save("Recording started!", props.stage.id, form.name);
       refresh();
       complete();
+      loading.value = false;
     };
 
     const now = ref(moment());
@@ -113,7 +131,6 @@ export default {
       if (recording) {
         const name = recording.name;
         const from = moment.utc(recording.createdOn);
-        console.log(from);
         const duration = humanizeDuration(
           now.value.diff(from, "milliseconds"),
           {

@@ -74,7 +74,7 @@ export default {
             },
             timers: [],
             interval: null,
-            speed: 32
+            speed: 1
         },
         loadingRunningStreams: false,
         audioPlayers: [],
@@ -197,17 +197,18 @@ export default {
         CLEAN_STAGE(state, cleanModel) {
             if (cleanModel) {
                 state.model = null;
+                state.tools.audios = [];
             }
             state.status = 'OFFLINE';
             if (state.background?.interval) {
                 clearInterval(state.background.interval);
             }
             state.background = null;
+            state.curtain = null;
             state.backdropColor = COLORS.DEFAULT_BACKDROP;
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
-            state.tools.audios = []
             state.tools.streams = [];
             state.config = getDefaultStageConfig()
             state.board.objects = [];
@@ -967,6 +968,7 @@ export default {
             state.replay.interval = setInterval(() => {
                 state.replay.timestamp.current += 10
                 if (state.replay.timestamp.current > state.replay.timestamp.end) {
+                    state.replay.timestamp.current = state.replay.timestamp.begin
                     dispatch('pauseReplay');
                 }
             }, 1000 / speed)
@@ -986,6 +988,10 @@ export default {
             state.replay.interval = null
             state.replay.timers.forEach(timer => clearTimeout(timer))
             state.replay.timers = []
+            state.tools.audios.forEach(audio => {
+                audio.isPlaying = false
+                audio.changed = true
+            })
         },
         seekForwardReplay({ state, dispatch }) {
             const current = state.replay.timestamp.current + 10000
