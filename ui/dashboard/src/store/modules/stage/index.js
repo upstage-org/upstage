@@ -966,7 +966,7 @@ export default {
             const events = state.model.events
             const speed = state.replay.speed
             state.replay.interval = setInterval(() => {
-                state.replay.timestamp.current += 10
+                state.replay.timestamp.current += 1
                 if (state.replay.timestamp.current > state.replay.timestamp.end) {
                     state.replay.timestamp.current = state.replay.timestamp.begin
                     dispatch('pauseReplay');
@@ -976,7 +976,7 @@ export default {
                 if (event.mqttTimestamp - current >= 0) {
                     const timer = setTimeout(() => {
                         dispatch('replayEvent', event);
-                    }, (event.mqttTimestamp - current) * 100 / speed)
+                    }, (event.mqttTimestamp - current) * 1000 / speed)
                     state.replay.timers.push(timer)
                 } else {
                     dispatch('replicateEvent', event);

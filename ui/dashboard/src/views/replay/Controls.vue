@@ -114,7 +114,7 @@ export default {
     };
 
     const showTimestamp = (t) => {
-      let s = Math.round(t / 10);
+      let s = Math.round(t);
       let m = Math.floor(s / 60);
       s = String(s % 60).padStart(2, 0);
       if (m < 60) {
