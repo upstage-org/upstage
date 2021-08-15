@@ -136,7 +136,7 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission && state.model.permission !== 'audience'
+            return state.model.permission && state.model.permission !== 'audience' && !state.replay.isReplaying
         },
         players(state) {
             return state.sessions.filter((s) => s.isPlayer)
@@ -200,6 +200,7 @@ export default {
                 state.tools.audios = [];
             }
             state.status = 'OFFLINE';
+            state.replay.isReplaying = false;
             if (state.background?.interval) {
                 clearInterval(state.background.interval);
             }

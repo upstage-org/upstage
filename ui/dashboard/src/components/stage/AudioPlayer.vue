@@ -65,7 +65,6 @@ export default {
     };
 
     const handleAudioChange = () => {
-      console.log(audios);
       audios.forEach((audio, i) => {
         if (audio.changed) {
           if (audio.isPlaying) {

@@ -165,7 +165,7 @@ export default {
               payload
               mqttTimestamp
             }
-            scenes {
+            scenes(performanceId: $performanceId) {
               ...sceneFragment
             }
           }
