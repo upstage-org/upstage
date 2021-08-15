@@ -31,13 +31,13 @@
           <Icon size="24" src="play.svg" />
         </div>
       </template>
-        <div
-          class="icon"
-          :class="{ grayscale: !audio.loop }"
-          @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
-        >
-          <Icon size="24" src="loop.svg" />
-        </div>
+      <div
+        class="icon"
+        :class="{ grayscale: !audio.loop }"
+        @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
+      >
+        <Icon size="24" src="loop.svg" />
+      </div>
       <div
         class="icon"
         :class="{ grayscale: sliderMode === 'volume' }"
