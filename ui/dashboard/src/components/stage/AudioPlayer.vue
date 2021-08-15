@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 export default {
@@ -64,10 +64,18 @@ export default {
       });
     };
 
+    const speed = computed(() => {
+      if (store.state.stage.replay.isReplaying) {
+        return Math.min(store.state.stage.replay.speed, 8);
+      }
+      return 1;
+    });
+
     const handleAudioChange = () => {
       audios.forEach((audio, i) => {
         if (audio.changed) {
           if (audio.isPlaying) {
+            refs[i].playbackRate = speed.value;
             refs[i].play();
           } else {
             refs[i].pause();

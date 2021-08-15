@@ -49,14 +49,30 @@
           </template>
         </Modal>
         <teleport v-if="!collapsed" to="body">
-          <Dropdown
-            style="position: absolute; left: 24px; bottom: 64px"
-            is-up
-            :data="speeds"
-            :render-label="(value) => value + 'x'"
-            v-model="speed"
-            @select="changeSpeed"
-          />
+          <Modal
+            width="500px"
+            @confirm="(close) => saveRole(item, close)"
+            :loading="loading"
+          >
+            <template #render="{ open }">
+              <Dropdown
+                style="position: absolute; left: 24px; bottom: 64px"
+                is-up
+                :data="speeds"
+                :render-label="(value) => value + 'x'"
+                v-model="speed"
+                @select="changeSpeed($event, open)"
+              />
+            </template>
+            <template #header> Warning </template>
+            <template #content>
+              <p>
+                Audio and avatar speeches won't be able to play in 16x speed or
+                more. You should only use these playback rate for seeking
+                purpose!
+              </p>
+            </template>
+          </Modal>
         </teleport>
       </div>
     </div>
@@ -114,7 +130,7 @@ export default {
     };
 
     const showTimestamp = (t) => {
-      let s = Math.round(t / 10);
+      let s = Math.round(t);
       let m = Math.floor(s / 60);
       s = String(s % 60).padStart(2, 0);
       if (m < 60) {
@@ -125,9 +141,14 @@ export default {
       return `${h}:${m}:${s}`;
     };
 
-    const changeSpeed = (speed) => {
+    const changeSpeed = (speed, open) => {
       store.commit("stage/SET_REPLAY", { speed });
-      play();
+      if (isPlaying.value) {
+        play();
+      }
+      if (speed >= 16) {
+        open();
+      }
     };
 
     const seekForward = () => {

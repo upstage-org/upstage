@@ -2,6 +2,7 @@
   <span @click="openModal">
     <slot name="trigger" />
   </span>
+  <slot name="render" :open="openModal" />
   <teleport to="body">
     <div v-if="isActive" class="modal is-active">
       <div class="modal-background" @click="closeModal"></div>

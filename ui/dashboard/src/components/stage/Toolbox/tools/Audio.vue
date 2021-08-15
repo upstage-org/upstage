@@ -11,8 +11,8 @@
         {{ audio.name }}
       </span>
     </div>
-    <template v-if="audio.isPlaying">
-      <div class="buttons">
+    <div class="buttons">
+      <template v-if="audio.isPlaying">
         <div
           class="icon"
           @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
@@ -22,29 +22,28 @@
         <div class="icon" @click="stopAudio(audio)">
           <Icon size="24" src="clear.svg" />
         </div>
+      </template>
+      <template v-else>
         <div
-          class="icon"
-          :class="{ grayscale: !audio.loop }"
-          @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
+          class="icon play-button"
+          @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
         >
-          <Icon size="24" src="loop.svg" />
+          <Icon size="24" src="play.svg" />
         </div>
-        <div
-          class="icon"
-          :class="{ grayscale: sliderMode === 'volume' }"
-          @click="sliderMode = sliderMode === 'volume' ? 'duration' : 'volume'"
-        >
-          <Icon size="24" src="voice-setting.svg" />
-        </div>
+      </template>
+      <div
+        class="icon"
+        :class="{ grayscale: !audio.loop }"
+        @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
+      >
+        <Icon size="24" src="loop.svg" />
       </div>
-    </template>
-    <div
-      v-else
-      class="buttons"
-      @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
-    >
-      <div class="icon play-button">
-        <Icon size="24" src="play.svg" />
+      <div
+        class="icon"
+        :class="{ grayscale: sliderMode === 'volume' }"
+        @click="sliderMode = sliderMode === 'volume' ? 'duration' : 'volume'"
+      >
+        <Icon size="24" src="voice-setting.svg" />
       </div>
     </div>
     <div class="sliders">
