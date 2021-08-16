@@ -218,6 +218,12 @@ class UpdateMedia(graphene.Mutation):
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
             elif file_location:
+                existedAsset = local_db_session.query(AssetModel).filter(
+                    AssetModel.file_location == file_location).first()
+                if existedAsset:
+                    raise Exception(
+                        "Media with the same key already existed, please pick another!")
+
                 asset = AssetModel(owner_id=current_user_id)
                 local_db_session.add(asset)
 
@@ -227,7 +233,8 @@ class UpdateMedia(graphene.Mutation):
                 asset.description = description
                 if file_location:
                     if "?" in file_location:
-                        file_location = file_location[:file_location.index("?")]
+                        file_location = file_location[:file_location.index(
+                            "?")]
                     asset.file_location = file_location
 
                 if base64:
@@ -242,6 +249,9 @@ class UpdateMedia(graphene.Mutation):
                     asset.asset_license.level = copyright_level
                     asset.asset_license.permissions = player_access
                 else:
+                    if not asset.id:
+                        local_db_session.flush()
+
                     asset_license = AssetLicense(
                         asset_id=asset.id,
                         level=copyright_level,

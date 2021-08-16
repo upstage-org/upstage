@@ -34,7 +34,6 @@ import Upload from "@/components/form/Upload";
 import MediaForm from "./MediaForm";
 import { ref } from "@vue/reactivity";
 import { inject } from "@vue/runtime-core";
-import { getUniqueKey } from "@/utils/streaming";
 
 export default {
   props: ["special"],
@@ -80,7 +79,8 @@ export default {
         mediaType: "stream",
         stages: [],
         isRTMP: true,
-        src: getUniqueKey(),
+        copyrightLevel: 0,
+        src: "your_stream_key",
       };
       active.value = true;
     };
