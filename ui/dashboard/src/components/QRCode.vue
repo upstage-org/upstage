@@ -1,29 +1,36 @@
 <script setup>
+import { ref, watchEffect } from "@vue/runtime-core";
 import QRCodeStyling from "qr-code-styling";
-const { onMounted, ref } = require("@vue/runtime-core");
+import { defineProps } from "vue";
+import upstage from "@/assets/upstage.png";
 
 const props = defineProps({
   value: String,
+  size: {
+    type: Number,
+    default: 128,
+  },
 });
 
 const el = ref();
 
-onMounted(() => {
-  console.log("qr code");
-  const qrCode = new QRCodeStyling({
-    width: 300,
-    height: 300,
-    type: "svg",
+const qrCode = new QRCodeStyling({
+  width: props.size,
+  height: props.size,
+  type: "svg",
+  data: props.value,
+  image: upstage,
+  dotsOptions: {
+    type: "rounded",
+  },
+});
+
+watchEffect(() => {
+  qrCode.update({
     data: props.value,
-    image:
-      "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-    dotsOptions: {
-      type: "rounded",
-    },
   });
 
-  qrCode.append(document.getElementById("canvas"));
-  qrCode.download({ name: "qr", extension: "svg" });
+  qrCode.append(el.value);
 });
 </script>
 

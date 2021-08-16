@@ -12,3 +12,7 @@ export const getSubsribeLink = (key) => {
 export const getPublishLink = (key) => {
     return `${config.STREAMING.publish}/${key}`
 }
+
+export const getLarixLink = key => {
+    return `larix://set/v1?conn[][url]=${key}`
+}
