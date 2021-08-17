@@ -52,7 +52,8 @@ export default {
     });
 
     const streams = computed(() => {
-      const res = store.state.stage.tools.streams;
+      const res = [...store.state.stage.tools.streams];
+      res.forEach((s) => (s.alive = false));
       runningStreams.value.forEach((stream) => {
         const index = res.findIndex((s) => s.url === stream.url);
         if (index >= 0) {

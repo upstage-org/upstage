@@ -1,7 +1,10 @@
 <template>
   <Modal>
     <template #trigger>
-      <p title="Show instruction on OBS Studio" class="has-tooltip-bottom">
+      <p
+        title="Show instruction on OBS Studio"
+        class="has-tooltip-bottom clickable"
+      >
         <Icon size="50" src="obs-logo.png" />
       </p>
     </template>
