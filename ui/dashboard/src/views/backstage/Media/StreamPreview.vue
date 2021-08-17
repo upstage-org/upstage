@@ -10,7 +10,7 @@
         : 'You can change it to anything you like, but remember: it must be unique!'
     "
   />
-  <div v-if="modelValue === originalKey" class="columns">
+  <div v-if="modelValue === originalKey && media.sign" class="columns">
     <div class="column">
       Scan this QR Code to start streaming with Larix Broadcaster
       <LarixQRCode :stream="media" />
@@ -20,7 +20,7 @@
       <OBSInstruction :url="modelValue" :sign="media.sign" />
     </div>
   </div>
-  <RTMPStream controls :src="originalKey" />
+  <RTMPStream v-if="media.id" controls :src="originalKey" />
 </template>
 
 <script>

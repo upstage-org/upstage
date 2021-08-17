@@ -256,13 +256,13 @@ class UpdateMedia(graphene.Mutation):
                     if "?" in file_location:
                         file_location = file_location[:file_location.index(
                             "?")]
-                    if file_location != asset.file_location:
+                    if asset.id and file_location != asset.file_location:
                         existedAsset = local_db_session.query(AssetModel).filter(
                             AssetModel.file_location == file_location).filter(AssetModel.id != asset.id).first()
                         if existedAsset:
                             raise Exception(
                                 "Media with the same key already existed, please pick another!")
-                        asset.file_location = file_location
+                    asset.file_location = file_location
 
                 if base64:
                     # Replace image content
