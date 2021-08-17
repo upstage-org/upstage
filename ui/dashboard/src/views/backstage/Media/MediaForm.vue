@@ -53,20 +53,7 @@
               <Asset :asset="media" @detect-size="updateMediaSize" />
             </template>
             <template v-else>
-              <RTMPStream controls :src="media.src" />
-              <Field
-                horizontal
-                label="Unique key"
-                v-model="form.src"
-                help="You can change it to anything you like, but remember: it must be unique!"
-              />
-              <p>
-                Use this URL to publish your stream:
-                <a :href="getPublishLink(form.src)">{{
-                  getPublishLink(form.src)
-                }}</a>
-              </p>
-              <OBSInstruction :src="form.src" />
+              <StreamPreview :media="media" v-model="form.src" />
             </template>
           </div>
         </template>
@@ -163,13 +150,11 @@ import Dropdown from "@/components/form/Dropdown";
 import Asset from "@/components/Asset";
 import MultiSelectList from "@/components/MultiSelectList";
 import Tabs from "@/components/Tabs";
-import RTMPStream from "@/components/RTMPStream";
 import MultiTransferColumn from "@/components/MultiTransferColumn";
 import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParameters";
 import { displayName } from "@/utils/auth";
-import { getPublishLink } from "@/utils/streaming";
-import OBSInstruction from "./OBSInstruction";
 import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
+import StreamPreview from "./StreamPreview.vue";
 
 export default {
   components: {
@@ -182,17 +167,13 @@ export default {
     MultiSelectList,
     Tabs,
     VoiceParameters,
-    RTMPStream,
-    OBSInstruction,
     Upload,
     MultiTransferColumn,
     Dropdown,
+    StreamPreview,
   },
   props: {
     media: Object,
-  },
-  methods: {
-    getPublishLink,
   },
   emits: ["complete"],
   setup: (props, { emit }) => {

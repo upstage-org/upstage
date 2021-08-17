@@ -1,7 +1,10 @@
 <template>
   <Modal>
     <template #trigger>
-      <p title="Show instruction on OBS Studio" class="has-tooltip-bottom">
+      <p
+        title="Show instruction on OBS Studio"
+        class="has-tooltip-bottom clickable"
+      >
         <Icon size="50" src="obs-logo.png" />
       </p>
     </template>
@@ -27,7 +30,7 @@
         <div class="column is-4 mt-6">
           <b>Step 2: </b>In Stream tab, choose Custom... for Service,
           <code>{{ publishUrl }}</code> for Server and
-          <code>{{ src }}</code> for Stream Key.
+          <code>{{ url }}?sign={{ sign }}</code> for Stream Key.
         </div>
         <div class="column">
           <img src="@/assets/obs-instruction/2.png" alt="Step 2" />
@@ -54,7 +57,7 @@ import configs from "@/config";
 
 export default {
   components: { Icon, Modal },
-  props: ["src"],
+  props: ["url", "sign"],
   setup: () => {
     return { publishUrl: configs.STREAMING.publish };
   },

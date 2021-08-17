@@ -1,7 +1,7 @@
 <template>
   <audio controls v-if="asset.mediaType === 'audio'" :src="src"></audio>
   <template v-else-if="asset.mediaType === 'stream'">
-    <RTMPStream v-if="meta.isRTMP" :src="asset.src"></RTMPStream>
+    <LarixQRCode v-if="meta.isRTMP" :stream="asset" :size="256" />
     <video v-else controls :src="src"></video>
   </template>
   <img
@@ -15,12 +15,12 @@
 <script>
 import { computed } from "@vue/runtime-core";
 import { absolutePath } from "@/utils/common";
-import RTMPStream from "@/components/RTMPStream";
+import LarixQRCode from "@/components/LarixQRCode";
 
 export default {
   props: ["asset"],
   emits: ["detectSize"],
-  components: { RTMPStream },
+  components: { LarixQRCode },
   setup: (props, { emit }) => {
     if (props.asset.assetType) {
       Object.assign(props.asset, { mediaType: props.asset.assetType.name });

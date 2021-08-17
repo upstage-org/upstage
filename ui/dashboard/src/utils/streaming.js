@@ -12,3 +12,12 @@ export const getSubsribeLink = (key) => {
 export const getPublishLink = (key) => {
     return `${config.STREAMING.publish}/${key}`
 }
+
+export const getLarixLink = (key, sign, name) => {
+    if (key.includes('?')) {
+        key = key.substr(0, key.indexOf('?'))
+    }
+    const url = encodeURIComponent(getPublishLink(key) + `?sign=${sign}`)
+    name = encodeURIComponent(name)
+    return `larix://set/v1?conn[][url]=${url}&conn[][name]=${name}&conn[][overwrite]=on`
+}
