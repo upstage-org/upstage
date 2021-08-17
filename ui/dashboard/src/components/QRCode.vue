@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watchEffect } from "@vue/runtime-core";
+import { onMounted, ref, watchEffect } from "@vue/runtime-core";
 import QRCodeStyling from "qr-code-styling";
 import { defineProps } from "vue";
 import upstage from "@/assets/upstage.png";
@@ -10,6 +10,10 @@ const props = defineProps({
     type: Number,
     default: 300,
   },
+  type: {
+    type: String,
+    default: "canvas",
+  },
 });
 
 const el = ref();
@@ -17,26 +21,31 @@ const el = ref();
 const qrCode = new QRCodeStyling({
   width: props.size,
   height: props.size,
-  type: "svg",
   data: props.value,
+  type: props.type,
   image: upstage,
   dotsOptions: {
     type: "rounded",
   },
 });
 
+onMounted(() => {
+  qrCode.append(el.value);
+});
+
 watchEffect(() => {
   qrCode.update({
     data: props.value,
   });
-
-  qrCode.append(el.value);
 });
 </script>
 
 <template>
-  <div ref="el"></div>
+  <div class="qr-code" ref="el"></div>
 </template>
 
-<style>
+<style scoped>
+.qr-code {
+  text-align: center;
+}
 </style>

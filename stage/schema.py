@@ -440,7 +440,7 @@ class Query(graphene.ObjectType):
     stageList = StageConnectionField(
         Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
     assetList = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String())
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 

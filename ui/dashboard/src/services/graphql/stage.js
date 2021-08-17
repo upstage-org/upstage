@@ -421,4 +421,15 @@ export default {
       }
     }
   `, { id }),
+  getStreamSign: key => client.request(gql`
+    query StreamSign($key: String) {
+      assetList(fileLocation: $key) {
+        edges {
+          node {
+            sign
+          }
+        }
+      }
+    }
+  `, { key }).then(response => response.assetList.edges[0]?.node?.sign)
 }

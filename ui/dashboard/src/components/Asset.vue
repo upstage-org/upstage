@@ -1,7 +1,7 @@
 <template>
   <audio controls v-if="asset.mediaType === 'audio'" :src="src"></audio>
   <template v-else-if="asset.mediaType === 'stream'">
-    <LarixQRCode v-if="meta.isRTMP" :stream="asset" />
+    <LarixQRCode v-if="meta.isRTMP" :stream="asset" :size="256" />
     <video v-else controls :src="src"></video>
   </template>
   <img

@@ -82,7 +82,8 @@ export default {
         isSavingScene: false,
         isLoadingScenes: false,
         showPlayerChat: false,
-        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0
+        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
+        runningStreams: []
     },
     getters: {
         ready(state) {
@@ -381,7 +382,7 @@ export default {
             state.tools.streams.push(stream);
         },
         PUSH_RUNNING_STREAMS(state, streams) {
-            state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
+            state.runningStreams = streams
         },
         PUSH_CURTAINS(state, curtains) {
             state.tools.curtains = curtains;

@@ -1,3 +1,14 @@
+from config.settings import STREAM_KEY
+from datetime import datetime, timedelta
+import hashlib
+import json
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from base64 import b64decode
+import graphene
+from graphql_relay.node.node import from_global_id
+from graphene_sqlalchemy import SQLAlchemyObjectType
+from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
+from config.project_globals import appdir, ScopedSession
 import sys
 import time
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
@@ -13,25 +24,15 @@ import uuid
 from sqlalchemy.orm import joinedload
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir,'..'))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from config.project_globals import appdir, ScopedSession
-from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
-from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphql_relay.node.node import from_global_id
-import graphene
-from base64 import b64decode
-from flask_jwt_extended import jwt_required, get_jwt_identity
-import json
-import hashlib
-from datetime import datetime, timedelta
-from config.settings import STREAM_KEY
 
 absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
+
 
 class AssetConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
@@ -255,7 +256,13 @@ class UpdateMedia(graphene.Mutation):
                     if "?" in file_location:
                         file_location = file_location[:file_location.index(
                             "?")]
-                    asset.file_location = file_location
+                    if file_location != asset.file_location:
+                        existedAsset = local_db_session.query(AssetModel).filter(
+                            AssetModel.file_location == file_location).filter(AssetModel.id != asset.id).first()
+                        if existedAsset:
+                            raise Exception(
+                                "Media with the same key already existed, please pick another!")
+                        asset.file_location = file_location
 
                 if base64:
                     # Replace image content
@@ -312,6 +319,8 @@ class DeleteMedia(graphene.Mutation):
                     absolutePath, storagePath, asset.file_location)
                 local_db_session.query(ParentStage).filter(
                     ParentStage.child_asset_id == id).delete(synchronize_session=False)
+                local_db_session.query(AssetLicense).filter(
+                    AssetLicense.asset_id == id).delete(synchronize_session=False)
 
                 for multiframe_media in local_db_session.query(AssetModel).filter(AssetModel.description.like(f"%{asset.file_location}%")).all():
                     attributes = json.loads(multiframe_media.description)

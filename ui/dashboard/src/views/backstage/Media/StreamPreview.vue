@@ -1,10 +1,9 @@
 <template>
-  <RTMPStream controls :src="media.src" />
   <Field
     horizontal
     label="Unique key"
     :modelValue="modelValue"
-    @update:modelValue="$emit('update:modelValue', $event)"
+    @update:modelValue="$emit('update:modelValue', trimKey($event))"
     :help="
       modelValue !== originalKey
         ? 'Stream key changed! Please save your stream before accessing it'
@@ -18,10 +17,10 @@
     </div>
     <div class="column">
       Or follow this instruction to start streaming with OBS Studio
-      <OBSInstruction :src="modelValue" />
+      <OBSInstruction :url="modelValue" :sign="media.sign" />
     </div>
   </div>
-  <div v-else></div>
+  <RTMPStream controls :src="originalKey" />
 </template>
 
 <script>
@@ -38,7 +37,8 @@ export default {
   components: { Field, RTMPStream, OBSInstruction, LarixQRCode },
   setup: (props) => {
     const originalKey = ref(props.media.src);
-    return { getPublishLink, originalKey };
+    const trimKey = (value) => value.replace(/\s/g, "").trim();
+    return { getPublishLink, originalKey, trimKey };
   },
 };
 </script>
