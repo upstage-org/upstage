@@ -1,4 +1,4 @@
-from datetime import datetime
+import sys
 import time
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
@@ -10,8 +10,13 @@ from user.user_utils import current_user
 from performance_config.models import ParentStage
 from utils.graphql_utils import CountableConnection, input_to_dictionary
 import uuid
-
 from sqlalchemy.orm import joinedload
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir,'..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
 
 from config.project_globals import appdir, ScopedSession
 from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
@@ -21,10 +26,12 @@ import graphene
 from base64 import b64decode
 from flask_jwt_extended import jwt_required, get_jwt_identity
 import json
+import hashlib
+from datetime import datetime, timedelta
+from config.settings import STREAM_KEY
 
 absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
-
 
 class AssetConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
@@ -72,6 +79,8 @@ class Asset(SQLAlchemyObjectType):
         description="Users who can access and edit this media")
     permission = graphene.String(
         description="What permission the logged in user is granted to this media")
+    sign = graphene.String(
+        description="Stream sign that is required to publish from broadcaster")
 
     class Meta:
         model = AssetModel
@@ -116,6 +125,17 @@ class Asset(SQLAlchemyObjectType):
                 elif user_id in accesses[1]:
                     return "editor"
         return "none"
+
+    def resolve_sign(self, info):
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        if self.owner_id == user_id:
+            timestamp = int((datetime.now() + timedelta(days=1)).timestamp())
+            payload = "/live/{0}-{1}-{2}".format(
+                self.file_location, timestamp, STREAM_KEY)
+            hashvalue = hashlib.md5(payload.encode('utf-8')).hexdigest()
+            return "{0}-{1}".format(timestamp, hashvalue)
+        return ''
 
 
 class AssetType(SQLAlchemyObjectType):

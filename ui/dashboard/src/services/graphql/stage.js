@@ -53,9 +53,9 @@ export const assetFragment = gql`
     copyrightLevel
     playerAccess
     permission
+    sign
   }
 `
-
 
 export const sceneFragment = gql`
   fragment sceneFragment on Scene {
