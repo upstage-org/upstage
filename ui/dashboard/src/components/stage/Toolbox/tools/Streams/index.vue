@@ -58,12 +58,15 @@ export default {
         const index = res.findIndex((s) => s.url === stream.url);
         if (index >= 0) {
           res[index].alive = true;
+          res[index].w = stream.w
+          res[index].h = stream.h
         } else {
           if (autoDetect.value) {
             res.push(stream);
           }
         }
       });
+      console.log(res)
       return res;
     });
 

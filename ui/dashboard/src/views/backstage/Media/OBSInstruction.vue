@@ -28,9 +28,15 @@
       </div>
       <div class="columns">
         <div class="column is-4 mt-6">
-          <b>Step 2: </b>In Stream tab, choose Custom... for Service,
-          <code>{{ publishUrl }}</code> for Server and
-          <code>{{ url }}?sign={{ sign }}</code> for Stream Key.
+          <b>Step 2: </b>In Stream tab, put the below configurations:<br />
+          <b>Service:</b> Custom...<br />
+          <b>Server:</b>
+          <Copy :value="publishUrl" />
+          <br />
+          <b>Stream Key:</b>
+          <Copy :value="streamKey" />
+          <br />
+          (Click on the red text to copy)
         </div>
         <div class="column">
           <img src="@/assets/obs-instruction/2.png" alt="Step 2" />
@@ -53,13 +59,16 @@
 <script>
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
+import Copy from "@/components/Copy.vue";
 import configs from "@/config";
 
 export default {
-  components: { Icon, Modal },
+  components: { Icon, Modal, Copy },
   props: ["url", "sign"],
-  setup: () => {
-    return { publishUrl: configs.STREAMING.publish };
+  setup: (props) => {
+    const publishUrl = configs.STREAMING.publish;
+    const streamKey = `${props.url}?sign=${props.sign}`;
+    return { publishUrl, streamKey };
   },
 };
 </script>

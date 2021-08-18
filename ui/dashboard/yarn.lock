@@ -5948,6 +5948,11 @@ mkdirp@^0.5.1, mkdirp@^0.5.3, mkdirp@^0.5.5, mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.5"
 
+modern-copy@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/modern-copy/-/modern-copy-1.0.3.tgz#1b0a3e8548316cae95e76f9f75cacb561d193b8e"
+  integrity sha512-2JGQcw7PFY74QsVupT1xzR09w7JGWjO9/XxFr42gCVuqPdeSmtRUlfcJnZTTPyRi0dbIXJ5Gotp1Pij4llMNWQ==
+
 moment@^2.29.1:
   version "2.29.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.29.1.tgz#b2be769fa31940be9eeea6469c075e35006fa3d3"

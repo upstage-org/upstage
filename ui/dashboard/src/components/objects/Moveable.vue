@@ -54,6 +54,8 @@ export default {
       origin: false,
     });
 
+    let animation;
+
     const sendMovement = (target, { left, top }) => {
       target.style.left = `${props.object.x}px`;
       target.style.top = `${props.object.y}px`;
@@ -66,6 +68,9 @@ export default {
     moveable
       .on("dragStart", () => {
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("drag", ({ target, left, top }) => {
         target.style.left = `${left}px`;
@@ -90,6 +95,9 @@ export default {
     moveable
       .on("resizeStart", () => {
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("resize", ({ target, width, height, drag: { left, top } }) => {
         target.style.width = `${width}px`;
@@ -123,6 +131,9 @@ export default {
       .on("rotateStart", (e) => {
         e.set(props.object.rotate ?? 0);
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("rotate", ({ target, rotate }) => {
         target.style.transform = `rotate(${rotate}deg)`;
@@ -184,7 +195,6 @@ export default {
       { immediate: true }
     );
 
-    let animation;
     watch(
       () => props.object,
       () => {

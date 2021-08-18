@@ -146,7 +146,6 @@ export default {
 
     const localMuted = ref(true);
     const toggleMuted = () => {
-      console.log("alo");
       localMuted.value = !localMuted.value;
     };
 
