@@ -9,7 +9,6 @@
       :style="{ opacity: canPlay ? 0.5 : 1 }"
     />
   </transition>
-  {{ dualCurtain }}
   <transition @enter="dualCurtainEnter" @leave="dualCurtainLeave">
     <img
       v-if="dualCurtain && curtain"

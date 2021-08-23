@@ -12,6 +12,14 @@
     >
       <i class="fas fa-lightbulb"></i>
     </button>
+    <button
+      v-if="object.type === 'text'"
+      :class="{ 'is-primary': object.editing }"
+      class="button is-rounded is-small"
+      @click="editText"
+    >
+      <i class="fas fa-pen"></i>
+    </button>
     <button class="button is-rounded is-small" @click="deleteObject">
       <i class="fas fa-times"></i>
     </button>
@@ -45,9 +53,14 @@ export default {
       store.dispatch("stage/deleteObject", props.object);
     };
 
-    const holdable = computed(() =>
-      ["avatar"].includes(props.object.type)
-    );
+    const editText = () => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        editing: !props.object.editing,
+      });
+    };
+
+    const holdable = computed(() => ["avatar"].includes(props.object.type));
     const activeMovable = computed(() => store.state.stage.activeMovable);
     const showQuickActions = computed(
       () =>
@@ -61,6 +74,7 @@ export default {
       toggleLiveAction,
       isHolding,
       showQuickActions,
+      editText,
     };
   },
 };
