@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 export default {
   props: {
     data: Array,
@@ -73,12 +73,13 @@ export default {
     isRounded: Boolean,
     fixed: Boolean,
   },
-  emits: ["update:modelValue", "select"],
+  emits: ["update:modelValue", "select", "open"],
   setup: (props, { emit }) => {
     const selectedItem = computed(() =>
       props.data?.find((item) => props.renderValue(item) === props.modelValue)
     );
     const isActive = ref();
+    watch(isActive, (value) => emit("open", value));
     const select = (value, item) => {
       emit("update:modelValue", value);
       emit("select", value, item);

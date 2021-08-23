@@ -11,12 +11,13 @@
       <p
         ref="el"
         :style="object"
-        class="has-text-centered show-text"
-        contenteditable="true"
+        class="has-text-centered"
+        :contenteditable="object.editing"
         @keyup.delete.prevent.stop
         @keyup="liveTyping"
         @focus="isFocus = true"
         @blur="isFocus = false"
+        @mousedown="mousedown"
       ></p>
     </template>
   </Object>
@@ -26,7 +27,7 @@
 import Object from "./Object.vue";
 import MenuContent from "./Avatar/ContextMenu"; // Text should inherit all of avatar behavior
 import { useStore } from "vuex";
-import { onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch } from "vue";
 
 export default {
   props: ["object"],
@@ -57,18 +58,24 @@ export default {
       }
     );
 
-    return { el, liveTyping, isFocus };
+    const activeMovable = computed(
+      () => store.state.stage.activeMovable === props.object.id
+    );
+    const mousedown = (e) => {
+      if (activeMovable.value && props.object.editing) {
+        e.stopPropagation();
+      }
+    };
+
+    return { el, liveTyping, isFocus, mousedown };
   },
 };
 </script>
 
 <style>
-p[contenteditable] {
+p[contenteditable="true"] {
   outline: none;
-  pointer-events: all;
-}
-.show-text {
-  white-space: nowrap;
   cursor: text;
+  white-space: nowrap;
 }
 </style>
