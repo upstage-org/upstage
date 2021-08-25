@@ -1,4 +1,4 @@
-from config.settings import STREAM_KEY
+from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from datetime import datetime, timedelta
 import hashlib
 import json
@@ -131,7 +131,7 @@ class Asset(SQLAlchemyObjectType):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         if self.owner_id == user_id:
-            timestamp = int((datetime.now() + timedelta(days=6*30)).timestamp())
+            timestamp = int((datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp())
             payload = "/live/{0}-{1}-{2}".format(
                 self.file_location, timestamp, STREAM_KEY)
             hashvalue = hashlib.md5(payload.encode('utf-8')).hexdigest()
