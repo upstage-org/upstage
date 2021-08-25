@@ -43,6 +43,14 @@ class SaveScene(graphene.Mutation):
                 SceneModel.stage_id == stage_id).count() + 1
             scene.scene_order = scene_order
             if name:
+                existedScene = local_db_session.query(SceneModel)\
+                    .filter(SceneModel.stage_id == stage_id)\
+                    .filter(SceneModel.active == True)\
+                    .filter(SceneModel.name == name)\
+                    .first()
+                if existedScene:
+                    raise Exception(
+                        'Scene "{}" already existed. Please choose another name!'.format(name))
                 scene.name = name
             else:
                 scene.name = f"Scene {scene_order}"

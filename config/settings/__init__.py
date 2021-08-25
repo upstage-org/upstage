@@ -68,6 +68,8 @@ TWILIO_ACCOUNT_ID = ""
 TWILIO_AUTH_TOKEN = ""
 TWILIO_FROM_NUMBER = ""
 
+STREAM_EXPIRY_DAYS = 180
+
 if 'HARDCODED_HOSTNAME' in os.environ:
     ORIG_HOSTNAME=HOSTNAME=os.environ['HARDCODED_HOSTNAME']
     print("Loading local settings from a hard-coded env hostname: %s.py" % HOSTNAME)

@@ -1,6 +1,7 @@
 import { onUnmounted, ref } from "vue";
 import buildClient from "@/services/mqtt";
-import { TOPICS } from "@/utils/constants";
+import { BACKGROUND_ACTIONS, TOPICS } from "@/utils/constants";
+import { namespaceTopic } from "@/store/modules/stage/reusable";
 
 export const useCounter = (stageUrl) => {
     const players = ref(0)
@@ -30,4 +31,36 @@ export const useCounter = (stageUrl) => {
     })
 
     return [players, audiences, loading]
+}
+
+export const useShortcut = (callback) => {
+    const shortcutHandler = (e) => {
+        if (!e) e = window.event;
+        callback(e);
+    };
+
+    window.addEventListener("keydown", shortcutHandler);
+
+    onUnmounted(() => {
+        window.removeEventListener("keydown", shortcutHandler);
+    });
+}
+
+export const useClearStage = (stageUrl) => {
+    const mqttClient = buildClient();
+    const clearStage = async () => {
+        await new Promise((resolve) => {
+            mqttClient.connect().on("connect", () => {
+                mqttClient
+                    .sendMessage(
+                        namespaceTopic(TOPICS.BACKGROUND, stageUrl),
+                        { type: BACKGROUND_ACTIONS.BLANK_SCENE },
+                        true
+                    )
+                    .then(resolve);
+            });
+        });
+    };
+
+    return clearStage;
 }

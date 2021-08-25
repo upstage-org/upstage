@@ -5,6 +5,17 @@
       :key="curtain"
       :src="curtain"
       class="curtain"
+      :class="{ 'dual-left': dualCurtain }"
+      :style="{ opacity: canPlay ? 0.5 : 1 }"
+    />
+  </transition>
+  <transition @enter="dualCurtainEnter" @leave="dualCurtainLeave">
+    <img
+      v-if="dualCurtain && curtain"
+      :key="curtain"
+      :src="curtain"
+      class="curtain"
+      :class="{ 'dual-right': dualCurtain }"
       :style="{ opacity: canPlay ? 0.5 : 1 }"
     />
   </transition>
@@ -25,7 +36,6 @@ export default {
     );
 
     const curtainEnter = (el, complete) => {
-      let anotherCurtain; // Needed for close and open animation
       const duration = curtainSpeed.value;
       switch (config.value?.animations?.curtain) {
         case "fade":
@@ -37,20 +47,12 @@ export default {
           });
           break;
         case "close":
-          anotherCurtain = el.cloneNode(true);
-          el.parentElement.appendChild(anotherCurtain);
           el.style.transformOrigin = "0 0";
           anime({
             targets: el,
-            scaleX: [0, 0.5],
+            scaleX: [0, 1],
             duration,
             complete,
-          });
-          anotherCurtain.style.transformOrigin = "100% 0";
-          anime({
-            targets: anotherCurtain,
-            scaleX: [0, 0.5],
-            duration,
           });
           break;
         default:
@@ -63,7 +65,6 @@ export default {
       }
     };
     const curtainLeave = (el, complete) => {
-      let anotherCurtain;
       const duration = curtainSpeed.value;
       switch (config.value?.animations?.curtain) {
         case "fade":
@@ -75,23 +76,13 @@ export default {
           });
           break;
         case "close":
-          anotherCurtain = el.parentElement.querySelectorAll(".curtain")[1];
           el.style.transformOrigin = "0 0";
           anime({
             targets: el,
-            scaleX: [0.5, 0],
+            scaleX: [1, 0],
             duration,
             complete,
           });
-          if (anotherCurtain) {
-            anotherCurtain.style.transformOrigin = "100% 0";
-            anime({
-              targets: anotherCurtain,
-              scaleX: [0.5, 0],
-              duration,
-              complete: () => anotherCurtain.remove(),
-            });
-          }
           break;
         default:
           anime({
@@ -103,15 +94,60 @@ export default {
       }
     };
 
+    const dualCurtain = computed(
+      () => config.value?.animations?.curtain === "close"
+    );
+
+    const dualCurtainEnter = (el, complete) => {
+      const duration = curtainSpeed.value;
+      el.style.transformOrigin = "100% 0";
+      anime({
+        targets: el,
+        scaleX: [0, 1],
+        duration,
+        complete,
+      });
+    };
+
+    const dualCurtainLeave = (el, complete) => {
+      const duration = curtainSpeed.value;
+      el.style.transformOrigin = "100% 0";
+      anime({
+        targets: el,
+        scaleX: [1, 0],
+        duration,
+        complete,
+      });
+    };
+
     return {
       canPlay,
       curtain,
       curtainEnter,
       curtainLeave,
+      dualCurtain,
+      dualCurtainEnter,
+      dualCurtainLeave,
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
+.curtain {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  transform-origin: top;
+}
+.dual-left {
+  width: 50vw;
+}
+.dual-right {
+  width: 50vw;
+  left: 50vw;
+}
 </style>

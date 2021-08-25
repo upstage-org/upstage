@@ -12,50 +12,10 @@
         <ul class="menu-list">
           <li>
             <router-link
-              to="/backstage/admin/approval"
+              to="/backstage/admin/player-management"
               exact-active-class="is-active"
             >
-              Registration Approval
-            </router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/reset-password"
-              exact-active-class="is-active"
-            >
-              Reset Password
-            </router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/switch-role"
-              exact-active-class="is-active"
-            >
-              Switch Role
-            </router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/delete-user"
-              exact-active-class="is-active"
-            >
-              Delete User
-            </router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/profile-management"
-              exact-active-class="is-active"
-            >
-              Profile Management
-            </router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/upload-limit"
-              exact-active-class="is-active"
-            >
-              Upload Limit
+              Player Management
             </router-link>
           </li>
           <li>

@@ -1,43 +1,44 @@
 <template>
-  <div @click="newStream">
-    <div style="height: 48px">
-      <OBSInstruction src="some_unique_key" />
-    </div>
-    <span class="tag is-light is-block">Instruction</span>
-  </div>
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
-      <RTMPStream v-if="stream.isRTMP" :src="stream.url"></RTMPStream>
+      <template v-if="stream.isRTMP">
+        <RTMPStream v-if="stream.alive" :src="stream.url"></RTMPStream>
+        <QRCodePopup v-else :stream="stream" />
+      </template>
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
-  <template v-if="autoDetect">
-    <div v-if="loading">
-      <Loading height="64px" />
+  <div v-if="loading">
+    <Loading height="64px" />
+  </div>
+  <div v-else @click="fetchRunningStreams">
+    <div class="icon is-large">
+      <Icon src="refresh.svg" size="36" />
     </div>
-    <div v-else @click="fetchRunningStreams">
-      <div class="icon is-large">
-        <Icon src="refresh.svg" size="36" />
-      </div>
-      <span class="tag is-light is-block">Refresh</span>
-    </div>
-  </template>
+    <span class="tag is-light is-block">Refresh</span>
+  </div>
 </template>
 
 <script>
-import { computed, watch } from "vue";
+import { computed, onMounted } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "../../Skeleton";
+import QRCodePopup from "./QRCodePopup";
 import Icon from "@/components/Icon";
 import RTMPStream from "@/components/RTMPStream";
 import Loading from "@/components/Loading";
-import OBSInstruction from "@/views/backstage/Media/OBSInstruction";
 
 export default {
-  components: { Skeleton, Icon, RTMPStream, Loading, OBSInstruction },
+  components: {
+    Skeleton,
+    Icon,
+    QRCodePopup,
+    RTMPStream,
+    Loading,
+  },
   setup: () => {
     const store = useStore();
-    const streams = computed(() => store.state.stage.tools.streams);
+    const runningStreams = computed(() => store.state.stage.runningStreams);
     const loading = computed(() => store.state.stage.loadingRunningStreams);
     const fetchRunningStreams = () => {
       store.dispatch("stage/getRunningStreams");
@@ -46,15 +47,28 @@ export default {
     const autoDetect = computed(
       () => store.state.stage.config.streaming?.autoDetect
     );
-    watch(
-      autoDetect,
-      (val) => {
-        if (val) {
-          fetchRunningStreams();
+    onMounted(() => {
+      fetchRunningStreams();
+    });
+
+    const streams = computed(() => {
+      const res = [...store.state.stage.tools.streams];
+      res.forEach((s) => (s.alive = false));
+      runningStreams.value.forEach((stream) => {
+        const index = res.findIndex((s) => s.url === stream.url);
+        if (index >= 0) {
+          res[index].alive = true;
+          res[index].w = stream.w
+          res[index].h = stream.h
+        } else {
+          if (autoDetect.value) {
+            res.push(stream);
+          }
         }
-      },
-      { immediate: true }
-    );
+      });
+      console.log(res)
+      return res;
+    });
 
     return { streams, loading, fetchRunningStreams, autoDetect };
   },

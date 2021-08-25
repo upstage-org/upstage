@@ -44,6 +44,9 @@
     <template #statistics="{ item }">
       <PlayerAudienceCounter :stage-url="item.fileLocation" />
     </template>
+    <template #recording="{ item }">
+      <RecordActions :stage="item" />
+    </template>
     <template #enter="{ item }">
       <router-link
         :to="`/live/${item.fileLocation}`"
@@ -63,6 +66,7 @@ import DataTable from "@/components/DataTable/index";
 import Confirm from "@/components/Confirm";
 import Icon from "@/components/Icon";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
+import RecordActions from "./RecordActions";
 import DuplicateStage from "./DuplicateStage.vue";
 import { displayName } from "@/utils/auth";
 import { stageGraph } from "@/services/graphql";
@@ -76,6 +80,7 @@ export default {
     Confirm,
     Icon,
     PlayerAudienceCounter,
+    RecordActions,
     DuplicateStage,
   },
   props: { data: Array },
@@ -95,6 +100,12 @@ export default {
         title: "Statistics",
         description: "Players and audiences counter",
         slot: "statistics",
+        align: "center",
+      },
+      {
+        title: "Recording",
+        description: "Start of stop recording",
+        slot: "recording",
         align: "center",
       },
       {

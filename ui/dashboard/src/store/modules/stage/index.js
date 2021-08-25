@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
-import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS } from '@/utils/constants'
+import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS, DRAW_ACTIONS } from '@/utils/constants'
 import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
@@ -38,6 +38,7 @@ export default {
             objects: [],
             drawings: [],
             texts: [],
+            whiteboard: []
         },
         tools: {
             avatars: [],
@@ -73,7 +74,7 @@ export default {
             },
             timers: [],
             interval: null,
-            speed: 32
+            speed: 1
         },
         loadingRunningStreams: false,
         audioPlayers: [],
@@ -81,7 +82,8 @@ export default {
         isSavingScene: false,
         isLoadingScenes: false,
         showPlayerChat: false,
-        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0
+        lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
+        runningStreams: []
     },
     getters: {
         ready(state) {
@@ -135,7 +137,7 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission && state.model.permission !== 'audience'
+            return state.model.permission && state.model.permission !== 'audience' && !state.replay.isReplaying
         },
         players(state) {
             return state.sessions.filter((s) => s.isPlayer)
@@ -145,6 +147,9 @@ export default {
         },
         unreadPrivateMessageCount(state) {
             return state.chat.privateMessages.filter(m => m.at > state.lastSeenPrivateMessage).length
+        },
+        whiteboard(state) {
+            return state.board.whiteboard
         }
     },
     mutations: {
@@ -193,22 +198,25 @@ export default {
         CLEAN_STAGE(state, cleanModel) {
             if (cleanModel) {
                 state.model = null;
+                state.tools.audios = [];
             }
             state.status = 'OFFLINE';
+            state.replay.isReplaying = false;
             if (state.background?.interval) {
                 clearInterval(state.background.interval);
             }
             state.background = null;
+            state.curtain = null;
             state.backdropColor = COLORS.DEFAULT_BACKDROP;
             state.tools.avatars = [];
             state.tools.props = [];
             state.tools.backdrops = []
-            state.tools.audios = []
             state.tools.streams = [];
             state.config = getDefaultStageConfig()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
+            state.board.whiteboard = [];
             state.chat.messages = [];
             state.chat.privateMessages = [];
             state.chat.color = randomColor();
@@ -364,6 +372,9 @@ export default {
         PUSH_DRAWING(state, drawing) {
             state.board.drawings.push(cloneDeep(drawing));
         },
+        POP_DRAWING(state, drawingId) {
+            state.board.drawings = state.board.drawings.filter(d => d.drawingId !== drawingId)
+        },
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);
         },
@@ -371,7 +382,7 @@ export default {
             state.tools.streams.push(stream);
         },
         PUSH_RUNNING_STREAMS(state, streams) {
-            state.tools.streams = state.tools.streams.filter(s => !s.autoDetect).concat(streams);
+            state.runningStreams = streams
         },
         PUSH_CURTAINS(state, curtains) {
             state.tools.curtains = curtains;
@@ -480,6 +491,24 @@ export default {
                 state.lastSeenPrivateMessage = state.chat.privateMessages[length - 1].at
                 localStorage.setItem('lastSeenPrivateMessage', state.lastSeenPrivateMessage)
             }
+        },
+        UPDATE_WHITEBOARD(state, message) {
+            if (!state.board.whiteboard) {
+                state.board.whiteboard = []
+            }
+            switch (message.type) {
+                case DRAW_ACTIONS.NEW_LINE:
+                    state.board.whiteboard = state.board.whiteboard.concat(message.command)
+                    break;
+                case DRAW_ACTIONS.UNDO:
+                    state.board.whiteboard = state.board.whiteboard.filter((e, i) => i !== message.index)
+                    break;
+                case DRAW_ACTIONS.CLEAR:
+                    state.board.whiteboard = []
+                    break;
+                default:
+                    break;
+            }
         }
     },
     actions: {
@@ -517,6 +546,7 @@ export default {
                 [TOPICS.AUDIO]: { qos: 2 },
                 [TOPICS.REACTION]: { qos: 2 },
                 [TOPICS.COUNTER]: { qos: 2 },
+                [TOPICS.DRAW]: { qos: 2 },
             }
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
@@ -547,6 +577,9 @@ export default {
                     break;
                 case TOPICS.COUNTER:
                     dispatch('handleCounterMessage', { message });
+                    break;
+                case TOPICS.DRAW:
+                    dispatch('handleDrawMessage', { message });
                     break;
                 default:
                     break;
@@ -637,7 +670,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar' || data.type === 'drawing') {
+            if (data.type === 'avatar') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
@@ -673,7 +706,7 @@ export default {
         },
         deleteObject(action, object) {
             object = serializeObject(object)
-            if (object.type === 'drawing') {
+            if (object.drawingId) { // is drawing
                 delete object.commands
             }
             const payload = {
@@ -830,11 +863,9 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        async addDrawing({ commit, dispatch }, drawing) {
-            drawing.type = 'drawing';
+        addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
-            drawing = await dispatch('placeObjectOnStage', drawing);
-            return drawing
+            dispatch('placeObjectOnStage', drawing);
         },
         addStream({ commit, dispatch }, stream) {
             stream.type = 'stream';
@@ -927,7 +958,7 @@ export default {
                 message,
             })
         },
-        async replayRecord({ state, dispatch, commit }, timestamp) {
+        async replayRecording({ state, dispatch, commit }, timestamp) {
             stopSpeaking()
             await dispatch('pauseReplay');
             const current = timestamp ? Number(timestamp) : state.replay.timestamp.begin
@@ -937,8 +968,9 @@ export default {
             const events = state.model.events
             const speed = state.replay.speed
             state.replay.interval = setInterval(() => {
-                state.replay.timestamp.current += 10
+                state.replay.timestamp.current += 1
                 if (state.replay.timestamp.current > state.replay.timestamp.end) {
+                    state.replay.timestamp.current = state.replay.timestamp.begin
                     dispatch('pauseReplay');
                 }
             }, 1000 / speed)
@@ -946,7 +978,7 @@ export default {
                 if (event.mqttTimestamp - current >= 0) {
                     const timer = setTimeout(() => {
                         dispatch('replayEvent', event);
-                    }, (event.mqttTimestamp - current) * 100 / speed)
+                    }, (event.mqttTimestamp - current) * 1000 / speed)
                     state.replay.timers.push(timer)
                 } else {
                     dispatch('replicateEvent', event);
@@ -958,6 +990,30 @@ export default {
             state.replay.interval = null
             state.replay.timers.forEach(timer => clearTimeout(timer))
             state.replay.timers = []
+            state.tools.audios.forEach(audio => {
+                audio.isPlaying = false
+                audio.changed = true
+            })
+        },
+        seekForwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current + 10000
+            const nextEvent = state.model.events.find(e => e.mqttTimestamp > current)
+            if (nextEvent) {
+                dispatch('replayRecording', nextEvent.mqttTimestamp)
+            }
+        },
+        seekBackwardReplay({ state, dispatch }) {
+            const current = state.replay.timestamp.current - 10000
+            let event = null
+            for (let i = state.model.events.length - 1; i >= 0; i--) {
+                event = state.model.events[i];
+                if (event.mqttTimestamp < current) {
+                    break;
+                }
+            }
+            if (event) {
+                dispatch('replayRecording', event.mqttTimestamp)
+            }
         },
         handleCounterMessage({ commit, state }, { message }) {
             commit('UPDATE_SESSIONS_COUNTER', message)
@@ -1009,6 +1065,18 @@ export default {
             if (getters.canPlay && !state.preferences.isDrawing && !state.replay.isReplaying) {
                 commit('SET_ACTIVE_MOVABLE', id)
             }
-        }
+        },
+        handleDrawMessage({ commit }, { message }) {
+            commit('UPDATE_WHITEBOARD', message)
+        },
+        sendDrawWhiteboard(action, command) {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.NEW_LINE, command })
+        },
+        sendUndoWhiteboard({ state }) {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.UNDO, index: state.board.whiteboard.length - 1 })
+        },
+        sendClearWhiteboard() {
+            mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.CLEAR })
+        },
     },
 };

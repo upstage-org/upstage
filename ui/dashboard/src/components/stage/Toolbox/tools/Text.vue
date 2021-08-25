@@ -1,6 +1,6 @@
 <template>
   <section
-    v-if="isWriting"
+    v-show="isWriting"
     class="writing"
     @click="onClickWriting"
     :style="{
@@ -29,9 +29,10 @@
     <div class="text-tool" style="width: 200px; z-index: 1005">
       <span class="tag muted is-block">Font</span>
       <Dropdown
+        class="font-dropdown"
         v-model="options.fontFamily"
         :data="fontFamilies"
-        style="position: fixed"
+        @open="fontDropdownOpen"
       >
         <template #option="{ label }">
           <span :style="{ 'font-family': label }">{{ label }}</span>
@@ -102,7 +103,7 @@ import ColorPicker from "@/components/form/ColorPicker";
 import Skeleton from "../Skeleton";
 import Icon from "@/components/Icon";
 import { useStore } from "vuex";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 
 export default {
   components: { Dropdown, Field, ColorPicker, Skeleton, Icon },
@@ -161,6 +162,11 @@ export default {
 
     const createText = () => {
       store.commit("stage/UPDATE_IS_WRITING", true);
+      store.commit("stage/SET_ACTIVE_MOVABLE", null);
+      onClickWriting({
+        clientX: window.innerWidth / 2 - 200,
+        clientY: window.innerHeight / 2 - 50,
+      });
     };
 
     const cancelWriting = () => {
@@ -180,14 +186,6 @@ export default {
       });
       el.value.focus();
     };
-
-    createText();
-    onMounted(() => {
-      onClickWriting({
-        clientX: window.innerWidth / 2,
-        clientY: window.innerHeight / 2,
-      });
-    });
 
     const saveText = async () => {
       const { width, height } = el.value.getBoundingClientRect() ?? {};
@@ -225,6 +223,11 @@ export default {
     };
 
     const savedTexts = computed(() => store.state.stage.board.texts);
+    const fontDropdownOpen = (visible) => {
+      document.querySelector("#topbar").style.overflowY = visible
+        ? "visible"
+        : "hidden";
+    };
 
     return {
       stageSize,
@@ -241,6 +244,7 @@ export default {
       toggleUnderline,
       changeFontSize,
       savedTexts,
+      fontDropdownOpen,
     };
   },
 };
@@ -259,9 +263,10 @@ export default {
   z-index: 1001;
   position: relative;
   float: left;
-  .dropdown {
-    position: absolute;
+  .font-dropdown {
+    position: absolute !important;
     transform: translateX(-50%);
+    z-index: 1000;
   }
 }
 </style>

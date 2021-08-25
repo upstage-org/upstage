@@ -8,14 +8,15 @@
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
       <PanelItem name="Streams" icon="streams.svg" />
-      <PanelItem name="Draw" icon="draw.svg" />
+      <PanelItem name="Whiteboard" icon="whiteboard.svg" label="Live drawing" />
+      <PanelItem name="Draw" icon="object-drawing.svg" label="Object drawing" />
       <PanelItem name="Text" icon="text.svg" />
       <hr />
-      <PanelItem name="Depth" icon="multi-frame.svg" />
+      <PanelItem name="Depth" icon="depth.svg" />
       <PanelItem name="Curtain" icon="curtain.svg" />
       <PanelItem name="Scenes" icon="animation-slider.svg" />
       <hr />
-      <PanelItem name="Settings" icon="rotation-slider.svg" />
+      <PanelItem name="Settings" icon="configurations.svg" />
       <PlayerChat />
     </div>
   </nav>

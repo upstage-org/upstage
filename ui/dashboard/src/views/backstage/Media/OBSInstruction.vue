@@ -1,7 +1,10 @@
 <template>
   <Modal>
     <template #trigger>
-      <p title="Show instruction on OBS Studio" class="has-tooltip-bottom">
+      <p
+        title="Show instruction on OBS Studio"
+        class="has-tooltip-bottom clickable"
+      >
         <Icon size="50" src="obs-logo.png" />
       </p>
     </template>
@@ -25,9 +28,15 @@
       </div>
       <div class="columns">
         <div class="column is-4 mt-6">
-          <b>Step 2: </b>In Stream tab, choose Custom... for Service,
-          <code>{{ publishUrl }}</code> for Server and
-          <code>{{ src }}</code> for Stream Key.
+          <b>Step 2: </b>In Stream tab, put the below configurations:<br />
+          <b>Service:</b> Custom...<br />
+          <b>Server:</b>
+          <Copy :value="publishUrl" />
+          <br />
+          <b>Stream Key:</b>
+          <Copy :value="streamKey" />
+          <br />
+          (Click on the red text to copy)
         </div>
         <div class="column">
           <img src="@/assets/obs-instruction/2.png" alt="Step 2" />
@@ -50,13 +59,16 @@
 <script>
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
+import Copy from "@/components/Copy.vue";
 import configs from "@/config";
 
 export default {
-  components: { Icon, Modal },
-  props: ["src"],
-  setup: () => {
-    return { publishUrl: configs.STREAMING.publish };
+  components: { Icon, Modal, Copy },
+  props: ["url", "sign"],
+  setup: (props) => {
+    const publishUrl = configs.STREAMING.publish;
+    const streamKey = `${props.url}?sign=${props.sign}`;
+    return { publishUrl, streamKey };
   },
 };
 </script>

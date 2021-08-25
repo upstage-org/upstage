@@ -9,18 +9,11 @@
       cursor,
       top: stageSize.top + 'px',
       left: stageSize.left + 'px',
-      'background-color': `rgba(255, 255, 255, ${liveDrawing ? '0.5' : '0.8'})`,
     }"
   >
     Your browser does not support the HTML5 canvas tag.
   </canvas>
   <template v-if="isDrawing">
-    <div class="drawing-tool">
-      <div class="icon is-large">
-        <Switch v-model="liveDrawing" class="is-success is-rounded ml-2" />
-      </div>
-      <span class="tag is-light is-block">Live drawing</span>
-    </div>
     <div class="drawing-tool">
       <div class="icon is-large">
         <ColorPicker v-model="color" />
@@ -72,11 +65,21 @@
       </div>
       <span class="tag is-light is-block">Clear</span>
     </div>
-    <div class="drawing-tool" @click="save(true)">
+    <div class="drawing-tool" @click="save('avatar')">
       <div class="icon is-large">
-        <Icon size="36" src="check.svg" />
+        <Icon size="24" src="check.svg" />
+        &nbsp;
+        <Icon size="24" src="avatar.svg" />
       </div>
-      <span class="tag is-light is-block">Save</span>
+      <span class="tag is-light is-block">Save as Avatar</span>
+    </div>
+    <div class="drawing-tool" @click="save('prop')">
+      <div class="icon is-large">
+        <Icon size="24" src="check.svg" />
+        &nbsp;
+        <Icon size="24" src="prop.svg" />
+      </div>
+      <span class="tag is-light is-block">Save as Prop</span>
     </div>
     <div class="drawing-tool" @click="cancel">
       <div class="icon is-large">
@@ -93,22 +96,38 @@
       <span class="tag is-light is-block">New</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
-      <Skeleton :data="drawing" />
+      <ContextMenu>
+        <template #trigger>
+          <Skeleton :data="drawing" />
+        </template>
+        <template #context>
+          <a
+            class="panel-block has-text-danger"
+            @click="deleteDrawingPermantly(drawing)"
+          >
+            <span class="panel-icon">
+              <Icon src="remove.svg" />
+            </span>
+            <span>Delete Permantly</span>
+          </a>
+        </template>
+      </ContextMenu>
     </div>
   </template>
 </template>
 
 <script>
-import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import { useDrawable } from "./composable";
 import ColorPicker from "@/components/form/ColorPicker";
 import Icon from "@/components/Icon";
-import Switch from "@/components/form/Switch";
+import ContextMenu from "@/components/ContextMenu";
 import Skeleton from "../../Skeleton";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
-  components: { Skeleton, ColorPicker, Icon, Switch },
+  components: { Skeleton, ColorPicker, Icon, ContextMenu },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);
@@ -116,7 +135,6 @@ export default {
     const isDrawing = computed(() => {
       return store.state.stage.preferences.isDrawing;
     });
-    const currentDrawing = ref();
     const {
       el,
       cursor,
@@ -132,53 +150,25 @@ export default {
     const create = () => {
       store.commit("stage/SET_ACTIVE_MOVABLE", null);
       store.commit("stage/UPDATE_IS_DRAWING", true);
-      currentDrawing.value = null;
       clearCanvas(true);
     };
     const cancel = () => {
       store.commit("stage/UPDATE_IS_DRAWING", false);
-      currentDrawing.value = null;
     };
-    const save = (closeAfterSaving) => {
-      if (!currentDrawing.value) {
-        const area = getDrawedArea();
-        if (area) {
-          store
-            .dispatch("stage/addDrawing", { ...area, commands: history })
-            .then((drawing) => {
-              currentDrawing.value = drawing.id;
-            });
-        }
+    const save = (type) => {
+      const area = getDrawedArea();
+      if (area) {
+        const drawingId = uuidv4();
+        const commands = [...history];
+        store.dispatch("stage/addDrawing", {
+          ...area,
+          commands,
+          type,
+          drawingId,
+        });
       }
-      if (closeAfterSaving) {
-        cancel();
-      }
+      cancel();
     };
-
-    const liveDrawing = ref(false);
-    watch(liveDrawing, (value) => {
-      if (value && !currentDrawing.value) {
-        save();
-      }
-    });
-
-    watch(history, (value) => {
-      if (liveDrawing.value) {
-        if (currentDrawing.value) {
-          const drawing = store.getters["stage/objects"].find(
-            (o) => o.id === currentDrawing.value
-          );
-          store.dispatch("stage/shapeObject", {
-            ...drawing,
-            ...getDrawedArea(),
-            commands: value,
-            liveAction: true,
-          });
-        } else {
-          save();
-        }
-      }
-    });
 
     onMounted(() => {
       store.commit("stage/UPDATE_IS_DRAWING", true);
@@ -187,6 +177,15 @@ export default {
     onUnmounted(() => {
       store.commit("stage/UPDATE_IS_DRAWING", false);
     });
+
+    const deleteDrawingPermantly = (drawing) => {
+      store.commit("stage/POP_DRAWING", drawing.drawingId);
+      store.getters["stage/objects"]
+        .filter((o) => o.drawingId === drawing.drawingId)
+        .forEach((o) => {
+          store.dispatch("stage/deleteObject", o);
+        });
+    };
 
     return {
       isDrawing,
@@ -203,7 +202,7 @@ export default {
       mode,
       cursor,
       stageSize,
-      liveDrawing,
+      deleteDrawingPermantly,
     };
   },
 };
@@ -213,6 +212,7 @@ export default {
 .drawing {
   position: fixed;
   z-index: 1000;
+  background-color: hsla(142, 52%, 96%, 0.8);
 }
 .drawing-tool {
   z-index: 1001;

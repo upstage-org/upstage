@@ -54,6 +54,8 @@ export default {
       origin: false,
     });
 
+    let animation;
+
     const sendMovement = (target, { left, top }) => {
       target.style.left = `${props.object.x}px`;
       target.style.top = `${props.object.y}px`;
@@ -66,9 +68,11 @@ export default {
     moveable
       .on("dragStart", () => {
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("drag", ({ target, left, top }) => {
-        emit("update:active", false);
         target.style.left = `${left}px`;
         target.style.top = `${top}px`;
       })
@@ -91,9 +95,11 @@ export default {
     moveable
       .on("resizeStart", () => {
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("resize", ({ target, width, height, drag: { left, top } }) => {
-        emit("update:active", false);
         target.style.width = `${width}px`;
         target.style.height = `${height}px`;
         target.style.left = `${left}px`;
@@ -111,7 +117,6 @@ export default {
         }) => {
           sendResize(target, { left, top, width, height });
           isDragging.value = false;
-          emit("update:active", true);
         }
       );
 
@@ -126,15 +131,16 @@ export default {
       .on("rotateStart", (e) => {
         e.set(props.object.rotate ?? 0);
         isDragging.value = true;
+        if (animation) {
+          animation.pause(true);
+        }
       })
       .on("rotate", ({ target, rotate }) => {
-        emit("update:active", false);
         target.style.transform = `rotate(${rotate}deg)`;
       })
       .on("rotateEnd", ({ target, lastEvent: { rotate } }) => {
         sendRotation(target, rotate);
         isDragging.value = false;
-        emit("update:active", true);
       });
 
     const showControls = (isShowing, e) => {
@@ -143,7 +149,7 @@ export default {
           moveable.setState(
             {
               target: el.value,
-              keepRatio: props.object.type === "stream",
+              keepRatio: props.object.type !== "text",
             },
             () => {
               if (e && props.object.type !== "text") {
@@ -189,7 +195,6 @@ export default {
       { immediate: true }
     );
 
-    let animation;
     watch(
       () => props.object,
       () => {
@@ -219,7 +224,7 @@ export default {
             try {
               moveable.updateRect();
             } catch (error) {
-              console.log("Object deleted while moving!");
+              // pass
             }
           },
         });

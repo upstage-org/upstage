@@ -38,13 +38,14 @@
           v-for="object in objects"
           :id="object.id"
           :key="object.id"
-          :is="object.type ?? 'avatar'"
+          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'"
           :object="object"
         />
       </transition-group>
     </div>
   </section>
   <Curtain />
+  <Whiteboard />
 </template>
 
 <script>
@@ -55,10 +56,19 @@ import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
 import Text from "@/components/objects/Text";
 import Curtain from "@/components/stage/Curtain";
+import Whiteboard from "@/components/stage/Whiteboard";
 import anime from "animejs";
 
 export default {
-  components: { Avatar, Prop: Avatar, Stream, Drawing, Text, Curtain },
+  components: {
+    Avatar,
+    Prop: Avatar,
+    Stream,
+    Drawing,
+    Text,
+    Curtain,
+    Whiteboard,
+  },
   setup: () => {
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
@@ -141,15 +151,7 @@ export default {
 #board {
   position: fixed;
   background-size: cover;
-}
-.curtain {
-  pointer-events: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  transform-origin: top;
+  overflow: hidden;
 }
 .background-image {
   position: absolute;

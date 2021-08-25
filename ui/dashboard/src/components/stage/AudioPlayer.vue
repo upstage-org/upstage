@@ -13,13 +13,18 @@
 </template>
 
 <script>
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 import { useStore } from "vuex";
+import anime from "animejs";
 export default {
   setup: () => {
     const store = useStore();
-    const pauseAudio = (audio) => {
-      store.dispatch("stage/updateAudioStatus", { ...audio, isPlaying: false });
+    const stopAudio = (audio) => {
+      store.dispatch("stage/updateAudioStatus", {
+        ...audio,
+        isPlaying: false,
+        currentTime: 0,
+      });
     };
     const audios = store.getters["stage/audios"];
     let refs = [];
@@ -33,7 +38,7 @@ export default {
             el.currentTime = 0;
             el.play();
           } else {
-            pauseAudio(audios[refs.indexOf(el)]);
+            stopAudio(audios[refs.indexOf(el)]);
           }
         });
         el.addEventListener("loadedmetadata", function () {
@@ -51,20 +56,36 @@ export default {
       }
     };
 
+    const fadeVolume = (audio, volume) => {
+      anime({
+        targets: audio,
+        volume: volume,
+        easing: "linear",
+      });
+    };
+
+    const speed = computed(() => {
+      if (store.state.stage.replay.isReplaying) {
+        return Math.min(store.state.stage.replay.speed, 8);
+      }
+      return 1;
+    });
+
     const handleAudioChange = () => {
       audios.forEach((audio, i) => {
         if (audio.changed) {
-          refs[i].currentTime = audio.currentTime ?? 0;
-          refs[i].volume = audio.volume ?? 1;
           if (audio.isPlaying) {
+            refs[i].playbackRate = speed.value;
             refs[i].play();
           } else {
             refs[i].pause();
           }
-          if (audio.currentTime) {
-            refs[i].currentTime = audio.currentTime;
+          if (audio.saken) {
+            refs[i].currentTime = audio.currentTime ?? 0;
           }
+          fadeVolume(refs[i], audio.volume ?? 1);
           audio.changed = false;
+          audio.saken = false;
         }
       });
     };

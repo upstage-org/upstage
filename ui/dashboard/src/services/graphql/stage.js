@@ -53,9 +53,9 @@ export const assetFragment = gql`
     copyrightLevel
     playerAccess
     permission
+    sign
   }
 `
-
 
 export const sceneFragment = gql`
   fragment sceneFragment on Scene {
@@ -108,6 +108,11 @@ export default {
         edges {
           node {
             ...stageFragment
+            activeRecording {
+              id
+              name
+              createdOn
+            }
           }
         }
       }
@@ -129,6 +134,7 @@ export default {
               createdOn
               name
               description
+              recording
             }
             scenes {
               id
@@ -159,7 +165,7 @@ export default {
               payload
               mqttTimestamp
             }
-            scenes {
+            scenes(performanceId: $performanceId) {
               ...sceneFragment
             }
           }
@@ -396,5 +402,34 @@ export default {
         success
       }
     }
-  `, { id, name, description })
+  `, { id, name, description }),
+  startRecording: (stageId, name, description) => client.request(gql`
+    mutation startRecording($stageId: ID!, $name: String, $description: String) {
+      startRecording(stageId: $stageId, name: $name, description: $description) {
+        recording {
+          id
+        }
+      }
+    }
+  `, { stageId, name, description }),
+  saveRecording: (id) => client.request(gql`
+    mutation saveRecording($id: Int!) {
+      saveRecording(id: $id) {
+        recording {
+          id
+        }
+      }
+    }
+  `, { id }),
+  getStreamSign: key => client.request(gql`
+    query StreamSign($key: String) {
+      assetList(fileLocation: $key) {
+        edges {
+          node {
+            sign
+          }
+        }
+      }
+    }
+  `, { key }).then(response => response.assetList.edges[0]?.node?.sign)
 }

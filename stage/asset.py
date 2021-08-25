@@ -1,4 +1,15 @@
-from datetime import datetime
+from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
+from datetime import datetime, timedelta
+import hashlib
+import json
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from base64 import b64decode
+import graphene
+from graphql_relay.node.node import from_global_id
+from graphene_sqlalchemy import SQLAlchemyObjectType
+from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
+from config.project_globals import appdir, ScopedSession
+import sys
 import time
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
@@ -10,17 +21,14 @@ from user.user_utils import current_user
 from performance_config.models import ParentStage
 from utils.graphql_utils import CountableConnection, input_to_dictionary
 import uuid
-
 from sqlalchemy.orm import joinedload
 
-from config.project_globals import appdir, ScopedSession
-from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
-from graphene_sqlalchemy import SQLAlchemyObjectType
-from graphql_relay.node.node import from_global_id
-import graphene
-from base64 import b64decode
-from flask_jwt_extended import jwt_required, get_jwt_identity
-import json
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 
 absolutePath = os.path.dirname(appdir)
 storagePath = 'ui/static/assets'
@@ -72,6 +80,8 @@ class Asset(SQLAlchemyObjectType):
         description="Users who can access and edit this media")
     permission = graphene.String(
         description="What permission the logged in user is granted to this media")
+    sign = graphene.String(
+        description="Stream sign that is required to publish from broadcaster")
 
     class Meta:
         model = AssetModel
@@ -116,6 +126,17 @@ class Asset(SQLAlchemyObjectType):
                 elif user_id in accesses[1]:
                     return "editor"
         return "none"
+
+    def resolve_sign(self, info):
+        result = verify_jwt_in_request(True)
+        user_id = get_jwt_identity()
+        if self.owner_id == user_id:
+            timestamp = int((datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp())
+            payload = "/live/{0}-{1}-{2}".format(
+                self.file_location, timestamp, STREAM_KEY)
+            hashvalue = hashlib.md5(payload.encode('utf-8')).hexdigest()
+            return "{0}-{1}".format(timestamp, hashvalue)
+        return ''
 
 
 class AssetType(SQLAlchemyObjectType):
@@ -218,6 +239,12 @@ class UpdateMedia(graphene.Mutation):
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
             elif file_location:
+                existedAsset = local_db_session.query(AssetModel).filter(
+                    AssetModel.file_location == file_location).first()
+                if existedAsset:
+                    raise Exception(
+                        "Media with the same key already existed, please pick another!")
+
                 asset = AssetModel(owner_id=current_user_id)
                 local_db_session.add(asset)
 
@@ -227,7 +254,14 @@ class UpdateMedia(graphene.Mutation):
                 asset.description = description
                 if file_location:
                     if "?" in file_location:
-                        file_location = file_location[:file_location.index("?")]
+                        file_location = file_location[:file_location.index(
+                            "?")]
+                    if asset.id and file_location != asset.file_location:
+                        existedAsset = local_db_session.query(AssetModel).filter(
+                            AssetModel.file_location == file_location).filter(AssetModel.id != asset.id).first()
+                        if existedAsset:
+                            raise Exception(
+                                "Media with the same key already existed, please pick another!")
                     asset.file_location = file_location
 
                 if base64:
@@ -242,6 +276,9 @@ class UpdateMedia(graphene.Mutation):
                     asset.asset_license.level = copyright_level
                     asset.asset_license.permissions = player_access
                 else:
+                    if not asset.id:
+                        local_db_session.flush()
+
                     asset_license = AssetLicense(
                         asset_id=asset.id,
                         level=copyright_level,
@@ -282,6 +319,8 @@ class DeleteMedia(graphene.Mutation):
                     absolutePath, storagePath, asset.file_location)
                 local_db_session.query(ParentStage).filter(
                     ParentStage.child_asset_id == id).delete(synchronize_session=False)
+                local_db_session.query(AssetLicense).filter(
+                    AssetLicense.asset_id == id).delete(synchronize_session=False)
 
                 for multiframe_media in local_db_session.query(AssetModel).filter(AssetModel.description.like(f"%{asset.file_location}%")).all():
                     attributes = json.loads(multiframe_media.description)

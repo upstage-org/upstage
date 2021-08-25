@@ -83,37 +83,12 @@ const routes = [
         children: [
           {
             path: '',
-            redirect: '/backstage/admin/approval',
+            redirect: '/backstage/admin/player-management',
           },
           {
-            path: 'approval',
-            name: 'Registration Approval',
-            component: () => import('../views/backstage/Admin/RegistrationApproval.vue'),
-          },
-          {
-            path: 'reset-password',
-            name: 'Reset Password',
-            component: () => import('../views/backstage/Admin/ResetPassword.vue'),
-          },
-          {
-            path: 'switch-role',
-            name: 'Switch Role',
-            component: () => import('../views/backstage/Admin/SwitchRole.vue'),
-          },
-          {
-            path: 'delete-user',
-            name: 'Delete User',
-            component: () => import('../views/backstage/Admin/DeleteUser.vue'),
-          },
-          {
-            path: 'profile-management',
-            name: 'Profile Management',
-            component: () => import('../views/backstage/Admin/ProfileManagement.vue'),
-          },
-          {
-            path: 'upload-limit',
-            name: 'Upload Limit',
-            component: () => import('../views/backstage/Admin/UploadLimit.vue'),
+            path: 'player-management',
+            name: 'Player Management',
+            component: () => import('../views/backstage/Admin/UserTable.vue'),
           },
           {
             path: 'batch-user-creation',
@@ -180,7 +155,7 @@ const routes = [
   },
   {
     path: '/replay/:url/:id',
-    name: 'Replay Record',
+    name: 'Replay Recording',
     component: () => import('../views/replay/Layout.vue'),
   },
 ]

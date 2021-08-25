@@ -37,7 +37,7 @@
           type="range"
           class="slider is-fullwidth is-primary"
           step="0.01"
-          min="0"
+          min="0.2"
           max="1"
         />
       </HorizontalField>
