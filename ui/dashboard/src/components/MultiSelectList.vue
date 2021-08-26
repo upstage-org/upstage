@@ -54,6 +54,7 @@
                 </Selectable>
               </div>
             </template>
+            <slot name="extras"></slot>
           </div>
         </div>
       </div>
