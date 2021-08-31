@@ -340,16 +340,17 @@ class DeleteMedia(graphene.Mutation):
                     if not user.id == asset.owner_id:
                         return DeleteMedia(success=False, message="Only media owner or admin can delete this media!")
 
-                attributes = json.loads(asset.description)
-                # Delete frames that was assigned only to this media
-                for frame in attributes['frames']:
-                    frame_asset = local_db_session.query(AssetModel).filter(
-                        AssetModel.file_location == frame).first()
-                    if not frame_asset:
-                        physical_path = os.path.join(
-                            absolutePath, storagePath, frame)
-                        if os.path.exists(physical_path):
-                            os.remove(physical_path)
+                if asset.description:
+                    attributes = json.loads(asset.description)
+                    # Delete frames that was assigned only to this media
+                    for frame in attributes['frames']:
+                        frame_asset = local_db_session.query(AssetModel).filter(
+                            AssetModel.file_location == frame).first()
+                        if not frame_asset:
+                            physical_path = os.path.join(
+                                absolutePath, storagePath, frame)
+                            if os.path.exists(physical_path):
+                                os.remove(physical_path)
 
                 physical_path = os.path.join(
                     absolutePath, storagePath, asset.file_location)
@@ -360,9 +361,13 @@ class DeleteMedia(graphene.Mutation):
 
                 for multiframe_media in local_db_session.query(AssetModel).filter(AssetModel.description.like(f"%{asset.file_location}%")).all():
                     attributes = json.loads(multiframe_media.description)
-                    attributes['frames'].remove(asset.file_location)
+                    for i, frame in enumerate(attributes['frames']):
+                        if "?" in frame:
+                            attributes['frames'][i] = frame[:frame.index("?")]
+                    if asset.file_location in attributes['frames']:
+                        attributes['frames'].remove(asset.file_location)
                     multiframe_media.description = json.dumps(attributes)
-                    local_db_session.commit()
+                    local_db_session.flush()
 
                 local_db_session.delete(asset)
                 local_db_session.flush()
