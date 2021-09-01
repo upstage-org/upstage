@@ -4,7 +4,7 @@ import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS, DRAW_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig, getDefaultStageSettings } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -49,6 +49,7 @@ export default {
             curtains: [],
         },
         config: getDefaultStageConfig(),
+        settings: getDefaultStageSettings(), // Settings will be saved as part of scene, while config is not
         settingPopup: {
             isActive: false,
         },
@@ -58,9 +59,6 @@ export default {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
             }
-        },
-        settings: {
-            chatVisibility: true,
         },
         reactions: [],
         viewport: getViewport(),
@@ -213,6 +211,7 @@ export default {
             state.tools.backdrops = []
             state.tools.streams = [];
             state.config = getDefaultStageConfig()
+            state.settings = getDefaultStageSettings()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
@@ -438,6 +437,9 @@ export default {
         },
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
+        },
+        SET_REACTION_VISIBILITY(state, visible) {
+            state.settings.reactionVisibility = visible
         },
         SET_CHAT_POSITION(state, position) {
             state.chatPosition = position
@@ -791,6 +793,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        showReactionsBar(action, visible) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY, visible })
+        },
         setChatPosition(action, position) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_POSITION, position })
         },
@@ -816,6 +821,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY:
+                    commit('SET_REACTION_VISIBILITY', message.visible)
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_POSITION:
                     commit('SET_CHAT_POSITION', message.position)

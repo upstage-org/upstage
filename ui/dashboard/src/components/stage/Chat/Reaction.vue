@@ -1,48 +1,50 @@
 <template>
-  <button
-    class="button is-small is-rounded reaction mx-1"
-    v-for="react in reactions"
-    :key="react"
-    @click="sendReaction(react)"
-  >
-    {{ react }}
-  </button>
-  <span v-if="customEmoji" style="position: absolute; margin-left: 40px">
-    <ChatInput
-      :picker-only="true"
-      :style="{ height: '30px' }"
-      className="is-white"
-      @update:model-value="sendCustomReaction"
-    >
-      <template #icon>
-        <span class="icon" data-tooltip="Custom Reactions">
-          <Icon src="new.svg" />
-        </span>
-      </template>
-    </ChatInput>
-  </span>
-  <teleport to="body">
-    <div class="flying-reactions">
-      <transition-group :css="false" @enter="flyin" @leave="flyout">
-        <div
-          v-for="react in flyingReactions"
-          :key="react"
-          :style="{
-            position: 'fixed',
-            left: react.x + 'px',
-            top: react.y + 'px',
-            fontSize: '42px',
-          }"
-        >
-          {{ react.reaction }}
-        </div>
-      </transition-group>
-    </div>
-  </teleport>
+  <template v-if="reactionVisibility">
+    <button
+      class="button is-small is-rounded reaction mx-1"
+      v-for="react in reactions"
+      :key="react"
+      @click="sendReaction(react)"
+    >{{ react }}</button>
+    <span v-if="customEmoji" style="position: absolute; margin-left: 40px">
+      <ChatInput
+        :picker-only="true"
+        :style="{ height: '30px' }"
+        className="is-white"
+        @update:model-value="sendCustomReaction"
+      >
+        <template #icon>
+          <span class="icon" data-tooltip="Custom Reactions">
+            <Icon src="new.svg" />
+          </span>
+        </template>
+      </ChatInput>
+    </span>
+    <teleport to="body">
+      <div class="flying-reactions">
+        <transition-group :css="false" @enter="flyin" @leave="flyout">
+          <div
+            v-for="react in flyingReactions"
+            :key="react"
+            :style="{
+              position: 'fixed',
+              left: react.x + 'px',
+              top: react.y + 'px',
+              fontSize: '42px',
+            }"
+          >{{ react.reaction }}</div>
+        </transition-group>
+      </div>
+    </teleport>
+  </template>
+  <div class="my-1" style="float: left;" v-else>
+    Your nickname is:
+    <a @click="openChatSetting">{{ nickname }}</a>
+  </div>
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed, watch } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
 import ChatInput from "@/components/form/ChatInput";
@@ -53,6 +55,17 @@ export default {
   props: ["customEmoji"],
   setup: () => {
     const store = useStore();
+    const reactionVisibility = computed(
+      () => store.state.stage.settings.reactionVisibility
+    );
+    watch(reactionVisibility, console.log)
+    const nickname = computed(() => {
+      const nickname = store.getters['user/nickname'];
+      if (nickname.length > 15) {
+        return nickname.slice(0, 10) + '...';
+      }
+      return nickname;
+    });
 
     const reactions = ["❤️", "🤣", "🙌", "👏"];
     const sendReaction = (react) => {
@@ -83,6 +96,11 @@ export default {
       sendReaction(e);
     };
 
+    const openChatSetting = () =>
+      store.dispatch("stage/openSettingPopup", {
+        type: "ChatParameters",
+      });
+
     return {
       reactions,
       sendReaction,
@@ -90,6 +108,9 @@ export default {
       flyin,
       flyout,
       sendCustomReaction,
+      reactionVisibility,
+      nickname,
+      openChatSetting
     };
   },
 };
