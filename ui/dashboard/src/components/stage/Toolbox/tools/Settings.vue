@@ -1,4 +1,16 @@
 <template>
+  <div v-if="reactionVisibility" @click="showReactions(false)">
+    <div class="icon is-large">
+      <Icon src="clear.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Hide reactions</span>
+  </div>
+  <div v-else @click="showReactions(true)">
+    <div class="icon is-large">
+      <Icon src="change-nickname.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Show reactions</span>
+  </div>
   <div v-if="chatVisibility" @click="showChat(false)">
     <div class="icon is-large">
       <Icon src="clear.svg" size="36" />
@@ -26,10 +38,7 @@
   </div>
   <div>
     <div class="icon is-large">
-      <ColorPicker
-        v-model="backdropColor"
-        @update:modelValue="sendBackdropColor"
-      />
+      <ColorPicker v-model="backdropColor" @update:modelValue="sendBackdropColor" />
     </div>
     <span class="tag is-light is-block p-0">Backdrop Color</span>
   </div>
@@ -48,9 +57,16 @@ export default {
     const chatVisibility = computed(
       () => store.state.stage.settings.chatVisibility
     );
+    const reactionVisibility = computed(
+      () => store.state.stage.settings.reactionVisibility
+    );
 
     const showChat = (value) => {
       store.dispatch("stage/showChatBox", value);
+    };
+
+    const showReactions = (value) => {
+      store.dispatch("stage/showReactionsBar", value);
     };
 
     const clearChat = () => {
@@ -75,6 +91,8 @@ export default {
     return {
       showChat,
       chatVisibility,
+      showReactions,
+      reactionVisibility,
       clearChat,
       sendBackdropColor,
       backdropColor,

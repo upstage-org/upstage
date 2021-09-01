@@ -63,6 +63,13 @@ export function getDefaultStageConfig() {
     }
 }
 
+export function getDefaultStageSettings() {
+    return {
+        chatVisibility: true,
+        reactionVisibility: true
+    }
+}
+
 export function takeSnapshotFromStage() {
     const {
         background,
