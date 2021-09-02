@@ -69,7 +69,7 @@ export default {
 #main-content {
   min-height: calc(100vh - 120px);
 }
-@media screen and (max-width: 1280px) {
+@media screen and (max-width: 1023px) {
   .navbar-brand {
     position: absolute;
     top: 0;
