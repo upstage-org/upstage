@@ -39,8 +39,12 @@
           </div>
           <div class="column">{{ item.name }}</div>
           <div class="column has-text-right has-text-grey-dark">
-            <small>created by</small> {{ displayName(item.owner) }}
+            <small>created by</small>
+            {{ displayName(item.owner) }}
           </div>
+        </div>
+        <div class="columns px-1">
+          <MultiframePreview :asset="item" />
         </div>
       </div>
     </template>
@@ -48,14 +52,12 @@
 
   <teleport to="#media-menu">
     <ul>
-      <li
-        v-for="type in mediaTypes"
-        :key="type.value"
-        @click="filter.type = type.value"
-      >
-        <a :class="{ 'is-active': type.value === filter.type }">{{
-          type.label
-        }}</a>
+      <li v-for="type in mediaTypes" :key="type.value" @click="filter.type = type.value">
+        <a :class="{ 'is-active': type.value === filter.type }">
+          {{
+            type.label
+          }}
+        </a>
       </li>
     </ul>
   </teleport>
@@ -79,9 +81,10 @@ import { computed, inject, watch, watchEffect } from "@vue/runtime-core";
 import { displayName } from "@/utils/auth";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
+import MultiframePreview from "../Media/MultiframePreview";
 
 export default {
-  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field },
+  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview },
   setup: () => {
     const store = useStore();
     const stage = inject("stage");
@@ -174,7 +177,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
 .media-preview {
   display: flex;
   justify-content: center;
