@@ -1,9 +1,5 @@
 <template>
-  <div
-    style="position: relative"
-    class="has-tooltip-left"
-    :data-tooltip="dynamicTooltip"
-  >
+  <div style="position: relative" class="has-tooltip-left" :data-tooltip="dynamicTooltip">
     <ElasticInput
       v-if="!pickerOnly"
       v-bind="$attrs"
@@ -18,10 +14,7 @@
       }"
       :class="dynamicClass"
     />
-    <div
-      v-click-outside="() => (isPicking = false)"
-      class="emoji-picker-wrapper"
-    >
+    <div v-click-outside="() => (isPicking = false)" class="emoji-picker-wrapper">
       <button
         type="button"
         class="button is-right clickable is-rounded"
@@ -55,6 +48,7 @@ import anime from "animejs";
 import Icon from "@/components/Icon";
 import ElasticInput from "@/components/form/ElasticInput";
 import { useStore } from "vuex";
+import { useHoldingShift } from "../stage/composable";
 
 export default {
   props: ["loading", "modelValue", "pickerOnly", "style", "className"],
@@ -65,6 +59,8 @@ export default {
     const isPicking = ref(false);
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
+
+    const isHoldingShift = useHoldingShift();
 
     const handleEmoji = ({ detail: { unicode } }) => {
       if (props.pickerOnly) {
@@ -81,9 +77,13 @@ export default {
           )}`
         );
       }
+      if (!isHoldingShift.value) {
+        isPicking.value = false;
+      }
     };
     const pickerEnter = (el, complete) => {
       el.addEventListener("emoji-click", handleEmoji);
+      el.shadowRoot.querySelector('#search').placeholder = "Hold \"Shift\" key to select multiple"
       anime({
         targets: el,
         scaleX: [0, 1],
@@ -134,7 +134,7 @@ emoji-picker {
   --input-border-color: #b5b5b5;
 
   position: absolute;
-  bottom: 0;
+  bottom: 40px;
   right: 0;
   z-index: 1000;
   overflow: hidden;
