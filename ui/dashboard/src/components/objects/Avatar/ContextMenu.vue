@@ -109,9 +109,9 @@
       <span>Remove</span>
     </a>
     <a
-      v-if="object.drawingId"
+      v-if="object.drawingId || object.textId"
       class="panel-block has-text-danger"
-      @click="deleteDrawingPermantly"
+      @click="deletePermantly"
     >
       <span class="panel-icon">
         <Icon src="remove.svg" />
@@ -249,9 +249,15 @@ export default {
       }
     };
 
-    const deleteDrawingPermantly = () => {
-      store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
-      store.commit("stage/POP_DRAWING", props.object.drawingId);
+    const deletePermantly = () => {
+      if (props.object.drawingId) {
+        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store.commit("stage/POP_DRAWING", props.object.drawingId);
+      }
+      if (props.object.textId) {
+        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store.commit("stage/POP_TEXT", props.object.textId);
+      }
     };
 
     return {
@@ -271,7 +277,7 @@ export default {
       isWearing,
       isHolding,
       holdable,
-      deleteDrawingPermantly,
+      deletePermantly,
     };
   },
 };

@@ -20,10 +20,22 @@
       <div class="icon is-large">
         <Icon size="36" src="new.svg" />
       </div>
-      <span class="tag is-block">New</span>
+      <span class="tag is-block">New Text</span>
     </div>
     <div v-for="text in savedTexts" :key="text" class="is-pulled-left">
-      <Skeleton :data="text" />
+      <ContextMenu>
+        <template #trigger>
+          <Skeleton :data="text" />
+        </template>
+        <template #context>
+          <a class="panel-block has-text-danger" @click="deleteTextPermantly(text)">
+            <span class="panel-icon">
+              <Icon src="remove.svg" />
+            </span>
+            <span>Delete Permantly</span>
+          </a>
+        </template>
+      </ContextMenu>
     </div>
   </template>
   <template v-else>
@@ -89,13 +101,15 @@
 import Dropdown from "@/components/form/Dropdown";
 import Field from "@/components/form/Field";
 import ColorPicker from "@/components/form/ColorPicker";
+import ContextMenu from "@/components/ContextMenu";
 import Skeleton from "../Skeleton";
 import Icon from "@/components/Icon";
 import { useStore } from "vuex";
 import { computed, onUnmounted, ref } from "vue";
+import { v4 as uuidv4 } from "uuid";
 
 export default {
-  components: { Dropdown, Field, ColorPicker, Skeleton, Icon },
+  components: { Dropdown, Field, ColorPicker, Skeleton, Icon, ContextMenu },
   setup: () => {
     const store = useStore();
     const stageSize = computed(() => store.getters["stage/stageSize"]);
@@ -179,11 +193,13 @@ export default {
     const saveText = async () => {
       const { width, height } = el.value.getBoundingClientRect() ?? {};
       store.commit("stage/UPDATE_IS_WRITING", false);
+      const textId = uuidv4();
       store.dispatch("stage/addText", {
         ...options,
         content: el.value.innerHTML,
         w: width + 10,
         h: height + 10,
+        textId
       });
     };
 
@@ -217,9 +233,19 @@ export default {
         ? "visible"
         : "auto";
     };
+
     onUnmounted(() => {
       document.querySelector("#topbar").style.overflow = "auto";
-    })
+    });
+
+    const deleteTextPermantly = (text) => {
+      store.commit("stage/POP_TEXT", text.textId);
+      store.getters["stage/objects"]
+        .filter((o) => o.textId === text.textId)
+        .forEach((o) => {
+          store.dispatch("stage/deleteObject", o);
+        });
+    };
 
     return {
       stageSize,
@@ -237,6 +263,7 @@ export default {
       changeFontSize,
       savedTexts,
       fontDropdownOpen,
+      deleteTextPermantly
     };
   },
 };

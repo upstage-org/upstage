@@ -377,6 +377,9 @@ export default {
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);
         },
+        POP_TEXT(state, textId) {
+            state.board.texts = state.board.texts.filter(d => d.textId !== textId)
+        },
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
         },

@@ -93,7 +93,7 @@
       <div class="icon is-large">
         <Icon src="new.svg" size="36" />
       </div>
-      <span class="tag is-light is-block">New</span>
+      <span class="tag is-light is-block">New Drawing</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
       <ContextMenu>
@@ -117,7 +117,7 @@
 </template>
 
 <script>
-import { computed, onMounted, onUnmounted } from "vue";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import { useDrawable } from "./composable";
 import ColorPicker from "@/components/form/ColorPicker";
@@ -169,14 +169,6 @@ export default {
       }
       cancel();
     };
-
-    onMounted(() => {
-      store.commit("stage/UPDATE_IS_DRAWING", true);
-    });
-
-    onUnmounted(() => {
-      store.commit("stage/UPDATE_IS_DRAWING", false);
-    });
 
     const deleteDrawingPermantly = (drawing) => {
       store.commit("stage/POP_DRAWING", drawing.drawingId);
