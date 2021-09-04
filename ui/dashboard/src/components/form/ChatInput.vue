@@ -34,7 +34,7 @@
           </span>
         </slot>
       </button>
-      <transition :css="false" @enter="pickerEnter">
+      <transition :css="false" @enter="pickerEnter" @leave="pickerLeave">
         <emoji-picker v-show="isPicking" class="light" />
       </transition>
     </div>
@@ -92,6 +92,9 @@ export default {
         complete,
       });
     };
+    const pickerLeave = () => {
+      input.value.focus();
+    }
     const behavior = computed(() => {
       if (props.modelValue) {
         if (props.modelValue.startsWith(":")) {
@@ -121,7 +124,7 @@ export default {
       }[behavior.value];
     });
 
-    return { input, isPicking, pickerEnter, dynamicClass, dynamicTooltip };
+    return { input, isPicking, pickerEnter, pickerLeave, dynamicClass, dynamicTooltip };
   },
 };
 </script>
