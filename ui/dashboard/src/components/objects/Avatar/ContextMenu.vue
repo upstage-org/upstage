@@ -102,6 +102,40 @@
         </button>
       </p>
     </div>
+
+    <div class="field has-addons menu-group">
+      <p class="control menu-group-title">
+        <span class="panel-icon pt-1">
+          <Icon src="rotation-slider.svg" />
+        </span>
+        <span>Flip</span>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleX === -1,
+          }"
+          @click="flipHorizontal"
+          data-tooltip="Flip Horizontal"
+        >
+          <span class="mt-1">Horizontal</span>
+        </button>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleY === -1,
+          }"
+          @click="flipVertical"
+          data-tooltip="Flip Vertical"
+        >
+          <span class="mt-1">Vertical</span>
+        </button>
+      </p>
+    </div>
+
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
         <Icon src="remove.svg" />
@@ -173,6 +207,22 @@ export default {
       store.dispatch("stage/switchFrame", {
         ...props.object,
         src: frame,
+      });
+    };
+
+    const flipHorizontal = () => {
+      const scaleX = -1 * (props.object.scaleX ?? 1)
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        scaleX
+      });
+    };
+
+    const flipVertical = () => {
+      const scaleY = -1 * (props.object.scaleY ?? 1)
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        scaleY,
       });
     };
 
@@ -278,6 +328,8 @@ export default {
       isHolding,
       holdable,
       deletePermantly,
+      flipHorizontal,
+      flipVertical
     };
   },
 };

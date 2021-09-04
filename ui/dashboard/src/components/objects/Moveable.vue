@@ -204,6 +204,8 @@ export default {
           rotate,
           moveSpeed,
           opacity,
+          scaleX,
+          scaleY,
         } = props.object;
         if (animation) {
           animation.pause(true);
@@ -216,6 +218,8 @@ export default {
           height,
           rotate,
           opacity,
+          scaleX,
+          scaleY,
           ...(moveSpeed > 1000 ? { easing: "linear" } : {}),
           duration: moveSpeed ?? config.animateDuration,
           update: () => {
@@ -248,9 +252,8 @@ export default {
         (a) => a.id === props.object.wornBy
       );
       if (wearer) {
-        return `${wearer.x + wearer.w / 2 - props.object.x}px ${
-          wearer.y + wearer.h / 2 - props.object.y
-        }px`;
+        return `${wearer.x + wearer.w / 2 - props.object.x}px ${wearer.y + wearer.h / 2 - props.object.y
+          }px`;
       } else {
         return "center";
       }

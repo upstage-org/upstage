@@ -235,7 +235,10 @@ export default {
     };
 
     onUnmounted(() => {
-      document.querySelector("#topbar").style.overflow = "auto";
+      const topbar = document.querySelector("#topbar")
+      if (topbar) {
+        topbar.style.overflow = "auto";
+      }
     });
 
     const deleteTextPermantly = (text) => {
