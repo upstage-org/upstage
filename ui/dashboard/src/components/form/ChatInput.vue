@@ -93,7 +93,9 @@ export default {
       });
     };
     const pickerLeave = () => {
-      input.value.focus();
+      if (input.value) {
+        input.value.focus();
+      }
     }
     const behavior = computed(() => {
       if (props.modelValue) {
