@@ -272,6 +272,15 @@ export default {
         CLEAR_CHAT(state) {
             state.chat.messages.length = 0
         },
+        REMOVE_MESSAGE(state, id) {
+            state.chat.messages = state.chat.messages.filter(m => m.id !== id)
+        },
+        HIGHLIGHT_MESSAGE(state, id) {
+            const message = state.chat.messages.find(m => m.id === id)
+            if (message) {
+                message.highlighted = !message.highlighted
+            }
+        },
         PUSH_OBJECT(state, object) {
             const { id } = object;
             deserializeObject(object);
@@ -590,11 +599,12 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, getters }, { message, isPrivate }) {
+        sendChat({ state, rootGetters, getters }, { message, isPrivate }) {
             if (!message) return;
             let user = rootGetters["user/chatname"];
             let isPlayer = getters["canPlay"]
             let behavior = "speak"
+            const session = state.session
             if (message.startsWith(":")) {
                 behavior = "think";
                 message = message.substr(1)
@@ -618,7 +628,9 @@ export default {
                 behavior,
                 isPlayer,
                 isPrivate,
-                at: +new Date()
+                session,
+                at: +new Date(),
+                id: uuidv4(),
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
@@ -633,31 +645,40 @@ export default {
         handleChatMessage({ commit, state, rootGetters, dispatch }, { message }) {
             if (message.clear) {
                 commit('CLEAR_CHAT')
+                return;
+            }
+            if (message.remove) {
+                commit('REMOVE_MESSAGE', message.remove)
+                return;
+            }
+            if (message.highlight) {
+                commit('HIGHLIGHT_MESSAGE', message.highlight)
+                return;
+            }
+
+            const model = {
+                user: 'Anonymous',
+                color: "#000000"
+            };
+            if (typeof message === "object") {
+                Object.assign(model, message)
             } else {
-                const model = {
-                    user: 'Anonymous',
-                    color: "#000000"
-                };
-                if (typeof message === "object") {
-                    Object.assign(model, message)
-                } else {
-                    model.message = message;
-                }
-                if (message.isPrivate) {
-                    commit('PUSH_PLAYER_CHAT_MESSAGE', model)
-                    if (message.at > state.lastSeenPrivateMessage) {
-                        if (state.showPlayerChat) {
-                            commit('SEEN_PRIVATE_MESSAGES')
-                        } else {
-                            const nickname = rootGetters['user/nickname'];
-                            if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
-                                dispatch('showPlayerChat', true)
-                            }
+                model.message = message;
+            }
+            if (message.isPrivate) {
+                commit('PUSH_PLAYER_CHAT_MESSAGE', model)
+                if (message.at > state.lastSeenPrivateMessage) {
+                    if (state.showPlayerChat) {
+                        commit('SEEN_PRIVATE_MESSAGES')
+                    } else {
+                        const nickname = rootGetters['user/nickname'];
+                        if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
+                            dispatch('showPlayerChat', true)
                         }
                     }
-                } else {
-                    commit('PUSH_CHAT_MESSAGE', model)
                 }
+            } else {
+                commit('PUSH_CHAT_MESSAGE', model)
             }
         },
         placeObjectOnStage({ commit, dispatch, state }, data) {
@@ -1065,6 +1086,12 @@ export default {
         },
         clearChat() {
             mqtt.sendMessage(TOPICS.CHAT, { clear: true })
+        },
+        removeChat(action, messageId) {
+            mqtt.sendMessage(TOPICS.CHAT, { remove: messageId })
+        },
+        highlightChat(action, messageId) {
+            mqtt.sendMessage(TOPICS.CHAT, { highlight: messageId })
         },
         showPlayerChat({ commit }, visible) {
             commit('SET_SHOW_PLAYER_CHAT', visible)
