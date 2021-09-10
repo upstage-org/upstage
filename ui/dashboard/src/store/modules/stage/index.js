@@ -210,6 +210,7 @@ export default {
             state.tools.props = [];
             state.tools.backdrops = []
             state.tools.streams = [];
+            state.tools.curtains = [];
             state.config = getDefaultStageConfig()
             state.settings = getDefaultStageSettings()
             state.board.objects = [];
@@ -394,9 +395,6 @@ export default {
         },
         PUSH_RUNNING_STREAMS(state, streams) {
             state.runningStreams = streams
-        },
-        PUSH_CURTAINS(state, curtains) {
-            state.tools.curtains = curtains;
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -918,10 +916,9 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const { stage, curtains } = await stageGraph.loadStage(url, recordId)
+            const { stage } = await stageGraph.loadStage(url, recordId)
             if (stage) {
                 commit('SET_MODEL', stage);
-                commit('PUSH_CURTAINS', curtains)
                 const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {

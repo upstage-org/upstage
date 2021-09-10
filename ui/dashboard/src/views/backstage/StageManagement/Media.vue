@@ -94,14 +94,15 @@ export default {
 
     const mediaList = computed(() => {
       if (!data.value) return [];
-      const { avatars, props, backdrops, audios, streams } = data.value;
+      const { avatars, props, backdrops, audios, streams, curtains } = data.value;
       const mediaList = []
         .concat(
           avatars.edges,
           props.edges,
           backdrops.edges,
           audios.edges,
-          streams.edges
+          streams.edges,
+          curtains.edges
         )
         .map((edge) => edge.node);
       return mediaList;
@@ -135,6 +136,7 @@ export default {
       },
       { label: "Audio", value: "audio" },
       { label: "Stream", value: "stream" },
+      { label: "Curtain", value: "curtain" },
     ];
     const filter = reactive({});
     const filteredMediaList = computed(() => {
