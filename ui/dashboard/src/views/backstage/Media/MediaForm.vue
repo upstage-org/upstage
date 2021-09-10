@@ -242,14 +242,8 @@ export default {
       const res = [
         { key: "preview", label: "Preview", icon: "fas fa-image" },
         { key: "copyright", label: "Copyright", icon: "fas fa-copyright" },
+        { key: "stages", label: "Stage", icon: "fas fa-person-booth" }
       ];
-      if (!["curtain"].includes(form.mediaType)) {
-        res.push({
-          key: "stages",
-          label: "Stage",
-          icon: "fas fa-person-booth",
-        });
-      }
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }

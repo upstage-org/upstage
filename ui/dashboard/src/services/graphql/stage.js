@@ -1,4 +1,3 @@
-import { absolutePath } from "@/utils/common";
 import { gql } from "graphql-request";
 import { stageGraph } from ".";
 import { createClient } from "./graphql";
@@ -171,25 +170,12 @@ export default {
           }
         }
       }
-      curtains: assetList(assetType: "curtain") {
-        edges {
-          node {
-            name
-            fileLocation
-          }
-        }
-      },
     }
     ${stageFragment}
     ${sceneFragment}
   `, { fileLocation, performanceId }).then(response => {
-    const path = edge => ({
-      name: edge.node.name,
-      src: absolutePath(edge.node.fileLocation)
-    })
     return {
       stage: response.stageList.edges[0]?.node,
-      curtains: response.curtains.edges.map(path)
     }
   }),
   loadPermission: (fileLocation) => client.request(gql`
@@ -333,6 +319,13 @@ export default {
         }
       }
       streams: assetList(assetType: "stream") {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
+      curtains: assetList(assetType: "curtain") {
         edges {
           node {
             ...assetFragment
