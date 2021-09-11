@@ -1,30 +1,16 @@
 <template>
   <section class="modal-card-body p-0">
-    <button
-      class="delete close-modal"
-      aria-label="close"
-      @click="closeModal"
-    ></button>
+    <button class="delete close-modal" aria-label="close" @click="closeModal"></button>
     <div class="container-fluid">
       <footer class="modal-card-foot">
         <div class="columns is-fullwidth">
           <div class="column is-narrow">
-            <SaveButton
-              @click="save"
-              :loading="loading"
-              :disabled="!form.name"
-            />
+            <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
           </div>
           <div class="column is-narrow">
             <Field horizontal label="Media Type">
-              <button v-if="media.isRTMP" class="button" disabled>
-                Stream
-              </button>
-              <MediaType
-                v-else
-                v-model="form.mediaType"
-                :data="availableTypes"
-              />
+              <button v-if="media.isRTMP" class="button" disabled>Stream</button>
+              <MediaType v-else v-model="form.mediaType" :data="availableTypes" />
             </Field>
           </div>
           <div class="column">
@@ -34,13 +20,7 @@
       </footer>
       <Tabs :items="tabs">
         <template #extras>
-          <Upload
-            v-if="!active"
-            v-model="form.base64"
-            :type="fileType"
-            :preview="false"
-            @change="handleFileChange"
-          >
+          <Upload v-model="form.base64" :type="fileType" :preview="false">
             <span class="icon">
               <i class="fas fa-retweet"></i>
             </span>
@@ -85,7 +65,7 @@
         </template>
         <template #stages>
           <MultiSelectList
-            :loading="loadingAllMedia"
+            :loading="loadingAllStages"
             :data="availableStages"
             v-model="form.assignedStages"
             :columnClass="() => 'is-12 p-0'"
@@ -96,9 +76,7 @@
                   <strong>{{ item.name }}</strong>
                   <span style="float: right">
                     Created by
-                    <span class="has-text-primary">
-                      {{ displayName(item.owner) }}
-                    </span>
+                    <span class="has-text-primary">{{ displayName(item.owner) }}</span>
                   </span>
                 </div>
               </div>
@@ -108,26 +86,19 @@
         <template #voice>
           <VoiceParameters v-model="form.voice" />
         </template>
+        <template #link>
+          <HorizontalField title="URL">
+            <Field
+              placeholder="The destination when audience click on the link"
+              v-model="form.link.url"
+            />
+          </HorizontalField>
+          <HorizontalField title="Open in new tab">
+            <Switch v-model="form.link.blank" />
+          </HorizontalField>
+        </template>
         <template #multiframe>
-          <HorizontalField title="Multiframe">
-            <Switch v-model="form.multi" className="is-rounded is-success" />
-          </HorizontalField>
-          <HorizontalField v-if="form.multi">
-            <MultiSelectList
-              :loading="loadingAllMedia"
-              :data="
-                allMedia
-                  ?.filter((item) => item.assetType.name !== 'audio')
-                  .map((media) => media.src)
-              "
-              v-model="form.frames"
-              :columnClass="() => 'is-4'"
-            >
-              <template #render="{ item: src }">
-                <Asset :asset="{ src }" />
-              </template>
-            </MultiSelectList>
-          </HorizontalField>
+          <Multiframe :media="media" :form="form" />
         </template>
       </Tabs>
     </div>
@@ -144,7 +115,6 @@ import HorizontalField from "@/components/form/HorizontalField";
 import Field from "@/components/form/Field";
 import MediaType from "@/components/form/MediaType";
 import SaveButton from "@/components/form/SaveButton";
-import Switch from "@/components/form/Switch";
 import Upload from "@/components/form/Upload";
 import Dropdown from "@/components/form/Dropdown";
 import Asset from "@/components/Asset";
@@ -155,6 +125,8 @@ import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParam
 import { displayName } from "@/utils/auth";
 import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
 import StreamPreview from "./StreamPreview.vue";
+import Multiframe from './Multiframe'
+import Switch from "@/components/form/Switch.vue";
 
 export default {
   components: {
@@ -162,7 +134,6 @@ export default {
     Field,
     MediaType,
     SaveButton,
-    Switch,
     Asset,
     MultiSelectList,
     Tabs,
@@ -171,6 +142,8 @@ export default {
     MultiTransferColumn,
     Dropdown,
     StreamPreview,
+    Multiframe,
+    Switch
   },
   props: {
     media: Object,
@@ -183,6 +156,11 @@ export default {
     form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
+    }
+    if (!form.link) {
+      form.link = {
+        blank: true
+      }
     }
     if (form.assetType) {
       form.mediaType = form.assetType.name;
@@ -230,7 +208,7 @@ export default {
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice, isRTMP, src, w, h } = form;
+        const { id, multi, frames, voice, link, isRTMP, src, w, h, uploadedFrames } = form;
         const payload = {
           id,
           name,
@@ -240,6 +218,7 @@ export default {
             multi,
             frames,
             voice,
+            link,
             isRTMP,
             w,
             h,
@@ -247,6 +226,7 @@ export default {
           fileLocation: src,
           copyrightLevel,
           playerAccess,
+          uploadedFrames
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
@@ -259,9 +239,6 @@ export default {
       }
     };
 
-    const { nodes: allMedia, loading: loadingAllMedia } = useQuery(
-      stageGraph.mediaList
-    );
     const fileType = computed(() => {
       if (["avatar", "prop", "backdrop", "curtain"].includes(form.mediaType)) {
         return "image";
@@ -284,22 +261,15 @@ export default {
       const res = [
         { key: "preview", label: "Preview", icon: "fas fa-image" },
         { key: "copyright", label: "Copyright", icon: "fas fa-copyright" },
+        { key: "stages", label: "Stage", icon: "fas fa-person-booth" }
       ];
-      if (!["curtain"].includes(form.mediaType)) {
-        res.push({
-          key: "stages",
-          label: "Stage",
-          icon: "fas fa-person-booth",
-        });
-      }
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }
-      if (
-        form.mediaType === "avatar" ||
-        form.mediaType === "prop" ||
-        form.mediaType === "backdrop"
-      ) {
+      if (["avatar", "prop"].includes(form.mediaType)) {
+        res.push({ key: "link", label: "Link", icon: "fas fa-link" });
+      }
+      if (["avatar", "prop", "backdrop"].includes(form.mediaType)) {
         res.push({
           key: "multiframe",
           label: "Multiframe",
@@ -308,7 +278,7 @@ export default {
       }
       return res;
     });
-    const { nodes: stageList } = useQuery(stageGraph.stageList);
+    const { nodes: stageList, loading: loadingAllStages } = useQuery(stageGraph.stageList);
     const availableStages = computed(() => {
       if (!stageList.value) return [];
       const res = stageList.value.filter(
@@ -356,8 +326,6 @@ export default {
       form,
       loading,
       save,
-      allMedia,
-      loadingAllMedia,
       availableTypes,
       tabs,
       availableStages,
@@ -368,6 +336,7 @@ export default {
       copyrightLevels,
       users,
       playerAccess,
+      loadingAllStages
     };
   },
 };

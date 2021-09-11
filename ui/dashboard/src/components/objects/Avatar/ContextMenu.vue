@@ -102,6 +102,40 @@
         </button>
       </p>
     </div>
+
+    <div class="field has-addons menu-group">
+      <p class="control menu-group-title">
+        <span class="panel-icon pt-1">
+          <Icon src="rotation-slider.svg" />
+        </span>
+        <span>Flip</span>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleX === -1,
+          }"
+          @click="flipHorizontal"
+          data-tooltip="Flip Horizontal"
+        >
+          <span class="mt-1">Horizontal</span>
+        </button>
+      </p>
+      <p class="control menu-group-item">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleY === -1,
+          }"
+          @click="flipVertical"
+          data-tooltip="Flip Vertical"
+        >
+          <span class="mt-1">Vertical</span>
+        </button>
+      </p>
+    </div>
+
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
         <Icon src="remove.svg" />
@@ -109,9 +143,9 @@
       <span>Remove</span>
     </a>
     <a
-      v-if="object.drawingId"
+      v-if="object.drawingId || object.textId"
       class="panel-block has-text-danger"
-      @click="deleteDrawingPermantly"
+      @click="deletePermantly"
     >
       <span class="panel-icon">
         <Icon src="remove.svg" />
@@ -173,6 +207,22 @@ export default {
       store.dispatch("stage/switchFrame", {
         ...props.object,
         src: frame,
+      });
+    };
+
+    const flipHorizontal = () => {
+      const scaleX = -1 * (props.object.scaleX ?? 1)
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        scaleX
+      });
+    };
+
+    const flipVertical = () => {
+      const scaleY = -1 * (props.object.scaleY ?? 1)
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        scaleY,
       });
     };
 
@@ -249,9 +299,15 @@ export default {
       }
     };
 
-    const deleteDrawingPermantly = () => {
-      store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
-      store.commit("stage/POP_DRAWING", props.object.drawingId);
+    const deletePermantly = () => {
+      if (props.object.drawingId) {
+        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store.commit("stage/POP_DRAWING", props.object.drawingId);
+      }
+      if (props.object.textId) {
+        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store.commit("stage/POP_TEXT", props.object.textId);
+      }
     };
 
     return {
@@ -271,7 +327,9 @@ export default {
       isWearing,
       isHolding,
       holdable,
-      deleteDrawingPermantly,
+      deletePermantly,
+      flipHorizontal,
+      flipVertical
     };
   },
 };

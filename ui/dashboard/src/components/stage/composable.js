@@ -46,6 +46,28 @@ export const useShortcut = (callback) => {
     });
 }
 
+export const useHoldingShift = () => {
+    const isHoldingShift = ref(false);
+
+    const callback = (e) => {
+        if (!e) e = window.event;
+        if (e.shiftKey) {
+            isHoldingShift.value = true;
+        } else {
+            isHoldingShift.value = false;
+        }
+    };
+    window.addEventListener("keydown", callback);
+    window.addEventListener("keyup", callback);
+
+    onUnmounted(() => {
+        window.removeEventListener("keydown", callback);
+        window.removeEventListener("keyup", callback);
+    });
+
+    return isHoldingShift
+}
+
 export const useClearStage = (stageUrl) => {
     const mqttClient = buildClient();
     const clearStage = async () => {

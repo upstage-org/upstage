@@ -131,7 +131,7 @@ export default {
           notification.success(
             `${form.users.length} users created successfully!`
           );
-          router.push("/backstage/admin/approval");
+          router.push("/backstage/admin/player-management");
         },
         {
           users: form.users,

@@ -6,29 +6,88 @@
     </div>
   </div>
   <div v-else>
-    <p
-      v-for="item in messages"
-      :key="item"
-      :style="{ opacity: item.isPlayer ? 1 : 0.5 }"
-    >
+    <p v-for="item in messages" :key="item" :style="{ opacity: item.isPlayer ? 1 : 0.5 }">
       <template v-if="item.clear">
         <Divider>Clear Chat</Divider>
       </template>
       <template v-else>
-        <small style="font-size: 1em">
-          <b v-if="item.isPlayer">{{ item.user }}: </b>
-          <span v-else>{{ item.user }}: </span>
-        </small>
-        <span
-          class="tag message"
-          :style="{
-            'font-size': '1em',
-          }"
-          :class="messageClass[item.behavior]"
-          :title="time(item.at)"
-        >
-          <Linkify>{{ item.message }}</Linkify>
-        </span>
+        <ContextMenu>
+          <template #trigger>
+            <small style="font-size: 1em">
+              <b v-if="item.isPlayer">{{ item.user }}:</b>
+              <span v-else>{{ item.user }}:</span>
+            </small>
+            <span
+              class="tag message"
+              :style="{
+                'font-size': '1em',
+              }"
+              :class="messageClass[item.highlighted ? 'highlighted' : item.behavior]"
+              :title="time(item.at)"
+            >
+              <span
+                v-if="item.highlighted"
+                :data-tooltip="canPlay ? 'Click to remove highlight' : 'This is a highlight message'"
+                class="highlight-star has-tooltip-left"
+                @click="highlightChat(item)"
+              >
+                <i class="far fa-star has-text-warning"></i>
+              </span>
+              <Linkify>{{ item.message }}</Linkify>
+            </span>
+          </template>
+          <template v-if="canPlay || session === item.session" #context="{ closeMenu }">
+            <div class="panel-block">
+              <span>
+                <Linkify>{{ item.message }}</Linkify>
+                <div>
+                  <small class="has-text-dark">
+                    Sent by
+                    <span v-if="session === item.session">you</span>
+                    <span v-else>{{ item.user }}</span>
+                    {{ time(item.at) }}
+                  </small>
+                </div>
+              </span>
+            </div>
+            <template v-if="item.id">
+              <a class="panel-block has-text-danger" @click="removeChat(item, closeMenu)">
+                <span class="panel-icon">
+                  <Icon src="remove.svg" />
+                </span>
+                <span>Remove</span>
+              </a>
+              <template v-if="canPlay">
+                <a
+                  v-if="item.highlighted"
+                  class="panel-block"
+                  @click="highlightChat(item, closeMenu)"
+                >
+                  <span class="panel-icon">
+                    <Icon src="object-drawing.svg" />
+                  </span>
+                  <span>Unhighlight</span>
+                </a>
+                <a
+                  v-else
+                  class="panel-block has-text-primary"
+                  @click="highlightChat(item, closeMenu)"
+                >
+                  <span class="panel-icon">
+                    <Icon src="object-drawing.svg" />
+                  </span>
+                  <span>Highlight</span>
+                </a>
+              </template>
+            </template>
+            <div v-else class="panel-block has-text-dark">
+              <span class="panel-icon">
+                <Icon src="clear.svg" />
+              </span>
+              <small>Sorry but no actions can be performed against these legacy messages!</small>
+            </div>
+          </template>
+        </ContextMenu>
       </template>
     </p>
   </div>
@@ -38,22 +97,40 @@
 import moment from "moment";
 import Linkify from "@/components/Linkify";
 import Divider from "@/components/Divider";
+import ContextMenu from "@/components/ContextMenu";
+import Icon from "@/components/Icon.vue";
+import { useStore } from "vuex";
+import { computed } from "@vue/reactivity";
+
 export default {
   props: ["messages", "style"],
-  components: { Linkify, Divider },
-  data: function () {
-    return {
-      messageClass: {
-        think: "has-text-info has-background-info-light",
-        shout: "has-text-danger",
-      },
-    };
-  },
-  methods: {
-    time(value) {
+  components: { Linkify, Divider, ContextMenu, Icon },
+  setup: () => {
+    const store = useStore()
+    const messageClass = {
+      think: "has-text-info has-background-info-light",
+      shout: "has-text-danger",
+      highlighted: "has-background-warning"
+    }
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
+    const session = computed(() => store.state.stage.session);
+
+    const time = (value) => {
       return moment(value).fromNow();
-    },
-  },
+    }
+
+    const removeChat = (item, closeMenu) => {
+      store.dispatch('stage/removeChat', item.id).then(closeMenu)
+    }
+
+    const highlightChat = (item, closeMenu) => {
+      if (canPlay.value) {
+        store.dispatch('stage/highlightChat', item.id).then(closeMenu)
+      }
+    }
+
+    return { messageClass, time, removeChat, highlightChat, canPlay, session }
+  }
 };
 </script>
 
@@ -61,5 +138,9 @@ export default {
 .tag.message {
   white-space: break-spaces;
   height: unset;
+  .highlight-star {
+    position: absolute;
+    right: 8px;
+  }
 }
 </style>

@@ -79,7 +79,6 @@ export default {
       });
     };
     const sendChat = () => {
-      console.log(message.value);
       if (message.value.trim() && !loadingUser.value) {
         store.dispatch("stage/sendChat", {
           message: message.value,

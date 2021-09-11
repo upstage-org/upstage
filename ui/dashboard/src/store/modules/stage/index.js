@@ -4,7 +4,7 @@ import hash from 'object-hash';
 import buildClient from '@/services/mqtt'
 import { absolutePath, cloneDeep, randomColor, randomMessageColor, randomRange } from '@/utils/common'
 import { TOPICS, BOARD_ACTIONS, BACKGROUND_ACTIONS, COLORS, DRAW_ACTIONS } from '@/utils/constants'
-import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig } from './reusable';
+import { deserializeObject, recalcFontSize, serializeObject, unnamespaceTopic, getDefaultStageConfig, getDefaultStageSettings } from './reusable';
 import { getViewport } from './reactiveViewport';
 import { stageGraph } from '@/services/graphql';
 import { useAttribute } from '@/services/graphql/composable';
@@ -49,6 +49,7 @@ export default {
             curtains: [],
         },
         config: getDefaultStageConfig(),
+        settings: getDefaultStageSettings(), // Settings will be saved as part of scene, while config is not
         settingPopup: {
             isActive: false,
         },
@@ -58,9 +59,6 @@ export default {
                 fontSize: '20px',
                 fontFamily: 'Josefin Sans',
             }
-        },
-        settings: {
-            chatVisibility: true,
         },
         reactions: [],
         viewport: getViewport(),
@@ -212,7 +210,9 @@ export default {
             state.tools.props = [];
             state.tools.backdrops = []
             state.tools.streams = [];
+            state.tools.curtains = [];
             state.config = getDefaultStageConfig()
+            state.settings = getDefaultStageSettings()
             state.board.objects = [];
             state.board.drawings = [];
             state.board.texts = [];
@@ -272,6 +272,15 @@ export default {
         },
         CLEAR_CHAT(state) {
             state.chat.messages.length = 0
+        },
+        REMOVE_MESSAGE(state, id) {
+            state.chat.messages = state.chat.messages.filter(m => m.id !== id)
+        },
+        HIGHLIGHT_MESSAGE(state, id) {
+            const message = state.chat.messages.find(m => m.id === id)
+            if (message) {
+                message.highlighted = !message.highlighted
+            }
         },
         PUSH_OBJECT(state, object) {
             const { id } = object;
@@ -378,14 +387,14 @@ export default {
         PUSH_TEXT(state, text) {
             state.board.texts.push(text);
         },
+        POP_TEXT(state, textId) {
+            state.board.texts = state.board.texts.filter(d => d.textId !== textId)
+        },
         PUSH_STREAM_TOOL(state, stream) {
             state.tools.streams.push(stream);
         },
         PUSH_RUNNING_STREAMS(state, streams) {
             state.runningStreams = streams
-        },
-        PUSH_CURTAINS(state, curtains) {
-            state.tools.curtains = curtains;
         },
         UPDATE_IS_DRAWING(state, isDrawing) {
             state.preferences.isDrawing = isDrawing;
@@ -438,6 +447,9 @@ export default {
         },
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
+        },
+        SET_REACTION_VISIBILITY(state, visible) {
+            state.settings.reactionVisibility = visible
         },
         SET_CHAT_POSITION(state, position) {
             state.chatPosition = position
@@ -585,11 +597,12 @@ export default {
                     break;
             }
         },
-        sendChat({ rootGetters, getters }, { message, isPrivate }) {
+        sendChat({ state, rootGetters, getters }, { message, isPrivate }) {
             if (!message) return;
             let user = rootGetters["user/chatname"];
             let isPlayer = getters["canPlay"]
             let behavior = "speak"
+            const session = state.session
             if (message.startsWith(":")) {
                 behavior = "think";
                 message = message.substr(1)
@@ -613,7 +626,9 @@ export default {
                 behavior,
                 isPlayer,
                 isPrivate,
-                at: +new Date()
+                session,
+                at: +new Date(),
+                id: uuidv4(),
             };
             mqtt.sendMessage(TOPICS.CHAT, payload);
             const avatar = getters['currentAvatar']
@@ -628,31 +643,40 @@ export default {
         handleChatMessage({ commit, state, rootGetters, dispatch }, { message }) {
             if (message.clear) {
                 commit('CLEAR_CHAT')
+                return;
+            }
+            if (message.remove) {
+                commit('REMOVE_MESSAGE', message.remove)
+                return;
+            }
+            if (message.highlight) {
+                commit('HIGHLIGHT_MESSAGE', message.highlight)
+                return;
+            }
+
+            const model = {
+                user: 'Anonymous',
+                color: "#000000"
+            };
+            if (typeof message === "object") {
+                Object.assign(model, message)
             } else {
-                const model = {
-                    user: 'Anonymous',
-                    color: "#000000"
-                };
-                if (typeof message === "object") {
-                    Object.assign(model, message)
-                } else {
-                    model.message = message;
-                }
-                if (message.isPrivate) {
-                    commit('PUSH_PLAYER_CHAT_MESSAGE', model)
-                    if (message.at > state.lastSeenPrivateMessage) {
-                        if (state.showPlayerChat) {
-                            commit('SEEN_PRIVATE_MESSAGES')
-                        } else {
-                            const nickname = rootGetters['user/nickname'];
-                            if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
-                                dispatch('showPlayerChat', true)
-                            }
+                model.message = message;
+            }
+            if (message.isPrivate) {
+                commit('PUSH_PLAYER_CHAT_MESSAGE', model)
+                if (message.at > state.lastSeenPrivateMessage) {
+                    if (state.showPlayerChat) {
+                        commit('SEEN_PRIVATE_MESSAGES')
+                    } else {
+                        const nickname = rootGetters['user/nickname'];
+                        if (message.message.toLowerCase().includes(`@${nickname.trim().toLowerCase()}`)) {
+                            dispatch('showPlayerChat', true)
                         }
                     }
-                } else {
-                    commit('PUSH_CHAT_MESSAGE', model)
                 }
+            } else {
+                commit('PUSH_CHAT_MESSAGE', model)
             }
         },
         placeObjectOnStage({ commit, dispatch, state }, data) {
@@ -791,6 +815,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        showReactionsBar(action, visible) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY, visible })
+        },
         setChatPosition(action, position) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_POSITION, position })
         },
@@ -816,6 +843,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY:
+                    commit('SET_REACTION_VISIBILITY', message.visible)
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_POSITION:
                     commit('SET_CHAT_POSITION', message.position)
@@ -886,10 +916,9 @@ export default {
         async loadStage({ commit, dispatch }, { url, recordId }) {
             commit('CLEAN_STAGE', true);
             commit('SET_PRELOADING_STATUS', true);
-            const { stage, curtains } = await stageGraph.loadStage(url, recordId)
+            const { stage } = await stageGraph.loadStage(url, recordId)
             if (stage) {
                 commit('SET_MODEL', stage);
-                commit('PUSH_CURTAINS', curtains)
                 const { events } = stage
                 if (recordId) {
                     commit('SET_REPLAY', {
@@ -1054,6 +1083,12 @@ export default {
         },
         clearChat() {
             mqtt.sendMessage(TOPICS.CHAT, { clear: true })
+        },
+        removeChat(action, messageId) {
+            mqtt.sendMessage(TOPICS.CHAT, { remove: messageId })
+        },
+        highlightChat(action, messageId) {
+            mqtt.sendMessage(TOPICS.CHAT, { highlight: messageId })
         },
         showPlayerChat({ commit }, visible) {
             commit('SET_SHOW_PLAYER_CHAT', visible)

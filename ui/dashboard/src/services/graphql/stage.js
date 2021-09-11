@@ -1,4 +1,3 @@
-import { absolutePath } from "@/utils/common";
 import { gql } from "graphql-request";
 import { stageGraph } from ".";
 import { createClient } from "./graphql";
@@ -171,25 +170,12 @@ export default {
           }
         }
       }
-      curtains: assetList(assetType: "curtain") {
-        edges {
-          node {
-            name
-            fileLocation
-          }
-        }
-      },
     }
     ${stageFragment}
     ${sceneFragment}
   `, { fileLocation, performanceId }).then(response => {
-    const path = edge => ({
-      name: edge.node.name,
-      src: absolutePath(edge.node.fileLocation)
-    })
     return {
       stage: response.stageList.edges[0]?.node,
-      curtains: response.curtains.edges.map(path)
     }
   }),
   loadPermission: (fileLocation) => client.request(gql`
@@ -339,17 +325,24 @@ export default {
           }
         }
       }
+      curtains: assetList(assetType: "curtain") {
+        edges {
+          node {
+            ...assetFragment
+          }
+        }
+      }
     }
     ${assetFragment}
   `),
   updateMedia: (variables) => client.request(gql`
-    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String, $base64: String, $copyrightLevel: Int, $playerAccess: String) {
-      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation, base64: $base64, copyrightLevel: $copyrightLevel, playerAccess: $playerAccess) {
+    mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String, $base64: String, $copyrightLevel: Int, $playerAccess: String, $uploadedFrames: [String]) {
+      updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation, base64: $base64, copyrightLevel: $copyrightLevel, playerAccess: $playerAccess, uploadedFrames: $uploadedFrames) {
         asset {
           id
         }
       }
-    }
+    }  
   `, variables),
   deleteMedia: (id) => client.request(gql`
     mutation deleteMedia($id: ID!) {

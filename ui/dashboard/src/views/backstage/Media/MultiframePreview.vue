@@ -1,9 +1,5 @@
 <template>
-  <div
-    data-tooltip="This is a multiframe media"
-    class="has-tooltip-bottom"
-    v-if="meta.multi"
-  >
+  <div v-if="meta.multi" data-tooltip="This is a multiframe media" class="has-tooltip-bottom">
     <Icon src="multi-frame.svg" />
     <Image
       v-for="frame in meta.frames"
@@ -20,7 +16,9 @@ import Image from "@/components/Image";
 import Icon from "@/components/Icon";
 import { absolutePath } from "@/utils/common";
 export default {
-  props: ["asset"],
+  props: {
+    asset: Object,
+  },
   components: { Image, Icon },
   setup: (props) => {
     const meta = computed(() => {

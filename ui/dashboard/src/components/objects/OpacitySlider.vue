@@ -103,9 +103,7 @@ export default {
     );
     const activeMovable = computed(() => store.state.stage.activeMovable);
     const showSlider = computed(
-      () =>
-        isHolding.value ||
-        (!holdable.value && activeMovable.value === props.object.id)
+      () => (isHolding.value || !holdable.value) && activeMovable.value === props.object.id
     );
 
     return { keepActive, handleChange, value, isHolding, showSlider };
