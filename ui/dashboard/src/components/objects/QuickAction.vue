@@ -63,9 +63,7 @@ export default {
     const holdable = computed(() => ["avatar"].includes(props.object.type));
     const activeMovable = computed(() => store.state.stage.activeMovable);
     const showQuickActions = computed(
-      () =>
-        isHolding.value ||
-        (!holdable.value && activeMovable.value === props.object.id)
+      () => (isHolding.value || !holdable.value) && activeMovable.value === props.object.id
     );
 
     return {
