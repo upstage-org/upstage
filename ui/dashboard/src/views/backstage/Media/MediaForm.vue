@@ -86,6 +86,17 @@
         <template #voice>
           <VoiceParameters v-model="form.voice" />
         </template>
+        <template #link>
+          <HorizontalField title="URL">
+            <Field
+              placeholder="The destination when audience click on the link"
+              v-model="form.link.url"
+            />
+          </HorizontalField>
+          <HorizontalField title="Open in new tab">
+            <Switch v-model="form.link.blank" />
+          </HorizontalField>
+        </template>
         <template #multiframe>
           <Multiframe :media="media" :form="form" />
         </template>
@@ -115,6 +126,7 @@ import { displayName } from "@/utils/auth";
 import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
 import StreamPreview from "./StreamPreview.vue";
 import Multiframe from './Multiframe'
+import Switch from "@/components/form/Switch.vue";
 
 export default {
   components: {
@@ -130,7 +142,8 @@ export default {
     MultiTransferColumn,
     Dropdown,
     StreamPreview,
-    Multiframe
+    Multiframe,
+    Switch
   },
   props: {
     media: Object,
@@ -143,6 +156,11 @@ export default {
     form.voice = {};
     if (form.description) {
       Object.assign(form, JSON.parse(form.description));
+    }
+    if (!form.link) {
+      form.link = {
+        blank: true
+      }
     }
     if (form.assetType) {
       form.mediaType = form.assetType.name;
@@ -190,7 +208,7 @@ export default {
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice, isRTMP, src, w, h, uploadedFrames } = form;
+        const { id, multi, frames, voice, link, isRTMP, src, w, h, uploadedFrames } = form;
         const payload = {
           id,
           name,
@@ -200,6 +218,7 @@ export default {
             multi,
             frames,
             voice,
+            link,
             isRTMP,
             w,
             h,
@@ -247,11 +266,10 @@ export default {
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
       }
-      if (
-        form.mediaType === "avatar" ||
-        form.mediaType === "prop" ||
-        form.mediaType === "backdrop"
-      ) {
+      if (["avatar", "prop"].includes(form.mediaType)) {
+        res.push({ key: "link", label: "Link", icon: "fas fa-link" });
+      }
+      if (["avatar", "prop", "backdrop"].includes(form.mediaType)) {
         res.push({
           key: "multiframe",
           label: "Multiframe",

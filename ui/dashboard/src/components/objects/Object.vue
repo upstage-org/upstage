@@ -4,12 +4,13 @@
     tabindex="0"
     @keyup.delete="deleteObject"
     @dblclick="hold"
+    @click="openLink"
     :style="
       activeMovable
         ? {
-            position: 'relative',
-            'z-index': 1,
-          }
+          position: 'relative',
+          'z-index': 1,
+        }
         : {}
     "
   >
@@ -30,25 +31,18 @@
             transform: `rotate(${object.rotate}deg)`,
           }"
         >
-          <OpacitySlider
-            v-model:active="active"
-            v-model:slider-mode="sliderMode"
-            :object="object"
-          />
+          <OpacitySlider v-model:active="active" v-model:slider-mode="sliderMode" :object="object" />
           <QuickAction :object="object" v-model:active="active" />
           <Topping :object="object" v-model:active="active" />
         </div>
-        <Moveable
-          v-model:active="active"
-          :controlable="controlable"
-          :object="object"
-        >
+        <Moveable v-model:active="active" :controlable="controlable" :object="object">
           <div
             class="object"
+            :class="{ 'has-link': hasLink }"
             :style="{
               width: '100%',
               height: '100%',
-              cursor: 'grab',
+              cursor: controlable ? 'grab' : (object.link && object.link.url ? 'pointer' : 'normal'),
             }"
             @dragstart.prevent
           >
@@ -176,6 +170,14 @@ export default {
     );
     provide("isWearing", isWearing);
 
+    const hasLink = computed(() => !canPlay.value && props.object.link && props.object.link.url)
+    const openLink = () => {
+      if (hasLink.value) {
+        const { url, blank } = props.object.link
+        window.open(url, blank ? '_blank' : '_self').focus()
+      }
+    }
+
     return {
       el,
       print,
@@ -191,6 +193,8 @@ export default {
       sliderMode,
       activeMovable,
       isWearing,
+      hasLink,
+      openLink
     };
   },
 };
@@ -205,5 +209,11 @@ div[tabindex] {
 }
 .object {
   z-index: 10;
+  &.has-link {
+    transition: transform 0.5s;
+  }
+  &.has-link:hover {
+    transform: scale(1.2) !important;
+  }
 }
 </style>
