@@ -249,6 +249,9 @@ export default {
           store.dispatch("stage/deleteObject", o);
         });
     };
+    onUnmounted(() => {
+      document.querySelector("#topbar").style.overflow = "auto";
+    })
 
     return {
       stageSize,
