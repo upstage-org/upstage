@@ -22,7 +22,7 @@
               >Stage loaded 100%, click anywhere to continue...</span>
             </h2>
             <h2 v-else class="subtitle">
-              <template v-if="status !== 'live'">
+              <template v-if="status !== 'live' && !canPlay">
                 <span class="tag is-dark">{{ status.toUpperCase() }}</span>&nbsp;
                 <span>This stage is not currently open to the public. Please come back later!</span>
               </template>
@@ -124,6 +124,8 @@ export default {
     };
     const backdropColor = computed(() => store.state.stage.backdropColor);
 
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
+
     return {
       model,
       preloadableAssets,
@@ -135,7 +137,8 @@ export default {
       clicked,
       leave,
       backdropColor,
-      status
+      status,
+      canPlay
     };
   },
 };
