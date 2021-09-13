@@ -13,34 +13,36 @@
       <div class="hero-body">
         <div class="container">
           <template v-if="model">
-            <h1 class="title" :class="{ 'mb-0': model.description }">
-              {{ model.name }}
-            </h1>
-            <h2 v-if="model.description" class="subtittle">
-              {{ model.description }}
-            </h2>
+            <h1 class="title" :class="{ 'mb-0': model.description }">{{ model.name }}</h1>
+            <h2 v-if="model.description" class="subtittle">{{ model.description }}</h2>
             <h2 v-if="ready" class="subtitle">
-              <span class="sparkle" style="line-height: 2">
-                Stage loaded 100%, click anywhere to continue...
-              </span>
+              <span
+                class="sparkle"
+                style="line-height: 2"
+              >Stage loaded 100%, click anywhere to continue...</span>
             </h2>
             <h2 v-else class="subtitle">
-              <button class="button is-primary is-loading" />
-              <span style="line-height: 2">
-                <span v-if="preloadableAssets.length">
-                  Preloading avatars, props and backdrops...
-                  {{ progress }}/{{ preloadableAssets.length }}
-
-                  <div id="preloading-area">
-                    <img
-                      v-for="src in preloadableAssets"
-                      :key="src"
-                      :src="src"
-                      @load="increaseProgress"
-                    />
-                  </div>
+              <template v-if="status !== 'live' && !canPlay">
+                <span class="tag is-dark">{{ status.toUpperCase() }}</span>&nbsp;
+                <span>This stage is not currently open to the public. Please come back later!</span>
+              </template>
+              <template v-else-if="preloadableAssets.length">
+                <button class="button is-primary is-loading" />
+                <span style="line-height: 2">
+                  <span>
+                    Preloading avatars, props and backdrops...
+                    {{ progress }}/{{ preloadableAssets.length }}
+                    <div id="preloading-area">
+                      <img
+                        v-for="src in preloadableAssets"
+                        :key="src"
+                        :src="src"
+                        @load="increaseProgress"
+                      />
+                    </div>
+                  </span>
                 </span>
-              </span>
+              </template>
             </h2>
           </template>
           <template v-else-if="preloading">
@@ -60,9 +62,10 @@
 </template>
 
 <script>
-import { computed, inject, ref, watch, watchEffect } from "vue";
+import { computed, inject, ref, watch, watchEffect, onUnmounted } from "vue";
 import { useStore } from "vuex";
 import anime from "animejs";
+import { useAttribute } from "@/services/graphql/composable";
 export default {
   setup: () => {
     const store = useStore();
@@ -86,11 +89,28 @@ export default {
       }
     });
 
-    watch(model, (val) => {
+    watch(preloading, (val) => {
+      const logo = document.querySelector('#live-logo')
       if (val) {
-        setTimeout(stopLoading, 60000);
+        logo.classList.add('preloader');
+      } else {
+        logo.classList.remove('preloader');
+      }
+    }, { immediate: true })
+
+    const status = useAttribute(model, 'status')
+    const timer = ref()
+    watch(model, (val) => {
+      if (val && status.value === 'live') {
+        timer.value = setTimeout(stopLoading, 60000);
       }
     });
+    onUnmounted(() => {
+      if (timer.value) {
+        clearInterval(timer.value)
+      }
+    })
+
     const replaying = inject("replaying");
     const ready = computed(() => store.getters["stage/ready"]);
     const clicked = ref(false); // Trick the user to click in order to play meSpeak voice
@@ -104,6 +124,8 @@ export default {
     };
     const backdropColor = computed(() => store.state.stage.backdropColor);
 
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
+
     return {
       model,
       preloadableAssets,
@@ -115,6 +137,8 @@ export default {
       clicked,
       leave,
       backdropColor,
+      status,
+      canPlay
     };
   },
 };
@@ -135,6 +159,8 @@ section {
   z-index: 20000;
   * {
     color: white;
+  }
+  button {
     background-color: transparent !important;
   }
   &.replaying {

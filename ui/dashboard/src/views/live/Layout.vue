@@ -85,6 +85,10 @@ export default {
   max-width: 200px;
   z-index: 1;
 
+  &.preloader {
+    z-index: 20001;
+  }
+
   @media screen and (min-width: 1024px) {
     img {
       max-height: unset;

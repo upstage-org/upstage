@@ -1,6 +1,7 @@
 {
   "name": "dashboard",
   "version": "4.7.0",
+  "versionAlias": "10-4T0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
@@ -52,6 +53,5 @@
     "eslint-plugin-vue": "^7.16.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2"
-  },
-  "versionAlias": "9-A9"
+  }
 }
