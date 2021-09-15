@@ -3,13 +3,12 @@ export { gql } from 'graphql-request';
 import config from '@/config';
 import store from '@/store/index';
 
-const options = {
-    headers: {}
-};
-
 export const createClient = namespace => ({
     request: async (...params) => {
         let response = null;
+        const options = {
+            headers: {}
+        };
         const client = new GraphQLClient(`${config.GRAPHQL_ENDPOINT}${namespace}/`, options)
         const token = store.getters["auth/getToken"];
         if (token) {
