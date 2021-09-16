@@ -135,6 +135,14 @@
         </button>
       </p>
     </div>
+    <template v-if="hasLink">
+      <a class="panel-block" @click="openLink" :data-tooltip="object.link.url">
+        <span class="panel-icon">
+          <i class="fas fa-link"></i>
+        </span>
+        <span>Open link</span>
+      </a>
+    </template>
 
     <a class="panel-block has-text-danger" @click="deleteObject">
       <span class="panel-icon">
@@ -310,6 +318,12 @@ export default {
       }
     };
 
+    const hasLink = computed(() => props.object.link && props.object.link.url)
+    const openLink = () => {
+      const { url, blank } = props.object.link
+      window.open(url, blank ? '_blank' : '_self').focus()
+    }
+
     return {
       switchFrame,
       holdAvatar,
@@ -329,7 +343,9 @@ export default {
       holdable,
       deletePermantly,
       flipHorizontal,
-      flipVertical
+      flipVertical,
+      hasLink,
+      openLink
     };
   },
 };

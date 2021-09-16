@@ -31,6 +31,8 @@ jobs:
           port: ${{ secrets.DEVAPP1_PORT }}
           script: |
             cd /home/upstage/mobilise/ui/dashboard/
+            git fetch
+            git checkout 10-4T0
             git pull
             yarn
             yarn build:dev

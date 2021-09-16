@@ -1,6 +1,7 @@
 {
   "name": "dashboard",
   "version": "4.7.0",
+  "versionAlias": "10-4T0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
@@ -12,7 +13,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",
     "animejs": "^3.2.1",
-    "axios": "^0.21.2",
+    "axios": "^0.21.4",
     "bulma": "^0.9.1",
     "bulma-slider": "^2.0.4",
     "bulma-switch": "^2.0.0",
@@ -52,6 +53,5 @@
     "eslint-plugin-vue": "^7.16.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2"
-  },
-  "versionAlias": "9-A9"
+  }
 }
