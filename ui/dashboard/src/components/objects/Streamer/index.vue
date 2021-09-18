@@ -48,7 +48,7 @@
           v-show="!loading"
           ref="video"
           :src="object.url"
-          :muted="isHost && localMuted"
+          :muted="localMuted"
           preload="auto"
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
@@ -57,7 +57,6 @@
           }"
         ></video>
         <button
-          v-if="isHost"
           class="button is-small mute-icon clickable"
           @mousedown="toggleMuted"
         >
@@ -140,10 +139,6 @@ export default {
       });
     };
 
-    const isHost = computed(
-      () => store.state.stage.session === props.object.hostId
-    );
-
     const localMuted = ref(true);
     const toggleMuted = () => {
       localMuted.value = !localMuted.value;
@@ -166,7 +161,6 @@ export default {
       clip,
       shapes,
       loading,
-      isHost,
       localMuted,
       toggleMuted,
     };
