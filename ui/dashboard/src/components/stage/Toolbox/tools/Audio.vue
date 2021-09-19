@@ -6,17 +6,12 @@
     :class="{ 'is-playing': audio.isPlaying }"
   >
     <div class="audio-name">
-      <span v-if="i < 10">{{ i + 1 }}. </span>
-      <span :title="audio.file">
-        {{ audio.name }}
-      </span>
+      <span v-if="i < 10">{{ i + 1 }}.</span>
+      <span :title="audio.file">{{ audio.name }}</span>
     </div>
     <div class="buttons">
       <template v-if="audio.isPlaying">
-        <div
-          class="icon"
-          @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
-        >
+        <div class="icon" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
           <Icon size="24" src="pause.svg" />
         </div>
         <div class="icon" @click="stopAudio(audio)">
@@ -24,10 +19,7 @@
         </div>
       </template>
       <template v-else>
-        <div
-          class="icon play-button"
-          @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
-        >
+        <div class="icon play-button" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
           <Icon size="24" src="play.svg" />
         </div>
       </template>
@@ -38,27 +30,28 @@
       >
         <Icon size="24" src="loop.svg" />
       </div>
-      <div
-        class="icon"
-        :class="{ grayscale: sliderMode === 'volume' }"
-        @click="sliderMode = sliderMode === 'volume' ? 'duration' : 'volume'"
-      >
-        <Icon size="24" src="voice-setting.svg" />
-      </div>
     </div>
     <div class="sliders">
+      <div class="addon volume">
+        <div
+          class="icon"
+          :class="{ grayscale: !showVolumeSlider }"
+          @click="showVolumeSlider = !showVolumeSlider"
+        >
+          <Icon size="24" src="voice-setting.svg" />
+        </div>
+        <input
+          v-if="showVolumeSlider"
+          class="slider is-fullwidth is-dark my-0"
+          step="0.01"
+          min="0"
+          max="1"
+          :value="audio.volume ?? 1"
+          @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
+          type="range"
+        />
+      </div>
       <input
-        v-if="sliderMode === 'volume'"
-        class="slider is-fullwidth is-dark my-0"
-        step="0.01"
-        min="0"
-        max="1"
-        :value="audio.volume ?? 1"
-        @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
-        type="range"
-      />
-      <input
-        v-show="sliderMode === 'duration'"
         class="slider is-fullwidth is-primary mt-0"
         min="0"
         :max="audioPlayers[i]?.duration"
@@ -66,6 +59,10 @@
         @change="seek(audio, $event)"
         type="range"
       />
+      <div class="addon">
+        <span v-if="audio.isPlaying">{{ displayTimestamp(audioPlayers[i]?.currentTime ?? 0) }}</span>
+        <span v-else>{{ displayTimestamp(audioPlayers[i]?.duration) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -75,6 +72,7 @@ import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import { computed, ref } from "@vue/runtime-core";
 import { useShortcut } from "../../composable";
+import { displayTimestamp } from "@/utils/common";
 
 export default {
   components: { Icon },
@@ -109,7 +107,6 @@ export default {
       audio.volume = e.target.value;
       store.dispatch("stage/updateAudioStatus", audio);
     };
-    const sliderMode = ref("duration");
 
     useShortcut((e) => {
       if (isFinite(e.key)) {
@@ -119,6 +116,7 @@ export default {
         }
       }
     });
+    const showVolumeSlider = ref(false)
 
     return {
       audios,
@@ -128,7 +126,8 @@ export default {
       setVolume,
       audioPlayers,
       seek,
-      sliderMode,
+      displayTimestamp,
+      showVolumeSlider
     };
   },
 };
@@ -171,11 +170,37 @@ export default {
   .sliders {
     display: none !important;
     margin-bottom: 0;
+    height: 16px;
+    .slider {
+      margin: 0 4px;
+      height: 16px;
+    }
+    .volume {
+      .slider {
+        position: absolute;
+        top: 8px;
+        left: 15px;
+        width: 100px;
+        transform: scale(0.5) rotate(270deg) translateX(-100%);
+        transform-origin: left top;
+      }
+    }
+  }
+  &.is-playing {
+    .sliders {
+      display: flex !important;
+      .addon {
+        display: none;
+      }
+    }
   }
   &:hover {
     width: 250px !important;
     .sliders {
-      display: block !important;
+      display: flex !important;
+      .addon {
+        display: block;
+      }
     }
     .buttons {
       > * {
@@ -187,11 +212,6 @@ export default {
           height: 24px !important;
         }
       }
-    }
-  }
-  &.is-playing {
-    .sliders {
-      display: block !important;
     }
   }
 }
