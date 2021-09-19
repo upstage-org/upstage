@@ -59,7 +59,7 @@ export default {
     const store = useStore();
     const isFirefox = navigator.userAgent.indexOf("Firefox") != -1;
     const status = computed(() => store.state.stage.status);
-    const visible = computed(() => isFirefox && status.value === "CONNECTING");
+    const visible = computed(() => isFirefox && status.value !== "LIVE");
 
     const reload = () => window.location.reload();
 
