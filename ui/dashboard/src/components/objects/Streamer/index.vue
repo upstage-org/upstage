@@ -13,11 +13,7 @@
             </span>
             <span>Pause</span>
           </a>
-          <a
-            v-else
-            class="panel-block has-text-info"
-            @click="playStream(slotProps)"
-          >
+          <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
             <span class="panel-icon">
               <i class="fas fa-play"></i>
             </span>
@@ -40,6 +36,36 @@
               </button>
             </p>
           </div>
+          <a class="panel-block" @click="bringToFront">
+            <span class="panel-icon">
+              <Icon src="bring-to-front.svg" />
+            </span>
+            <span>Bring forward</span>
+          </a>
+          <a class="panel-block" @click="sendToBack">
+            <span class="panel-icon">
+              <Icon src="send-to-back.svg" />
+            </span>
+            <span>Send back</span>
+          </a>
+          <a class="panel-block">
+            <span class="panel-icon">
+              <Icon src="voice-setting.svg" />
+            </span>
+            <span>Volumn setting</span>
+          </a>
+          <a class="panel-block" @click="changeSliderMode('speed')">
+            <span class="panel-icon">
+              <Icon src="movement-slider.svg" />
+            </span>
+            <span>Move speed</span>
+          </a>
+          <a class="panel-block has-text-danger" @click="deleteStream">
+            <span class="panel-icon">
+              <Icon src="remove.svg" />
+            </span>
+            <span>Remove</span>
+          </a>
         </div>
       </template>
       <template #render>
@@ -56,10 +82,7 @@
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
-        <button
-          class="button is-small mute-icon clickable"
-          @mousedown="toggleMuted"
-        >
+        <button class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -76,10 +99,12 @@ import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
 import { nmsService } from "@/services/rest";
+import Icon from "@/components/Icon.vue";
 
 export default {
-  components: { Object, Loading },
-  props: ["object"],
+  components: { Object, Loading, Icon },
+  emits: ["update:active", "hold"],
+  props: ["object", "setSliderMode",],
   setup: (props) => {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
@@ -132,6 +157,22 @@ export default {
         .then(closeMenu);
     };
 
+    const deleteStream = () => {
+      store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+    };
+
+    const bringToFront = () => {
+      store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);
+    };
+
+    const sendToBack = () => {
+      store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
+    };
+
+    const changeSliderMode = (mode) => {
+      console.log(mode)
+    };
+
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
         ...stream,
@@ -163,6 +204,10 @@ export default {
       loading,
       localMuted,
       toggleMuted,
+      deleteStream,
+      bringToFront,
+      sendToBack,
+      changeSliderMode
     };
   },
 };
