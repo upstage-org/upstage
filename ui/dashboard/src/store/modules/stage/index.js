@@ -34,6 +34,9 @@ export default {
             opacity: 0.9,
             fontSize: '14px',
         },
+        stream: {
+            volume: 100
+        },
         board: {
             objects: [],
             drawings: [],
@@ -430,6 +433,9 @@ export default {
         SET_CHAT_PARAMETERS(state, { opacity, fontSize }) {
             state.chat.opacity = opacity;
             state.chat.fontSize = fontSize;
+        },
+        SET_STREAM_PARAMETERS(state, { volume }) {
+            state.stream.volume = volume;
         },
         UPDATE_SESSIONS_COUNTER(state, session) {
             const index = state.sessions.findIndex(s => s.id === session.id)
@@ -893,7 +899,7 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        addDrawing({ commit, dispatch }, drawing) {
+            addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
             dispatch('placeObjectOnStage', drawing);
         },

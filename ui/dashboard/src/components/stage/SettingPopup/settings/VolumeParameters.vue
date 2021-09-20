@@ -1,0 +1,57 @@
+<template>
+    <div class="card-header">
+        <span class="card-header-title">Volumne Setting</span>
+    </div>
+    <div class="card-content voice-parameters">
+        <div class="content">
+            <HorizontalField title="Volume">
+                <input
+                    v-model="parameters.volume"
+                    class="slider is-fullwidth is-primary m-0"
+                    type="range"
+                    min="0"
+                    max="100"
+                    step="1"
+                />
+            </HorizontalField>
+            <SaveButton @click="saveVolume" :loading="loading" />
+        </div>
+    </div>
+</template>
+
+<script>
+import { reactive } from "vue";
+import { useStore } from "vuex";
+import HorizontalField from "@/components/form/HorizontalField";
+import SaveButton from "@/components/form/SaveButton.vue";
+
+export default {
+    components: {
+        HorizontalField,
+        SaveButton
+    },
+    props: ["modelValue"],
+    setup: (props, { emit }) => {
+        const store = useStore();
+
+        const parameters = reactive({
+            volume: store.state.stage.stream.volume,
+        });
+
+        const saveVolume = () => {
+            console.log("on save volqume", parameters)
+            store.commit("stage/SET_STREAM_PARAMETERS", parameters)
+            emit("close")
+        }
+
+        return {
+            saveVolume,
+            parameters
+        }
+    }
+
+}
+</script>
+
+<style lang="scss">
+</style>

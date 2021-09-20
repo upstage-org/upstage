@@ -48,7 +48,7 @@
             </span>
             <span>Send back</span>
           </a>
-          <a class="panel-block">
+          <a class="panel-block" @click="openVolumePopup">
             <span class="panel-icon">
               <Icon src="voice-setting.svg" />
             </span>
@@ -173,6 +173,14 @@ export default {
       console.log(mode)
     };
 
+    const openVolumePopup = () => {
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "VolumeParameters",
+        })
+        .then(props.closeMenu);
+    };
+
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
         ...stream,
@@ -207,7 +215,8 @@ export default {
       deleteStream,
       bringToFront,
       sendToBack,
-      changeSliderMode
+      changeSliderMode,
+      openVolumePopup,
     };
   },
 };
