@@ -17,7 +17,7 @@
       </p>
       <div class="columns">
         <div class="column is-3 mt-6">
-          <b>Step 1:</b>Open a new tab and go to
+          <b>Step 1:</b>&nbsp;Open a new tab and go to
           <code>about:config</code>
         </div>
         <div class="column">
@@ -26,7 +26,7 @@
       </div>
       <div class="columns">
         <div class="column is-3 mt-6">
-          <b>Step 2:</b>Search for
+          <b>Step 2:</b>&nbsp;Search for
           <code>network.http.spdy.websockets</code>
         </div>
         <div class="column">
@@ -35,7 +35,7 @@
       </div>
       <div class="columns">
         <div class="column is-3 mt-6">
-          <b>Step 3:</b>Change the value to
+          <b>Step 3:</b>&nbsp;Change the value to
           <code>false</code>
         </div>
         <div class="column">
