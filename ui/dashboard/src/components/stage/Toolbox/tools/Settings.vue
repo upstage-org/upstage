@@ -40,7 +40,7 @@
     <div class="icon is-large">
       <ColorPicker v-model="backdropColor" @update:modelValue="sendBackdropColor" />
     </div>
-    <span class="tag is-light is-block p-0">Backdrop Color</span>
+    <span class="tag is-light is-block p-0">Backdrop Colour</span>
   </div>
 </template>
 

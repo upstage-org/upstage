@@ -61,7 +61,7 @@
       />
     </div>
     <div class="text-tool" style="z-index: 1003">
-      <span class="tag muted is-block">Color</span>
+      <span class="tag muted is-block">Colour</span>
       <ColorPicker v-model="options.color" />
     </div>
     <div class="text-tool" :class="{ active: options.fontWeight }" @click="toggleBold">
