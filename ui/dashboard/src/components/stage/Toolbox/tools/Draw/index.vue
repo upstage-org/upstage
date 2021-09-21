@@ -103,12 +103,12 @@
         <template #context>
           <a
             class="panel-block has-text-danger"
-            @click="deleteDrawingPermantly(drawing)"
+            @click="deleteDrawingPermanently(drawing)"
           >
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permantly</span>
+            <span>Delete Permanently</span>
           </a>
         </template>
       </ContextMenu>
@@ -170,7 +170,7 @@ export default {
       cancel();
     };
 
-    const deleteDrawingPermantly = (drawing) => {
+    const deleteDrawingPermanently = (drawing) => {
       store.commit("stage/POP_DRAWING", drawing.drawingId);
       store.getters["stage/objects"]
         .filter((o) => o.drawingId === drawing.drawingId)
@@ -194,7 +194,7 @@ export default {
       mode,
       cursor,
       stageSize,
-      deleteDrawingPermantly,
+      deleteDrawingPermanently,
     };
   },
 };

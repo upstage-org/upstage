@@ -153,12 +153,12 @@
     <a
       v-if="object.drawingId || object.textId"
       class="panel-block has-text-danger"
-      @click="deletePermantly"
+      @click="deletePermanently"
     >
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
-      <span>Delete Permantly</span>
+      <span>Delete Permanently</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
@@ -307,7 +307,7 @@ export default {
       }
     };
 
-    const deletePermantly = () => {
+    const deletePermanently = () => {
       if (props.object.drawingId) {
         store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
         store.commit("stage/POP_DRAWING", props.object.drawingId);
@@ -341,7 +341,7 @@ export default {
       isWearing,
       isHolding,
       holdable,
-      deletePermantly,
+      deletePermanently,
       flipHorizontal,
       flipVertical,
       hasLink,
