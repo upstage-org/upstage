@@ -48,7 +48,7 @@
             </span>
             <span>Send back</span>
           </a>
-          <a class="panel-block" @click="openVolumePopup">
+          <a class="panel-block" @click="openVolumePopup(slotProps)">
             <span class="panel-icon">
               <Icon src="voice-setting.svg" />
             </span>
@@ -173,12 +173,12 @@ export default {
       console.log(mode)
     };
 
-    const openVolumePopup = () => {
+    const openVolumePopup = ({ closeMenu }) => {
       store
         .dispatch("stage/openSettingPopup", {
           type: "VolumeParameters",
         })
-        .then(props.closeMenu);
+        .then(closeMenu);
     };
 
     const clip = (shape) => {
