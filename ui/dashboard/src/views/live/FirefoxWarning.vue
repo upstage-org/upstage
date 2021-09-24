@@ -20,8 +20,8 @@
         <div class="column">
           <img src="@/assets/firefox-instruction/1.png" alt="Step 1" />
           <div class="columns">
-            <div class="column is-3 mt-6">
-              <code>Note:</code>&nbsp;If you see this screen, click to continue. Don't worry, this is not going to cause any problems!
+            <div class="column is-4 mt-6">
+              <code>Note:</code>&nbsp;If you see this screen, click to continue. Don't worry, the setting change needed for UpStage to work will not impact on performance or security of Firefox.
             </div>
             <div class="column">
               <img src="@/assets/firefox-instruction/1.2.png" alt="Step 1.2" />
