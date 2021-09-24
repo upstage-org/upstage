@@ -38,6 +38,7 @@ img {
   height: 100%;
   object-fit: contain;
   object-position: center;
+  will-change: opacity;
 }
 .fade-enter-active,
 .fade-leave-active {
@@ -46,6 +47,6 @@ img {
 }
 .fade-enter,
 .fade-leave-to {
-  opacity: 0;
+  opacity: 0 !important;
 }
 </style>
