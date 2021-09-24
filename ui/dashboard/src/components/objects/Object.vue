@@ -47,7 +47,7 @@
             @dragstart.prevent
           >
             <slot name="render">
-              <Image class="the-object" :src="src" />
+              <Image class="the-object" :src="src" :transition="object.autoplayFrames" />
             </slot>
           </div>
         </Moveable>
@@ -210,7 +210,7 @@ div[tabindex] {
 .object {
   z-index: 10;
   &.has-link {
-    transition: transform 0.5s;
+    transition: transform v-bind(transition);
   }
   &.has-link:hover {
     transform: scale(1.2) !important;
