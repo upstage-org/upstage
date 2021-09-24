@@ -50,6 +50,7 @@
           :src="object.url"
           :muted="localMuted"
           preload="auto"
+          disablePictureInPicture
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
           :style="{
