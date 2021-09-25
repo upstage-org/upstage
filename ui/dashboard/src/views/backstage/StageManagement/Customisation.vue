@@ -58,8 +58,8 @@
                 step="0.01"
                 min="0.1"
                 max="1"
-                :value="1000 / animations.curtainSpeed"
-                @change="animations.curtainSpeed = 1000 / $event.target.value"
+                :value="5000 / animations.curtainSpeed"
+                @change="animations.curtainSpeed = 5000 / $event.target.value"
                 type="range"
               />
               <span class="ml-2">Fast</span>
@@ -180,7 +180,7 @@ export default {
         bubble: "fade",
         curtain: "drop",
         bubbleSpeed: 1000,
-        curtainSpeed: 1000,
+        curtainSpeed: 5000,
       },
       streaming: {
         autoDetect: false,
