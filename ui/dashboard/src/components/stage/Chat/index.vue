@@ -247,6 +247,7 @@ export default {
     position: absolute;
     right: 24px;
     top: 10px;
+    z-index: 1;
     button {
       width: 26px;
       height: 26px;
