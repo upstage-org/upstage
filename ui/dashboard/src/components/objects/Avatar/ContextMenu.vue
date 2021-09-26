@@ -297,7 +297,6 @@ export default {
         .then(props.closeMenu);
 
     const bringToFront = () => {
-      console.log(props.object)
       store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);
     };
 
