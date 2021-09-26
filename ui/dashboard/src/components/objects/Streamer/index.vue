@@ -2,75 +2,13 @@
   <div>
     <Object :object="stream">
       <template #menu="slotProps">
-        <div class="avatar-context-menu card-content p-0">
-          <a
-            v-if="stream.isPlaying"
-            class="panel-block has-text-info"
-            @click="pauseStream(slotProps)"
-          >
-            <span class="panel-icon">
-              <i class="fas fa-pause"></i>
-            </span>
-            <span>Pause</span>
-          </a>
-          <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
-            <span class="panel-icon">
-              <i class="fas fa-play"></i>
-            </span>
-            <span>Play</span>
-          </a>
-
-          <div class="field has-addons menu-group">
-            <p class="control menu-group-item">
-              <button class="button is-light" @click="clip(null)">
-                <div class="icon">
-                  <i class="fas fa-square"></i>
-                </div>
-              </button>
-            </p>
-            <p class="control menu-group-item" @click="clip('circle')">
-              <button class="button is-light">
-                <div class="icon">
-                  <i class="fas fa-circle"></i>
-                </div>
-              </button>
-            </p>
-          </div>
-          <a class="panel-block" @click="bringToFront">
-            <span class="panel-icon">
-              <Icon src="bring-to-front.svg" />
-            </span>
-            <span>Bring forward</span>
-          </a>
-          <a class="panel-block" @click="sendToBack">
-            <span class="panel-icon">
-              <Icon src="send-to-back.svg" />
-            </span>
-            <span>Send back</span>
-          </a>
-          <a class="panel-block" @click="openVolumePopup(slotProps)">
-            <span class="panel-icon">
-              <Icon src="voice-setting.svg" />
-            </span>
-            <span>Volumn setting</span>
-          </a>
-          <a class="panel-block" @click="changeSliderMode('speed')">
-            <span class="panel-icon">
-              <Icon src="movement-slider.svg" />
-            </span>
-            <span>Move speed</span>
-          </a>
-          <a class="panel-block has-text-danger" @click="deleteStream">
-            <span class="panel-icon">
-              <Icon src="remove.svg" />
-            </span>
-            <span>Remove</span>
-          </a>
-        </div>
+        <MenuContent :object="object" :stream="stream" v-bind="slotProps" v-model:active="active" />
       </template>
+
       <template #render>
         <Loading v-if="loading" height="100%" />
         <video
+          v-bind:id="'video' + stream.id"
           v-show="!loading"
           ref="video"
           :src="object.url"
@@ -99,10 +37,10 @@ import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
 import { nmsService } from "@/services/rest";
-import Icon from "@/components/Icon.vue";
+import MenuContent from '../Avatar/ContextMenu'
 
 export default {
-  components: { Object, Loading, Icon },
+  components: { Object, Loading, MenuContent },
   emits: ["update:active", "hold"],
   props: ["object", "setSliderMode",],
   setup: (props) => {
@@ -139,47 +77,6 @@ export default {
       useFlv(video, fullUrl);
     }
 
-    const playStream = ({ closeMenu }) => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: true,
-        })
-        .then(closeMenu);
-    };
-
-    const pauseStream = ({ closeMenu }) => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: false,
-        })
-        .then(closeMenu);
-    };
-
-    const deleteStream = () => {
-      store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
-    };
-
-    const bringToFront = () => {
-      store.dispatch("stage/bringToFront", props.object).then(props.closeMenu);
-    };
-
-    const sendToBack = () => {
-      store.dispatch("stage/sendToBack", props.object).then(props.closeMenu);
-    };
-
-    const changeSliderMode = (mode) => {
-      console.log(mode)
-    };
-
-    const openVolumePopup = ({ closeMenu }) => {
-      store
-        .dispatch("stage/openSettingPopup", {
-          type: "VolumeParameters",
-        })
-        .then(closeMenu);
-    };
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
@@ -205,18 +102,11 @@ export default {
       video,
       stream,
       loadeddata,
-      playStream,
-      pauseStream,
       clip,
       shapes,
       loading,
       localMuted,
       toggleMuted,
-      deleteStream,
-      bringToFront,
-      sendToBack,
-      changeSliderMode,
-      openVolumePopup,
     };
   },
 };

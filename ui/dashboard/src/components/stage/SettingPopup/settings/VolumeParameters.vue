@@ -20,7 +20,7 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { useStore } from "vuex";
 import HorizontalField from "@/components/form/HorizontalField";
 import SaveButton from "@/components/form/SaveButton.vue";
@@ -31,17 +31,22 @@ export default {
         SaveButton
     },
     props: ["modelValue"],
+    emits: ["close", "update:modelValue"],
     setup: (props, { emit }) => {
         const store = useStore();
-
+        const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
         const parameters = reactive({
-            volume: store.state.stage.stream.volume,
+            volume: currentAvatar.value?.volume
         });
-
         const saveVolume = () => {
-            console.log("on save volqume", parameters)
-            store.commit("stage/SET_STREAM_PARAMETERS", parameters)
-            emit("close")
+            let video = document.getElementById('video' + currentAvatar.value.id);
+            video.volume = parameters.volume / 100;
+            store
+                .dispatch("stage/shapeObject", {
+                    ...currentAvatar.value,
+                    volume: parameters.volume,
+                })
+                .then(() => emit("close"));
         }
 
         return {

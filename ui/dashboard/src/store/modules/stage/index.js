@@ -34,9 +34,6 @@ export default {
             opacity: 0.9,
             fontSize: '14px',
         },
-        stream: {
-            volume: 100
-        },
         board: {
             objects: [],
             drawings: [],
@@ -434,9 +431,6 @@ export default {
             state.chat.opacity = opacity;
             state.chat.fontSize = fontSize;
         },
-        SET_STREAM_PARAMETERS(state, { volume }) {
-            state.stream.volume = volume;
-        },
         UPDATE_SESSIONS_COUNTER(state, session) {
             const index = state.sessions.findIndex(s => s.id === session.id)
             if (index > -1) {
@@ -692,6 +686,7 @@ export default {
                 opacity: 1,
                 moveSpeed: 2000,
                 voice: {},
+                volume: 100,
                 rotate: 0,
                 ...data,
                 id: uuidv4(),
@@ -700,7 +695,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar') {
+            if (data.type === 'avatar' || data.type === 'stream') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
