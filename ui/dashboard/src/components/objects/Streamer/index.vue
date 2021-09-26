@@ -2,49 +2,13 @@
   <div>
     <Object :object="stream">
       <template #menu="slotProps">
-        <div class="avatar-context-menu card-content p-0">
-          <a
-            v-if="stream.isPlaying"
-            class="panel-block has-text-info"
-            @click="pauseStream(slotProps)"
-          >
-            <span class="panel-icon">
-              <i class="fas fa-pause"></i>
-            </span>
-            <span>Pause</span>
-          </a>
-          <a
-            v-else
-            class="panel-block has-text-info"
-            @click="playStream(slotProps)"
-          >
-            <span class="panel-icon">
-              <i class="fas fa-play"></i>
-            </span>
-            <span>Play</span>
-          </a>
-
-          <div class="field has-addons menu-group">
-            <p class="control menu-group-item">
-              <button class="button is-light" @click="clip(null)">
-                <div class="icon">
-                  <i class="fas fa-square"></i>
-                </div>
-              </button>
-            </p>
-            <p class="control menu-group-item" @click="clip('circle')">
-              <button class="button is-light">
-                <div class="icon">
-                  <i class="fas fa-circle"></i>
-                </div>
-              </button>
-            </p>
-          </div>
-        </div>
+        <MenuContent :object="object" :stream="stream" v-bind="slotProps" v-model:active="active" />
       </template>
+
       <template #render>
         <Loading v-if="loading" height="100%" />
         <video
+          v-bind:id="'video' + stream.id"
           v-show="!loading"
           ref="video"
           :src="object.url"
@@ -57,10 +21,7 @@
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
-        <button
-          class="button is-small mute-icon clickable"
-          @mousedown="toggleMuted"
-        >
+        <button class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -77,10 +38,12 @@ import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
 import { nmsService } from "@/services/rest";
+import MenuContent from '../Avatar/ContextMenu'
 
 export default {
-  components: { Object, Loading },
-  props: ["object"],
+  components: { Object, Loading, MenuContent },
+  emits: ["update:active", "hold"],
+  props: ["object", "setSliderMode",],
   setup: (props) => {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
@@ -115,23 +78,6 @@ export default {
       useFlv(video, fullUrl);
     }
 
-    const playStream = ({ closeMenu }) => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: true,
-        })
-        .then(closeMenu);
-    };
-
-    const pauseStream = ({ closeMenu }) => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: false,
-        })
-        .then(closeMenu);
-    };
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
@@ -157,8 +103,6 @@ export default {
       video,
       stream,
       loadeddata,
-      playStream,
-      pauseStream,
       clip,
       shapes,
       loading,
