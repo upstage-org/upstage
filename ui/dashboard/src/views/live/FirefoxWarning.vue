@@ -11,10 +11,7 @@
       <Icon size="24" src="firefox-logo.svg" />&nbsp;Caution Firefox Users!
     </template>
     <template #content>
-      <p>
-        If you got stuck on CONNECTING, please turn off SPDY before you can use
-        UpStage on Firefox:
-      </p>
+      <p>A Firefox setting needs to be changed to allow you to access UpStage on Firefox.</p>
       <div class="columns">
         <div class="column is-3 mt-6">
           <b>Step 1:</b>&nbsp;Open a new tab and go to
@@ -22,6 +19,14 @@
         </div>
         <div class="column">
           <img src="@/assets/firefox-instruction/1.png" alt="Step 1" />
+          <div class="columns">
+            <div class="column is-4 mt-6">
+              <code>Note:</code>&nbsp;If you see this screen, click to continue. Don't worry, the setting change needed for UpStage to work will not impact on performance or security of Firefox.
+            </div>
+            <div class="column">
+              <img src="@/assets/firefox-instruction/1.2.png" alt="Step 1.2" />
+            </div>
+          </div>
         </div>
       </div>
       <div class="columns">
