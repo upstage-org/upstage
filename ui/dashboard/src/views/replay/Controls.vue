@@ -15,11 +15,7 @@
         >
           <i class="fas fa-pause"></i>
         </button>
-        <button
-          v-else
-          class="button is-primary is-rounded reaction mx-1"
-          @click="play"
-        >
+        <button v-else class="button is-primary is-rounded reaction mx-1" @click="play">
           <i class="fas fa-play"></i>
         </button>
         <button
@@ -30,16 +26,13 @@
         </button>
         <Modal width="500px">
           <template #trigger>
-            <button
-              class="button minimise is-rounded is-light is-small"
-              @click="collapsed = true"
-            >
+            <button class="button minimise is-rounded is-light is-small" @click="collapsed = true">
               <span class="icon">
                 <Icon src="minimise.svg" size="24" class="mt-4" />
               </span>
             </button>
           </template>
-          <template #header> Tips </template>
+          <template #header>Tips</template>
           <template #content>
             <p>
               Replay controls are hidden! You can toggle the
@@ -49,11 +42,7 @@
           </template>
         </Modal>
         <teleport v-if="!collapsed" to="body">
-          <Modal
-            width="500px"
-            @confirm="(close) => saveRole(item, close)"
-            :loading="loading"
-          >
+          <Modal width="500px" @confirm="(close) => saveRole(item, close)" :loading="loading">
             <template #render="{ open }">
               <Dropdown
                 style="position: absolute; left: 24px; bottom: 64px"
@@ -64,7 +53,7 @@
                 @select="changeSpeed($event, open)"
               />
             </template>
-            <template #header> Warning </template>
+            <template #header>Warning</template>
             <template #content>
               <p>
                 Audio and avatar speeches won't be able to play in 16x speed or
@@ -77,9 +66,10 @@
       </div>
     </div>
     <footer class="card-footer">
-      <div class="card-footer-item" style="width: 60px">
-        {{ showTimestamp(timestamp.current - timestamp.begin) }}
-      </div>
+      <div
+        class="card-footer-item"
+        style="width: 60px"
+      >{{ displayTimestamp(timestamp.current - timestamp.begin) }}</div>
       <div class="card-footer-item">
         <input
           type="range"
@@ -92,9 +82,10 @@
         />
         <EventIndicator />
       </div>
-      <div class="card-footer-item" style="width: 60px">
-        {{ showTimestamp(timestamp.end - timestamp.begin) }}
-      </div>
+      <div
+        class="card-footer-item"
+        style="width: 60px"
+      >{{ displayTimestamp(timestamp.end - timestamp.begin) }}</div>
     </footer>
   </div>
 </template>
@@ -107,6 +98,7 @@ import { computed, ref } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import EventIndicator from "./EventIndicator.vue";
 import { useShortcut } from "@/components/stage/composable";
+import { displayTimestamp } from '@/utils/common';
 
 export default {
   components: { Dropdown, EventIndicator, Icon, Modal },
@@ -129,17 +121,7 @@ export default {
       store.dispatch("stage/pauseReplay");
     };
 
-    const showTimestamp = (t) => {
-      let s = Math.round(t);
-      let m = Math.floor(s / 60);
-      s = String(s % 60).padStart(2, 0);
-      if (m < 60) {
-        return `${m}:${s}`;
-      }
-      let h = Math.floor(m / 60);
-      m = String(m % 60).padStart(2, 0);
-      return `${h}:${m}:${s}`;
-    };
+
 
     const changeSpeed = (speed, open) => {
       store.commit("stage/SET_REPLAY", { speed });
@@ -173,7 +155,7 @@ export default {
       isPlaying,
       play,
       pause,
-      showTimestamp,
+      displayTimestamp,
       speed,
       speeds,
       changeSpeed,

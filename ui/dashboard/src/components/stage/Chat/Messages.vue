@@ -13,28 +13,30 @@
       <template v-else>
         <ContextMenu>
           <template #trigger>
-            <small style="font-size: 1em">
-              <b v-if="item.isPlayer">{{ item.user }}:</b>
-              <span v-else>{{ item.user }}:</span>
-            </small>
-            <span
-              class="tag message"
-              :style="{
-                'font-size': '1em',
-              }"
-              :class="messageClass[item.highlighted ? 'highlighted' : item.behavior]"
-              :title="time(item.at)"
-            >
+            <div style="position: relative;">
+              <small style="font-size: 1em">
+                <b v-if="item.isPlayer">{{ item.user }}:</b>
+                <span v-else>{{ item.user }}:</span>
+              </small>
               <span
-                v-if="item.highlighted"
-                :data-tooltip="canPlay ? 'Click to remove highlight' : 'This is a highlight message'"
-                class="highlight-star has-tooltip-left"
-                @click="highlightChat(item)"
+                class="tag message"
+                :style="{
+                  'font-size': '1em',
+                }"
+                :class="messageClass[item.highlighted ? 'highlighted' : item.behavior]"
+                :title="time(item.at)"
               >
-                <i class="far fa-star has-text-warning"></i>
+                <span
+                  v-if="item.highlighted"
+                  :data-tooltip="canPlay ? 'Click to remove highlight' : 'This is a highlight message'"
+                  class="highlight-star has-tooltip-left"
+                  @click="highlightChat(item)"
+                >
+                  <i class="far fa-star has-text-warning"></i>
+                </span>
+                <Linkify>{{ item.message }}</Linkify>
               </span>
-              <Linkify>{{ item.message }}</Linkify>
-            </span>
+            </div>
           </template>
           <template v-if="canPlay || session === item.session" #context="{ closeMenu }">
             <div class="panel-block">
@@ -140,7 +142,7 @@ export default {
   height: unset;
   .highlight-star {
     position: absolute;
-    right: 8px;
+    right: -4px;
   }
 }
 </style>

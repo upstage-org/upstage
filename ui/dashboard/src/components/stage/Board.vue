@@ -20,20 +20,15 @@
           'px)',
       }"
     >
-      <img
+      <Image
         class="background-image"
         :src="background"
         :style="{
-          'background-image': 'url(' + background + ')',
           opacity: backgroundOpacity,
         }"
+        :transition="backgroundSpeed"
       />
-      <transition-group
-        name="stage-avatars"
-        :css="false"
-        @enter="avatarEnter"
-        @leave="avatarLeave"
-      >
+      <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
         <component
           v-for="object in objects"
           :id="object.id"
@@ -57,6 +52,7 @@ import Stream from "@/components/objects/Streamer/index";
 import Text from "@/components/objects/Text";
 import Curtain from "@/components/stage/Curtain";
 import Whiteboard from "@/components/stage/Whiteboard";
+import Image from "../Image";
 import anime from "animejs";
 
 export default {
@@ -68,6 +64,7 @@ export default {
     Text,
     Curtain,
     Whiteboard,
+    Image
   },
   setup: () => {
     const store = useStore();
@@ -83,6 +80,7 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
+    const backgroundSpeed = computed(() => 50 / store.state.stage.background?.speed);
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);
@@ -142,6 +140,7 @@ export default {
       backdropColor,
       canPlay,
       backgroundOpacity,
+      backgroundSpeed
     };
   },
 };

@@ -1,29 +1,33 @@
 <template>
-  <img v-if="fallback" src="@/assets/notfound.svg" />
-  <img
-    v-else
-    v-bind="$props"
-    :style="{
-      'object-fit': fit,
-      opacity,
-      transform: `rotate(${rotate ?? 0}deg)`,
-    }"
-    @error="fallback = true"
-  />
+  <transition name="fade">
+    <img v-if="fallback" src="@/assets/notfound.svg" />
+    <img
+      v-else
+      v-bind="$props"
+      :key="src"
+      :style="{
+        'object-fit': fit,
+        opacity,
+        transform: `rotate(${rotate ?? 0}deg)`,
+      }"
+      @error="fallback = true"
+    />
+  </transition>
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 export default {
-  props: ["src", "fit", "opacity", "rotate"],
+  props: ["src", "fit", "opacity", "rotate", "transition"],
   setup: (props) => {
     const fallback = ref(false);
     watch(
       () => props.src,
       () => (fallback.value = false)
     );
-    return { fallback };
+    const transitionDuration = computed(() => `${props.transition / 1000}s`)
+    return { fallback, transitionDuration };
   },
 };
 </script>
@@ -34,5 +38,15 @@ img {
   height: 100%;
   object-fit: contain;
   object-position: center;
+  will-change: opacity;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity v-bind(transitionDuration);
+  position: absolute;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0 !important;
 }
 </style>

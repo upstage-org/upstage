@@ -21,11 +21,52 @@
         </span>
         <span>Remove from avatar</span>
       </a>
-      <a v-else-if="currentAvatar" class="panel-block" @click="wearCostume">
+      <a
+        v-else-if="currentAvatar && object.type !== 'stream'"
+        class="panel-block"
+        @click="wearCostume"
+      >
         <span class="panel-icon">
           <Icon src="prop.svg" />
         </span>
         <span>Add to avatar</span>
+      </a>
+    </template>
+    <template v-if="object.type === 'stream'">
+      <div class="field has-addons menu-group">
+        <p class="control menu-group-item">
+          <button class="button is-light" @click="clip(null)">
+            <div class="icon">
+              <i class="fas fa-square"></i>
+            </div>
+          </button>
+        </p>
+        <p class="control menu-group-item" @click="clip('circle')">
+          <button class="button is-light">
+            <div class="icon">
+              <i class="fas fa-circle"></i>
+            </div>
+          </button>
+        </p>
+      </div>
+      <a v-if="stream.isPlaying" class="panel-block has-text-info" @click="pauseStream(slotProps)">
+        <span class="panel-icon">
+          <i class="fas fa-pause"></i>
+        </span>
+        <span>Pause</span>
+      </a>
+      <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
+        <span class="panel-icon">
+          <i class="fas fa-play"></i>
+        </span>
+        <span>Play</span>
+      </a>
+
+      <a class="panel-block" @click="openVolumePopup(slotProps)">
+        <span class="panel-icon">
+          <Icon src="voice-setting.svg" />
+        </span>
+        <span>Volumn setting</span>
       </a>
     </template>
     <a class="panel-block" @click="bringToFront">
@@ -153,12 +194,12 @@
     <a
       v-if="object.drawingId || object.textId"
       class="panel-block has-text-danger"
-      @click="deletePermantly"
+      @click="deletePermanently"
     >
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
-      <span>Delete Permantly</span>
+      <span>Delete Permanently</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">
@@ -182,12 +223,13 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject, ref } from "vue";
+import { computed, inject, ref, reactive } from "vue";
 import Icon from "@/components/Icon";
 
 export default {
   props: [
     "object",
+    "stream",
     "closeMenu",
     "active",
     "sliderMode",
@@ -198,6 +240,8 @@ export default {
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
+    const loading = ref(true);
+    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
 
     const holdAvatar = () => {
       store.dispatch("user/setAvatarId", props.object.id).then(props.closeMenu);
@@ -307,7 +351,7 @@ export default {
       }
     };
 
-    const deletePermantly = () => {
+    const deletePermanently = () => {
       if (props.object.drawingId) {
         store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
         store.commit("stage/POP_DRAWING", props.object.drawingId);
@@ -316,6 +360,39 @@ export default {
         store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
         store.commit("stage/POP_TEXT", props.object.textId);
       }
+    };
+
+    const pauseStream = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          isPlaying: false,
+        })
+        .then(props.closeMenu);
+    };
+
+    const playStream = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          isPlaying: true,
+        })
+        .then(props.closeMenu);
+    };
+
+    const clip = (shape) => {
+      store.dispatch("stage/shapeObject", {
+        ...stream,
+        shape,
+      });
+    };
+
+    const openVolumePopup = () => {
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "VolumeParameters",
+        })
+        .then(props.closeMenu);
     };
 
     const hasLink = computed(() => props.object.link && props.object.link.url)
@@ -341,11 +418,15 @@ export default {
       isWearing,
       isHolding,
       holdable,
-      deletePermantly,
+      deletePermanently,
       flipHorizontal,
       flipVertical,
       hasLink,
-      openLink
+      openLink,
+      pauseStream,
+      playStream,
+      clip,
+      openVolumePopup
     };
   },
 };

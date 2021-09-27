@@ -1,13 +1,13 @@
 {
   "name": "dashboard",
   "version": "4.7.0",
-  "versionAlias": "9-A9",
+  "versionAlias": "10-4T0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
     "build": "VUE_APP_PUBLIC_PATH=/V4.0/ui/ vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build:dev": "yarn build --mode dev",
+    "build:dev": "NODE_ENV=production yarn build --mode dev",
     "serve:localhost": "vue-cli-service serve --mode localhost"
   },
   "dependencies": {
