@@ -14,16 +14,12 @@
       <div v-if="item.name">
         <b>{{ item.name }}</b>
       </div>
-      <small v-if="item.description" class="has-text-dark">
-        {{ item.description }}
-      </small>
+      <small v-if="item.description" class="has-text-dark">{{ item.description }}</small>
       <small v-else class="has-text-dark">
-        <span v-if="item.recording">Recorded </span>
-        <span v-else>Auto recorded </span>
+        <span v-if="item.recording">Recorded</span>
+        <span v-else>Auto recorded</span>
         <span v-if="item.chatless">on {{ date(item.createdOn) }}</span>
-        <span v-else>
-          from {{ date(item.begin) }} to {{ date(item.end) }}
-        </span>
+        <span v-else>from {{ date(item.begin) }} to {{ date(item.end) }}</span>
       </small>
     </template>
     <template #chat="{ item }">
@@ -35,7 +31,9 @@
         </template>
         <template #header>
           Chats from {{ date(item.begin) }}
-          <span v-if="item.begin !== item.end"> to {{ date(item.end) }}</span>
+          <span
+            v-if="item.begin !== item.end"
+          >to {{ date(item.end) }}</span>
         </template>
         <template #content>
           <Messages :messages="item.messages" />
@@ -46,12 +44,12 @@
       </button>
     </template>
     <template #replay="{ item }">
-      <router-link
-        :to="`/replay/${stage.fileLocation}/${item.id}`"
+      <a
+        :href="`/replay/${stage.fileLocation}/${item.id}`"
         :class="`button ${item.recording ? 'is-primary' : 'is-dark'}`"
       >
         <i class="fas fa-video"></i>
-      </router-link>
+      </a>
     </template>
     <template #actions="{ item }">
       <Confirm
@@ -61,11 +59,7 @@
       >
         <Field v-model="item.name" label="Performance Name" required />
         <Field label="Description">
-          <textarea
-            class="textarea"
-            v-model="item.description"
-            rows="3"
-          ></textarea>
+          <textarea class="textarea" v-model="item.description" rows="3"></textarea>
         </Field>
         <template #yes>
           <span>Save</span>
@@ -76,10 +70,7 @@
           </button>
         </template>
       </Confirm>
-      <Confirm
-        @confirm="(complete) => deletePerformance(item, complete)"
-        :loading="deleting"
-      >
+      <Confirm @confirm="(complete) => deletePerformance(item, complete)" :loading="deleting">
         <template #trigger>
           <button class="button is-light is-danger">
             <Icon src="delete.svg" />
@@ -87,7 +78,9 @@
         </template>
         <div class="has-text-centered">
           Deleting this performance will also delete
-          <span class="has-text-danger">all of its replay and chat</span>. This
+          <span
+            class="has-text-danger"
+          >all of its replay and chat</span>. This
           cannot be undo!
           <strong>Are you sure you want to continue?</strong>
         </div>
@@ -215,8 +208,7 @@ export default {
       if (session) {
         link.setAttribute(
           "download",
-          `[Chat] ${stage.value.name} (${
-            session.end ? date(session.end) : "Now"
+          `[Chat] ${stage.value.name} (${session.end ? date(session.end) : "Now"
           }).txt`
         );
         content = session.messages.map((item) => {
@@ -287,5 +279,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.button.is-light > img {
+  max-width: unset;
+}
 </style>
