@@ -17,7 +17,7 @@
       <div class="actions">
         <Reaction v-if="collapsed" />
         <button
-          class="chat-setting button is-rounded is-light"
+          class="chat-setting button is-rounded is-outlined"
           @click="collapsed = !collapsed"
           :data-tooltip="collapsed ? 'Maximise' : 'Minimise'"
           :key="collapsed"
@@ -28,7 +28,7 @@
           </span>
         </button>
         <button
-          class="chat-setting button is-rounded is-light"
+          class="chat-setting button is-rounded is-outlined"
           @click="openChatSetting"
           data-tooltip="Settings"
         >
