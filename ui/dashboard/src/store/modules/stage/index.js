@@ -243,7 +243,7 @@ export default {
                                 nextFrame = 0;
                             }
                             state.background.currentFrame = frames[nextFrame];
-                        }, 50 / speed);
+                        }, 100 / speed);
                     }
                 }
             }
