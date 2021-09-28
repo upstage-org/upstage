@@ -23,7 +23,7 @@
             </h2>
             <h2 v-else class="subtitle">
               <template v-if="status !== 'live' && !canPlay">
-                <span class="tag is-dark">{{ status.toUpperCase() }}</span>&nbsp;
+                <span v-if="status" class="tag is-dark">{{ status.toUpperCase() }}</span>&nbsp;
                 <span>This stage is not currently open to the public. Please come back later!</span>
               </template>
               <template v-else-if="preloadableAssets.length">
