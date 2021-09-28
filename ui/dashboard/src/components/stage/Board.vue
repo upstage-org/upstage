@@ -80,7 +80,7 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
-    const backgroundSpeed = computed(() => 50 / store.state.stage.background?.speed);
+    const backgroundSpeed = computed(() => 100 / store.state.stage.background?.speed);
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);

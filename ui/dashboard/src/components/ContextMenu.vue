@@ -55,7 +55,7 @@ export default {
     const position = reactive({ x: 100, y: 100 });
 
     const openMenu = (e) => {
-      e.target.click();
+      e.currentTarget.click();
       position.x = e.clientX + props.padLeft;
       position.y = e.clientY + props.padTop;
       isActive.value = true;
