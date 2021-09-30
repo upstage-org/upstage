@@ -27,6 +27,7 @@
           opacity: backgroundOpacity,
         }"
         :transition="backgroundSpeed"
+        :no-fallback="true"
       />
       <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
         <component
