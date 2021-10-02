@@ -70,7 +70,7 @@
 <script>
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
-import { computed, onMounted, onUnmounted, ref } from "@vue/runtime-core";
+import { computed, ref } from "@vue/runtime-core";
 import { useShortcut } from "../../composable";
 import { displayTimestamp } from "@/utils/common";
 
@@ -118,18 +118,6 @@ export default {
     });
     const showVolumeSlider = ref(false)
 
-    onMounted(() => {
-      const topbar = document.querySelector("#topbar")
-      topbar.style.scrollbarWidth = 'none'
-    })
-
-    onUnmounted(() => {
-      const topbar = document.querySelector("#topbar")
-      if (topbar) {
-        topbar.style.scrollbarWidth = 'initial'
-      }
-    });
-
     return {
       audios,
       togglePlaying,
@@ -157,6 +145,8 @@ export default {
 .audio {
   transition-duration: 0.25s;
   overflow-y: hidden;
+  margin-top: -6px;
+  height: 96px !important;
 
   .buttons {
     display: flex;
