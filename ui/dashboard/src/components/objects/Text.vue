@@ -59,7 +59,7 @@ export default {
     );
 
     const activeMovable = computed(
-      () => store.state.stage.activeMovable === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id
     );
     const mousedown = (e) => {
       if (activeMovable.value && props.object.editing) {
