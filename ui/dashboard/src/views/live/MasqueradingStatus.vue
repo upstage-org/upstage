@@ -2,7 +2,7 @@
   <div
     v-if="masquerading"
     id="masquerading-status"
-    class="clickable has-tooltip-right"
+    class="clickable has-tooltip-left"
     data-tooltip="You are masquerading as audience. Click to go back to the player mode!"
     @click="exitAudienceView"
   >
@@ -33,7 +33,7 @@ export default {
 #masquerading-status {
   position: absolute;
   z-index: 10;
-  top: 8px;
-  left: 8px;
+  top: 76px;
+  right: 16px;
 }
 </style>
