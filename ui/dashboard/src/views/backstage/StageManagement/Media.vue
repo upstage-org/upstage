@@ -2,6 +2,15 @@
   <div class="columns">
     <div class="column">
       <Dropdown
+        class="mr-2"
+        v-model="filter.type"
+        :data="mediaTypes"
+        :render-value="(item) => item.value"
+        :render-label="(item) => item.label"
+        placeholder="Media type"
+      />
+      <Dropdown
+        class="mr-2"
         v-model="filter.owner"
         :data="owners.concat({ displayName: 'All players' })"
         :render-value="(item) => item.id"
@@ -9,7 +18,6 @@
         placeholder="Stage owner"
       />
       <Field
-        class="ml-2"
         style="width: 200px; display: inline-block; vertical-align: top"
         v-model="filter.keyword"
         right="fas fa-search"
@@ -49,18 +57,6 @@
       </div>
     </template>
   </MultiSelectList>
-
-  <teleport to="#media-menu">
-    <ul>
-      <li v-for="type in mediaTypes" :key="type.value" @click="filter.type = type.value">
-        <a :class="{ 'is-active': type.value === filter.type }">
-          {{
-            type.label
-          }}
-        </a>
-      </li>
-    </ul>
-  </teleport>
 </template>
 
 <script>

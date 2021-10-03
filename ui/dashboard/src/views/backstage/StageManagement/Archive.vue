@@ -1,13 +1,11 @@
 <template>
-  <teleport to="#main-content .hero-body .title">
-    <span style="float: right">
-      <button class="button ml-2 is-light" @click="downloadChatLog()">
-        <span>Download All Chat</span>
-      </button>
-      <ClearChat />
-      <SweepStage>Archive Performance</SweepStage>
-    </span>
-  </teleport>
+  <div class="archive-actions">
+    <button class="button ml-2 is-light" @click="downloadChatLog()">
+      <span>Download All Chat</span>
+    </button>
+    <ClearChat />
+    <SweepStage>Archive Performance</SweepStage>
+  </div>
 
   <DataTable :data="sessions" :headers="headers">
     <template #name="{ item }">
@@ -44,12 +42,12 @@
       </button>
     </template>
     <template #replay="{ item }">
-      <a
-        :href="`/replay/${stage.fileLocation}/${item.id}`"
+      <router-link
+        :to="`/replay/${stage.fileLocation}/${item.id}`"
         :class="`button ${item.recording ? 'is-primary' : 'is-dark'}`"
       >
         <i class="fas fa-video"></i>
-      </a>
+      </router-link>
     </template>
     <template #actions="{ item }">
       <Confirm
@@ -282,5 +280,13 @@ export default {
 <style scoped>
 .button.is-light > img {
   max-width: unset;
+}
+@media screen and (min-width: 1024px) {
+  .archive-actions {
+    position: relative;
+    top: -110px;
+    width: fit-content;
+    margin-left: auto;
+  }
 }
 </style>
