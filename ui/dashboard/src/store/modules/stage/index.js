@@ -142,7 +142,11 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission && state.model.permission !== 'audience' && !state.replay.isReplaying && !state.masquerading
+            return state.model.permission
+                && state.model.permission !== 'audience'
+                && !state.replay.isReplaying
+                && !state.masquerading
+                && !state.replay.isReplaying
         },
         players(state) {
             return state.sessions.filter((s) => s.isPlayer)
