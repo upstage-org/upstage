@@ -114,7 +114,7 @@
           </span>
         </button>
       </p>
-      <p class="control menu-group-item">
+      <p v-if="object.type !== 'stream'" class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
