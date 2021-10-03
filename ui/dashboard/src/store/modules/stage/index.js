@@ -574,7 +574,7 @@ export default {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
                 dispatch('sendStatistics')
-            })
+            }).catch(error => console.log(error))
         },
         async disconnect({ dispatch }) {
             await dispatch('leaveStage', true);
