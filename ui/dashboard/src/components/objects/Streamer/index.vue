@@ -21,7 +21,11 @@
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
-        <button class="button is-small mute-icon clickable" @mousedown="toggleMuted">
+        <button
+          v-if="isPlayer"
+          class="button is-small mute-icon clickable"
+          @mousedown="toggleMuted"
+        >
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -50,7 +54,8 @@ export default {
 
     const stream = reactive({ ...props.object, isPlaying: true, src: loading });
     const video = ref();
-
+    const isPlayer = computed(() => store.getters["stage/canPlay"]);
+    
     const synchronize = () => {
       if (stream.isPlaying && video.value) {
         video.value.play();
@@ -66,7 +71,6 @@ export default {
         synchronize();
       }
     );
-
     const loading = ref(true);
     const loadeddata = () => {
       loading.value = false;
@@ -77,7 +81,6 @@ export default {
       const fullUrl = computed(() => getSubsribeLink(props.object.url));
       useFlv(video, fullUrl);
     }
-
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
@@ -108,6 +111,7 @@ export default {
       loading,
       localMuted,
       toggleMuted,
+      isPlayer,
     };
   },
 };
