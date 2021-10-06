@@ -146,7 +146,7 @@ export default {
   transition-duration: 0.25s;
   overflow-y: hidden;
   margin-top: -6px;
-  height: 96px !important;
+  height: 86px !important;
 
   .buttons {
     display: flex;
