@@ -14,7 +14,7 @@
           :src="object.url"
           :muted="localMuted"
           preload="auto"
-          disablePictureInPicture
+          disablepictureinpicture
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
           :style="{
@@ -35,13 +35,12 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
-import { nmsService } from "@/services/rest";
 import MenuContent from '../Avatar/ContextMenu'
 
 export default {
@@ -55,7 +54,7 @@ export default {
     const stream = reactive({ ...props.object, isPlaying: true, src: loading });
     const video = ref();
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
-    
+
     const synchronize = () => {
       if (stream.isPlaying && video.value) {
         video.value.play();
@@ -93,14 +92,6 @@ export default {
     const toggleMuted = () => {
       localMuted.value = !localMuted.value;
     };
-
-    onMounted(async () => {
-      const streams = await nmsService.getStreams();
-      if (!streams.some((s) => s.url === props.object.url)) {
-        // Delete stream because it is not running anymore
-        store.dispatch("stage/deleteObject", props.object);
-      }
-    });
 
     return {
       video,
