@@ -100,6 +100,8 @@ export default {
             ...object,
             x: e.clientX - 50 - stageSize.value.left,
             y: e.clientY - 50 - stageSize.value.top,
+          }).then(({ id }) => {
+            store.dispatch("stage/autoFocusMoveable", id);
           });
         }
       }
@@ -112,10 +114,7 @@ export default {
         translateY: [-200, 0],
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
-        complete: () => {
-          store.dispatch("stage/autoFocusMoveable", el.id);
-          complete();
-        },
+        complete
       });
     };
     const avatarLeave = (el, complete) => {
