@@ -13,7 +13,7 @@
     >
       <div class="actions">
         <button
-          class="chat-setting button is-rounded is-light"
+          class="chat-setting button is-rounded is-outlined"
           @click="minimiseToToolbox"
         >
           <span class="icon">
@@ -22,8 +22,8 @@
           </span>
         </button>
         <button
-          class="chat-setting button is-rounded is-light"
-          :class="{ 'is-primary': isMovingable }"
+          class="chat-setting button is-rounded is-outlined"
+          :class="{ 'has-background-primary-light': isMovingable }"
           @click="toggleMoveable"
         >
           <span class="icon">
@@ -213,6 +213,7 @@ export default {
     position: absolute;
     right: 24px;
     top: 10px;
+    z-index: 1;
     button {
       width: 26px;
       height: 26px;

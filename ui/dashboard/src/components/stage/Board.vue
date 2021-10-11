@@ -27,6 +27,7 @@
           opacity: backgroundOpacity,
         }"
         :transition="backgroundSpeed"
+        :no-fallback="true"
       />
       <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
         <component
@@ -80,7 +81,7 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
-    const backgroundSpeed = computed(() => 50 / store.state.stage.background?.speed);
+    const backgroundSpeed = computed(() => 100 / store.state.stage.background?.speed);
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);
@@ -99,6 +100,8 @@ export default {
             ...object,
             x: e.clientX - 50 - stageSize.value.left,
             y: e.clientY - 50 - stageSize.value.top,
+          }).then(({ id }) => {
+            store.dispatch("stage/autoFocusMoveable", id);
           });
         }
       }
@@ -111,10 +114,7 @@ export default {
         translateY: [-200, 0],
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
-        complete: () => {
-          store.dispatch("stage/autoFocusMoveable", el.id);
-          complete();
-        },
+        complete
       });
     };
     const avatarLeave = (el, complete) => {

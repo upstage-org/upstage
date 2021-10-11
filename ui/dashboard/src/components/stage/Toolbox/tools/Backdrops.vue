@@ -1,6 +1,8 @@
 <template>
   <div @click="setBackground({ src: null })">
-    <div class="icon is-large"><Icon size="36" src="clear.svg" /></div>
+    <div class="icon is-large">
+      <Icon size="36" src="clear.svg" />
+    </div>
     <span class="tag is-light is-block">Clear</span>
   </div>
   <div
@@ -15,35 +17,27 @@
       <template #trigger>
         <Image :src="background.src" @click="setBackground(background)" />
         <template v-if="background.multi">
-          <div v-if="background.id === currentBackground.id">
-            <input
-              class="slider is-fullwidth is-primary mt-0"
-              step="0.01"
-              min="0"
-              max="1"
-              :value="currentBackground.speed ?? 0"
-              @change="changeBackdropSpeed"
-              type="range"
-            />
-          </div>
-          <Icon
-            v-else
-            class="is-multi"
-            title="This is a multiframe backdrop"
-            src="multi-frame.svg"
-          />
+          <Icon class="is-multi" title="This is a multiframe backdrop" src="multi-frame.svg" />
         </template>
       </template>
       <template #context>
+        <a
+          v-if="background.id !== currentBackground.id"
+          class="panel-block px-4"
+          @click="setBackground(background)"
+        >
+          <span class="panel-icon">
+            <Icon src="backdrops.svg" />
+          </span>
+          <span>Set as backdrop</span>
+        </a>
         <div
           v-if="background.multi && background.id === currentBackground.id"
           class="field has-addons menu-group"
         >
           <p class="control menu-group-item" @click="toggleAutoplayFrames()">
             <button class="button is-light">
-              <Icon
-                :src="currentBackground.speed > 0 ? 'pause.svg' : 'play.svg'"
-              />
+              <Icon :src="currentBackground.speed > 0 ? 'pause.svg' : 'play.svg'" />
             </button>
           </p>
           <p
@@ -55,6 +49,27 @@
             <button class="button is-light">
               <img :src="frame" style="height: 100%" />
             </button>
+          </p>
+        </div>
+        <div
+          v-if="(background.id === currentBackground.id) && currentBackground.speed"
+          class="field has-addons menu-group px-4 my-2"
+        >
+          <p class="control menu-group-title">
+            <span class="panel-icon pt-1">
+              <Icon src="animation-slider.svg" />
+            </span>
+          </p>
+          <p class="control menu-group-item is-fullwidth">
+            <input
+              class="slider is-fullwidth is-primary mt-0"
+              step="0.01"
+              min="0"
+              max="1"
+              :value="currentBackground.speed"
+              @change="changeBackdropSpeed"
+              type="range"
+            />
           </p>
         </div>
         <div class="field has-addons menu-group px-4 my-2">
