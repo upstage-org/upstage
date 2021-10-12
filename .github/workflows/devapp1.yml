@@ -6,7 +6,7 @@ name: DEVAPP1 CI
 on:
   # Triggers the workflow on push or approved pull request on R1-2021 branch
   push:
-    branches: [ IG-11 ]
+    branches: [ LE-12 ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
