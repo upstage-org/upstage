@@ -90,7 +90,7 @@ export default {
   text-align: center;
   width: fit-content;
   overflow: hidden;
-  z-index: 2;
+  z-index: 5;
 
   &:hover {
     overflow-x: auto;
