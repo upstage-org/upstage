@@ -32,7 +32,7 @@ jobs:
           script: |
             cd /home/upstage/mobilise/ui/dashboard/
             git fetch
-            git checkout IG-11
+            git checkout LE-12
             git pull
             yarn
             yarn build:dev

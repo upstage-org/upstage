@@ -40,8 +40,8 @@
       </transition-group>
     </div>
   </section>
-  <Curtain />
   <Whiteboard />
+  <Curtain />
 </template>
 
 <script>
