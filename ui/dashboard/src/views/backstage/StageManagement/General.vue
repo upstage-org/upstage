@@ -7,13 +7,13 @@
           :class="{ 'is-loading': loading }"
           @click="updateStage"
           :disabled="!shortNameValid"
-        >
-          Save Stage
-        </button>
+        >Save Stage</button>
         <ClearChat />
         <SweepStage />
         <button class="button ml-2 is-dark">Hide From Stage List</button>
-        <button class="button ml-2 is-danger">Delete Stage</button>
+        <DeleteStage :stage="stage" :refresh="afterDelete">
+          <button class="button ml-2 is-danger">Delete Stage</button>
+        </DeleteStage>
       </template>
       <template v-else>
         <button
@@ -21,9 +21,7 @@
           :class="{ 'is-loading': loading }"
           @click="createStage"
           :disabled="!shortNameValid"
-        >
-          Create Stage
-        </button>
+        >Create Stage</button>
       </template>
     </div>
   </div>
@@ -52,10 +50,10 @@
             validatingShortName
               ? 'fas fa-circle-notch fa-spin'
               : shortNameValid === true
-              ? 'fas fa-check'
-              : shortNameValid === false
-              ? 'fas fa-times'
-              : 'fas'
+                ? 'fas fa-check'
+                : shortNameValid === false
+                  ? 'fas fa-times'
+                  : 'fas'
           "
           :help="!form.fileLocation && `From which the stage URL is created`"
           :error="
@@ -162,6 +160,7 @@ import { displayName } from "@/utils/auth";
 import { debounce } from "@/utils/common";
 import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
+import DeleteStage from "@/components/stage/DeleteStage";
 import { useStore } from "vuex";
 
 export default {
@@ -171,6 +170,7 @@ export default {
     SweepStage,
     MultiTransferColumn,
     ImagePicker,
+    DeleteStage
   },
   setup: () => {
     const store = useStore();
@@ -233,6 +233,11 @@ export default {
       }
     }, 500);
 
+    const afterDelete = () => {
+      store.dispatch("cache/fetchStages");
+      router.push("/backstage/stages");
+    }
+
     return {
       form,
       stage,
@@ -245,6 +250,7 @@ export default {
       validatingShortName,
       shortNameValid,
       playerAccess,
+      afterDelete
     };
   },
 };
