@@ -8,7 +8,7 @@ export default defineConfig({
   plugins: [
     vue(),
     Components({
-      resolvers: [AntDesignVueResolver({ importStyle: 'less' })]
+      resolvers: [AntDesignVueResolver({ importStyle: 'less', resolveIcons: true })]
     })
   ],
   css: {
