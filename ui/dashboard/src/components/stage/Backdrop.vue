@@ -5,7 +5,7 @@
     :style="{
       opacity: backgroundOpacity,
     }"
-    :transition="backgroundSpeed"
+    :transition="transitionDuration"
     :no-fallback="true"
   />
 </template>
@@ -24,7 +24,7 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
-    const backgroundSpeed = computed(() => 100 / store.state.stage.background?.speed);
+    const transitionDuration = computed(() => 10 / store.state.stage.background?.speed);
 
     const frameAnimation = reactive({
       interval: null,
@@ -51,9 +51,9 @@ export default {
         }
         frameAnimation.currentFrame = frames[nextFrame];
       }, 100 / speed);
-    })
+    }, { immediate: true });
 
-    return { backgroundOpacity, backgroundSpeed, src }
+    return { backgroundOpacity, transitionDuration, src }
   }
 }
 </script>
