@@ -4,7 +4,7 @@ import MediaTable from './components/media/MediaTable.vue';
 </script>
 
 <template>
-  <a-layout class="pb-4 bg-gray-800">
+  <a-layout class="pb-4">
     <MediaFilter />
     <MediaTable />
   </a-layout>
