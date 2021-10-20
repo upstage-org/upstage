@@ -31,6 +31,9 @@ export default {
       currentFrame: null,
     });
     const src = computed(() => {
+      if (!background.value) {
+        return null
+      }
       if (background.value.multi && background.value.speed > 0) {
         return frameAnimation.currentFrame
       } else {
@@ -39,6 +42,7 @@ export default {
     })
 
     watch(background, (value) => {
+      if (!value) return;
       const { speed, frames, currentFrame } = value;
       if (currentFrame) {
         frameAnimation.currentFrame = currentFrame
