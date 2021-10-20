@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from '@vue/reactivity';
+import { useStudioStore } from '../../store';
 import Notifications from './Notifications.vue';
 
 const mode = ref<'simple' | 'advanced'>('simple')
@@ -8,17 +9,20 @@ const handleChange = (value: string) => {
   console.log(`selected ${value}`);
 };
 const options = [...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))
+
+const store = useStudioStore()
+
 </script>
 
 <template>
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-md m-4 px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary">
+        <a-button type="primary" @click="store.commit('INCREASE')">
           <template #icon>
             <PlusOutlined />
           </template>
-          New
+          New {{ store.state.count }}
         </a-button>
         <a-input-search class="w-48" placeholder="Search media" />
         <a-radio-group v-model:value="mode" button-style="solid">
