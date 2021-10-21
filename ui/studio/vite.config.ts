@@ -5,7 +5,7 @@ import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/V4.0/studio/',
+  base: '/studio/',
   plugins: [
     vue(),
     Components({

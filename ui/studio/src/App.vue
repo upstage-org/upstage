@@ -2,10 +2,11 @@
 import MediaFilter from './components/media/MediaFilter.vue';
 import MediaTable from './components/media/MediaTable.vue';
 import Authorized from './components/Authorized.vue';
-import { useStudioStore } from './store';
+import { provide } from '@vue/runtime-core';
+import { DefaultApolloClient } from '@vue/apollo-composable'
+import { apolloClient } from './apollo';
 
-const store = useStudioStore()
-store.dispatch('init')
+provide(DefaultApolloClient, apolloClient)
 </script>
 
 <template>

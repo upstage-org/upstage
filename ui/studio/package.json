@@ -7,16 +7,18 @@
     "start": "vite preview"
   },
   "dependencies": {
+    "@apollo/client": "^3.4.16",
+    "@vue/apollo-composable": "^4.0.0-alpha.15",
     "ant-design-vue": "^2.2.8",
     "autoprefixer": "^10.3.7",
-    "graphql-request": "^3.6.1",
+    "graphql": "^15.6.1",
+    "graphql-tag": "^2.12.5",
     "less": "^4.1.2",
     "moment": "^2.29.1",
     "postcss": "^8.3.9",
     "tailwindcss": "^2.2.17",
     "unplugin-vue-components": "^0.15.6",
-    "vue": "^3.2.16",
-    "vuex": "^4.0.2"
+    "vue": "^3.2.16"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^1.9.3",

@@ -1,28 +1,39 @@
 <script lang="ts" setup>
-import { ref } from '@vue/reactivity';
-import { useStudioStore } from '../../store';
+import { ref, watch } from 'vue';
 import Notifications from './Notifications.vue';
+import { useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+import { StageGraph } from '../../composable';
+
+const { result } = useQuery<StageGraph>(gql`
+{
+  stageList {
+    edges {
+      node {
+        id
+        name
+      }
+    }
+  }
+}
+`)
+watch(result, console.log)
 
 const mode = ref<'simple' | 'advanced'>('simple')
-const value = ref([])
-const handleChange = (value: string) => {
-  console.log(`selected ${value}`);
-};
-const options = [...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }))
-
-const store = useStudioStore()
-
+const owners = ref([])
+const types = ref([])
+const stages = ref([])
 </script>
 
 <template>
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-md m-4 px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="store.commit('INCREASE')">
+        <a-button type="primary">
           <template #icon>
             <PlusOutlined />
           </template>
-          New {{ store.state.count }}
+          New
         </a-button>
         <a-input-search class="w-48" placeholder="Search media" />
         <a-radio-group v-model:value="mode" button-style="solid">
@@ -31,31 +42,28 @@ const store = useStudioStore()
         </a-radio-group>
         <template v-if="mode === 'advanced'">
           <a-select
-            v-model:value="value"
+            showArrow
             mode="tags"
             style="min-width: 96px"
             placeholder="Owners"
-            :options="options"
-            @change="handleChange"
-            showArrow
+            v-model:value="owners"
+            :options="result ? result.stageList.edges.map(e => ({ value: e.node.id, label: e.node.name })) : []"
           ></a-select>
           <a-select
-            v-model:value="value"
+            showArrow
             mode="tags"
             style="min-width: 128px"
             placeholder="Media types"
-            :options="options"
-            @change="handleChange"
-            showArrow
+            v-model:value="types"
+            :options="result ? result.stageList.edges.map(e => ({ value: e.node.id, label: e.node.name })) : []"
           ></a-select>
           <a-select
-            v-model:value="value"
+            showArrow
             mode="tags"
             style="min-width: 160px"
             placeholder="Stages assigned"
-            :options="options"
-            @change="handleChange"
-            showArrow
+            v-model:value="stages"
+            :options="result ? result.stageList.edges.map(e => ({ value: e.node.id, label: e.node.name })) : []"
           ></a-select>
           <a-range-picker :placeholder="['Created from', 'to date']" />
         </template>
