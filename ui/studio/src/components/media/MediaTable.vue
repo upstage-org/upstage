@@ -48,17 +48,22 @@ const fetchMedia = async () => {
   loading.value = false
 }
 
+const pagination = {
+  showQuickJumper: true
+}
+
 onMounted(fetchMedia)
 
-</script>
+                                                                                                                                                                                                                                                        </script>
 
 <template>
   <a-table
-    class="mx-4 shadow rounded-md"
+    class="mx-4 shadow rounded-md bg-white"
     :columns="columns"
     :data-source="data"
     rowKey="id"
     :loading="loading"
+    :pagination="pagination"
   >
     <template #preview="{ record }">
       <a-image :src="absolutePath(record.src)" />
