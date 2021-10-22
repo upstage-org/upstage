@@ -11,7 +11,7 @@ provide(DefaultApolloClient, apolloClient)
 
 <template>
   <Authorized>
-    <a-layout class="pb-4">
+    <a-layout class="pb-4 layout">
       <MediaFilter />
       <MediaTable />
     </a-layout>
@@ -19,4 +19,7 @@ provide(DefaultApolloClient, apolloClient)
 </template>
 
 <style>
+.layout {
+  min-height: 100vh;
+}
 </style>

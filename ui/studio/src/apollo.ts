@@ -1,9 +1,10 @@
 import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
+import configs from './config'
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: 'https://dev-app1.upstage.org.nz/V4.0/stage_graphql/',
+  uri: configs.GRAPHQL_ENDPOINT,
 })
 
 // Cache implementation

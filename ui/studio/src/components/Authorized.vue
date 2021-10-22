@@ -19,7 +19,7 @@ auth.value = sharedState
     sub-title="Sorry, you are not authorized to access this page."
   >
     <template #extra>
-      <a :href="configs.BACKSTAGE_URL">
+      <a :href="configs.BACKSTAGE_URL ?? '/backstage'">
         <a-button type="primary">Login</a-button>
       </a>
     </template>

@@ -1,6 +1,7 @@
 const configs = {
-  BACKSTAGE_URL: 'http://localhost:8080/backstage',
-  GRAPHQL_ENDPOINT: 'https://dev-app1.upstage.org.nz/V4.0/'
+  MODE: import.meta.env.MODE as 'development' | 'production',
+  BACKSTAGE_URL: import.meta.env.VITE_APP_BACKSTAGE_URL as string,
+  GRAPHQL_ENDPOINT: import.meta.env.VITE_APP_GRAPHQL_ENDPOINT as string
 }
 
 export default configs

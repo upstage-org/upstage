@@ -1,9 +1,25 @@
 <script lang="ts" setup>
-import { ref } from '@vue/reactivity';
-import { onMounted } from '@vue/runtime-core';
-import { AssetTypeName, Media } from '../../models/media';
-import { media } from '../../models/mock'
+import { useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+import { computed, watch } from 'vue';
+import { StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
+
+const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string }>(gql`
+query MediaTable($page: Int, $size: Int, $sort: [AssetSortEnum]) {
+  media(page: $page, size: $size, sort: $sort) {
+    totalCount
+    edges {
+      cursor
+      node {
+        id
+        name
+        src
+      }
+    }
+  }
+}
+`, { limit: 10 }, { notifyOnNetworkStatusChange: true })
 
 const columns = [
   {
@@ -15,6 +31,7 @@ const columns = [
   {
     title: "Name",
     dataIndex: "name",
+    sorter: true
   },
   {
     title: "Type",
@@ -40,30 +57,50 @@ const columns = [
   },
 ];
 
-const data = ref<Media[]>([])
-const loading = ref(false)
-const fetchMedia = async () => {
-  loading.value = true
-  data.value = media.data.assetList.edges.filter(e => e.node.assetType.name !== AssetTypeName.Audio && e.node.assetType.name !== AssetTypeName.Stream).map(e => e.node)
-  loading.value = false
+interface Pagination {
+  current: number
+  pageSize: number
+  showQuickJumper: boolean
+  showSizeChanger: boolean
+  total: number
 }
 
-const pagination = {
-  showQuickJumper: true
+interface Sorter {
+  column: object
+  columnKey: string
+  field: string
+  order: "ascend" | "descend"
 }
 
-onMounted(fetchMedia)
-
-                                                                                                                                                                                                                                                        </script>
+const handleTableChange = ({ current, pageSize }: Pagination, _: any, { columnKey, order }: Sorter) => {
+  fetchMore({
+    variables: {
+      cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+      limit: pageSize,
+      sort: `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase()
+    },
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      if (!fetchMoreResult) return previousResult
+      return fetchMoreResult
+    },
+  })
+}
+const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
+</script>
 
 <template>
   <a-table
     class="mx-4 shadow rounded-md bg-white"
     :columns="columns"
-    :data-source="data"
+    :data-source="dataSource"
     rowKey="id"
     :loading="loading"
-    :pagination="pagination"
+    @change="handleTableChange"
+    :pagination="{
+      showQuickJumper: true,
+      showSizeChanger: true,
+      total: result ? result.media.totalCount : 0,
+    } as Pagination"
   >
     <template #preview="{ record }">
       <a-image :src="absolutePath(record.src)" />

@@ -16,6 +16,7 @@ export default defineConfig({
     preprocessorOptions: {
       less: {
         modifyVars: {
+          'dark': true,
           'primary-color': '#007011',
           'border-radius-base': '4px',
           'font-size-base': '16px',

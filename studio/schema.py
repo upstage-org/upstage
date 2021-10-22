@@ -3,14 +3,15 @@ import os
 import sys
 
 import graphene
+from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from config.project_globals import app
 from config.settings import VERSION
 from flask_graphql import GraphQLView
 from graphene import relay
-
+from asset.models import Stage as StageModel
+from user.models import User as UserModel
 from studio.media import (Asset, AssetConnectionField, AssetType, AssignStages,
                           DeleteMedia, UpdateMedia, UploadMedia)
-from studio.stage import Stage, StageConnectionField
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -19,21 +20,39 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 
+class Stage(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
+    permission = graphene.String(description="Player access to this stage")
+
+    class Meta:
+        model = StageModel
+        model.db_id = model.id
+        interfaces = (graphene.relay.Node,)
+
+
+class User(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
+
+    class Meta:
+        model = UserModel
+        model.db_id = model.id
+        interfaces = (graphene.relay.Node,)
+
+
+class Query(graphene.ObjectType):
+    node = relay.Node.Field()
+    mediaTypes = SQLAlchemyConnectionField(AssetType.connection)
+    stages = SQLAlchemyConnectionField(Stage.connection)
+    users = SQLAlchemyConnectionField(User.connection)
+    media = AssetConnectionField(
+        Asset.connection, id=graphene.ID(), page=graphene.Int(), size=graphene.Int(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
+
+
 class Mutation(graphene.ObjectType):
     uploadMedia = UploadMedia.Field()
     updateMedia = UpdateMedia.Field()
     deleteMedia = DeleteMedia.Field()
     assignStages = AssignStages.Field()
-
-
-class Query(graphene.ObjectType):
-    node = relay.Node.Field()
-    stages = StageConnectionField(
-        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
-    media = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
-    mediaTypes = StageConnectionField(
-        AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
