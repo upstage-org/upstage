@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref, watch, inject } from 'vue';
 import Notifications from './Notifications.vue';
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
@@ -39,6 +39,7 @@ const mode = ref<'simple' | 'advanced'>('advanced')
 const owners = ref([])
 const types = ref([])
 const stages = ref([])
+const visibleDropzone = inject('visibleDropzone')
 </script>
 
 <template>
@@ -47,7 +48,7 @@ const stages = ref([])
       class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
     >
       <a-space class="flex-wrap">
-        <a-button type="primary">
+        <a-button type="primary" @click="visibleDropzone = true">
           <template #icon>
             <PlusOutlined />
           </template>
