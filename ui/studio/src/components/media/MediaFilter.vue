@@ -63,6 +63,13 @@ const clearFilters = () => {
   stages.value = []
 }
 const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length)
+const handleFilterOwnerName = (keyword: string, option: any) => {
+  const s = keyword.toLowerCase()
+  return option.value.toLowerCase().includes(s) || option.label.toLowerCase().includes(s)
+}
+const handleFilterStageName = (keyword: string, option: any) => {
+  return option.label.toLowerCase().includes(keyword.toLowerCase())
+}
 
 const visibleDropzone = inject('visibleDropzone')
 </script>
@@ -79,14 +86,16 @@ const visibleDropzone = inject('visibleDropzone')
           </template>
           New
         </a-button>
-        <a-input-search class="w-48" placeholder="Search media" v-model:value="name" />
+        <a-input-search allowClear class="w-48" placeholder="Search media" v-model:value="name" />
         <a-radio-group v-model:value="mode" button-style="solid">
           <a-radio-button value="simple">Simple</a-radio-button>
           <a-radio-button value="advanced">Advanced</a-radio-button>
         </a-radio-group>
         <template v-if="mode === 'advanced'">
           <a-select
+            allowClear
             showArrow
+            :filterOption="handleFilterOwnerName"
             mode="tags"
             style="min-width: 96px"
             placeholder="Owners"
@@ -95,7 +104,9 @@ const visibleDropzone = inject('visibleDropzone')
             :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
           ></a-select>
           <a-select
+            allowClear
             showArrow
+            filterOption
             mode="tags"
             style="min-width: 128px"
             placeholder="Media types"
@@ -104,7 +115,9 @@ const visibleDropzone = inject('visibleDropzone')
             :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
           ></a-select>
           <a-select
+            allowClear
             showArrow
+            :filterOption="handleFilterStageName"
             mode="tags"
             style="min-width: 160px"
             placeholder="Stages assigned"
