@@ -46,6 +46,7 @@ const ranges = {
   Yesterday: [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'day').endOf('day')],
   'Last 7 days': [moment().subtract(7, 'days'), moment()],
   'This month': [moment().startOf('month'), moment().endOf('day')],
+  'Last month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
   'This year': [moment().startOf('year'), moment().endOf('day')],
 }
 

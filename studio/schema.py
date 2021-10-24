@@ -10,8 +10,7 @@ from flask_graphql import GraphQLView
 from graphene import relay
 from asset.models import Stage as StageModel
 from user.models import User as UserModel
-from studio.media import (Asset, AssetConnectionField, AssetType, AssignStages,
-                          DeleteMedia, UpdateMedia, UploadMedia)
+from studio.media import (Asset, AssetConnectionField, AssetType, CalcSizes)
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -49,10 +48,7 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    uploadMedia = UploadMedia.Field()
-    updateMedia = UpdateMedia.Field()
-    deleteMedia = DeleteMedia.Field()
-    assignStages = AssignStages.Field()
+    calcSizes = CalcSizes.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

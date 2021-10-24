@@ -61,7 +61,7 @@ const columns = [
     title: "Preview",
     align: "center",
     width: 96,
-    slots: { customRender: 'preview' },
+    key: 'preview'
   },
   {
     title: "Name",
@@ -75,7 +75,6 @@ const columns = [
     title: "Type",
     dataIndex: ['assetType', 'name'],
     key: 'asset_type_id',
-    slots: { customRender: 'type' },
     sorter: {
       multiple: 1,
     },
@@ -87,20 +86,18 @@ const columns = [
     sorter: {
       multiple: 2,
     },
-    slots: { customRender: 'owner' },
   },
   {
     title: "Stages",
     key: 'stages',
     dataIndex: 'stages',
-    slots: { customRender: 'stages' },
+    width: 250
   },
   {
     title: "Date",
     type: "date",
     dataIndex: "createdOn",
     key: "created_on",
-    slots: { customRender: 'date' },
     sorter: {
       multiple: 4,
     },
@@ -110,7 +107,7 @@ const columns = [
     title: "Manage Media",
     align: "center",
     fixed: "right",
-    slots: { customRender: 'actions' },
+    key: 'actions'
   },
 ];
 
@@ -156,41 +153,44 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
       total: result ? result.media.totalCount : 0,
     } as Pagination"
   >
-    <template #preview="{ record }">
-      <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
-        <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
-      </audio>
-      <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
-        <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
-      </video>
-      <a-image v-else :src="absolutePath(record.src)" class="w-24" />
-    </template>
-    <template #type="{ text }">
-      <span class="capitalize">{{ text }}</span>
-    </template>
-    <template #owner="{ text }">
-      <span v-if="text.displayName">
-        <b>{{ text.displayName }}</b>
-        <br />
-        <span class="text-gray-500">{{ text.username }}</span>
-      </span>
-      <span v-else>
-        <span>{{ text.username }}</span>
-      </span>
-    </template>
-    <template #stages="{ text: stages }">
-      <a v-for="(stage,i) in stages" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
-        {{ stage.name }}
-        <br />
-      </a>
-    </template>
-    <template #date="{ text }">
-      <d-date :value="text" />
-    </template>
-    <template #actions="{ text }">
-      <a-button danger>
-        <DeleteOutlined />Delete
-      </a-button>
+    <template #bodyCell="{ column, record, text }">
+      <template v-if="column.key === 'preview'">
+        <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
+          <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
+        </audio>
+        <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
+          <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
+        </video>
+        <a-image v-else :src="absolutePath(record.src)" class="w-24" />
+      </template>
+      <template v-if="column.key === 'asset_type_id'">
+        <span class="capitalize">{{ text }}</span>
+      </template>
+      <template v-if="column.key === 'owner_id'">
+        <span v-if="text.displayName">
+          <b>{{ text.displayName }}</b>
+          <br />
+          <span class="text-gray-500">{{ text.username }}</span>
+        </span>
+        <span v-else>
+          <span>{{ text.username }}</span>
+        </span>
+      </template>
+      <template v-if="column.key === 'stages'">
+        <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+          <a-tag color="#007011">{{ stage.name }}</a-tag>
+        </a>
+      </template>
+      <template v-if="column.key === 'created_on'">
+        <d-date :value="text" />
+      </template>
+      <template v-if="column.key === 'actions'">
+        <a :href="absolutePath(record.src)" :download="record.name">
+          <a-button>
+            <DownloadOutlined />Download
+          </a-button>
+        </a>
+      </template>
     </template>
   </a-table>
 </template>
