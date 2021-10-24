@@ -4,6 +4,8 @@
   "scripts": {
     "serve": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:dev": "vue-tsc --noEmit && vite build --mode dev",
+    "serve:localhost": "vite --mode localhost",
     "start": "vite preview"
   },
   "dependencies": {

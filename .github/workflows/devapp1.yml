@@ -36,6 +36,9 @@ jobs:
             git pull
             yarn
             yarn build:dev
+            cd /home/upstage/mobilise/ui/studio/
+            yarn
+            yarn build:dev
             systemctl restart upstage.service
             systemctl restart event_archive.service
             chown -R upstage:upstage /home/upstage/mobilise
