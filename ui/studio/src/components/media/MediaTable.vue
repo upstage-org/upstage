@@ -30,6 +30,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         name
         src
         createdOn
+        size
         assetType {
           name
         }
@@ -94,12 +95,19 @@ const columns = [
     width: 250
   },
   {
+    title: "Size",
+    dataIndex: "size",
+    key: "size",
+    sorter: {
+      multiple: 4,
+    },
+  },
+  {
     title: "Date",
-    type: "date",
     dataIndex: "createdOn",
     key: "created_on",
     sorter: {
-      multiple: 4,
+      multiple: 5,
     },
     defaultSortOrder: 'descend'
   },
@@ -180,6 +188,12 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
         <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
           <a-tag color="#007011">{{ stage.name }}</a-tag>
         </a>
+      </template>
+      <template v-if="column.key === 'size'">
+        <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
+          <d-size :value="text" />
+        </a-tag>
+        <a-tag v-else>Can't calculate size</a-tag>
       </template>
       <template v-if="column.key === 'created_on'">
         <d-date :value="text" />

@@ -7,6 +7,7 @@ import gql from 'graphql-tag';
 import { StudioGraph } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
+import configs from '../../config';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -161,7 +162,9 @@ const visibleDropzone = inject('visibleDropzone')
           </a>
           <template #overlay>
             <a-menu>
-              <a-menu-item>Back to Backstage</a-menu-item>
+              <a :href="`${configs.UPSTAGE_URL}/backstage`">
+                <a-menu-item>Back to Backstage</a-menu-item>
+              </a>
               <a-menu-item>Logout</a-menu-item>
             </a-menu>
           </template>
