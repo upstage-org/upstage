@@ -36,6 +36,7 @@ export interface User {
 export interface Stage {
   id: string;
   name: string;
+  dbId: number;
 }
 
 export interface Media {

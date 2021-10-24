@@ -1,4 +1,4 @@
-import { ApolloClient, createHttpLink, InMemoryCache } from '@apollo/client/core'
+import { ApolloClient, createHttpLink, InMemoryCache,makeVar } from '@apollo/client/core'
 import configs from './config'
 
 // HTTP connection to the API
@@ -8,7 +8,20 @@ const httpLink = createHttpLink({
 })
 
 // Cache implementation
-const cache = new InMemoryCache()
+export const inquiryVar = makeVar({})
+const cache = new InMemoryCache({
+  typePolicies:{
+    Query: {
+      fields: {
+        inquiry: {
+          read() {
+            return inquiryVar()
+          }
+        }
+      }
+    }
+  }
+})
 
 // Create the apollo client
 export const apolloClient = new ApolloClient({

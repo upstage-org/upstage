@@ -1,16 +1,17 @@
 <script lang="ts" setup>
-import { ref, watch, inject } from 'vue';
+import { ref, watch, inject, computed } from 'vue';
 import Notifications from './Notifications.vue';
 import { useQuery } from '@vue/apollo-composable';
+import { useDebounceFn } from '@vueuse/core'
 import gql from 'graphql-tag';
 import { StudioGraph } from '../../models/studio';
+import { inquiryVar } from '../../apollo';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
   users {
     edges {
       node {
-        id
         displayName
         username
       }
@@ -19,7 +20,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   stages {
     edges {
       node {
-        id
+        dbId
         name
       }
     }
@@ -27,18 +28,42 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   mediaTypes {
     edges {
       node {
-        id
         name
       }
     }
   }
 }`)
-watch(result, console.log)
 
 const mode = ref<'simple' | 'advanced'>('advanced')
+const name = ref('')
 const owners = ref([])
 const types = ref([])
 const stages = ref([])
+
+const updateInquiry = (vars: any) => inquiryVar({
+  ...inquiryVar(),
+  ...vars
+})
+watch(name, useDebounceFn(() => {
+  updateInquiry({ name: name.value })
+}, 500))
+watch(owners, owners => {
+  updateInquiry({ owners })
+})
+watch(stages, stages => {
+  updateInquiry({ stages })
+})
+watch(types, mediaTypes => {
+  updateInquiry({ mediaTypes })
+})
+const clearFilters = () => {
+  name.value = ''
+  owners.value = []
+  types.value = []
+  stages.value = []
+}
+const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length)
+
 const visibleDropzone = inject('visibleDropzone')
 </script>
 
@@ -54,7 +79,7 @@ const visibleDropzone = inject('visibleDropzone')
           </template>
           New
         </a-button>
-        <a-input-search class="w-48" placeholder="Search media" />
+        <a-input-search class="w-48" placeholder="Search media" v-model:value="name" />
         <a-radio-group v-model:value="mode" button-style="solid">
           <a-radio-button value="simple">Simple</a-radio-button>
           <a-radio-button value="advanced">Advanced</a-radio-button>
@@ -67,7 +92,7 @@ const visibleDropzone = inject('visibleDropzone')
             placeholder="Owners"
             :loading="loading"
             v-model:value="owners"
-            :options="result ? result.users.edges.map(e => ({ value: e.node.id, label: e.node.displayName || e.node.username })) : []"
+            :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
           ></a-select>
           <a-select
             showArrow
@@ -76,7 +101,7 @@ const visibleDropzone = inject('visibleDropzone')
             placeholder="Media types"
             :loading="loading"
             v-model:value="types"
-            :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.id, label: e.node.name })) : []"
+            :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
           ></a-select>
           <a-select
             showArrow
@@ -85,9 +110,12 @@ const visibleDropzone = inject('visibleDropzone')
             placeholder="Stages assigned"
             :loading="loading"
             v-model:value="stages"
-            :options="result ? result.stages.edges.map(e => ({ value: e.node.id, label: e.node.name })) : []"
+            :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
           ></a-select>
           <a-range-picker :placeholder="['Created from', 'to date']" />
+          <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
+            <ClearOutlined />Clear Filters
+          </a-button>
         </template>
       </a-space>
       <a-space>

@@ -8,8 +8,9 @@ from base64 import b64decode
 from datetime import datetime, timedelta
 
 import graphene
-from asset.models import Asset as AssetModel
+from asset.models import Asset as AssetModel, Stage as StageModel
 from asset.models import AssetType as AssetTypeModel
+from user.models import User as UserModel
 from config.project_globals import ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -56,8 +57,18 @@ class AssetConnectionField(SQLAlchemyConnectionField):
             if field == 'id':
                 _type, _id = from_global_id(value)
                 query = query.filter(getattr(model, field) == _id)
-            elif field == 'asset_type':
-                query = query.filter(getattr(model, field).has(name=value))
+            elif field == 'media_types':
+                if len(value):
+                    query = query.filter(getattr(model, 'asset_type').has(
+                        AssetTypeModel.name.in_(value)))
+            elif field == 'owners':
+                if len(value):
+                    query = query.filter(getattr(model, 'owner').has(
+                        UserModel.username.in_(value)))
+            elif field == 'stages':
+                if len(value):
+                    query = query.join(ParentStage, AssetModel.stages).filter(
+                        ParentStage.stage_id.in_(value))
             elif len(field) > 5 and field[-4:] == 'like':
                 query = query.filter(
                     getattr(model, field[:-5]).ilike(f"%{value}%"))

@@ -9,6 +9,7 @@
   "dependencies": {
     "@apollo/client": "^3.4.16",
     "@vue/apollo-composable": "^4.0.0-alpha.15",
+    "@vueuse/core": "^6.7.3",
     "ant-design-vue": "^3.0.0-alpha.4",
     "autoprefixer": "^10.3.7",
     "graphql": "^15.6.1",

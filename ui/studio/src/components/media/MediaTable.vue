@@ -1,14 +1,27 @@
 <script lang="ts" setup>
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { computed, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import configs from '../../config';
 import { StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 
+const tableParams = reactive({
+  limit: 10,
+  cursor: undefined
+})
+const { result: inquiryResult } = useQuery(gql`{ inquiry @client }`)
+const params = computed(() => ({
+  ...tableParams,
+  ...inquiryResult.value.inquiry
+}))
+watch(inquiryResult, () => {
+  tableParams.cursor = undefined
+})
+
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
-query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum]) {
-  media(after: $cursor, first: $limit, sort: $sort) {
+query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int]) {
+  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages) {
     totalCount
     edges {
       cursor
@@ -32,7 +45,16 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum]) {
     }
   }
 }
-`, { limit: 10 }, { notifyOnNetworkStatusChange: true })
+`, params.value, { notifyOnNetworkStatusChange: true })
+
+watch(params, () => {
+  fetchMore({
+    variables: params.value,
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      return fetchMoreResult ?? previousResult
+    },
+  })
+})
 
 const columns = [
   {
@@ -111,16 +133,10 @@ const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: So
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
-  fetchMore({
-    variables: {
-      cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
-      limit: pageSize,
-      sort
-    },
-    updateQuery: (previousResult, { fetchMoreResult }) => {
-      if (!fetchMoreResult) return previousResult
-      return fetchMoreResult
-    },
+  Object.assign(tableParams, {
+    cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+    limit: pageSize,
+    sort
   })
 }
 const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
@@ -141,13 +157,13 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
     } as Pagination"
   >
     <template #preview="{ record }">
-      <audio v-if="record.assetType.name === 'audio'" controls>
+      <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
         <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
       </audio>
-      <video v-else-if="record.assetType.name === 'stream'" width="320" height="240" controls>
+      <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
         <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
       </video>
-      <a-image v-else :src="absolutePath(record.src)" />
+      <a-image v-else :src="absolutePath(record.src)" class="w-24" />
     </template>
     <template #type="{ text }">
       <span class="capitalize">{{ text }}</span>
