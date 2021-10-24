@@ -23,11 +23,6 @@ const routes = [
         name: 'Register',
         component: () => import('../views/Register.vue')
       },
-      {
-        path: '/stage',
-        name: 'Stages',
-        component: () => import('../views/Stage.vue')
-      },
     ]
   },
   {
@@ -147,16 +142,15 @@ const routes = [
       }
     ]
   },
-
-  {
-    path: '/live/:url?',
-    name: 'Live',
-    component: () => import('../views/live/Layout.vue'),
-  },
   {
     path: '/replay/:url/:id',
     name: 'Replay Recording',
     component: () => import('../views/replay/Layout.vue'),
+  },
+  {
+    path: '/:url', // Keep it in the last of the route list so it won't block these other pages when conflict happens
+    name: 'Live',
+    component: () => import('../views/live/Layout.vue'),
   },
 ]
 
