@@ -67,8 +67,14 @@ class AssetConnectionField(SQLAlchemyConnectionField):
                         UserModel.username.in_(value)))
             elif field == 'stages':
                 if len(value):
-                    query = query.join(ParentStage, AssetModel.stages).filter(
-                        ParentStage.stage_id.in_(value))
+                    query = query\
+                        .join(ParentStage, AssetModel.stages)\
+                        .filter(ParentStage.stage_id.in_(value))
+            elif field == 'created_between':
+                if len(value) == 2:
+                    query = query\
+                        .filter(AssetModel.created_on >= value[0])\
+                        .filter(AssetModel.created_on <= value[1])
             elif len(field) > 5 and field[-4:] == 'like':
                 query = query.filter(
                     getattr(model, field[:-5]).ilike(f"%{value}%"))

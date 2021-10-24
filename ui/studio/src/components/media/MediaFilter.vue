@@ -6,6 +6,7 @@ import { useDebounceFn } from '@vueuse/core'
 import gql from 'graphql-tag';
 import { StudioGraph } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
+import moment, { Moment } from 'moment';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -34,11 +35,19 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   }
 }`)
 
-const mode = ref<'simple' | 'advanced'>('advanced')
 const name = ref('')
 const owners = ref([])
 const types = ref([])
 const stages = ref([])
+const dates = ref<[Moment, Moment] | undefined>()
+
+const ranges = {
+  Today: [moment().startOf('day'), moment().endOf('day')],
+  Yesterday: [moment().subtract(1, 'day').startOf('day'), moment().subtract(1, 'day').endOf('day')],
+  'Last 7 days': [moment().subtract(7, 'days'), moment()],
+  'This month': [moment().startOf('month'), moment().endOf('day')],
+  'This year': [moment().startOf('year'), moment().endOf('day')],
+}
 
 const updateInquiry = (vars: any) => inquiryVar({
   ...inquiryVar(),
@@ -56,13 +65,22 @@ watch(stages, stages => {
 watch(types, mediaTypes => {
   updateInquiry({ mediaTypes })
 })
+watch(dates, dates => {
+  updateInquiry({
+    createdBetween: dates ? [
+      dates[0].startOf('day').format('YYYY-MM-DD'),
+      dates[1].endOf('day').format('YYYY-MM-DD')
+    ] : undefined
+  })
+})
 const clearFilters = () => {
   name.value = ''
   owners.value = []
   types.value = []
   stages.value = []
+  dates.value = undefined
 }
-const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length)
+const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length || dates.value)
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase()
   return option.value.toLowerCase().includes(s) || option.label.toLowerCase().includes(s)
@@ -87,49 +105,47 @@ const visibleDropzone = inject('visibleDropzone')
           New
         </a-button>
         <a-input-search allowClear class="w-48" placeholder="Search media" v-model:value="name" />
-        <a-radio-group v-model:value="mode" button-style="solid">
-          <a-radio-button value="simple">Simple</a-radio-button>
-          <a-radio-button value="advanced">Advanced</a-radio-button>
-        </a-radio-group>
-        <template v-if="mode === 'advanced'">
-          <a-select
-            allowClear
-            showArrow
-            :filterOption="handleFilterOwnerName"
-            mode="tags"
-            style="min-width: 96px"
-            placeholder="Owners"
-            :loading="loading"
-            v-model:value="owners"
-            :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
-          ></a-select>
-          <a-select
-            allowClear
-            showArrow
-            filterOption
-            mode="tags"
-            style="min-width: 128px"
-            placeholder="Media types"
-            :loading="loading"
-            v-model:value="types"
-            :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
-          ></a-select>
-          <a-select
-            allowClear
-            showArrow
-            :filterOption="handleFilterStageName"
-            mode="tags"
-            style="min-width: 160px"
-            placeholder="Stages assigned"
-            :loading="loading"
-            v-model:value="stages"
-            :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
-          ></a-select>
-          <a-range-picker :placeholder="['Created from', 'to date']" />
-          <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
-            <ClearOutlined />Clear Filters
-          </a-button>
-        </template>
+        <a-select
+          allowClear
+          showArrow
+          :filterOption="handleFilterOwnerName"
+          mode="tags"
+          style="min-width: 96px"
+          placeholder="Owners"
+          :loading="loading"
+          v-model:value="owners"
+          :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
+        ></a-select>
+        <a-select
+          allowClear
+          showArrow
+          filterOption
+          mode="tags"
+          style="min-width: 128px"
+          placeholder="Media types"
+          :loading="loading"
+          v-model:value="types"
+          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
+        ></a-select>
+        <a-select
+          allowClear
+          showArrow
+          :filterOption="handleFilterStageName"
+          mode="tags"
+          style="min-width: 160px"
+          placeholder="Stages assigned"
+          :loading="loading"
+          v-model:value="stages"
+          :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
+        ></a-select>
+        <a-range-picker
+          :placeholder="['Created from', 'to date']"
+          v-model:value="dates"
+          :ranges="ranges"
+        />
+        <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
+          <ClearOutlined />Clear Filters
+        </a-button>
       </a-space>
       <a-space>
         <div style="line-height: 0.8;" class="text-right">

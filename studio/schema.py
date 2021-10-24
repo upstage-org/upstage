@@ -45,7 +45,7 @@ class Query(graphene.ObjectType):
     stages = SQLAlchemyConnectionField(Stage.connection)
     users = SQLAlchemyConnectionField(User.connection)
     media = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int))
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int))
 
 
 class Mutation(graphene.ObjectType):
