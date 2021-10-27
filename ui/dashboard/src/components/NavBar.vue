@@ -67,7 +67,7 @@
                 v-for="stage in liveStages"
                 :key="stage.id"
                 class="navbar-item"
-                :to="`/live/${stage.fileLocation}`"
+                :to="`/${stage.fileLocation}`"
               >
                 {{ stage.name }}
               </router-link>

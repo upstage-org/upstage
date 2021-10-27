@@ -7,13 +7,13 @@
           :class="{ 'is-loading': loading }"
           @click="updateStage"
           :disabled="!shortNameValid"
-        >
-          Save Stage
-        </button>
+        >Save Stage</button>
         <ClearChat />
         <SweepStage />
         <button class="button ml-2 is-dark">Hide From Stage List</button>
-        <button class="button ml-2 is-danger">Delete Stage</button>
+        <DeleteStage :stage="stage" :refresh="afterDelete">
+          <button class="button ml-2 is-danger">Delete Stage</button>
+        </DeleteStage>
       </template>
       <template v-else>
         <button
@@ -21,9 +21,7 @@
           :class="{ 'is-loading': loading }"
           @click="createStage"
           :disabled="!shortNameValid"
-        >
-          Create Stage
-        </button>
+        >Create Stage</button>
       </template>
     </div>
   </div>
@@ -39,6 +37,7 @@
           required
           requiredMessage="Stage name is required"
           expanded
+          class="half-flex"
         />
         <Field
           required
@@ -52,15 +51,13 @@
             validatingShortName
               ? 'fas fa-circle-notch fa-spin'
               : shortNameValid === true
-              ? 'fas fa-check'
-              : shortNameValid === false
-              ? 'fas fa-times'
-              : 'fas'
+                ? 'fas fa-check'
+                : shortNameValid === false
+                  ? 'fas fa-times'
+                  : 'fas'
           "
           :help="!form.fileLocation && `From which the stage URL is created`"
-          :error="
-            shortNameValid === false && 'This short name already existed!'
-          "
+          :error="shortNameError"
         />
       </div>
     </div>
@@ -152,7 +149,7 @@ import {
   useRequest,
 } from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { inject, reactive, ref, watch } from "vue";
+import { inject, reactive, ref, watch, computed } from "vue";
 import Field from "@/components/form/Field";
 import ImagePicker from "@/components/form/ImagePicker";
 import MultiTransferColumn from "@/components/MultiTransferColumn";
@@ -162,6 +159,7 @@ import { displayName } from "@/utils/auth";
 import { debounce } from "@/utils/common";
 import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
+import DeleteStage from "@/components/stage/DeleteStage";
 import { useStore } from "vuex";
 
 export default {
@@ -171,6 +169,7 @@ export default {
     SweepStage,
     MultiTransferColumn,
     ImagePicker,
+    DeleteStage
   },
   setup: () => {
     const store = useStore();
@@ -216,13 +215,19 @@ export default {
       }
     };
 
+    const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay']
     const shortNameValid = ref(!!stage.value.id);
     const { loading: validatingShortName, fetch } = useRequest(
       stageGraph.stageList
     );
     const checkShortName = debounce(async () => {
+      const shortname = form.fileLocation.trim()
+      if (!shortname || preservedPaths.includes(shortname)) {
+        shortNameValid.value = false
+        return;
+      }
       const response = await fetch({
-        fileLocation: form.fileLocation,
+        fileLocation: shortname,
       });
       shortNameValid.value = true;
       if (response.stageList.edges.length) {
@@ -232,6 +237,21 @@ export default {
         }
       }
     }, 500);
+
+    const shortNameError = computed(() => {
+      if (preservedPaths.includes(form.fileLocation.trim())) {
+        return `These shortname are not allowed: ${preservedPaths.join(', ')}`
+      }
+      if (!shortNameValid.value && form.fileLocation) {
+        return 'This short name already existed!'
+      }
+      return null
+    })
+
+    const afterDelete = () => {
+      store.dispatch("cache/fetchStages");
+      router.push("/backstage/stages");
+    }
 
     return {
       form,
@@ -245,10 +265,16 @@ export default {
       validatingShortName,
       shortNameValid,
       playerAccess,
+      afterDelete,
+      shortNameError
     };
   },
 };
 </script>
 
-<style>
+<style scoped>
+.half-flex {
+  flex: none;
+  flex-basis: 50%;
+}
 </style>
