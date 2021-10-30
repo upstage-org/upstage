@@ -177,6 +177,7 @@ export default {
     const stage = inject("stage");
 
     const form = reactive({
+      fileLocation: '',
       ...stage.value,
       ownerId: stage.value.owner?.id,
       status: useAttribute(stage, "status").value,
