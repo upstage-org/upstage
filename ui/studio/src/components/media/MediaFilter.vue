@@ -11,6 +11,11 @@ import configs from '../../config';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
+  whoami {
+    username
+    displayName
+    roleName
+  }
   users {
     edges {
       node {
@@ -92,6 +97,7 @@ const handleFilterStageName = (keyword: string, option: any) => {
 }
 
 const visibleDropzone = inject('visibleDropzone')
+const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
 </script>
 
 <template>
@@ -150,10 +156,15 @@ const visibleDropzone = inject('visibleDropzone')
         </a-button>
       </a-space>
       <a-space>
-        <div style="line-height: 0.8;" class="text-right">
-          <h2 class="mb-0">Helen</h2>
-          <span class="text-gray-500">Admin</span>
-        </div>
+        <a
+          :href="to('backstage/profile')"
+          v-if="result"
+          style="line-height: 0.8;"
+          class="text-right"
+        >
+          <h2 class="mb-0">{{ result.whoami.displayName || result.whoami.username }}</h2>
+          <span class="text-gray-500">{{ result.whoami.roleName }}</span>
+        </a>
         <Notifications />
         <a-dropdown class="ml-4">
           <a class="ant-dropdown-link flex-nowrap block w-24" @click.prevent>
@@ -162,7 +173,7 @@ const visibleDropzone = inject('visibleDropzone')
           </a>
           <template #overlay>
             <a-menu>
-              <a :href="`${configs.UPSTAGE_URL}/backstage`">
+              <a :href="to('backstage')">
                 <a-menu-item>Back to Backstage</a-menu-item>
               </a>
               <a-menu-item>Logout</a-menu-item>

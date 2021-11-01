@@ -320,7 +320,7 @@ class UpdateMedia(graphene.Mutation):
 
 
 class DeleteMedia(graphene.Mutation):
-    """Mutation to sweep a stage."""
+    """Mutation to delete a media."""
     success = graphene.Boolean()
     message = graphene.String()
 

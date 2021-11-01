@@ -1,16 +1,21 @@
 # -*- coding: iso8859-15 -*-
 import os
 import sys
+from flask_jwt_extended.view_decorators import jwt_required
 
 import graphene
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
-from config.project_globals import app
+from auth.auth_mutation import RefreshMutation
+from config.project_globals import DBSession, app
 from config.settings import VERSION
 from flask_graphql import GraphQLView
 from graphene import relay
 from asset.models import Stage as StageModel
-from user.models import User as UserModel
-from studio.media import (Asset, AssetConnectionField, AssetType, CalcSizes)
+from stage.asset import DeleteMedia
+from user.models import ROLES, User as UserModel, role_conv
+from studio.media import (Asset, AssetConnectionField,
+                          AssetType, CalcSizes, UploadFile)
+from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -31,11 +36,15 @@ class Stage(SQLAlchemyObjectType):
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+    role_name = graphene.String(description="Name of the role")
 
     class Meta:
         model = UserModel
         model.db_id = model.id
         interfaces = (graphene.relay.Node,)
+
+    def resolve_role_name(self, info):
+        return role_conv(self.role)
 
 
 class Query(graphene.ObjectType):
@@ -45,10 +54,19 @@ class Query(graphene.ObjectType):
     users = SQLAlchemyConnectionField(User.connection)
     media = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int))
+    whoami = graphene.Field(User, description="Logged in user info")
+
+    @jwt_required()
+    def resolve_whoami(self, info):
+        code, error, user, timezone = current_user()
+        return user
 
 
 class Mutation(graphene.ObjectType):
     calcSizes = CalcSizes.Field()
+    deleteMedia = DeleteMedia.Field()
+    uploadFile = UploadFile.Field()
+    refreshUser = RefreshMutation.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -4,7 +4,7 @@
   "scripts": {
     "serve": "vite",
     "build": "vue-tsc --noEmit && vite build",
-    "build:dev": "vue-tsc --noEmit && vite build --mode dev",
+    "build:dev": "vue-tsc --noEmit && vite build --mode development",
     "serve:localhost": "vite --mode localhost",
     "start": "vite preview"
   },

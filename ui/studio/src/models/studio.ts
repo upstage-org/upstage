@@ -14,7 +14,9 @@ export interface StudioGraph {
   users: Connection<User>;
   stages: Connection<Stage>;
   media: Connection<Media>;
+  whoami: User;
 }
+
 export interface PageInfo {
   startCursor: string;
   endCursor: string;
@@ -31,6 +33,7 @@ export interface User {
   id: string;
   displayName: string;
   username: string;
+  roleName: string;
 }
 
 export interface Stage {

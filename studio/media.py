@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 import graphene
 from asset.models import Asset as AssetModel, Stage as StageModel
 from asset.models import AssetType as AssetTypeModel
-from user.models import User as UserModel
+from user.models import MAKER, PLAYER, User as UserModel
 from config.project_globals import ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -191,3 +191,34 @@ class CalcSizes(graphene.Mutation):
             local_db_session.commit()
             local_db_session.close()
             return CalcSizes(size=total)
+
+
+class UploadFile(graphene.Mutation):
+    """Mutation to upload a media."""
+    url = graphene.String(description="Uploaded file url")
+
+    class Arguments:
+        base64 = graphene.String(
+            required=True, description="Base64 encoded content of the uploading media")
+        filename = graphene.String(
+            required=True, description="Original file name")
+
+    @jwt_required()
+    def mutate(self, info, base64, filename):
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN, PLAYER, MAKER):
+            raise Exception("You don't have permission to upload media")
+
+        # Save base64 to file
+        filename, file_extension = os.path.splitext(filename)
+        unique_filename = uuid.uuid4().hex + file_extension
+        mediaDirectory = os.path.join(
+            absolutePath, storagePath)
+        if not os.path.exists(mediaDirectory):
+            os.makedirs(mediaDirectory)
+        with open(os.path.join(mediaDirectory, unique_filename), "wb") as fh:
+            fh.write(b64decode(base64.split(',')[1]))
+
+        file_location = os.path.join(unique_filename)
+        return UploadFile(url=file_location)
+

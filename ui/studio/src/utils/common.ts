@@ -14,7 +14,7 @@ export function getSharedAuth(): SharedAuth | undefined {
     const sharedStateJSON = localStorage.getItem('vuex')
     if (sharedStateJSON) {
       const sharedState = JSON.parse(sharedStateJSON)
-      return sharedState
+      return sharedState.auth
     }
   } catch (error) {
     console.log('No shared auth found. Try login using dashboard first!')
