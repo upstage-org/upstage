@@ -40,7 +40,10 @@
     <div class="icon is-large">
       <ColorPicker v-model="backdropColor" @update:modelValue="sendBackdropColor" />
     </div>
-    <span class="tag is-light is-block p-0">Backdrop Colour</span>
+    <span
+      class="tag is-light is-block p-0"
+      style="white-space: break-spaces; line-height: 1;"
+    >Background Colour</span>
   </div>
   <div @click="masqueradeAudience">
     <div class="icon is-large">
