@@ -21,6 +21,11 @@ export function getSharedAuth(): SharedAuth | undefined {
   }
 }
 
+export function setSharedAuth(auth: SharedAuth) {
+  const vuex = JSON.parse(localStorage.getItem('vuex') || '{}')
+  localStorage.setItem('vuex', JSON.stringify({ ...vuex, auth }))
+}
+
 export function humanFileSize(bytes: number, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
