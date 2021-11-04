@@ -45,4 +45,28 @@ export interface Stage {
 export interface Media {
   id: string;
   name: string;
+  src: string;
+  description: string;
+  createdOn: string;
+  size: number;
+  assetType: MediaType;
+  owner: User;
+  stages: Stage[];
+}
+
+export interface MediaAttributes {
+  multi: boolean;
+  frames: string[];
+  voice: Voice;
+  link: Link;
+  w: number;
+  h: number;
+}
+
+export interface Link {
+  blank: boolean;
+  url: string;
+}
+
+export interface Voice {
 }

@@ -1,14 +1,17 @@
 <script lang="ts" setup>
-import { useQuery } from '@vue/apollo-composable';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
 import { computed, reactive, watch } from 'vue';
 import configs from '../../config';
 import { StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
+import MediaPreview from './MediaPreview.vue';
 
 const tableParams = reactive({
   limit: 10,
-  cursor: undefined
+  cursor: undefined,
+  sort: 'CREATED_ON_DESC',
 })
 const { result: inquiryResult } = useQuery(gql`{ inquiry @client }`)
 const params = computed(() => ({
@@ -31,6 +34,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         src
         createdOn
         size
+        description
         assetType {
           name
         }
@@ -145,6 +149,28 @@ const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: So
   })
 }
 const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
+
+const { loading: deleting, mutate: deleteMedia, onDone } = useMutation(gql`
+mutation deleteMedia($id: ID!) {
+  deleteMedia(id: $id) {
+    success
+    message
+  }
+}`)
+onDone((result) => {
+  console.log()
+  if (result.data.deleteMedia.success) {
+    message.success('Media deleted successfully')
+  } else {
+    message.error(result.data.deleteMedia.message)
+  }
+  fetchMore({
+    variables: params.value,
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      return fetchMoreResult ?? previousResult
+    },
+  })
+})
 </script>
 
 <template>
@@ -163,13 +189,7 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
   >
     <template #bodyCell="{ column, record, text }">
       <template v-if="column.key === 'preview'">
-        <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
-          <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
-        </audio>
-        <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
-          <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
-        </video>
-        <a-image v-else :src="absolutePath(record.src)" class="w-24" />
+        <MediaPreview :media="record" />
       </template>
       <template v-if="column.key === 'asset_type_id'">
         <span class="capitalize">{{ text }}</span>
@@ -193,17 +213,34 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
         <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
           <d-size :value="text" />
         </a-tag>
-        <a-tag v-else>Can't calculate size</a-tag>
+        <a-tag v-else>No size</a-tag>
       </template>
       <template v-if="column.key === 'created_on'">
         <d-date :value="text" />
       </template>
       <template v-if="column.key === 'actions'">
-        <a :href="absolutePath(record.src)" :download="record.name">
-          <a-button>
-            <DownloadOutlined />Download
-          </a-button>
-        </a>
+        <a-space>
+          <a :href="absolutePath(record.src)" :download="record.name">
+            <a-button>
+              <DownloadOutlined />Download
+            </a-button>
+          </a>
+          <a-popconfirm
+            title="Are you sure delete this media?"
+            ok-text="Yes"
+            cancel-text="No"
+            @confirm="deleteMedia(record)"
+            placement="left"
+            :ok-button-props="{ danger: true }"
+            loading="deleting"
+          >
+            <a-button type="dashed" danger>
+              <template #icon>
+                <DeleteOutlined />
+              </template>
+            </a-button>
+          </a-popconfirm>
+        </a-space>
       </template>
     </template>
   </a-table>
