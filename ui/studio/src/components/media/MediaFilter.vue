@@ -8,6 +8,7 @@ import { StudioGraph } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
+import { capitalize } from '../../utils/common';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -133,7 +134,7 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
           placeholder="Media types"
           :loading="loading"
           v-model:value="types"
-          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
+          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []"
         ></a-select>
         <a-select
           allowClear

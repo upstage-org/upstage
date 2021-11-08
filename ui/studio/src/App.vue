@@ -6,7 +6,7 @@ import { provide } from '@vue/runtime-core';
 import { DefaultApolloClient } from '@vue/apollo-composable'
 import { apolloClient } from './apollo';
 import Dropzone from './components/media/Dropzone.vue';
-import MediaUpload from './components/media/MediaUpload.vue';
+import MediaUpload from './components/media/MediaForm/index.vue';
 
 provide(DefaultApolloClient, apolloClient)
 </script>
