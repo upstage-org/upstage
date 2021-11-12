@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, reactive, provide } from 'vue';
+import { ref, provide } from 'vue';
 import configs from '../../config';
+import { UploadFile } from '../../models/studio';
 
 const visible = ref(false)
-const files = reactive<any>([])
+const files = ref<UploadFile[]>([])
 provide('files', files)
 provide('visibleDropzone', visible)
 
@@ -12,8 +13,17 @@ window.addEventListener('dragenter', e => {
   visible.value = true
 })
 
+const toSrc = ({ file }: { file: File }) => {
+  return URL.createObjectURL(file)
+}
+
 const handleUpload = (file: any) => {
-  files.push(file)
+  files.value = files.value.concat({
+    ...file,
+    id: files.value.length,
+    preview: toSrc(file),
+    status: 'local'
+  })
   visible.value = false
 }
 </script>
@@ -24,7 +34,8 @@ const handleUpload = (file: any) => {
     :visible="visible"
     @cancel="visible = false"
     width="100%"
-    class="fullscreen-dragzone"
+    wrapClassName="fullscreen-dragzone"
+    class="h-full top-0 p-0"
   >
     <a-upload-dragger :show-upload-list="false" :custom-request="handleUpload" multiple>
       <p class="ant-upload-drag-icon">
@@ -43,10 +54,7 @@ const handleUpload = (file: any) => {
 
 <style lang="less">
 .fullscreen-dragzone {
-  height: 100%;
-  top: 0;
-  padding-bottom: 0;
-  z-index: 99999;
+  z-index: 999999;
   .ant-modal-content {
     height: 100%;
   }
