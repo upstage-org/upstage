@@ -70,3 +70,15 @@ export interface Link {
 
 export interface Voice {
 }
+
+export interface UploadFile {
+  action: string;
+  filename: string;
+  data: any;
+  file: File;
+  headers: any;
+  withCredentials: boolean;
+  method: string;
+  id: number;
+  preview: string;
+}

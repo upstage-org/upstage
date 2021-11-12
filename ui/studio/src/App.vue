@@ -16,8 +16,9 @@ provide(DefaultApolloClient, apolloClient)
     <a-layout class="pb-4 layout">
       <Dropzone>
         <MediaFilter />
-        <MediaTable />
-        <MediaUpload />
+        <MediaTable>
+          <MediaUpload />
+        </MediaTable>
       </Dropzone>
     </a-layout>
   </Authorized>

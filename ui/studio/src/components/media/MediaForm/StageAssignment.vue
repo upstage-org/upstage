@@ -1,9 +1,17 @@
 <script setup lang="ts">
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { ref, computed } from 'vue';
+import { ref, computed, watchEffect, PropType } from 'vue';
 import { Stage, StudioGraph } from '../../../models/studio';
 
+const props = defineProps({
+  modelValue: {
+    type: Array as PropType<string[]>,
+    required: true
+  }
+});
+
+const emits = defineEmits(['update:modelValue']);
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -25,17 +33,16 @@ const stages = computed(() => {
 })
 
 
-const targetKeys = ref<string[]>([]);
+const targetKeys = ref(props.modelValue);
 const filterOption = (inputValue: string, option: Stage) => {
   return option.name.toLowerCase().indexOf(inputValue.toLowerCase()) > -1;
 };
-const handleChange = (keys: string[], direction: string, moveKeys: string[]) => {
-  console.log(keys, direction, moveKeys);
-};
 
-const handleSearch = (dir: string, value: string) => {
-  console.log('search:', dir, value);
-};
+watchEffect(() => {
+  emits('update:modelValue', targetKeys.value);
+})
+
+const renderItem = (item: Stage) => item.name;
 </script>
 
 <template>
@@ -54,8 +61,6 @@ const handleSearch = (dir: string, value: string) => {
     :data-source="stages"
     show-search
     :filter-option="filterOption"
-    :render="(item: Stage) => item.name"
-    @change="handleChange"
-    @search="handleSearch"
+    :render="renderItem"
   />
 </template>

@@ -342,15 +342,16 @@ class DeleteMedia(graphene.Mutation):
 
                 if asset.description:
                     attributes = json.loads(asset.description)
-                    # Delete frames that was assigned only to this media
-                    for frame in attributes['frames']:
-                        frame_asset = local_db_session.query(AssetModel).filter(
-                            AssetModel.file_location == frame).first()
-                        if not frame_asset:
-                            physical_path = os.path.join(
-                                absolutePath, storagePath, frame)
-                            if os.path.exists(physical_path):
-                                os.remove(physical_path)
+                    if 'frames' in attributes and attributes['frames']:
+                        # Delete frames that was assigned only to this media
+                        for frame in attributes['frames']:
+                            frame_asset = local_db_session.query(AssetModel).filter(
+                                AssetModel.file_location == frame).first()
+                            if not frame_asset:
+                                physical_path = os.path.join(
+                                    absolutePath, storagePath, frame)
+                                if os.path.exists(physical_path):
+                                    os.remove(physical_path)
 
                 physical_path = os.path.join(
                     absolutePath, storagePath, asset.file_location)

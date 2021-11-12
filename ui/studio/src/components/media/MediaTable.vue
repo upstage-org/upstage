@@ -1,8 +1,9 @@
 <script lang="ts" setup>
+import { FetchMoreQueryOptions } from '@apollo/client/core';
 import { useMutation, useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, watch, provide, inject } from 'vue';
 import configs from '../../config';
 import { StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
@@ -52,12 +53,14 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
 }
 `, params.value, { notifyOnNetworkStatusChange: true })
 
+const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
+  return fetchMoreResult ?? previousResult
+}
+
 watch(params, () => {
   fetchMore({
     variables: params.value,
-    updateQuery: (previousResult, { fetchMoreResult }) => {
-      return fetchMoreResult ?? previousResult
-    },
+    updateQuery
   })
 })
 
@@ -166,9 +169,18 @@ onDone((result) => {
   }
   fetchMore({
     variables: params.value,
-    updateQuery: (previousResult, { fetchMoreResult }) => {
-      return fetchMoreResult ?? previousResult
+    updateQuery
+  })
+})
+
+provide('refresh', () => {
+  fetchMore({
+    variables: {
+      cursor: undefined,
+      sort: ['CREATED_ON_DESC'],
+      limit: 10
     },
+    updateQuery
   })
 })
 </script>
@@ -244,4 +256,5 @@ onDone((result) => {
       </template>
     </template>
   </a-table>
+  <slot></slot>
 </template>

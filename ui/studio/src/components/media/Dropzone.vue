@@ -22,6 +22,7 @@ const handleUpload = (file: any) => {
     id: files.value.length,
     preview: toSrc(file),
   })
+  console.log(files.value)
   visible.value = false
 }
 </script>

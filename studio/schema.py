@@ -14,7 +14,7 @@ from asset.models import Stage as StageModel
 from stage.asset import DeleteMedia
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, UploadFile)
+                          AssetType, CalcSizes, SaveMedia, UploadFile)
 from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -66,6 +66,7 @@ class Mutation(graphene.ObjectType):
     calcSizes = CalcSizes.Field()
     deleteMedia = DeleteMedia.Field()
     uploadFile = UploadFile.Field()
+    saveMedia = SaveMedia.Field()
     refreshUser = RefreshMutation.Field()
 
 
