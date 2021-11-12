@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "serve": "vite",
-    "build": "vue-tsc --noEmit && vite build",
-    "build:dev": "vue-tsc --noEmit && vite build --mode development",
+    "build": "vue-tsc --noEmit --skipLibCheck && vite build",
+    "build:dev": "vue-tsc --noEmit --skipLibCheck && vite build --mode development",
     "serve:localhost": "vite --mode localhost",
     "start": "vite preview"
   },
