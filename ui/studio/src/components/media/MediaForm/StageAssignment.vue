@@ -6,7 +6,7 @@ import { Stage, StudioGraph } from '../../../models/studio';
 
 const props = defineProps({
   modelValue: {
-    type: Array as PropType<string[]>,
+    type: Array as PropType<number[]>,
     required: true
   }
 });
@@ -42,6 +42,10 @@ watchEffect(() => {
   emits('update:modelValue', targetKeys.value);
 })
 
+watchEffect(() => {
+  targetKeys.value = props.modelValue;
+})
+
 const renderItem = (item: Stage) => item.name;
 </script>
 
@@ -54,7 +58,8 @@ const renderItem = (item: Stage) => item.name;
       searchPlaceholder: 'Search stage name'
     }"
     :list-style="{
-      flex: '1'
+      flex: '1',
+      height: '300px'
     }"
     :titles="[' available', ' assigned']"
     v-model:target-keys="targetKeys"

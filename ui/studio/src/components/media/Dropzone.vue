@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, provide } from 'vue';
 import configs from '../../config';
+import { UploadFile } from '../../models/studio';
 
 const visible = ref(false)
-const files = ref<any[]>([])
+const files = ref<UploadFile[]>([])
 provide('files', files)
 provide('visibleDropzone', visible)
 
@@ -21,8 +22,8 @@ const handleUpload = (file: any) => {
     ...file,
     id: files.value.length,
     preview: toSrc(file),
+    status: 'local'
   })
-  console.log(files.value)
   visible.value = false
 }
 </script>

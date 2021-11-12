@@ -51,7 +51,6 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
 
   const saveMedia = async () => {
     try {
-
       progress.value = 0
       const payload = collectData()
       const totalSteps = payload.files.length + 1;
@@ -60,17 +59,21 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
         finishedSteps++
         progress.value = Math.round(finishedSteps * 100 / totalSteps)
       }
-      const uploadedUrls = [] as string[];
       for (const file of payload.files) {
-        const base64 = await getBase64(file.file)
-        const result = await uploadFile({ base64, filename: file.file.name })
-        const uploadedUrl = result?.data?.uploadFile.url
-        if (uploadedUrl) {
-          uploadedUrls.push(uploadedUrl)
-          increaseProgress()
+        if (file.status === 'local') {
+          const base64 = await getBase64(file.file)
+          const result = await uploadFile({ base64, filename: file.file.name })
+          const uploadedUrl = result?.data?.uploadFile.url
+          if (uploadedUrl) {
+            file.url = uploadedUrl
+            file.status = 'uploaded'
+            increaseProgress()
+          } else {
+            message.error(`File ${file.file.name} upload failed!`)
+          }
         }
       }
-      payload.media.urls = uploadedUrls
+      payload.media.urls = payload.files.filter(file => file.status === 'uploaded').map(file => file.url!)
       const result = await mutate(payload.media)
       const mediaId = result?.data?.saveMedia.asset.id
       if (mediaId) {

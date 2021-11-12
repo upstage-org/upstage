@@ -4,8 +4,9 @@ import { useMutation, useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
 import { computed, reactive, watch, provide, inject } from 'vue';
+import { editingMediaVar } from '../../apollo';
 import configs from '../../config';
-import { StudioGraph } from '../../models/studio';
+import { Media, StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
 
@@ -46,6 +47,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         stages {
           name
           url
+          id
         }
       }
     }
@@ -175,14 +177,14 @@ onDone((result) => {
 
 provide('refresh', () => {
   fetchMore({
-    variables: {
-      cursor: undefined,
-      sort: ['CREATED_ON_DESC'],
-      limit: 10
-    },
+    variables: params.value,
     updateQuery
   })
 })
+
+const editMedia = (media: Media) => {
+  editingMediaVar(media)
+}
 </script>
 
 <template>
@@ -232,9 +234,14 @@ provide('refresh', () => {
       </template>
       <template v-if="column.key === 'actions'">
         <a-space>
+          <a-button type="primary" @click="editMedia(record)">
+            <EditOutlined />Edit
+          </a-button>
           <a :href="absolutePath(record.src)" :download="record.name">
             <a-button>
-              <DownloadOutlined />Download
+              <template #icon>
+                <DownloadOutlined />
+              </template>
             </a-button>
           </a>
           <a-popconfirm

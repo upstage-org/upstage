@@ -42,6 +42,12 @@ export interface Stage {
   dbId: number;
 }
 
+export interface AssignedStage {
+  id: number
+  name: string
+  url: string
+}
+
 export interface Media {
   id: string;
   name: string;
@@ -51,7 +57,7 @@ export interface Media {
   size: number;
   assetType: MediaType;
   owner: User;
-  stages: Stage[];
+  stages: AssignedStage[];
 }
 
 export interface MediaAttributes {
@@ -72,13 +78,15 @@ export interface Voice {
 }
 
 export interface UploadFile {
-  action: string;
-  filename: string;
-  data: any;
+  action?: string;
+  filename?: string;
+  data?: any;
   file: File;
-  headers: any;
-  withCredentials: boolean;
-  method: string;
+  headers?: any;
+  withCredentials?: boolean;
+  method?: string;
   id: number;
   preview: string;
+  status: 'local' | 'uploaded';
+  url?: string;
 }

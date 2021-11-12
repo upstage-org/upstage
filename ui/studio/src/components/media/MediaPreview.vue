@@ -2,38 +2,37 @@
 import { PropType, computed } from 'vue';
 import { Media, MediaAttributes } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
-const { media } = defineProps({
+const props = defineProps({
   media: {
     type: Object as PropType<Media>,
     required: true,
   }
 })
 
-console.log(media.description);
 const attributes = computed<MediaAttributes>(() => {
-  return JSON.parse(media.description || '{}');
+  return JSON.parse(props.media.description || '{}');
 })
 
 </script>
 
 <template>
-  <audio v-if="media.assetType.name === 'audio'" controls class="w-48">
-    <source :src="absolutePath(media.src)" />Your browser does not support the audio element.
+  <audio v-if="props.media.assetType.name === 'audio'" controls class="w-48">
+    <source :src="absolutePath(props.media.src)" />Your browser does not support the audio element.
   </audio>
-  <video v-else-if="media.assetType.name === 'stream'" controls class="w-48">
-    <source :src="absolutePath(media.src)" />Your browser does not support the video tag.
+  <video v-else-if="props.media.assetType.name === 'stream'" controls class="w-48">
+    <source :src="absolutePath(props.media.src)" />Your browser does not support the video tag.
   </video>
   <a-carousel v-else-if="attributes.multi" arrows dots-class="slick-dots slick-thumb" class="w-48">
-    <template #customPaging="props">
+    <template #customPaging="{ i }">
       <a>
-        <img :src="absolutePath(attributes.frames[props.i])" />
+        <img :src="absolutePath(attributes.frames[i])" />
       </a>
     </template>
     <div v-for="frame in attributes.frames" :key="frame">
       <a-image :src="absolutePath(frame)" />
     </div>
   </a-carousel>
-  <a-image v-else :src="absolutePath(media.src)" class="w-24" />
+  <a-image v-else :src="absolutePath(props.media.src)" class="w-24" />
 </template>
 
 <style scoped>

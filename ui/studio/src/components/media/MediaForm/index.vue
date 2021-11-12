@@ -3,17 +3,44 @@ import { useQuery } from '@vue/apollo-composable';
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
-import { ref, computed, inject, Ref, createVNode } from 'vue'
+import { ref, computed, inject, Ref, createVNode, watch } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { StudioGraph } from '../../../models/studio';
-import { capitalize } from '../../../utils/common';
+import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
-const files: Ref<any[]> | undefined = inject("files")
+import { editingMediaVar } from '../../../apollo';
+const files = inject<Ref<UploadFile[]>>("files")
+
+const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
+
+watch(editingMediaResult, () => {
+  if (editingMediaResult.value) {
+    const { editingMedia } = editingMediaResult.value;
+    name.value = editingMedia.name;
+    type.value = editingMedia.assetType.name;
+    const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
+    if (files?.value) {
+      const frames = attributes.frames && attributes.frames.length ? attributes.frames : [editingMedia.src];
+      files.value = frames.map((frame, id) => ({
+        id,
+        preview: absolutePath(frame),
+        url: frame,
+        status: 'uploaded',
+        file: {
+          name: editingMedia.name,
+        } as File
+      }));
+    }
+    if (editingMedia.stages) {
+      stageIds.value = editingMedia.stages.map(stage => stage.id);
+    }
+  }
+});
 
 const name = ref('')
 const type = ref('avatar')
-const stageIds = ref([])
+const stageIds = ref<number[]>([])
 const mediaName = computed(() => {
   if (name.value) {
     return name.value
@@ -21,6 +48,7 @@ const mediaName = computed(() => {
   if (files && files.value.length) {
     return files.value[0].file.name
   }
+  return ''
 })
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
@@ -50,7 +78,10 @@ const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
 
 const handleClose = () => {
   if (files) {
-    if (files.value.length) {
+    if (editingMediaResult.value) {
+      editingMediaVar(undefined)
+      files.value = []
+    } else {
       Modal.confirm({
         title: 'Are you sure you want to quit?',
         icon: createVNode(ExclamationCircleOutlined),
@@ -62,8 +93,6 @@ const handleClose = () => {
           danger: true
         }
       });
-    } else {
-      files.value = []
     }
   }
 }
@@ -93,6 +122,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
   return {
     files: files ? files.value : [],
     media: {
+      id: editingMediaResult.value?.editingMedia?.id,
       name: mediaName.value,
       mediaType: type.value,
       copyrightLevel: 0,
@@ -103,6 +133,16 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
   if (files && refresh) {
     files.value = []
     refresh()
+  }
+})
+
+watch(files as Ref, ([firstFile]) => {
+  if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('audio')) {
+    type.value = 'audio'
+  } else if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('video')) {
+    type.value = 'stream'
+  } else if (firstFile && firstFile.status === 'local' && (!type.value || type.value === 'stream' || type.value === 'audio')) {
+    type.value = 'avatar'
   }
 })
 
@@ -140,8 +180,15 @@ const visibleDropzone = inject('visibleDropzone')
     </template>
     <a-row :gutter="12">
       <a-col :span="6">
-        <div class="bg-gray-200 flex items-center h-full max-h-96">
+        <div class="bg-gray-200 flex items-center justify-center h-full max-h-96">
+          <audio v-if="type === 'audio'" controls class="w-48">
+            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
+          </audio>
+          <video v-else-if="type === 'stream'" controls class="w-48">
+            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
+          </video>
           <SlickList
+            v-else
             axis="y"
             v-model:list="files"
             class="cursor-move w-full max-h-96 overflow-auto"

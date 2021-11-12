@@ -5,6 +5,7 @@ import { message } from 'ant-design-vue';
 import configs from './config'
 import { getSharedAuth, setSharedAuth } from './utils/common';
 import gql from 'graphql-tag';
+import { Media } from './models/studio';
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
@@ -102,6 +103,7 @@ const authLink = setContext((request, { headers }) => {
 
 // Cache implementation
 export const inquiryVar = makeVar({})
+export const editingMediaVar = makeVar<Media | undefined>(undefined)
 const cache = new InMemoryCache({
   typePolicies: {
     Query: {
@@ -109,6 +111,11 @@ const cache = new InMemoryCache({
         inquiry: {
           read() {
             return inquiryVar()
+          }
+        },
+        editingMedia: {
+          read() {
+            return editingMediaVar()
           }
         }
       }
