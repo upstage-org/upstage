@@ -120,7 +120,7 @@
           </span>
         </button>
       </p>
-      <p v-if="object.type !== 'stream'" class="control menu-group-item">
+      <p v-if="object.multi" class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
@@ -388,7 +388,7 @@ export default {
         if (flvjs.isSupported()) {
           const flvPlayer = flvjs.createPlayer({
             type: "flv",
-            url: fullUrl.value + "?" + new Date(), 
+            url: fullUrl.value + "?" + new Date(),
           });
           flvPlayer.attachMediaElement(video);
           flvPlayer.load();
