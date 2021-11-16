@@ -9,7 +9,7 @@ import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
-import { editingMediaVar } from '../../../apollo';
+import { editingMediaVar, inquiryVar } from '../../../apollo';
 const files = inject<Ref<UploadFile[]>>("files")
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
@@ -147,11 +147,22 @@ watch(files as Ref, ([firstFile]) => {
 })
 
 const visibleDropzone = inject('visibleDropzone')
+const composingMode = inject<Ref<boolean>>('composingMode')
+
+const addExistingFrame = () => {
+  if (composingMode) {
+    composingMode.value = true
+    inquiryVar({
+      ...inquiryVar(),
+      mediaTypes: [type.value]
+    })
+  }
+}
 </script>
 
 <template>
   <a-modal
-    :visible="files?.length"
+    :visible="files?.length && !composingMode"
     :body-style="{ padding: 0 }"
     :width="1000"
     @cancel="handleClose"
@@ -165,8 +176,8 @@ const visibleDropzone = inject('visibleDropzone')
         <a-button type="primary" @click="visibleDropzone = true">
           <UploadOutlined />Upload frame
         </a-button>
-        <a-button type="primary">
-          <PlusCircleOutlined />Add existed frame
+        <a-button type="primary" @click="addExistingFrame">
+          <PlusCircleOutlined />Add existing frame
         </a-button>
         <a-button
           v-if="files!.length > 1"
@@ -217,7 +228,7 @@ const visibleDropzone = inject('visibleDropzone')
             <a-tab-pane key="stages" tab="Stages" class="pb-4">
               <StageAssignment v-model="stageIds" />
             </a-tab-pane>
-            <a-tab-pane key="c" tab="Copyrights">
+            <a-tab-pane key="c" tab="Permissions">
               <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
                 <template #icon>
                   <BuildOutlined />

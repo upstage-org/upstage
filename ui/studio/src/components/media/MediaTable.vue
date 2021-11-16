@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { FetchMoreQueryOptions } from '@apollo/client/core';
 import { useMutation, useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
-import { computed, reactive, watch, provide, inject } from 'vue';
+import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
 import { editingMediaVar } from '../../apollo';
 import configs from '../../config';
-import { Media, StudioGraph } from '../../models/studio';
+import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
+
+const files = inject<Ref<UploadFile[]>>("files")
 
 const tableParams = reactive({
   limit: 10,
@@ -185,6 +186,28 @@ provide('refresh', () => {
 const editMedia = (media: Media) => {
   editingMediaVar(media)
 }
+
+const composingMode = inject<Ref<boolean>>('composingMode')
+
+const addFrameToEditingMedia = (media: Media) => {
+  if (files && composingMode) {
+    let frames = [media.src]
+    const attribute = JSON.parse(media.description || '{}') as MediaAttributes
+    if (attribute.multi) {
+      frames = attribute.frames
+    }
+    files.value = files.value.concat(frames.map<UploadFile>((frame, i) => ({
+      id: files.value.length + i,
+      preview: absolutePath(frame),
+      url: frame,
+      status: 'uploaded',
+      file: {
+        name: frame,
+      } as File
+    })))
+    composingMode.value = false
+  }
+}
 </script>
 
 <template>
@@ -233,7 +256,12 @@ const editMedia = (media: Media) => {
         <d-date :value="text" />
       </template>
       <template v-if="column.key === 'actions'">
-        <a-space>
+        <a-space v-if="composingMode">
+          <a-button type="primary" @click="addFrameToEditingMedia(record)">
+            <DoubleRightOutlined />Append frames
+          </a-button>
+        </a-space>
+        <a-space v-else>
           <a-button type="primary" @click="editMedia(record)">
             <EditOutlined />Edit
           </a-button>

@@ -5,6 +5,8 @@ import { UploadFile } from '../../models/studio';
 
 const visible = ref(false)
 const files = ref<UploadFile[]>([])
+const composingMode = ref(false)
+provide('composingMode', composingMode)
 provide('files', files)
 provide('visibleDropzone', visible)
 

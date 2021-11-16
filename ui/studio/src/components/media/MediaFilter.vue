@@ -61,6 +61,13 @@ const updateInquiry = (vars: any) => inquiryVar({
   ...inquiryVar(),
   ...vars
 })
+
+const watchInquiryVar = (vars: any) => {
+  types.value = vars.mediaTypes
+  inquiryVar.onNextChange(watchInquiryVar)
+}
+inquiryVar.onNextChange(watchInquiryVar)
+
 watch(name, useDebounceFn(() => {
   updateInquiry({ name: name.value })
 }, 500))
@@ -98,6 +105,7 @@ const handleFilterStageName = (keyword: string, option: any) => {
 }
 
 const visibleDropzone = inject('visibleDropzone')
+const composingMode = inject('composingMode')
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
 </script>
 
@@ -107,7 +115,13 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
       class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
     >
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="visibleDropzone = true">
+        <a-button v-if="composingMode" type="danger" @click="composingMode = false">
+          <template #icon>
+            <RollbackOutlined />
+          </template>
+          Back to editing
+        </a-button>
+        <a-button v-else type="primary" @click="visibleDropzone = true">
           <template #icon>
             <PlusOutlined />
           </template>
