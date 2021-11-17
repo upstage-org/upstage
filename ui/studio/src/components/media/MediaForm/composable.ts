@@ -17,6 +17,7 @@ interface SaveMediaMutationVariables {
   playerAccess?: string
   copyrightLevel: 0 | 1 | 2 | 3
   stageIds: number[]
+  tags: string[]
 }
 
 const getBase64 = (file: File) => new Promise<string>((resolve) => {
@@ -39,8 +40,8 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
     }
   `)
   const { mutate } = useMutation<{ saveMedia: { asset: Media } }, SaveMediaMutationVariables>(gql`
-    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $playerAccess: String, $copyrightLevel: Int, $stageIds: [Int]) {
-      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, playerAccess: $playerAccess, copyrightLevel: $copyrightLevel, stageIds: $stageIds) {
+    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $playerAccess: String, $copyrightLevel: Int, $stageIds: [Int], $tags: [String]) {
+      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, playerAccess: $playerAccess, copyrightLevel: $copyrightLevel, stageIds: $stageIds, tags: $tags) {
         asset {
           id
         }

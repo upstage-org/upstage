@@ -13,6 +13,7 @@ export interface StudioGraph {
   mediaTypes: Connection<MediaType>;
   users: Connection<User>;
   stages: Connection<Stage>;
+  tags: Connection<Tag>;
   media: Connection<Media>;
   whoami: User;
 }
@@ -42,6 +43,12 @@ export interface Stage {
   dbId: number;
 }
 
+export interface Tag {
+  id: string;
+  name: string;
+  dbId: number;
+}
+
 export interface AssignedStage {
   id: number
   name: string
@@ -58,6 +65,7 @@ export interface Media {
   assetType: MediaType;
   owner: User;
   stages: AssignedStage[];
+  tags: string[];
 }
 
 export interface MediaAttributes {

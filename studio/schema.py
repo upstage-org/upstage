@@ -11,6 +11,7 @@ from config.settings import VERSION
 from flask_graphql import GraphQLView
 from graphene import relay
 from asset.models import Stage as StageModel
+from asset.models import Tag as TagModel
 from stage.asset import DeleteMedia
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
@@ -34,6 +35,15 @@ class Stage(SQLAlchemyObjectType):
         interfaces = (graphene.relay.Node,)
 
 
+class Tag(SQLAlchemyObjectType):
+    db_id = graphene.Int(description="Database ID")
+
+    class Meta:
+        model = TagModel
+        model.db_id = model.id
+        interfaces = (graphene.relay.Node,)
+
+
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     role_name = graphene.String(description="Name of the role")
@@ -51,9 +61,10 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     mediaTypes = SQLAlchemyConnectionField(AssetType.connection)
     stages = SQLAlchemyConnectionField(Stage.connection)
+    tags = SQLAlchemyConnectionField(Tag.connection)
     users = SQLAlchemyConnectionField(User.connection)
     media = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int))
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int), tags=graphene.List(graphene.String))
     whoami = graphene.Field(User, description="Logged in user info")
 
     @jwt_required()

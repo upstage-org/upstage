@@ -1,14 +1,15 @@
 <script lang="ts" setup>
-import { FetchMoreQueryOptions } from '@apollo/client/core';
 import { useMutation, useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
-import { computed, reactive, watch, provide, inject } from 'vue';
-import { editingMediaVar } from '../../apollo';
+import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
+import { editingMediaVar, inquiryVar } from '../../apollo';
 import configs from '../../config';
-import { Media, StudioGraph } from '../../models/studio';
+import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
+
+const files = inject<Ref<UploadFile[]>>("files")
 
 const tableParams = reactive({
   limit: 10,
@@ -25,8 +26,8 @@ watch(inquiryResult, () => {
 })
 
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
-query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $createdBetween: [Date]) {
-  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, createdBetween: $createdBetween) {
+query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
+  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
     totalCount
     edges {
       cursor
@@ -49,6 +50,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
           url
           id
         }
+        tags
       }
     }
   }
@@ -104,6 +106,12 @@ const columns = [
     width: 250
   },
   {
+    title: "Tags",
+    key: 'tags',
+    dataIndex: 'tags',
+    width: 250
+  },
+  {
     title: "Size",
     dataIndex: "size",
     key: "size",
@@ -148,7 +156,7 @@ const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: So
     .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
   Object.assign(tableParams, {
-    cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+    cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
     limit: pageSize,
     sort
   })
@@ -185,6 +193,35 @@ provide('refresh', () => {
 const editMedia = (media: Media) => {
   editingMediaVar(media)
 }
+
+const composingMode = inject<Ref<boolean>>('composingMode')
+
+const addFrameToEditingMedia = (media: Media) => {
+  if (files && composingMode) {
+    let frames = [media.src]
+    const attribute = JSON.parse(media.description || '{}') as MediaAttributes
+    if (attribute.multi) {
+      frames = attribute.frames
+    }
+    files.value = files.value.concat(frames.map<UploadFile>((frame, i) => ({
+      id: files.value.length + i,
+      preview: absolutePath(frame),
+      url: frame,
+      status: 'uploaded',
+      file: {
+        name: frame,
+      } as File
+    })))
+    composingMode.value = false
+  }
+}
+
+const filterTag = (tag: string) => {
+  inquiryVar({
+    ...inquiryVar(),
+    tags: [tag]
+  })
+}
 </script>
 
 <template>
@@ -219,9 +256,18 @@ const editMedia = (media: Media) => {
         </span>
       </template>
       <template v-if="column.key === 'stages'">
-        <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+        <a v-for="(stage, i) in text" :key="i" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
           <a-tag color="#007011">{{ stage.name }}</a-tag>
         </a>
+      </template>
+      <template v-if="column.key === 'tags'">
+        <a-tag
+          v-for="(tag, i) in text"
+          :key="i"
+          :color="tag"
+          @click="filterTag(tag)"
+          class="cursor-pointer"
+        >{{ tag }}</a-tag>
       </template>
       <template v-if="column.key === 'size'">
         <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
@@ -233,7 +279,12 @@ const editMedia = (media: Media) => {
         <d-date :value="text" />
       </template>
       <template v-if="column.key === 'actions'">
-        <a-space>
+        <a-space v-if="composingMode">
+          <a-button type="primary" @click="addFrameToEditingMedia(record)">
+            <DoubleRightOutlined />Append frames
+          </a-button>
+        </a-space>
+        <a-space v-else>
           <a-button type="primary" @click="editMedia(record)">
             <EditOutlined />Edit
           </a-button>
