@@ -19,6 +19,7 @@ watch(editingMediaResult, () => {
     const { editingMedia } = editingMediaResult.value;
     name.value = editingMedia.name;
     type.value = editingMedia.assetType.name;
+    tags.value = editingMedia.tags;
     const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
     if (files?.value) {
       const frames = attributes.frames && attributes.frames.length ? attributes.frames : [editingMedia.src];
@@ -40,6 +41,7 @@ watch(editingMediaResult, () => {
 
 const name = ref('')
 const type = ref('avatar')
+const tags = ref<string[]>([])
 const stageIds = ref<number[]>([])
 const mediaName = computed(() => {
   if (name.value) {
@@ -108,6 +110,13 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       }
     }
   }
+  tags {
+    edges {
+      node {
+        name
+      }
+    }
+  }
 }
 `, null, { fetchPolicy: "cache-only" })
 const mediaTypes = computed(() => {
@@ -126,7 +135,8 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       name: mediaName.value,
       mediaType: type.value,
       copyrightLevel: 0,
-      stageIds: stageIds.value
+      stageIds: stageIds.value,
+      tags: tags.value,
     }
   }
 }, id => {
@@ -260,10 +270,20 @@ const addExistingFrame = () => {
       <template #format></template>
     </a-progress>
     <template #footer>
-      <a-button key="submit" type="primary" :loading="saving" @click="saveMedia">
-        <span v-if="saving">Saving {{ progress }}%</span>
-        <span v-else>Save</span>
-      </a-button>
+      <a-space>
+        <a-select
+          class="text-left"
+          style="min-width: 200px;"
+          v-model:value="tags"
+          mode="tags"
+          placeholder="Tags"
+          :options="result ? result.tags.edges.map(({ node }) => ({ value: node.name, label: node.name })) : []"
+        ></a-select>
+        <a-button key="submit" type="primary" :loading="saving" @click="saveMedia">
+          <span v-if="saving">Saving {{ progress }}%</span>
+          <span v-else>Save</span>
+        </a-button>
+      </a-space>
     </template>
   </a-modal>
 </template>

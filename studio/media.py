@@ -8,7 +8,7 @@ from base64 import b64decode
 from datetime import datetime, timedelta
 
 import graphene
-from asset.models import Asset as AssetModel, Stage as StageModel
+from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
 from user.models import MAKER, PLAYER, User as UserModel
 from config.project_globals import ScopedSession, appdir
@@ -55,6 +55,7 @@ class Asset(SQLAlchemyObjectType):
         description="What permission the logged in user is granted to this media")
     sign = graphene.String(
         description="Stream sign that is required to publish from broadcaster")
+    tags = graphene.List(graphene.String, description="Media tags")
 
     class Meta:
         model = AssetModel
@@ -68,6 +69,9 @@ class Asset(SQLAlchemyObjectType):
 
     def resolve_stages(self, info):
         return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
+
+    def resolve_tags(self, info):
+        return [x.tag.name for x in self.tags.all()]
 
     def resolve_copyright_level(self, info):
         if self.asset_license:
@@ -155,6 +159,12 @@ class AssetConnectionField(SQLAlchemyConnectionField):
                     query = query\
                         .join(ParentStage, AssetModel.stages)\
                         .filter(ParentStage.stage_id.in_(value))
+            elif field == 'tags':
+                if len(value):
+                    query = query\
+                        .join(MediaTag, AssetModel.tags)\
+                        .join(Tag, MediaTag.tag)\
+                        .filter(Tag.name.in_(value))
             elif field == 'created_between':
                 if len(value) == 2:
                     query = query\
@@ -242,9 +252,11 @@ class SaveMedia(graphene.Mutation):
             description="Users who can access and edit this media")
         stage_ids = graphene.List(
             graphene.Int, description="Id of stages to be assigned to")
+        tags = graphene.List(
+            graphene.String, description="Media tags")
 
     @jwt_required()
-    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, player_access=None, stage_ids=None):
+    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, player_access=None, stage_ids=None, tags=None):
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -311,6 +323,17 @@ class SaveMedia(graphene.Mutation):
                 asset.stages.delete()
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
+
+            if tags:
+                asset.tags.delete()
+                for tag in tags:
+                    tag_model = local_db_session.query(
+                        Tag).filter(Tag.name == tag).first()
+                    if not tag_model:
+                        tag_model = Tag(name=tag)
+                        local_db_session.add(tag_model)
+                        local_db_session.flush()
+                    asset.tags.append(MediaTag(tag_id=tag_model.id))
 
             local_db_session.flush()
             local_db_session.commit()

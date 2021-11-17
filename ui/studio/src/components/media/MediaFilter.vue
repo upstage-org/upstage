@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, inject, computed } from 'vue';
+import { ref, watch, watchEffect, inject, computed } from 'vue';
 import Notifications from './Notifications.vue';
 import { useQuery } from '@vue/apollo-composable';
 import { useDebounceFn } from '@vueuse/core'
@@ -33,6 +33,13 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       }
     }
   }
+  tags {
+    edges {
+      node {
+        name
+      }
+    }
+  }
   mediaTypes {
     edges {
       node {
@@ -46,6 +53,7 @@ const name = ref('')
 const owners = ref([])
 const types = ref([])
 const stages = ref([])
+const tags = ref([])
 const dates = ref<[Moment, Moment] | undefined>()
 
 const ranges = {
@@ -63,23 +71,24 @@ const updateInquiry = (vars: any) => inquiryVar({
 })
 
 const watchInquiryVar = (vars: any) => {
-  types.value = vars.mediaTypes
+  types.value = vars.mediaTypes ?? []
+  tags.value = vars.tags ?? []
+  console.log(vars)
   inquiryVar.onNextChange(watchInquiryVar)
 }
 inquiryVar.onNextChange(watchInquiryVar)
 
+watchEffect(() => {
+  updateInquiry({
+    owners: owners.value,
+    stages: stages.value,
+    tags: tags.value,
+    mediaTypes: types.value,
+  })
+})
 watch(name, useDebounceFn(() => {
   updateInquiry({ name: name.value })
 }, 500))
-watch(owners, owners => {
-  updateInquiry({ owners })
-})
-watch(stages, stages => {
-  updateInquiry({ stages })
-})
-watch(types, mediaTypes => {
-  updateInquiry({ mediaTypes })
-})
 watch(dates, dates => {
   updateInquiry({
     createdBetween: dates ? [
@@ -93,9 +102,10 @@ const clearFilters = () => {
   owners.value = []
   types.value = []
   stages.value = []
+  tags.value = []
   dates.value = undefined
 }
-const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length || dates.value)
+const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length || tags.value.length || dates.value)
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase()
   return option.value.toLowerCase().includes(s) || option.label.toLowerCase().includes(s)
@@ -160,6 +170,16 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
           :loading="loading"
           v-model:value="stages"
           :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
+        ></a-select>
+        <a-select
+          allowClear
+          showArrow
+          mode="tags"
+          style="min-width: 160px"
+          placeholder="Tags"
+          :loading="loading"
+          v-model:value="tags"
+          :options="result ? result.tags.edges.map(e => ({ value: e.node.name, label: e.node.name })) : []"
         ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"

@@ -3,7 +3,7 @@ import { useMutation, useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
 import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
-import { editingMediaVar } from '../../apollo';
+import { editingMediaVar, inquiryVar } from '../../apollo';
 import configs from '../../config';
 import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
@@ -26,8 +26,8 @@ watch(inquiryResult, () => {
 })
 
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
-query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $createdBetween: [Date]) {
-  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, createdBetween: $createdBetween) {
+query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
+  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
     totalCount
     edges {
       cursor
@@ -50,6 +50,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
           url
           id
         }
+        tags
       }
     }
   }
@@ -105,6 +106,12 @@ const columns = [
     width: 250
   },
   {
+    title: "Tags",
+    key: 'tags',
+    dataIndex: 'tags',
+    width: 250
+  },
+  {
     title: "Size",
     dataIndex: "size",
     key: "size",
@@ -149,7 +156,7 @@ const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: So
     .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
   Object.assign(tableParams, {
-    cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+    cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
     limit: pageSize,
     sort
   })
@@ -208,6 +215,13 @@ const addFrameToEditingMedia = (media: Media) => {
     composingMode.value = false
   }
 }
+
+const filterTag = (tag: string) => {
+  inquiryVar({
+    ...inquiryVar(),
+    tags: [tag]
+  })
+}
 </script>
 
 <template>
@@ -242,9 +256,18 @@ const addFrameToEditingMedia = (media: Media) => {
         </span>
       </template>
       <template v-if="column.key === 'stages'">
-        <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+        <a v-for="(stage, i) in text" :key="i" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
           <a-tag color="#007011">{{ stage.name }}</a-tag>
         </a>
+      </template>
+      <template v-if="column.key === 'tags'">
+        <a-tag
+          v-for="(tag, i) in text"
+          :key="i"
+          :color="tag"
+          @click="filterTag(tag)"
+          class="cursor-pointer"
+        >{{ tag }}</a-tag>
       </template>
       <template v-if="column.key === 'size'">
         <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
