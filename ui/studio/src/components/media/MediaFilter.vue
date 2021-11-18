@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, inject, computed } from 'vue';
+import { ref, watch, watchEffect, inject, computed } from 'vue';
 import Notifications from './Notifications.vue';
 import { useQuery } from '@vue/apollo-composable';
 import { useDebounceFn } from '@vueuse/core'
@@ -8,9 +8,15 @@ import { StudioGraph } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
+import { capitalize } from '../../utils/common';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
+  whoami {
+    username
+    displayName
+    roleName
+  }
   users {
     edges {
       node {
@@ -23,6 +29,13 @@ const { result, loading } = useQuery<StudioGraph>(gql`
     edges {
       node {
         dbId
+        name
+      }
+    }
+  }
+  tags {
+    edges {
+      node {
         name
       }
     }
@@ -40,6 +53,7 @@ const name = ref('')
 const owners = ref([])
 const types = ref([])
 const stages = ref([])
+const tags = ref([])
 const dates = ref<[Moment, Moment] | undefined>()
 
 const ranges = {
@@ -55,18 +69,26 @@ const updateInquiry = (vars: any) => inquiryVar({
   ...inquiryVar(),
   ...vars
 })
+
+const watchInquiryVar = (vars: any) => {
+  types.value = vars.mediaTypes ?? []
+  tags.value = vars.tags ?? []
+  console.log(vars)
+  inquiryVar.onNextChange(watchInquiryVar)
+}
+inquiryVar.onNextChange(watchInquiryVar)
+
+watchEffect(() => {
+  updateInquiry({
+    owners: owners.value,
+    stages: stages.value,
+    tags: tags.value,
+    mediaTypes: types.value,
+  })
+})
 watch(name, useDebounceFn(() => {
   updateInquiry({ name: name.value })
 }, 500))
-watch(owners, owners => {
-  updateInquiry({ owners })
-})
-watch(stages, stages => {
-  updateInquiry({ stages })
-})
-watch(types, mediaTypes => {
-  updateInquiry({ mediaTypes })
-})
 watch(dates, dates => {
   updateInquiry({
     createdBetween: dates ? [
@@ -80,9 +102,10 @@ const clearFilters = () => {
   owners.value = []
   types.value = []
   stages.value = []
+  tags.value = []
   dates.value = undefined
 }
-const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length || dates.value)
+const hasFilter = computed(() => name.value || owners.value.length || types.value.length || stages.value.length || tags.value.length || dates.value)
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase()
   return option.value.toLowerCase().includes(s) || option.label.toLowerCase().includes(s)
@@ -92,6 +115,8 @@ const handleFilterStageName = (keyword: string, option: any) => {
 }
 
 const visibleDropzone = inject('visibleDropzone')
+const composingMode = inject('composingMode')
+const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
 </script>
 
 <template>
@@ -100,7 +125,13 @@ const visibleDropzone = inject('visibleDropzone')
       class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
     >
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="visibleDropzone = true">
+        <a-button v-if="composingMode" type="danger" @click="composingMode = false">
+          <template #icon>
+            <RollbackOutlined />
+          </template>
+          Back to editing
+        </a-button>
+        <a-button v-else type="primary" @click="visibleDropzone = true">
           <template #icon>
             <PlusOutlined />
           </template>
@@ -127,7 +158,7 @@ const visibleDropzone = inject('visibleDropzone')
           placeholder="Media types"
           :loading="loading"
           v-model:value="types"
-          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: e.node.name[0].toUpperCase() + e.node.name.substr(1) })) : []"
+          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []"
         ></a-select>
         <a-select
           allowClear
@@ -140,6 +171,16 @@ const visibleDropzone = inject('visibleDropzone')
           v-model:value="stages"
           :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
         ></a-select>
+        <a-select
+          allowClear
+          showArrow
+          mode="tags"
+          style="min-width: 160px"
+          placeholder="Tags"
+          :loading="loading"
+          v-model:value="tags"
+          :options="result ? result.tags.edges.map(e => ({ value: e.node.name, label: e.node.name })) : []"
+        ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
           v-model:value="dates"
@@ -150,10 +191,15 @@ const visibleDropzone = inject('visibleDropzone')
         </a-button>
       </a-space>
       <a-space>
-        <div style="line-height: 0.8;" class="text-right">
-          <h2 class="mb-0">Helen</h2>
-          <span class="text-gray-500">Admin</span>
-        </div>
+        <a
+          :href="to('backstage/profile')"
+          v-if="result"
+          style="line-height: 0.8;"
+          class="text-right"
+        >
+          <h2 class="mb-0">{{ result.whoami.displayName || result.whoami.username }}</h2>
+          <span class="text-gray-500">{{ result.whoami.roleName }}</span>
+        </a>
         <Notifications />
         <a-dropdown class="ml-4">
           <a class="ant-dropdown-link flex-nowrap block w-24" @click.prevent>
@@ -162,7 +208,7 @@ const visibleDropzone = inject('visibleDropzone')
           </a>
           <template #overlay>
             <a-menu>
-              <a :href="`${configs.UPSTAGE_URL}/backstage`">
+              <a :href="to('backstage')">
                 <a-menu-item>Back to Backstage</a-menu-item>
               </a>
               <a-menu-item>Logout</a-menu-item>

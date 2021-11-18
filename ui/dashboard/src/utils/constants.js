@@ -76,7 +76,7 @@ export const MEDIA_COPYRIGHT_LEVELS = [
     value: 3,
     name: "🔒️ Not shared",
     description:
-      "Nobody except the owner can use the media item; that is, only the owner can assign it to stages - if it is assigned to a stage then it would be available for players who have access to that stage",
+      "Only the owner can assign this media item to a stage. Once it is assigned to a stage it can be used there by players who have access to that stage.",
   },
 ]
 

@@ -8,7 +8,7 @@
       :style="{
         'object-fit': fit,
         opacity,
-        transform: `rotate(${rotate ?? 0}deg)`,
+        transform: `rotate(${rotate}deg)`,
       }"
       @error="fallback = true"
     />
@@ -19,7 +19,32 @@
 import { computed, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 export default {
-  props: ["src", "fit", "opacity", "rotate", "transition", "noFallback"],
+  props: {
+    src: {
+      type: String,
+      required: true,
+    },
+    fit: {
+      type: String,
+      default: "contain",
+    },
+    transition: {
+      type: Number,
+      default: 1000,
+    },
+    noFallback: {
+      type: Boolean,
+      default: false,
+    },
+    rotate: {
+      type: Number,
+      default: 0,
+    },
+    opacity: {
+      type: Number,
+      default: 1,
+    },
+  },
   setup: (props) => {
     const fallback = ref(false);
     watch(
@@ -48,5 +73,8 @@ img {
 .fade-enter,
 .fade-leave-to {
   opacity: 0 !important;
+}
+.fade-enter-active {
+  z-index: -1;
 }
 </style>
