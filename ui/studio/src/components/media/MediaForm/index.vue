@@ -10,6 +10,7 @@ import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
 import { editingMediaVar, inquiryVar } from '../../../apollo';
+import MediaPermissions from './MediaPermissions.vue';
 const files = inject<Ref<UploadFile[]>>("files")
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
@@ -239,11 +240,7 @@ const addExistingFrame = () => {
               <StageAssignment v-model="stageIds" />
             </a-tab-pane>
             <a-tab-pane key="c" tab="Permissions">
-              <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
-                <template #icon>
-                  <BuildOutlined />
-                </template>
-              </a-result>
+              <MediaPermissions />
             </a-tab-pane>
             <a-tab-pane key="voice" tab="Voice">
               <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
