@@ -21,6 +21,7 @@ watch(editingMediaResult, () => {
     name.value = editingMedia.name;
     type.value = editingMedia.assetType.name;
     tags.value = editingMedia.tags;
+    copyrightLevel.value = editingMedia.copyrightLevel;
     const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
     if (files?.value) {
       const frames = attributes.frames && attributes.frames.length ? attributes.frames : [editingMedia.src];
@@ -44,6 +45,7 @@ const name = ref('')
 const type = ref('avatar')
 const tags = ref<string[]>([])
 const stageIds = ref<number[]>([])
+const userIds = ref<number[]>([])
 const mediaName = computed(() => {
   if (name.value) {
     return name.value
@@ -53,6 +55,7 @@ const mediaName = computed(() => {
   }
   return ''
 })
+const copyrightLevel = ref(0)
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
   console.log(event)
@@ -137,6 +140,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       mediaType: type.value,
       copyrightLevel: 0,
       stageIds: stageIds.value,
+      userIds: [],
       tags: tags.value,
     }
   }
@@ -240,7 +244,7 @@ const addExistingFrame = () => {
               <StageAssignment v-model="stageIds" />
             </a-tab-pane>
             <a-tab-pane key="c" tab="Permissions">
-              <MediaPermissions />
+              <MediaPermissions v-model="copyrightLevel" v-model:users="userIds" />
             </a-tab-pane>
             <a-tab-pane key="voice" tab="Voice">
               <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">

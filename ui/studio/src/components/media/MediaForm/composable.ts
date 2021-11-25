@@ -14,9 +14,9 @@ interface SaveMediaMutationVariables {
   name: string
   urls?: string[]
   mediaType: string
-  playerAccess?: string
   copyrightLevel: 0 | 1 | 2 | 3
   stageIds: number[]
+  userIds: number[]
   tags: string[]
 }
 
@@ -40,8 +40,8 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
     }
   `)
   const { mutate } = useMutation<{ saveMedia: { asset: Media } }, SaveMediaMutationVariables>(gql`
-    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $playerAccess: String, $copyrightLevel: Int, $stageIds: [Int], $tags: [String]) {
-      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, playerAccess: $playerAccess, copyrightLevel: $copyrightLevel, stageIds: $stageIds, tags: $tags) {
+    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $copyrightLevel: Int, $stageIds: [Int], $tags: [String], $userIds: [Int]) {
+      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, copyrightLevel: $copyrightLevel, stageIds: $stageIds, tags: $tags, userIds: $userIds) {
         asset {
           id
         }

@@ -18,7 +18,7 @@ from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql_relay.node.node import from_global_id
-from licenses.models import AssetLicense
+from licenses.models import AssetLicense, AssetUsage
 from performance_config.models import ParentStage
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import and_, or_
@@ -48,7 +48,6 @@ class Asset(SQLAlchemyObjectType):
     src = graphene.String(description="Logical path of the media")
     stages = graphene.List(
         AssignedStage, description="Stages that this media is assigned to")
-    copyright_level = graphene.Int(description="Copyright level")
     playerAccess = graphene.String(
         description="Users who can access and edit this media")
     permission = graphene.String(
@@ -72,11 +71,6 @@ class Asset(SQLAlchemyObjectType):
 
     def resolve_tags(self, info):
         return [x.tag.name for x in self.tags.all()]
-
-    def resolve_copyright_level(self, info):
-        if self.asset_license:
-            return self.asset_license.level
-        return 0
 
     def resolve_playerAccess(self, info):
         if self.asset_license and self.asset_license.permissions:
@@ -248,15 +242,15 @@ class SaveMedia(graphene.Mutation):
             description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
         id = graphene.ID(description="ID of the media (for updating)")
         copyright_level = graphene.Int(description="Copyright level")
-        player_access = graphene.String(
-            description="Users who can access and edit this media")
+        user_ids = graphene.List(
+            graphene.Int, description="Users who can access and edit this media")
         stage_ids = graphene.List(
             graphene.Int, description="Id of stages to be assigned to")
         tags = graphene.List(
             graphene.String, description="Media tags")
 
     @jwt_required()
-    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, player_access=None, stage_ids=None, tags=None):
+    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, user_ids=None, stage_ids=None, tags=None):
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -279,21 +273,8 @@ class SaveMedia(graphene.Mutation):
                 asset.name = name
                 asset.asset_type = asset_type
                 asset.file_location = urls[0]
+                asset.copyright_level = copyright_level
                 asset.updated_on = datetime.utcnow()
-
-                if asset.asset_license:
-                    asset.asset_license.level = copyright_level
-                    asset.asset_license.permissions = player_access
-                else:
-                    if not asset.id:
-                        local_db_session.flush()
-
-                    asset_license = AssetLicense(
-                        asset_id=asset.id,
-                        level=copyright_level,
-                        permissions=player_access
-                    )
-                    local_db_session.add(asset_license)
                 local_db_session.flush()
 
             if urls:
@@ -323,6 +304,22 @@ class SaveMedia(graphene.Mutation):
                 asset.stages.delete()
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
+
+            if user_ids:
+                granted_permissions = asset.permissions.all()
+                for permission in granted_permissions:
+                    if isinstance(permission, AssetUsage):
+                        if permission.user_id not in user_ids and permission.approved == True:
+                            asset.permissions.remove(permission)
+                            local_db_session.delete(permission)
+                for user_id in user_ids:
+                    permission = local_db_session.query(AssetUsage).filter(
+                        AssetUsage.asset_id == asset.id, AssetUsage.user_id == user_id).first()
+                    if not permission:
+                        permission = AssetUsage(user_id=user_id)
+                        asset.permissions.append(permission)
+                    permission.approved = True
+                local_db_session.flush()
 
             if tags:
                 asset.tags.delete()

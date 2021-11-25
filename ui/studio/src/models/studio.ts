@@ -32,6 +32,7 @@ export interface MediaType {
 
 export interface User {
   id: string;
+  dbId: number;
   displayName: string;
   username: string;
   roleName: string;
@@ -62,6 +63,7 @@ export interface Media {
   description: string;
   createdOn: string;
   size: number;
+  copyrightLevel: number;
   assetType: MediaType;
   owner: User;
   stages: AssignedStage[];

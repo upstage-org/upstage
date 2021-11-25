@@ -20,6 +20,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   users {
     edges {
       node {
+        dbId
         displayName
         username
       }

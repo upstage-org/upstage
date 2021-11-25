@@ -47,6 +47,7 @@ class Asset(Base, db.Model):
     owner = relationship(User, foreign_keys=[owner_id])
     stages = relationship('ParentStage', lazy='dynamic')
     tags = relationship('MediaTag', lazy='dynamic')
+    permissions = relationship('AssetUsage', lazy='dynamic')
 
 
 class Stage(Base, db.Model):
