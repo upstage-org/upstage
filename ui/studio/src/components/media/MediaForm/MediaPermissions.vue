@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from '@vue/apollo-composable';
+import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
 import { ref, watchEffect, PropType } from 'vue';
 import { editingMediaVar } from '../../../apollo';
@@ -56,7 +57,7 @@ const renderItem = (item: User) => item.displayName || item.username;
 const { mutate: confirmPermission } = useConfirmPermission();
 const confirm = (id: string, approved: boolean) => confirmPermission({ id, approved }).then(result => {
     if (result?.data?.confirmPermission.success) {
-        const emv = editingMediaVar()
+        message.success('Permission updated successfully!');
         editingMediaVar({
             ...editingMediaVar()!,
             permissions: result.data.confirmPermission.permissions,

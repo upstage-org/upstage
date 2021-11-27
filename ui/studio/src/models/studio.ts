@@ -16,6 +16,7 @@ export interface StudioGraph {
   tags: Connection<Tag>;
   media: Connection<Media>;
   whoami: User;
+  notifications: Notification[];
 }
 
 export interface PageInfo {
@@ -113,4 +114,11 @@ export interface Permission {
   createdOn: string;
   note: null;
   user: User;
+  asset: Media;
+}
+
+export interface Notification {
+  id: string;
+  type: "MEDIA_USAGE";
+  mediaUsage: Permission;
 }
