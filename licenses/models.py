@@ -46,6 +46,7 @@ class AssetUsage(Base,db.Model):
     user_id = Column(Integer, ForeignKey('upstage_user.id'), nullable=False, default=0)
     approved = Column(Boolean, nullable=False, default=False)
     seen = Column(Boolean, nullable=False, default=False)
+    note = Column(String, nullable=True)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     user = relationship('User', foreign_keys=[user_id])
     asset = relationship('Asset', foreign_keys=[asset_id])

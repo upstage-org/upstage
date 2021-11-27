@@ -56,6 +56,8 @@ export interface AssignedStage {
   url: string
 }
 
+export type CopyrightLevel = 0 | 1 | 2 | 3;
+
 export interface Media {
   id: string;
   name: string;
@@ -63,7 +65,8 @@ export interface Media {
   description: string;
   createdOn: string;
   size: number;
-  copyrightLevel: number;
+  copyrightLevel: CopyrightLevel;
+  permissions: Permission[];
   assetType: MediaType;
   owner: User;
   stages: AssignedStage[];
@@ -99,4 +102,15 @@ export interface UploadFile {
   preview: string;
   status: 'local' | 'uploaded';
   url?: string;
+}
+
+export interface Permission {
+  id: string;
+  approved: boolean;
+  userId: number;
+  assetId: number;
+  seen: boolean;
+  createdOn: string;
+  note: null;
+  user: User;
 }

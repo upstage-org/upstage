@@ -33,6 +33,7 @@ CREATE TABLE "public"."asset_usage" (
     "user_id" integer NOT NULL,
     "approved" boolean NOT NULL DEFAULT false,
     "seen" boolean NOT NULL DEFAULT false,
+    "note" TEXT,
     "created_on" timestamp DEFAULT (now() at time zone 'utc'),
     PRIMARY KEY ("id"),
     FOREIGN KEY (asset_id) REFERENCES asset(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE,

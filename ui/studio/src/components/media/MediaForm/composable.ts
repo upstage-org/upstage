@@ -2,7 +2,8 @@ import { useMutation } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { ref, computed } from "vue";
-import { Media, UploadFile } from "../../../models/studio";
+import { permissionFragment } from "../../../models/fragment";
+import { CopyrightLevel, Media, Permission, UploadFile } from "../../../models/studio";
 
 interface SaveMediaPayload {
   files: UploadFile[];
@@ -14,7 +15,7 @@ interface SaveMediaMutationVariables {
   name: string
   urls?: string[]
   mediaType: string
-  copyrightLevel: 0 | 1 | 2 | 3
+  copyrightLevel: CopyrightLevel
   stageIds: number[]
   userIds: number[]
   tags: string[]
@@ -91,4 +92,19 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
   const saving = computed(() => progress.value < 100)
 
   return { progress, saveMedia, saving }
+}
+
+export const useConfirmPermission = () => {
+  return useMutation<{ confirmPermission: { success: boolean, message: string, permissions: Permission[] } }, { id: string, approved: boolean }>(gql`
+    mutation ConfirmPermission($id: ID, $approved: Boolean) {
+      confirmPermission(id: $id, approved: $approved) {
+        success
+        message
+        permissions {
+          ...permissionFragment
+        }
+      }
+    }
+    ${permissionFragment}
+  `)
 }

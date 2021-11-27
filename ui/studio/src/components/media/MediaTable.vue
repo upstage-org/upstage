@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
 import { editingMediaVar, inquiryVar } from '../../apollo';
 import configs from '../../config';
+import { permissionFragment } from '../../models/fragment';
 import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
@@ -51,10 +52,15 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
           id
         }
         tags
+        copyrightLevel
+        permissions {
+          ...permissionFragment
+        }
       }
     }
   }
 }
+${permissionFragment}
 `, params.value, { notifyOnNetworkStatusChange: true })
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {

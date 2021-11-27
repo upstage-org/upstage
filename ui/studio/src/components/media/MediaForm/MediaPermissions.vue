@@ -2,8 +2,10 @@
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { ref, watchEffect, PropType } from 'vue';
+import { editingMediaVar } from '../../../apollo';
 import configs from '../../../config';
-import { StudioGraph, User } from '../../../models/studio';
+import { Media, StudioGraph, User } from '../../../models/studio';
+import { useConfirmPermission } from './composable';
 
 const props = defineProps({
     modelValue: {
@@ -14,12 +16,16 @@ const props = defineProps({
         type: Array as PropType<number[]>,
         default: [],
     },
+    media: Object as PropType<Media>,
 });
-
 const emits = defineEmits(['update:modelValue', 'update:users']);
 
-const copyrightLevel = ref(0)
-const targetKeys = ref(props.users);
+const copyrightLevel = ref();
+const targetKeys = ref();
+watchEffect(() => {
+    copyrightLevel.value = props.modelValue;
+    targetKeys.value = props.users;
+})
 
 watchEffect(() => {
     emits('update:modelValue', copyrightLevel.value);
@@ -46,10 +52,21 @@ const filterOption = (keyword: string, option: any) => {
 }
 
 const renderItem = (item: User) => item.displayName || item.username;
+
+const { mutate: confirmPermission } = useConfirmPermission();
+const confirm = (id: string, approved: boolean) => confirmPermission({ id, approved }).then(result => {
+    if (result?.data?.confirmPermission.success) {
+        const emv = editingMediaVar()
+        editingMediaVar({
+            ...editingMediaVar()!,
+            permissions: result.data.confirmPermission.permissions,
+        })
+    }
+})
 </script>
 
 <template>
-    <a-space direction="vertical" class="w-full">
+    <a-space direction="vertical" class="w-full mb-4">
         <a-select class="w-80" placeholder="Media copyright level" v-model:value="copyrightLevel">
             <a-select-option
                 v-for="level in configs.MEDIA_COPYRIGHT_LEVELS"
@@ -63,6 +80,29 @@ const renderItem = (item: User) => item.displayName || item.username;
                 </a-tooltip>
             </a-select-option>
         </a-select>
+        <a-alert
+            type="warning"
+            show-icon
+            v-for="request in media?.permissions.filter(p => !p.approved)"
+            :key="request.id"
+        >
+            <template #icon>🔑</template>
+            <template #message>
+                <b>
+                    <DName :user="request.user" />
+                </b>
+                is requesting access to this media: &quot;{{ request.note }}&quot;
+                <br />
+                <a-space>
+                    <smart-button type="primary" :action="() => confirm(request.id, true)">Approve</smart-button>
+                    <smart-button type="danger" :action="() => confirm(request.id, false)">Reject</smart-button>
+                </a-space>
+                <br />
+                <small class="text-gray-500">
+                    <d-date :value="request.createdOn" />
+                </small>
+            </template>
+        </a-alert>
         <a-transfer
             v-if="copyrightLevel === 2"
             :locale="{
