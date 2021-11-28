@@ -5,11 +5,12 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
 import { ref, computed, inject, Ref, createVNode, watch } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { CopyrightLevel, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
 import { editingMediaVar, inquiryVar } from '../../../apollo';
+import MediaPermissions from './MediaPermissions.vue';
 const files = inject<Ref<UploadFile[]>>("files")
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
@@ -20,6 +21,7 @@ watch(editingMediaResult, () => {
     name.value = editingMedia.name;
     type.value = editingMedia.assetType.name;
     tags.value = editingMedia.tags;
+    copyrightLevel.value = editingMedia.copyrightLevel;
     const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
     if (files?.value) {
       const frames = attributes.frames && attributes.frames.length ? attributes.frames : [editingMedia.src];
@@ -36,6 +38,7 @@ watch(editingMediaResult, () => {
     if (editingMedia.stages) {
       stageIds.value = editingMedia.stages.map(stage => stage.id);
     }
+    userIds.value = editingMedia.permissions.filter(permission => permission.approved).map(permission => permission.userId);
   }
 });
 
@@ -43,6 +46,7 @@ const name = ref('')
 const type = ref('avatar')
 const tags = ref<string[]>([])
 const stageIds = ref<number[]>([])
+const userIds = ref<number[]>([])
 const mediaName = computed(() => {
   if (name.value) {
     return name.value
@@ -52,6 +56,7 @@ const mediaName = computed(() => {
   }
   return ''
 })
+const copyrightLevel = ref<CopyrightLevel>(0)
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
   console.log(event)
@@ -134,8 +139,9 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       id: editingMediaResult.value?.editingMedia?.id,
       name: mediaName.value,
       mediaType: type.value,
-      copyrightLevel: 0,
+      copyrightLevel: copyrightLevel.value,
       stageIds: stageIds.value,
+      userIds: userIds.value,
       tags: tags.value,
     }
   }
@@ -238,12 +244,14 @@ const addExistingFrame = () => {
             <a-tab-pane key="stages" tab="Stages" class="pb-4">
               <StageAssignment v-model="stageIds" />
             </a-tab-pane>
-            <a-tab-pane key="c" tab="Permissions">
-              <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
-                <template #icon>
-                  <BuildOutlined />
-                </template>
-              </a-result>
+            <a-tab-pane key="permissions" tab="Permissions">
+              <MediaPermissions
+                v-if="editingMediaResult"
+                :key="editingMediaResult.editingMedia.id"
+                v-model="copyrightLevel"
+                v-model:users="userIds"
+                :media="editingMediaResult.editingMedia"
+              />
             </a-tab-pane>
             <a-tab-pane key="voice" tab="Voice">
               <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">

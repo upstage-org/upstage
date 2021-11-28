@@ -41,11 +41,13 @@ class Asset(Base, db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     size = Column(BigInteger, nullable=False, default=0)
+    copyright_level = Column(Integer, nullable=False, default=0)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
     asset_license = relationship(AssetLicense, uselist=False, backref="asset")
     owner = relationship(User, foreign_keys=[owner_id])
     stages = relationship('ParentStage', lazy='dynamic')
     tags = relationship('MediaTag', lazy='dynamic')
+    permissions = relationship('AssetUsage', lazy='dynamic')
 
 
 class Stage(Base, db.Model):

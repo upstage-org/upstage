@@ -9,6 +9,7 @@ import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
 import { capitalize } from '../../utils/common';
+import { permissionFragment } from '../../models/fragment';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -20,6 +21,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   users {
     edges {
       node {
+        dbId
         displayName
         username
       }
