@@ -15,7 +15,7 @@ from stage.asset import DeleteMedia
 from studio.notification import Notification, resolve_notifications
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, ConfirmPermission, SaveMedia, UploadFile)
+                          AssetType, CalcSizes, ConfirmPermission, RequestPermission, SaveMedia, UploadFile)
 from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -81,6 +81,7 @@ class Mutation(graphene.ObjectType):
     saveMedia = SaveMedia.Field()
     refreshUser = RefreshMutation.Field()
     confirmPermission = ConfirmPermission.Field()
+    requestPermission = RequestPermission.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

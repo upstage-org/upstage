@@ -49,6 +49,14 @@ class AssetUsage(SQLAlchemyObjectType):
         interfaces = (graphene.relay.Node,)
 
 
+class Previlege(graphene.Enum):
+    NONE = 0
+    OWNER = 1
+    APPROVED = 2
+    PENDING_APPROVAL = 3
+    REQUIRE_APPROVAL = 4
+
+
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     src = graphene.String(description="Logical path of the media")
@@ -56,7 +64,7 @@ class Asset(SQLAlchemyObjectType):
         AssignedStage, description="Stages that this media is assigned to")
     permissions = graphene.List(
         AssetUsage, description="Users who had been granted or acknowledged to use this media")
-    privilege = graphene.String(
+    privilege = Previlege(
         description="Permission of the logged in user for this media")
     sign = graphene.String(
         description="Stream sign that is required to publish from broadcaster")
@@ -79,28 +87,29 @@ class Asset(SQLAlchemyObjectType):
         return [x.tag.name for x in self.tags.all()]
 
     def resolve_permissions(self, info):
-        return self.permissions.all()
+        return self.permissions.order_by(AssetUsageModel.created_on.desc()).all()
 
     def resolve_privilege(self, info):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         if not user_id:
-            return "none"
+            return Previlege.NONE
         if self.owner_id == user_id:
-            return 'owner'
-        if not self.asset_license or self.asset_license.level == 0:
-            return "editor"
-        if self.asset_license.level == 3:
-            return "none"
-        player_access = self.asset_license.permissions
-        if player_access:
-            accesses = json.loads(player_access)
-            if len(accesses) == 2:
-                if user_id in accesses[0]:
-                    return "readonly"
-                elif user_id in accesses[1]:
-                    return "editor"
-        return "none"
+            return Previlege.OWNER
+        if not self.copyright_level:  # no copyright
+            return Previlege.APPROVED
+        if self.copyright_level == 3:
+            # not shared, will not visisble to anyone either, this condidtion is just in case
+            return Previlege.NONE
+        usage = DBSession.query(AssetUsageModel).filter(
+            AssetUsageModel.asset_id == self.id).filter(AssetUsageModel.user_id == user_id).first()
+        if usage:
+            if not usage.approved and self.copyright_level == 2:
+                return Previlege.PENDING_APPROVAL
+            else:
+                return Previlege.APPROVED
+        else:
+            return Previlege.REQUIRE_APPROVAL
 
     def resolve_sign(self, info):
         result = verify_jwt_in_request(True)
@@ -135,10 +144,8 @@ class AssetConnectionField(SQLAlchemyConnectionField):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         query = query.filter(or_(
-            AssetModel.asset_license == None,
-            AssetModel.asset_license.has(AssetLicense.level < 3),
-            and_(AssetModel.asset_license.has(AssetLicense.level == 3),
-                 AssetModel.owner_id == user_id)
+            AssetModel.copyright_level < 3,
+            AssetModel.copyright_level == 3 and AssetModel.owner_id == user_id
         ))
         for field, value in args.items():
             if field == 'id':
@@ -309,7 +316,7 @@ class SaveMedia(graphene.Mutation):
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
 
-            if user_ids:
+            if user_ids != None:
                 granted_permissions = asset.permissions.all()
                 for permission in granted_permissions:
                     if isinstance(permission, AssetUsageModel):
@@ -377,3 +384,31 @@ class ConfirmPermission(graphene.Mutation):
         permissions = DBSession.query(AssetUsageModel).filter(
             AssetUsageModel.asset_id == asset_id).all()
         return ConfirmPermission(success=True, permissions=permissions)
+
+
+class RequestPermission(graphene.Mutation):
+    """Mutation to create an asset usage"""
+    success = graphene.Boolean(description="Success")
+
+    class Arguments:
+        asset_id = graphene.ID(description="ID of the media usage request")
+        note = graphene.String(
+            description="Note for the media usage request", required=False)
+
+    @jwt_required()
+    def mutate(self, info, asset_id, note=None):
+        asset_id = from_global_id(asset_id)[1]
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).get(asset_id)
+            if asset:
+                code, error, user, timezone = current_user()
+                asset_usage = AssetUsageModel(
+                    user_id=user.id, asset_id=asset_id, note=note)
+                if asset.copyright_level == 2:
+                    asset_usage.approved = False
+                else:
+                    asset_usage.approved = True
+                local_db_session.add(asset_usage)
+                local_db_session.flush()
+                local_db_session.commit()
+        return ConfirmPermission(success=True)

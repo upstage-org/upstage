@@ -1,16 +1,15 @@
 <script lang="ts" setup>
 import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
-import { PropType, computed } from 'vue';
+import { computed } from 'vue';
 import { permissionFragment } from '../../models/fragment';
-import { Notification, StudioGraph } from '../../models/studio';
+import { StudioGraph } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import { useConfirmPermission } from './MediaForm/composable';
 
 const { result, loading, refetch } = useQuery<StudioGraph>(gql`
 {
   notifications {
-    id
     type
     mediaUsage {
       ...permissionFragment
@@ -32,7 +31,7 @@ const refresh = () => refetch();
   <a-popover title="Notifications" trigger="click">
     <template #content>
       <a-list class="w-96 overflow-auto" style="max-height: 75vh">
-        <a-list-item v-for="notification in notifications" key="{notification.id}" class="px-4">
+        <a-list-item v-for="notification, i in notifications" :key="i" class="px-4">
           <template v-if="notification.type === 'MEDIA_USAGE'">
             <a-list-item-meta>
               <template #avatar>

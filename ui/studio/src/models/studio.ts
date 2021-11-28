@@ -72,6 +72,7 @@ export interface Media {
   owner: User;
   stages: AssignedStage[];
   tags: string[];
+  privilege: Privilege;
 }
 
 export interface MediaAttributes {
@@ -122,3 +123,5 @@ export interface Notification {
   type: "MEDIA_USAGE";
   mediaUsage: Permission;
 }
+
+export type Privilege = 'NONE' | 'OWNER' | 'APPROVED' | 'PENDING_APPROVAL' | 'REQUIRE_APPROVAL'

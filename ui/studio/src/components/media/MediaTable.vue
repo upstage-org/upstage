@@ -9,6 +9,8 @@ import { permissionFragment } from '../../models/fragment';
 import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
+import RequestPermission from './MediaForm/RequestPermission.vue';
+import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
 
 const files = inject<Ref<UploadFile[]>>("files")
 
@@ -56,6 +58,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         permissions {
           ...permissionFragment
         }
+        privilege
       }
     }
   }
@@ -104,6 +107,11 @@ const columns = [
     sorter: {
       multiple: 2,
     },
+  },
+  {
+    title: "Copyright Level",
+    dataIndex: "copyrightLevel",
+    key: "copyrightLevel",
   },
   {
     title: "Stages",
@@ -281,6 +289,11 @@ const filterTag = (tag: string) => {
         </a-tag>
         <a-tag v-else>No size</a-tag>
       </template>
+      <template v-if="column.key === 'copyrightLevel'">
+        <span
+          class="leading-4"
+        >{{ configs.MEDIA_COPYRIGHT_LEVELS.find(l => l.value === record.copyrightLevel)?.name }}</span>
+      </template>
       <template v-if="column.key === 'created_on'">
         <d-date :value="text" />
       </template>
@@ -290,33 +303,53 @@ const filterTag = (tag: string) => {
             <DoubleRightOutlined />Append frames
           </a-button>
         </a-space>
-        <a-space v-else>
-          <a-button type="primary" @click="editMedia(record)">
-            <EditOutlined />Edit
-          </a-button>
-          <a :href="absolutePath(record.src)" :download="record.name">
-            <a-button>
-              <template #icon>
-                <DownloadOutlined />
-              </template>
-            </a-button>
-          </a>
-          <a-popconfirm
-            title="Are you sure delete this media?"
-            ok-text="Yes"
-            cancel-text="No"
-            @confirm="deleteMedia(record)"
-            placement="left"
-            :ok-button-props="{ danger: true }"
-            loading="deleting"
+        <template v-else>
+          <a-space v-if="record.privilege === 'NONE'">
+            <a-tooltip>
+              <template #title>You don't have permission to access this media</template>
+              🙅‍♀️🙅‍♂️
+            </a-tooltip>
+          </a-space>
+          <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
+            <RequestPermission v-if="record.copyrightLevel === 2" :media="record" />
+            <RequestAcknowledge v-else :media="record" />
+          </a-space>
+          <a-space
+            v-else-if="record.privilege === 'PENDING_APPROVAL'"
+            direction="vertical"
+            class="leading-4"
           >
-            <a-button type="dashed" danger>
-              <template #icon>
-                <DeleteOutlined />
-              </template>
+            <b>✅ Request sent!</b>
+            <small>Please wait for the media owner's approval</small>
+          </a-space>
+          <a-space v-else>
+            <a-button type="primary" @click="editMedia(record)">
+              <EditOutlined />Edit
             </a-button>
-          </a-popconfirm>
-        </a-space>
+            <a :href="absolutePath(record.src)" :download="record.name">
+              <a-button>
+                <template #icon>
+                  <DownloadOutlined />
+                </template>
+              </a-button>
+            </a>
+            <a-popconfirm
+              title="Are you sure delete this media?"
+              ok-text="Yes"
+              cancel-text="No"
+              @confirm="deleteMedia(record)"
+              placement="left"
+              :ok-button-props="{ danger: true }"
+              loading="deleting"
+            >
+              <a-button type="dashed" danger>
+                <template #icon>
+                  <DeleteOutlined />
+                </template>
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+        </template>
       </template>
     </template>
   </a-table>

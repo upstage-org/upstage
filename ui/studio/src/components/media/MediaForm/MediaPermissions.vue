@@ -81,47 +81,75 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
                 </a-tooltip>
             </a-select-option>
         </a-select>
-        <a-alert
-            type="warning"
-            show-icon
-            v-for="request in media?.permissions.filter(p => !p.approved)"
-            :key="request.id"
-        >
-            <template #icon>🔑</template>
-            <template #message>
-                <b>
-                    <DName :user="request.user" />
-                </b>
-                is requesting access to this media: &quot;{{ request.note }}&quot;
-                <br />
-                <a-space>
-                    <smart-button type="primary" :action="() => confirm(request.id, true)">Approve</smart-button>
-                    <smart-button type="danger" :action="() => confirm(request.id, false)">Reject</smart-button>
-                </a-space>
-                <br />
-                <small class="text-gray-500">
-                    <d-date :value="request.createdOn" />
-                </small>
-            </template>
-        </a-alert>
-        <a-transfer
-            v-if="copyrightLevel === 2"
-            :locale="{
-                itemUnit: 'player',
-                itemsUnit: 'players',
-                notFoundContent: 'No player available',
-                searchPlaceholder: 'Search player name'
-            }"
-            :list-style="{
-                flex: '1',
-                height: '300px'
-            }"
-            :titles="[' available', ' granted']"
-            v-model:target-keys="targetKeys"
-            :data-source="result ? result.users.edges.map(e => ({ key: e.node.dbId, ...e.node })) : []"
-            show-search
-            :filter-option="filterOption"
-            :render="renderItem"
-        />
+        <template v-if="copyrightLevel === 1">
+            <a-alert
+                show-icon
+                v-for="request in media?.permissions"
+                :key="request.id"
+                class="bg-white"
+            >
+                <template #icon>✅</template>
+                <template #message>
+                    <b>
+                        <DName :user="request.user" />
+                    </b>
+                    acknowledge of using this media.
+                    <small
+                        class="text-gray-500"
+                    >
+                        <d-date :value="request.createdOn" />
+                    </small>
+                </template>
+            </a-alert>
+        </template>
+        <template v-else-if="copyrightLevel === 2">
+            <a-alert
+                type="warning"
+                show-icon
+                v-for="request in media?.permissions.filter(p => !p.approved)"
+                :key="request.id"
+            >
+                <template #icon>🔑</template>
+                <template #message>
+                    <b>
+                        <DName :user="request.user" />
+                    </b>
+                    is requesting access to this media: &quot;{{ request.note }}&quot;
+                    <br />
+                    <a-space>
+                        <smart-button
+                            type="primary"
+                            :action="() => confirm(request.id, true)"
+                        >Approve</smart-button>
+                        <smart-button
+                            type="danger"
+                            :action="() => confirm(request.id, false)"
+                        >Reject</smart-button>
+                    </a-space>
+                    <br />
+                    <small class="text-gray-500">
+                        <d-date :value="request.createdOn" />
+                    </small>
+                </template>
+            </a-alert>
+            <a-transfer
+                :locale="{
+                    itemUnit: 'player',
+                    itemsUnit: 'players',
+                    notFoundContent: 'No player available',
+                    searchPlaceholder: 'Search player name'
+                }"
+                :list-style="{
+                    flex: '1',
+                    height: '300px'
+                }"
+                :titles="[' available', ' granted']"
+                v-model:target-keys="targetKeys"
+                :data-source="result ? result.users.edges.map(e => ({ key: e.node.dbId, ...e.node })) : []"
+                show-search
+                :filter-option="filterOption"
+                :render="renderItem"
+            />
+        </template>
     </a-space>
 </template>

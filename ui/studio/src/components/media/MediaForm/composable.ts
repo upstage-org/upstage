@@ -108,3 +108,13 @@ export const useConfirmPermission = () => {
     ${permissionFragment}
   `)
 }
+
+export const useRequestPermission = () => {
+  return useMutation<{ requestPermission: { success: boolean, message: string } }, { assetId: string, note?: string }>(gql`
+    mutation RequestPermission($assetId: ID, $note: String) {
+      requestPermission(assetId: $assetId, note: $note) {
+        success
+      }
+    }
+  `)
+}
