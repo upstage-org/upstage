@@ -72,9 +72,11 @@ class Asset(SQLAlchemyObjectType):
 
     class Meta:
         model = AssetModel
-        model.db_id = model.id
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
+    
+    def resolve_db_id(self, info):
+        return self.id
 
     def resolve_src(self, info):
         timestamp = int(time.mktime(self.updated_on.timetuple()))
@@ -129,9 +131,10 @@ class AssetType(SQLAlchemyObjectType):
 
     class Meta:
         model = AssetTypeModel
-        model.db_id = model.id
         interfaces = (graphene.relay.Node,)
 
+    def resolve_db_id(self, info):
+        return self.id
 
 class AssetConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
@@ -307,6 +310,9 @@ class SaveMedia(graphene.Mutation):
 
                 if len(urls) > 1:
                     attributes['multi'] = True
+                else:
+                    attributes['multi'] = False
+                    attributes['frame'] = []
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
