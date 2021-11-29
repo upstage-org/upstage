@@ -246,11 +246,10 @@ const addExistingFrame = () => {
             </a-tab-pane>
             <a-tab-pane key="permissions" tab="Permissions">
               <MediaPermissions
-                v-if="editingMediaResult"
-                :key="editingMediaResult.editingMedia.id"
+                :key="editingMediaResult?.editingMedia?.id"
                 v-model="copyrightLevel"
                 v-model:users="userIds"
-                :media="editingMediaResult.editingMedia"
+                :media="editingMediaResult?.editingMedia"
               />
             </a-tab-pane>
             <a-tab-pane key="voice" tab="Voice">

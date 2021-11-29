@@ -312,7 +312,7 @@ class SaveMedia(graphene.Mutation):
                     attributes['multi'] = True
                 else:
                     attributes['multi'] = False
-                    attributes['frame'] = []
+                    attributes['frames'] = []
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
