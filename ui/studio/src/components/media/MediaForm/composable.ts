@@ -13,12 +13,14 @@ interface SaveMediaPayload {
 interface SaveMediaMutationVariables {
   id?: string
   name: string
-  urls?: string[]
+  urls: string[]
   mediaType: string
   copyrightLevel: CopyrightLevel
   stageIds: number[]
   userIds: number[]
-  tags: string[]
+  tags: string[],
+  w: number,
+  h: number,
 }
 
 const getBase64 = (file: File) => new Promise<string>((resolve) => {
@@ -40,9 +42,9 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
       }
     }
   `)
-  const { mutate } = useMutation<{ saveMedia: { asset: Media } }, SaveMediaMutationVariables>(gql`
-    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $copyrightLevel: Int, $stageIds: [Int], $tags: [String], $userIds: [Int]) {
-      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, copyrightLevel: $copyrightLevel, stageIds: $stageIds, tags: $tags, userIds: $userIds) {
+  const { mutate } = useMutation<{ saveMedia: { asset: Media } }, { input: SaveMediaMutationVariables }>(gql`
+    mutation SaveMedia($input: SaveStageInput!) {
+      saveMedia(input: $input) {
         asset {
           id
         }
@@ -76,7 +78,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
         }
       }
       payload.media.urls = payload.files.filter(file => file.status === 'uploaded').map(file => file.url!)
-      const result = await mutate(payload.media)
+      const result = await mutate({ input: payload.media })
       const mediaId = result?.data?.saveMedia.asset.id
       if (mediaId) {
         message.success("Media saved successfully")

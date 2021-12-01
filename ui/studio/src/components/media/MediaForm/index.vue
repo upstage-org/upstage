@@ -143,6 +143,9 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       stageIds: stageIds.value,
       userIds: userIds.value,
       tags: tags.value,
+      w: frameSize.value.width,
+      h: frameSize.value.height,
+      urls: [],
     }
   }
 }, id => {
@@ -172,6 +175,24 @@ const addExistingFrame = () => {
       ...inquiryVar(),
       mediaTypes: [type.value]
     })
+  }
+}
+
+const frameSize = ref({ width: 100, height: 100 })
+const handleImageLoad = (e: Event, index: number) => {
+  if (index === 0 && e.target) {
+    const { width, height } = e.target as HTMLImageElement
+    if (width > height) {
+      frameSize.value = {
+        width: 100,
+        height: (100 * height) / width
+      }
+    } else {
+      frameSize.value = {
+        width: (100 * width) / height,
+        height: 100
+      }
+    }
   }
 }
 </script>
@@ -224,7 +245,12 @@ const addExistingFrame = () => {
           >
             <SlickItem v-for="(file, i) in files" :key="file.id" :index="i" style="z-index: 99999;">
               <div class="my-2 px-8 text-center">
-                <img show-handle :src="file.preview" class="max-w-full rounded-md max-h-24" />
+                <img
+                  show-handle
+                  :src="file.preview"
+                  class="max-w-full rounded-md max-h-24"
+                  @load="handleImageLoad($event, i)"
+                />
               </div>
             </SlickItem>
           </SlickList>

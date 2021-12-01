@@ -14,7 +14,7 @@ import time
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from sqlalchemy.sql.expression import and_, or_
-from licenses.models import AssetLicense
+from licenses.models import AssetLicense, AssetUsage
 import os
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
@@ -362,6 +362,8 @@ class DeleteMedia(graphene.Mutation):
                     MediaTag.asset_id == id).delete(synchronize_session=False)
                 local_db_session.query(AssetLicense).filter(
                     AssetLicense.asset_id == id).delete(synchronize_session=False)
+                local_db_session.query(AssetUsage).filter(
+                    AssetUsage.asset_id == id).delete(synchronize_session=False)
 
                 for multiframe_media in local_db_session.query(AssetModel).filter(AssetModel.description.like(f"%{asset.file_location}%")).all():
                     attributes = json.loads(multiframe_media.description)

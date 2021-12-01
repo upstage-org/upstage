@@ -1,5 +1,6 @@
 import hashlib
 import json
+from operator import itemgetter
 import os
 import sys
 import time
@@ -74,7 +75,7 @@ class Asset(SQLAlchemyObjectType):
         model = AssetModel
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
-    
+
     def resolve_db_id(self, info):
         return self.id
 
@@ -135,6 +136,7 @@ class AssetType(SQLAlchemyObjectType):
 
     def resolve_db_id(self, info):
         return self.id
+
 
 class AssetConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ['first', 'last', 'before', 'after']
@@ -242,29 +244,38 @@ class UploadFile(graphene.Mutation):
         return UploadFile(url=file_location)
 
 
+class SaveStageInput(graphene.InputObjectType):
+    """Arguments to update a stage."""
+    name = graphene.String(
+        required=True, description="Name of the media")
+    urls = graphene.List(
+        graphene.String, description="Uploaded url of files")
+    media_type = graphene.String(
+        description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+    id = graphene.ID(description="ID of the media (for updating)")
+    copyright_level = graphene.Int(description="Copyright level")
+    user_ids = graphene.List(
+        graphene.Int, description="Users who can access and edit this media")
+    stage_ids = graphene.List(
+        graphene.Int, description="Id of stages to be assigned to")
+    tags = graphene.List(
+        graphene.String, description="Media tags")
+    w = graphene.Int(description="Width of the media")
+    h = graphene.Int(description="Height of the media")
+
+
 class SaveMedia(graphene.Mutation):
     """Mutation to upload a media."""
     asset = graphene.Field(
         lambda: Asset, description="Media saved by this mutation.")
 
     class Arguments:
-        name = graphene.String(
-            required=True, description="Name of the media")
-        urls = graphene.List(
-            graphene.String, description="Uploaded url of files")
-        media_type = graphene.String(
-            description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
-        id = graphene.ID(description="ID of the media (for updating)")
-        copyright_level = graphene.Int(description="Copyright level")
-        user_ids = graphene.List(
-            graphene.Int, description="Users who can access and edit this media")
-        stage_ids = graphene.List(
-            graphene.Int, description="Id of stages to be assigned to")
-        tags = graphene.List(
-            graphene.String, description="Media tags")
+        input = SaveStageInput(required=True)
 
     @jwt_required()
-    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, user_ids=None, stage_ids=None, tags=None):
+    def mutate(self, info, input):
+        name, urls, media_type, copyright_level, user_ids, stage_ids, tags, w, h = itemgetter(
+            'name', 'urls', 'media_type', 'copyright_level', 'user_ids', 'stage_ids', 'tags', 'w', 'h')(input)
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -275,8 +286,8 @@ class SaveMedia(graphene.Mutation):
                 local_db_session.add(asset_type)
                 local_db_session.flush()
 
-            if id:
-                id = from_global_id(id)[1]
+            if 'id' in input:
+                id = from_global_id(input['id'])[1]
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
             else:
@@ -313,6 +324,8 @@ class SaveMedia(graphene.Mutation):
                 else:
                     attributes['multi'] = False
                     attributes['frames'] = []
+                attributes['w'] = w
+                attributes['h'] = h
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
