@@ -50,7 +50,7 @@
         <div class="vertical-divider" />
         <a
           class="navbar-item"
-          href="https://github.com/upstage-org/mobilise/"
+          href="https://github.com/upstage-org/upstage/"
           target="_blank"
         >
           Develop
