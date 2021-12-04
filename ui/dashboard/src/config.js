@@ -9,17 +9,17 @@ let configs = {
     ACCESS_TOKEN_KEY: 'access_token',
     MQTT_NAMESPACE: VUE_APP_MQTT_NAMESPACE,
     MQTT_CONNECTION: {
-        url: 'wss://svc1.upstage.org.nz:9002/mqtt',
-        username: 'performance',
-        password: 'z48FCTsJVEUkYmtUw5S9',
+        url: 'wss://svc1.meta.upstage.live:9002/mqtt',
+        username: 'meta',
+        password: '7#Yr4egD\'X&u]{wyK',
         clean: true, // Reserved session
         connectTimeout: 4000, // Time out
         reconnectPeriod: 4000, // Reconnection interval
         retain: true,
     },
     STREAMING: {
-        publish: "rtmp://streaming1.upstage.org.nz:1941/live",
-        subscribe: "https://streaming1.upstage.org.nz:9999/",
+        publish: "rtmp://streaming1.meta.upstage.live:1941/live",
+        subscribe: "https://streaming1.meta.upstage.live:9999/",
         auth: {
             username: 'admin',
             password: 'admin'

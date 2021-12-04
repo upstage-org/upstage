@@ -3,8 +3,8 @@ DROP TABLE IF EXISTS "stage_license";
 CREATE TABLE "public"."stage_license" (
     "id" BIGSERIAL NOT NULL,
     "stage_id" integer NOT NULL,
-    "created_on" timestamp DEFAULT (now() at time zone 'utc'),
-    "expires_on" timestamp DEFAULT timezone('utc')) NOT NULL,
+    "created_on" timestamp without time zone DEFAULT (now() at time zone 'utc'),
+    "expires_on" timestamp without time zone NOT NULL,
     "access_path" character varying unique NOT NULL,
     PRIMARY KEY ("id"),
     FOREIGN KEY (stage_id) REFERENCES stage(id) ON UPDATE CASCADE ON DELETE CASCADE NOT DEFERRABLE
