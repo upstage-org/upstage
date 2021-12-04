@@ -2,14 +2,8 @@
   <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">CYBERFORMANCE PLATFORM</h1>
-        <h2 class="subtitle">
-          UpStage is an online venue for live performance: remote performers
-          collaborate in real time using digital media, and online audiences
-          anywhere in the world join events by going to a web page, without
-          having to download and install any additional software. UpStage is
-          available free to anyone who would like to use it.
-        </h2>
+        <h1 class="title">{{ foyer.title }}</h1>
+        <h2 v-if="foyer.description" class="subtitle">{{ foyer.description }}</h2>
         <Loading v-if="loading" />
         <div v-else class="links columns is-multiline my-4 pt-6">
           <div v-for="stage in liveStages" :key="stage.id" class="column is-4">
@@ -53,6 +47,7 @@ export default {
 
     const loading = computed(() => store.getters["cache/loadingStages"]);
     const liveStages = computed(() => store.getters["cache/liveStages"]);
+    const foyer = computed(() => store.getters["config/foyer"]);
     const upcomingStages = computed(
       () => store.getters["cache/upcomingStages"]
     );
@@ -67,6 +62,7 @@ export default {
       loading,
       upcomingStages,
       absolutePath,
+      foyer,
     };
   },
 };
@@ -89,6 +85,7 @@ export default {
     max-width: 800px;
     margin: auto;
     box-shadow: 10px 10px 0 0 $primary;
+    white-space: pre-wrap;
   }
   .column {
     padding: 2rem;

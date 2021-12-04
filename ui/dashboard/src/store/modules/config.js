@@ -4,7 +4,8 @@ export default {
     namespaced: true,
     state: {
         nginx: {},
-        system: {}
+        system: {},
+        foyer: {}
     },
     getters: {
         uploadLimit(state) {
@@ -12,6 +13,9 @@ export default {
         },
         termsOfService(state) {
             return state.system.termsOfService
+        },
+        foyer(state) {
+            return state.foyer
         }
     },
     mutations: {
