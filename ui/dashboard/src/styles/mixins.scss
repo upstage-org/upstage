@@ -17,7 +17,6 @@
 @mixin textShadow() {
     color: $black;
     text-shadow: -3px 0 $primary;
-    text-transform: uppercase;
 }
 @mixin differentiatedToolbar($color) {
     background-color: $color;

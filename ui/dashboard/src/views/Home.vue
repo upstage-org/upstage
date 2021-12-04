@@ -2,8 +2,8 @@
   <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title">{{ foyer.title }}</h1>
-        <h2 v-if="foyer.description" class="subtitle">{{ foyer.description }}</h2>
+        <h1 class="title" v-html="foyer.title" />
+        <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description" />
         <Loading v-if="loading" />
         <div v-else class="links columns is-multiline my-4 pt-6">
           <div v-for="stage in liveStages" :key="stage.id" class="column is-4">
