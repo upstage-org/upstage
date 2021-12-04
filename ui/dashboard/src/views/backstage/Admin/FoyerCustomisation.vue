@@ -32,7 +32,7 @@
     </div>
     <template v-if="edit == 'description'">
       <div class="column">
-        <ElasticInput v-model="description" />
+        <textarea class="textarea" rows="4" v-model="description" />
       </div>
       <div class="column is-narrow">
         <button
@@ -93,9 +93,8 @@ import { useStore } from "vuex";
 import { ref, watchEffect } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { configGraph } from "@/services/graphql";
-import ElasticInput from "@/components/form/ElasticInput.vue";
 export default {
-  components: { Field, ElasticInput },
+  components: { Field },
   setup: () => {
     const store = useStore();
 
