@@ -43,7 +43,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="column" style="white-space: pre-wrap;">{{ description }}</div>
+      <div class="column pre-wrap">{{ description }}</div>
       <div class="column is-narrow">
         <button class="button is-primary" @click="edit = 'description'">Edit</button>
       </div>
@@ -51,11 +51,24 @@
   </div>
   <div class="columns is-vcentered">
     <div class="column is-2">
-      <b>Menu</b>
+      <span
+        class="has-tooltip-right"
+        data-tooltip="Syntax: <title> (<url>)
+For example: Development (https://github.com/upstage-org/upstage/)
+Put the navigation links line by line. Put > before the line to make it nested inside parent menu.
+For example:
+About
+> FAQ (https://upstage.org.nz/?page_id=115)
+> Contact (/contact)
+"
+      >
+        <b>Menu</b>
+        <i class="fas fa-info-circle ml-1"></i>
+      </span>
     </div>
     <template v-if="edit == 'menu'">
       <div class="column">
-        <Field v-model="menu" />
+        <textarea class="textarea" rows="8" v-model="menu" />
       </div>
       <div class="column is-narrow">
         <button
@@ -66,7 +79,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="column">{{ menu }}</div>
+      <div class="column pre-wrap">{{ menu }}</div>
       <div class="column is-narrow">
         <button class="button is-primary" @click="edit = 'menu'">Edit</button>
       </div>
@@ -106,5 +119,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.pre-wrap {
+  white-space: pre-wrap;
+}
 </style>
