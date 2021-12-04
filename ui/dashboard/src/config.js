@@ -1,4 +1,17 @@
-const { VUE_APP_API_ENDPOINT, VUE_APP_GRAPHQL_ENDPOINT, VUE_APP_STATIC_ASSETS_ENDPOINT, VUE_APP_STUDIO_ENDPOINT, VUE_APP_MQTT_NAMESPACE } = process.env;
+const {
+    VUE_APP_API_ENDPOINT,
+    VUE_APP_GRAPHQL_ENDPOINT,
+    VUE_APP_STATIC_ASSETS_ENDPOINT,
+    VUE_APP_STUDIO_ENDPOINT,
+    VUE_APP_MQTT_NAMESPACE,
+    VUE_APP_MQTT_ENDPOINT,
+    VUE_APP_MQTT_USERNAME,
+    VUE_APP_MQTT_PASSWORD,
+    VUE_APP_STREAMING_PUBLISH_ENDPOINT,
+    VUE_APP_STREAMING_SUBSCRIBE_ENDPOINT,
+    VUE_APP_STREAMING_USERNAME,
+    VUE_APP_STREAMING_PASSWORD,
+} = process.env;
 
 let configs = {
     API_ENDPOINT: VUE_APP_API_ENDPOINT,
@@ -9,20 +22,20 @@ let configs = {
     ACCESS_TOKEN_KEY: 'access_token',
     MQTT_NAMESPACE: VUE_APP_MQTT_NAMESPACE,
     MQTT_CONNECTION: {
-        url: 'wss://svc1.meta.upstage.live:9002/mqtt',
-        username: 'meta',
-        password: '7#Yr4egD\'X&u]{wyK',
+        url: VUE_APP_MQTT_ENDPOINT,
+        username: VUE_APP_MQTT_USERNAME,
+        password: VUE_APP_MQTT_PASSWORD,
         clean: true, // Reserved session
         connectTimeout: 4000, // Time out
         reconnectPeriod: 4000, // Reconnection interval
         retain: true,
     },
     STREAMING: {
-        publish: "rtmp://streaming1.meta.upstage.live:1941/live",
-        subscribe: "https://streaming1.meta.upstage.live:9999/",
+        publish: VUE_APP_STREAMING_PUBLISH_ENDPOINT,
+        subscribe: VUE_APP_STREAMING_SUBSCRIBE_ENDPOINT,
         auth: {
-            username: 'admin',
-            password: 'admin'
+            username: VUE_APP_STREAMING_USERNAME,
+            password: VUE_APP_STREAMING_PASSWORD,
         }
     }
 }
