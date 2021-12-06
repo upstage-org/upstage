@@ -1,6 +1,6 @@
 # -*- coding: iso8859-15 -*-
 from os import name
-from config.project_globals import ScopedSession, app
+from config.project_globals import DBSession, ScopedSession, app
 from flask_graphql import GraphQLView
 from config.settings import NGINX_CONFIG_FILE, VERSION
 from graphene import relay
@@ -28,28 +28,49 @@ class NginxConfig(graphene.ObjectType):
         return limit
 
 
+def get_config(name):
+    config = DBSession.query(ConfigModel).filter(
+        ConfigModel.name == name).first()
+    if config:
+        return config.value
+
+
 class SystemConfig(graphene.ObjectType):
     termsOfService = graphene.String()
 
     def resolve_termsOfService(self, info):
-        with ScopedSession() as local_db_session:
-            config = local_db_session.query(ConfigModel).filter(
-                ConfigModel.name == TERMS_OF_SERVICE
-            ).first()
-            if config:
-                return config.value
+        return get_config(TERMS_OF_SERVICE)
+
+
+class FoyerConfig(graphene.ObjectType):
+    title = graphene.String()
+    description = graphene.String()
+    menu = graphene.String()
+
+    def resolve_title(self, info):
+        return get_config('FOYER_TITLE')
+
+    def resolve_description(self, info):
+        return get_config('FOYER_DESCRIPTION')
+
+    def resolve_menu(self, info):
+        return get_config('FOYER_MENU')
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     nginx = graphene.Field(NginxConfig)
     system = graphene.Field(SystemConfig)
+    foyer = graphene.Field(FoyerConfig)
 
     def resolve_nginx(self, info):
         return NginxConfig()
 
     def resolve_system(self, info):
         return SystemConfig()
+
+    def resolve_foyer(self, info):
+        return FoyerConfig()
 
 
 class UpdateTermsOfService(graphene.Mutation):
@@ -76,8 +97,38 @@ class UpdateTermsOfService(graphene.Mutation):
             return UpdateTermsOfService(url=url)
 
 
+class SaveConfig(graphene.Mutation):
+    """Mutation to customise foyer."""
+    success = graphene.Boolean(description="True if the config was saved.")
+
+    class Arguments:
+        name = graphene.String(
+            required=True, description="The name of the config.")
+        value = graphene.String(
+            required=True, description="The value of the config.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, name, value):
+        with ScopedSession() as local_db_session:
+            config = local_db_session.query(ConfigModel).filter(
+                ConfigModel.name == name).first()
+
+            if name == TERMS_OF_SERVICE:
+                # Use UpdateTermsOfService mutation instead.
+                return SaveConfig(success=False)
+
+            if config:
+                config.value = value
+            else:
+                config = ConfigModel(name=name, value=value)
+                local_db_session.add(config)
+
+            return SaveConfig(success=True)
+
+
 class Mutation(graphene.ObjectType):
     updateTermsOfService = UpdateTermsOfService.Field()
+    saveConfig = SaveConfig.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
