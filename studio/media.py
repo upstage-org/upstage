@@ -208,8 +208,6 @@ class CalcSizes(graphene.Mutation):
                     local_db_session.flush()
                 total += media.size
 
-            local_db_session.commit()
-            local_db_session.close()
             return CalcSizes(size=total)
 
 
@@ -398,8 +396,6 @@ class ConfirmPermission(graphene.Mutation):
                 else:
                     local_db_session.delete(asset_usage)
                 local_db_session.flush()
-                local_db_session.commit()
-            local_db_session.close()
         permissions = DBSession.query(AssetUsageModel).filter(
             AssetUsageModel.asset_id == asset_id).all()
         return ConfirmPermission(success=True, permissions=permissions)

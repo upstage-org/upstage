@@ -123,8 +123,6 @@ class SaveConfig(graphene.Mutation):
                 config = ConfigModel(name=name, value=value)
                 local_db_session.add(config)
 
-            local_db_session.commit()
-            local_db_session.close()
             return SaveConfig(success=True)
 
 
