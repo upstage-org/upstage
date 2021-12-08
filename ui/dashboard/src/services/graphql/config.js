@@ -12,6 +12,11 @@ export default {
       system {
         termsOfService
       }
+      foyer {
+        title
+        description
+        menu
+      }
     }
   `),
   updateTermsOfService: (variables) => client.request(gql`
@@ -20,5 +25,12 @@ export default {
         url
       }
     }
-  `, variables)
+  `, variables),
+  saveConfig: (name, value) => client.request(gql`
+    mutation SaveConfig($name: String!, $value: String!) {
+      saveConfig(name: $name, value: $value) {
+        success
+      }
+    }
+  `, { name, value }),
 }

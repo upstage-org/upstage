@@ -95,6 +95,11 @@ const routes = [
             name: 'System Configurations',
             component: () => import('../views/backstage/Admin/SystemConfigurations.vue'),
           },
+          {
+            path: 'foyer-customisation',
+            name: 'Foyer Customisation',
+            component: () => import('../views/backstage/Admin/FoyerCustomisation.vue'),
+          }
         ]
       },
       {
