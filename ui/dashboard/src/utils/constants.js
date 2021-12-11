@@ -31,7 +31,8 @@ export const BACKGROUND_ACTIONS = {
   DRAW_CURTAIN: 'drawCurtain',
   LOAD_SCENES: 'loadScenes',
   SWITCH_SCENE: 'switchScene',
-  BLANK_SCENE: 'blankScene'
+  BLANK_SCENE: 'blankScene',
+  SET_DARK_MODE_CHAT: 'setDarkModeChat',
 }
 
 export const DRAW_ACTIONS = {

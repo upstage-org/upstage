@@ -445,6 +445,9 @@ export default {
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
         },
+        SET_DARK_MODE_CHAT(state, enabled) {
+            state.settings.chatDarkMode = enabled
+        },
         SET_REACTION_VISIBILITY(state, visible) {
             state.settings.reactionVisibility = visible
         },
@@ -816,6 +819,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        enableDarkModeChat(action, enabled) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_DARK_MODE_CHAT, enabled })
+        },
         showReactionsBar(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY, visible })
         },
@@ -844,6 +850,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_DARK_MODE_CHAT:
+                    commit('SET_DARK_MODE_CHAT', message.enabled)
                     break;
                 case BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY:
                     commit('SET_REACTION_VISIBILITY', message.visible)
