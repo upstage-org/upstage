@@ -38,6 +38,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         id
         name
         src
+        sign
         createdOn
         size
         description
