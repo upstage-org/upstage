@@ -128,7 +128,7 @@ const createRTMPStream = () => {
       url: '',
       status: 'virtual',
       file: {
-        name: result.value ? `${result.value.whoami.displayName ?? result.value.whoami.username}'s stream` : 'Stream name',
+        name: result.value ? `${result.value.whoami.displayName || result.value.whoami.username}'s stream` : 'Stream name',
         type: 'video'
       } as File
     }]

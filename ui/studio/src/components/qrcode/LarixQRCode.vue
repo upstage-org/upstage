@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getLarixLink } from "../../utils/streaming";
-import { computed, PropType } from "vue";
+import { computed, PropType, watchEffect } from "vue";
 import QRCode from "./QRCode.vue";
 import { Media } from "../../models/studio";
 
@@ -15,10 +15,13 @@ const code = computed(() =>
     props.stream.name
   )
 );
+watchEffect(() => {
+  console.log(code.value, props.stream);
+});
 </script>
 
 <template>
-  <a-tooltip title="New unique key detected, please save the stream first!">
+  <a-tooltip :title="props.stream.sign ? null : `You can't broadcast to this stream!`">
     <QRCode
       :value="code"
       :size="size"
