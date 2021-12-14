@@ -77,7 +77,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
           }
         }
       }
-      payload.media.urls = payload.files.filter(file => file.status === 'uploaded').map(file => file.url!)
+      payload.media.urls = payload.files.filter(file => file.status !== 'local').map(file => file.url!)
       const result = await mutate({ input: payload.media })
       const mediaId = result?.data?.saveMedia.asset.id
       if (mediaId) {
@@ -85,7 +85,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
         handleSuccess(mediaId)
       }
     } catch (error) {
-      message.error("Error saving media. Detail: " + error)
+      message.error('' + error)
     } finally {
       progress.value = 100
     }

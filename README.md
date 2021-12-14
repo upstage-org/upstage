@@ -177,12 +177,7 @@ VUE_APP_STREAMING_PASSWORD=admin
 
 3. `Studio` configurations
 
-Studio uses a smaller set of configurations compared to `Dashboard`. There is a small different: configuration name in Studio must be started with `VITE_APP`:
-
-```yml
-VITE_APP_GRAPHQL_ENDPOINT=https://upstage.live/V4.0/studio_graphql/
-VITE_APP_STATIC_ASSETS_ENDPOINT=https://upstage.live/V4.0/static/assets/
-```
+Studio and dashboard share the same access token and configurations base. In other word, you don't have to set up separate environment for studio.
 
 4. `Nginx` configurations
 

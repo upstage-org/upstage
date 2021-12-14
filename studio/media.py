@@ -295,7 +295,20 @@ class SaveMedia(graphene.Mutation):
             if asset:
                 asset.name = name
                 asset.asset_type = asset_type
-                asset.file_location = urls[0]
+                file_location = urls[0]
+                if file_location:
+                    if "?" in file_location:
+                        file_location = file_location[:file_location.index(
+                            "?")]
+                    if asset.id and file_location != asset.file_location and '/' not in file_location:
+                        existedAsset = local_db_session.query(AssetModel).filter(
+                            AssetModel.file_location == file_location).filter(AssetModel.id != asset.id).first()
+                        if existedAsset:
+                            raise Exception(
+                                "Stream with the same key already existed, please pick another unique key!")
+                    asset.file_location = file_location
+                else:
+                    asset.file_location = uuid.uuid4()
                 asset.copyright_level = copyright_level
                 asset.updated_on = datetime.utcnow()
                 local_db_session.flush()
@@ -324,6 +337,8 @@ class SaveMedia(graphene.Mutation):
                     attributes['frames'] = []
                 attributes['w'] = w
                 attributes['h'] = h
+                if asset_type.name == 'stream' and '/' not in file_location:
+                    attributes['isRTMP'] = True
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()

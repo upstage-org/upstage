@@ -1,12 +1,18 @@
 import configs from "../config"
+import { SharedAuth, SharedConfigs } from "../models/config"
 
 export function absolutePath(path: string) {
-  return `${configs.STATIC_ASSETS_ENDPOINT}${path}`
+  return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`
 }
 
-interface SharedAuth {
-  refresh_token: string
-  token: string
+export function getSharedConfig(): SharedConfigs {
+  try {
+    const sharedConfig = JSON.parse(localStorage.getItem('configs') ?? '')
+    return sharedConfig
+  } catch (error) {
+    localStorage.clear() // Remove shared auth so that it will ask you to visit Dashboard for login
+    return {} as SharedConfigs
+  }
 }
 
 export function getSharedAuth(): SharedAuth | undefined {

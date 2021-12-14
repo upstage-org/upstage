@@ -63,6 +63,7 @@ export interface Media {
   id: string;
   name: string;
   src: string;
+  sign: string;
   description: string;
   createdOn: string;
   size: number;
@@ -80,6 +81,7 @@ export interface MediaAttributes {
   frames: string[];
   voice: Voice;
   link: Link;
+  isRTMP: boolean;
   w: number;
   h: number;
 }
@@ -102,7 +104,7 @@ export interface UploadFile {
   method?: string;
   id: number;
   preview: string;
-  status: 'local' | 'uploaded';
+  status: 'local' | 'uploaded' | 'virtual';
   url?: string;
 }
 

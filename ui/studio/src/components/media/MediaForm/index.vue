@@ -28,8 +28,8 @@ watch(editingMediaResult, () => {
       files.value = frames.map((frame, id) => ({
         id,
         preview: absolutePath(frame),
-        url: frame,
-        status: 'uploaded',
+        url: attributes.isRTMP ? frame.split("?")[0] : frame,
+        status: attributes.isRTMP ? 'virtual' : 'uploaded',
         file: {
           name: editingMedia.name,
         } as File
@@ -59,7 +59,6 @@ const mediaName = computed(() => {
 const copyrightLevel = ref<CopyrightLevel>(0)
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
-  console.log(event)
   event.preventDefault()
   if (!clearMode.value) {
     return
@@ -158,7 +157,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
 watch(files as Ref, ([firstFile]) => {
   if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('audio')) {
     type.value = 'audio'
-  } else if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('video')) {
+  } else if (firstFile && ((firstFile.status === 'local' && firstFile.file.type.includes('video')) || firstFile.status === 'virtual')) {
     type.value = 'stream'
   } else if (firstFile && firstFile.status === 'local' && (!type.value || type.value === 'stream' || type.value === 'audio')) {
     type.value = 'avatar'
@@ -195,6 +194,12 @@ const handleImageLoad = (e: Event, index: number) => {
     }
   }
 }
+const clearSign = () => {
+  editingMediaVar({
+    ...editingMediaVar()!,
+    sign: ''
+  })
+}
 </script>
 
 <template>
@@ -210,20 +215,28 @@ const handleImageLoad = (e: Event, index: number) => {
           <a-select :options="mediaTypes" v-model:value="type"></a-select>
           <a-input v-model:value="name" :placeholder="mediaName"></a-input>
         </a-input-group>
-        <a-button type="primary" @click="visibleDropzone = true">
-          <UploadOutlined />Upload frame
-        </a-button>
-        <a-button type="primary" @click="addExistingFrame">
-          <PlusCircleOutlined />Add existing frame
-        </a-button>
-        <a-button
-          v-if="files!.length > 1"
-          :type="clearMode ? 'primary' : 'dashed'"
-          danger
-          @click="clearMode = !clearMode"
-        >
-          <ClearOutlined />Clear frames
-        </a-button>
+        <template v-if="!['stream', 'audio'].includes(type)">
+          <a-button type="primary" @click="visibleDropzone = true">
+            <UploadOutlined />Upload frame
+          </a-button>
+          <a-button type="primary" @click="addExistingFrame">
+            <PlusCircleOutlined />Add existing frame
+          </a-button>
+          <a-button
+            v-if="files!.length > 1"
+            :type="clearMode ? 'primary' : 'dashed'"
+            danger
+            @click="clearMode = !clearMode"
+          >
+            <ClearOutlined />Clear frames
+          </a-button>
+        </template>
+        <a-input
+          v-else-if="files && files.length"
+          v-model:value="files![0].url"
+          placeholder="Unique key"
+          @focus="clearSign"
+        ></a-input>
       </a-space>
     </template>
     <a-row :gutter="12">
@@ -232,9 +245,21 @@ const handleImageLoad = (e: Event, index: number) => {
           <audio v-if="type === 'audio'" controls class="w-48">
             <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
           </audio>
-          <video v-else-if="type === 'stream'" controls class="w-48">
-            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
-          </video>
+          <template v-else-if="type === 'stream'">
+            <div
+              v-if="files && files.length && files[0].status === 'virtual'"
+              controls
+              class="w-48"
+            >
+              <LarixQRCode
+                :stream="{ name, src: files[0].url, sign: editingMediaResult?.editingMedia.sign }"
+                :size="192"
+              />
+            </div>
+            <video v-else controls class="w-48">
+              <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
+            </video>
+          </template>
           <SlickList
             v-else
             axis="y"

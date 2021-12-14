@@ -2,6 +2,7 @@
 import { PropType, computed } from 'vue';
 import { Media, MediaAttributes } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
+import LarixQRCode from '../qrcode/LarixQRCode.vue';
 const props = defineProps({
   media: {
     type: Object as PropType<Media>,
@@ -19,9 +20,14 @@ const attributes = computed<MediaAttributes>(() => {
   <audio v-if="props.media.assetType.name === 'audio'" controls class="w-48">
     <source :src="absolutePath(props.media.src)" />Your browser does not support the audio element.
   </audio>
-  <video v-else-if="props.media.assetType.name === 'stream'" controls class="w-48">
-    <source :src="absolutePath(props.media.src)" />Your browser does not support the video tag.
-  </video>
+  <template v-else-if="props.media.assetType.name === 'stream'">
+    <div v-if="attributes.isRTMP" controls class="w-48">
+      <LarixQRCode :stream="media" :size="192" />
+    </div>
+    <video v-else controls class="w-48">
+      <source :src="absolutePath(props.media.src)" />Your browser does not support the video tag.
+    </video>
+  </template>
   <a-carousel v-else-if="attributes.multi" arrows dots-class="slick-dots slick-thumb" class="w-48">
     <template #customPaging="{ i }">
       <a>
