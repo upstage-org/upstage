@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import graphene
 from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
-from user.models import MAKER, PLAYER, User as UserModel
+from user.models import PLAYER, User as UserModel
 from config.project_globals import DBSession, ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -224,7 +224,7 @@ class UploadFile(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, base64, filename):
         code, error, user, timezone = current_user()
-        if not user.role in (ADMIN, SUPER_ADMIN, PLAYER, MAKER):
+        if not user.role in (ADMIN, SUPER_ADMIN, PLAYER):
             raise Exception("You don't have permission to upload media")
 
         # Save base64 to file

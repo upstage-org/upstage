@@ -42,11 +42,9 @@ export const DRAW_ACTIONS = {
 }
 
 export const ROLES = {
-  PLAYER: 1,
-  MAKER: 2,
   GUEST: 4,
+  PLAYER: 1,
   ADMIN: 8,
-  CREATOR: 16,
   SUPER_ADMIN: 32,
 }
 
