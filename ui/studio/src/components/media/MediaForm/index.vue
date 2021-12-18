@@ -11,6 +11,7 @@ import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
 import { editingMediaVar, inquiryVar } from '../../../apollo';
 import MediaPermissions from './MediaPermissions.vue';
+import AvatarVoice from './AvatarVoice.vue';
 const files = inject<Ref<UploadFile[]>>("files")
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
@@ -304,11 +305,7 @@ const clearSign = () => {
               />
             </a-tab-pane>
             <a-tab-pane key="voice" tab="Voice">
-              <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
-                <template #icon>
-                  <BuildOutlined />
-                </template>
-              </a-result>
+              <AvatarVoice />
             </a-tab-pane>
           </a-tabs>
         </div>

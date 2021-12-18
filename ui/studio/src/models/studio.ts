@@ -126,4 +126,12 @@ export interface Notification {
   mediaUsage: Permission;
 }
 
+export interface AvatarVoice {
+  voice: string | null
+  variant: string
+  pitch: number
+  speed: number
+  amplitude: number
+}
+
 export type Privilege = 'NONE' | 'OWNER' | 'APPROVED' | 'PENDING_APPROVAL' | 'REQUIRE_APPROVAL'
