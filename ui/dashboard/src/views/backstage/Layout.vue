@@ -3,27 +3,35 @@
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         &nbsp;
-        <router-link class="navbar-item" to="/backstage/stages">Stages</router-link>
+        <router-link class="navbar-item" to="/backstage/stages">
+          <span>
+            <i class="fas fa-person-booth"></i>
+            Stages
+          </span>
+        </router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/media">Media</router-link>
+        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT" target="_blank">
+          <span>
+            <i class="fas fa-magic has-text-info"></i>
+            Studio
+          </span>
+        </a>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/profile/">Profile</router-link>
+        <router-link class="navbar-item" to="/backstage/profile/">
+          <span>
+            <i class="fas fa-user"></i>
+            Profile
+          </span>
+        </router-link>
         <template v-if="isAdmin">
           <div class="vertical-divider" />
           <router-link class="navbar-item" to="/backstage/admin/">
             <span>
-              Admin
               <i class="fas fa-shield-alt has-text-warning"></i>
+              Admin
             </span>
           </router-link>
         </template>
-        <div class="vertical-divider" />
-        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
-          <span>
-            Studio
-            <i class="fas fa-magic has-text-info"></i>
-          </span>
-        </a>
       </div>
     </div>
 
