@@ -37,7 +37,10 @@ watch(editingMediaResult, () => {
         } as File
       }));
     }
-    Object.assign(voice, (attributes.voice && attributes.voice.voice) ? attributes.voice : getDefaultAvatarVoice())
+    Object.assign(voice, getDefaultAvatarVoice());
+    if (attributes.voice && attributes.voice.voice) {
+      Object.assign(voice, attributes.voice);
+    }
     if (editingMedia.stages) {
       stageIds.value = editingMedia.stages.map(stage => stage.id);
     }
@@ -308,7 +311,7 @@ const clearSign = () => {
                 :media="editingMediaResult?.editingMedia"
               />
             </a-tab-pane>
-            <a-tab-pane key="voice" tab="Voice">
+            <a-tab-pane v-if="type === 'avatar'" key="voice" tab="Voice">
               <AvatarVoice :voice="voice" />
             </a-tab-pane>
           </a-tabs>

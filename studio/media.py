@@ -243,7 +243,7 @@ class UploadFile(graphene.Mutation):
 
 
 class AvatarVoice:
-    voice = graphene.String(required=True, description="Voice name")
+    voice = graphene.String(required=False, description="Voice name")
     variant = graphene.String(required=True, description="Voice variant")
     pitch = graphene.Int(
         required=True, description="Voice pitch, range from 0 to 100")
@@ -357,7 +357,7 @@ class SaveMedia(graphene.Mutation):
                     attributes['isRTMP'] = True
                 if 'voice' in input:
                     voice = input['voice']
-                    if voice and voice['voice']:
+                    if voice and voice.voice:
                         attributes['voice'] = voice
                     else:
                         del attributes['voice']
@@ -492,6 +492,9 @@ def resolve_voices(self, info):
                         if key in voice:
                             setattr(av, key, int(voice[key]))
                         else:
-                            setattr(av, key, 50)
+                            if key == 'speed':
+                                setattr(av, key, 175)
+                            else:
+                                setattr(av, key, 50)
                     voices.append(Voice(avatar=media, voice=av))
     return voices

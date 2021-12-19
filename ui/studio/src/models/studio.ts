@@ -17,6 +17,12 @@ export interface StudioGraph {
   media: Connection<Media>;
   whoami: User;
   notifications: Notification[];
+  voices: VoiceGraph[]
+}
+
+export interface VoiceGraph {
+  avatar: Media;
+  voice: AvatarVoice
 }
 
 export interface PageInfo {

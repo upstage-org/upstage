@@ -89,3 +89,5 @@ export const getDefaultAvatarVoice = () => {
         amplitude: 50,
     } as AvatarVoice
 }
+
+export const defaultTestMessage = 'Welcome to UpStage!'
