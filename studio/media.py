@@ -359,7 +359,7 @@ class SaveMedia(graphene.Mutation):
                     voice = input['voice']
                     if voice and voice.voice:
                         attributes['voice'] = voice
-                    else:
+                    elif 'voice' in attributes:
                         del attributes['voice']
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
