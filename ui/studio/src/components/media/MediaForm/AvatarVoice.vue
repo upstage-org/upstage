@@ -1,38 +1,51 @@
 <script lang="ts" setup>
-import { reactive } from 'vue';
+import { PropType, reactive, ref } from 'vue';
 import { AvatarVoice } from '../../../models/studio';
+import { avatarSpeak } from '../../../services/speech';
 import { getVoiceList, getVariantList, getDefaultVariant } from '../../../services/speech/voice'
 
-const av = reactive<AvatarVoice>({
-  voice: null,
-  variant: getDefaultVariant(),
-  pitch: 50,
-  speed: 50,
-  amplitude: 50,
+const props = defineProps({
+  voice: {
+    type: Object as PropType<AvatarVoice>,
+    required: true
+  }
 })
+
+const defaultTest = 'Welcome to UpStage!'
+const test = ref('')
+const testVoice = () => {
+  avatarSpeak(props.voice, test.value || defaultTest)
+}
 </script>
 
 <template>
   <a-form-item label="Voice" :labelCol="{ span: 3 }" class="mb-2">
-    <a-select v-model:value="av.voice" placeholder="No voice" :options="getVoiceList()" allowClear />
+    <a-select
+      v-model:value="props.voice.voice"
+      placeholder="No voice"
+      :options="getVoiceList()"
+      allowClear
+    />
   </a-form-item>
-  <a-form-item label="Variant" :labelCol="{ span: 3 }" class="mb-2">
-    <a-select v-model:value="av.variant" :options="getVariantList()" />
-  </a-form-item>
-  <a-form-item label="Pitch" :labelCol="{ span: 3 }" class="mb-2">
-    <a-slider v-model:value="av.pitch" />
-  </a-form-item>
-  <a-form-item label="Rate" :labelCol="{ span: 3 }" class="mb-2">
-    <a-slider v-model:value="av.speed" />
-  </a-form-item>
-  <a-form-item label="Volume" :labelCol="{ span: 3 }" class="mb-2">
-    <a-slider v-model:value="av.amplitude" />
-  </a-form-item>
-  <a-form-item label="Test voice" :labelCol="{ span: 3 }" class="mb-2">
-    <a-input-search placeholder="Welcome to UpStage!">
-      <template #enterButton>
-        <sound-outlined />
-      </template>
-    </a-input-search>
-  </a-form-item>
+  <template v-if="props.voice.voice">
+    <a-form-item label="Variant" :labelCol="{ span: 3 }" class="mb-2">
+      <a-select v-model:value="props.voice.variant" :options="getVariantList()" />
+    </a-form-item>
+    <a-form-item label="Pitch" :labelCol="{ span: 3 }" class="mb-2">
+      <a-slider v-model:value="props.voice.pitch" />
+    </a-form-item>
+    <a-form-item label="Rate" :labelCol="{ span: 3 }" class="mb-2">
+      <a-slider :value="props.voice.speed / 3.5" @change="props.voice.speed = $event * 3.5" />
+    </a-form-item>
+    <a-form-item label="Volume" :labelCol="{ span: 3 }" class="mb-2">
+      <a-slider v-model:value="props.voice.amplitude" />
+    </a-form-item>
+    <a-form-item label="Test voice" :labelCol="{ span: 3 }" class="mb-2">
+      <a-input-search :placeholder="defaultTest" v-model:value="test" @search="testVoice">
+        <template #enterButton>
+          <sound-outlined />
+        </template>
+      </a-input-search>
+    </a-form-item>
+  </template>
 </template>

@@ -4,11 +4,15 @@ import { getDefaultVoice, isValidVoice } from "./voice";
 const { loadVoice, speak, stop } = (window as any).meSpeak
 
 export const avatarSpeak = (voice: AvatarVoice, message: string) => {
-    const callback = () => speak(cleanEmoji(message), voice) // voice got loaded assynchronous
-    if (isValidVoice(voice.voice)) {
-        loadVoice(voice, callback)
-    } else {
-        loadVoice(getDefaultVoice(), callback)
+    if (voice.voice) {
+        const callback = () => {
+            speak(cleanEmoji(message), voice)
+        } // voice got loaded assynchronous
+        if (isValidVoice(voice.voice)) {
+            loadVoice(voice.voice, callback)
+        } else {
+            loadVoice(getDefaultVoice(), callback)
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+import { AvatarVoice } from "../../models/studio";
+
 export const voices: { [key: string]: string } = {
     ca: "Catalan",
     cs: "Czech",
@@ -76,4 +78,14 @@ export const getVariantList = () => {
 
 export const getDefaultVariant = () => {
     return "f1"
+}
+
+export const getDefaultAvatarVoice = () => {
+    return {
+        voice: null,
+        variant: getDefaultVariant(),
+        pitch: 50,
+        speed: 175,
+        amplitude: 50,
+    } as AvatarVoice
 }

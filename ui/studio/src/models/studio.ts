@@ -79,7 +79,7 @@ export interface Media {
 export interface MediaAttributes {
   multi: boolean;
   frames: string[];
-  voice: Voice;
+  voice: AvatarVoice;
   link: Link;
   isRTMP: boolean;
   w: number;
@@ -89,9 +89,6 @@ export interface MediaAttributes {
 export interface Link {
   blank: boolean;
   url: string;
-}
-
-export interface Voice {
 }
 
 export interface UploadFile {
