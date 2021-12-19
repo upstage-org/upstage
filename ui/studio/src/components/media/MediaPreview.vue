@@ -31,7 +31,7 @@ const attributes = computed<MediaAttributes>(() => {
   <a-carousel v-else-if="attributes.multi" arrows dots-class="slick-dots slick-thumb" class="w-48">
     <template #customPaging="{ i }">
       <a>
-        <img :src="absolutePath(attributes.frames[i])" />
+        <img :src="absolutePath(attributes.frames[i])" class="max-h-8 object-contain" />
       </a>
     </template>
     <div v-for="frame in attributes.frames" :key="frame">

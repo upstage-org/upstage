@@ -698,7 +698,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar' || data.type === 'stream') {
+            if (data.type === 'avatar') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
