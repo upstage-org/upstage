@@ -257,7 +257,7 @@ const handleImageLoad = (e: Event, index: number) => {
         </div>
         <a-alert
           v-if="files!.length > 1"
-          :message="clearMode ? 'Click a frame to remove it' : 'Drag a frame to reorder it\'s position'"
+          :message="clearMode ? 'Click a frame to remove it' : 'Drag a frame to reorder its position'"
           :type="clearMode ? 'error' : 'success'"
           show-icon
           closable
