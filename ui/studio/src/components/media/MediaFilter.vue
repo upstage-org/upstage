@@ -233,9 +233,11 @@ const createRTMPStream = () => {
           <template #overlay>
             <a-menu>
               <a :href="to('backstage')">
-                <a-menu-item>Back to Backstage</a-menu-item>
+                <a-menu-item>Backstage</a-menu-item>
               </a>
-              <a-menu-item>Logout</a-menu-item>
+              <a :href="to('')">
+                <a-menu-item>Foyer</a-menu-item>
+              </a>
             </a-menu>
           </template>
         </a-dropdown>

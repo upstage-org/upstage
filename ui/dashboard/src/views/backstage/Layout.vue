@@ -10,7 +10,7 @@
           </span>
         </router-link>
         <div class="vertical-divider" />
-        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT" target="_blank">
+        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
           <span>
             <i class="fas fa-magic has-text-info"></i>
             Studio
