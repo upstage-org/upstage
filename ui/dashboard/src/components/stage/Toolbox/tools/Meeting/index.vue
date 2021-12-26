@@ -23,10 +23,8 @@ const store = useStore();
 const rooms = computed(() => store.state.stage.tools.meetings);
 
 const createRoom = () => {
-  store.commit("stage/CREATE_ROOM", {
-    type: 'meeting',
-    name: "New Room",
-    description: "",
+  store.dispatch("stage/openSettingPopup", {
+    type: "CreateRoom",
   });
 };
 </script>
