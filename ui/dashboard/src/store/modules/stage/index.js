@@ -46,6 +46,7 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
+            meetings: [],
             curtains: [],
         },
         config: getDefaultStageConfig(),
@@ -144,7 +145,8 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission
+            return state.model
+                && state.model.permission
                 && state.model.permission !== 'audience'
                 && !state.replay.isReplaying
                 && !state.masquerading
@@ -524,6 +526,9 @@ export default {
         },
         TOGGLE_MASQUERADING(state) {
             state.masquerading = !state.masquerading
+        },
+        CREATE_ROOM(state, room) {
+            state.tools.meetings.push(room)
         }
     },
     actions: {

@@ -6,6 +6,7 @@
       </template>
       <div class="submenu">
         <router-link to="/backstage" class="navbar-item">Backstage</router-link>
+        <router-link to="/" class="navbar-item">Foyer</router-link>
       </div>
     </Popover>
   </div>

@@ -1,0 +1,75 @@
+<template>
+  <div>
+    <Object :object="meeting">
+      <template #render>
+        <div class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }">
+          <Loading v-if="loading" height="100%" />
+          <div class="room" ref="room"></div>
+        </div>
+      </template>
+    </Object>
+  </div>
+</template>
+
+<script>
+import Object from "../Object.vue";
+import Loading from "@/components/Loading.vue";
+import { computed, onMounted, ref, watchEffect } from "vue";
+import { useStore } from "vuex";
+
+export default {
+  components: { Object, Loading },
+  props: ["object"],
+  setup: (props) => {
+    const store = useStore();
+    const room = ref();
+    const meeting = computed(() => props.object);
+
+    onMounted(() => {
+      const domain = 'meet.jit.si';
+      const options = {
+        roomName: props.object.name,
+        subject: 'Powered by Jitsi',
+        width: 100,
+        height: 100 * (props.object.h / props.object.w),
+        parentNode: room.value,
+        userInfo: {
+          email: store.state.user.user?.email,
+          displayName: store.getters['user/chatname']
+        },
+        configOverwrite: {
+          prejoinPageEnabled: false,
+          startVideoMuted: 1,
+          startAudioMuted: 1,
+        },
+        interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false }
+      };
+      const api = new window.JitsiMeetExternalAPI(domain, options);
+      console.log(api)
+    })
+
+    watchEffect(() => {
+      if (room.value) {
+        room.value.style.zoom = props.object.w / 100;
+      }
+    })
+
+    return { meeting, room };
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+@import "@/styles/bulma";
+
+.frame {
+  border: 2px solid black;
+  border-top: $green-bar;
+  border-radius: 8px;
+  box-sizing: border-box;
+  overflow: hidden;
+  .room {
+    height: fit-content;
+  }
+}
+</style>
