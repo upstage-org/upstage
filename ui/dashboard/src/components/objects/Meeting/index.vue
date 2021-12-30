@@ -14,7 +14,7 @@
 <script>
 import Object from "../Object.vue";
 import Loading from "@/components/Loading.vue";
-import { computed, onMounted, ref, watchEffect } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 
 export default {
@@ -30,8 +30,8 @@ export default {
       const options = {
         roomName: props.object.name,
         subject: 'Powered by Jitsi',
-        width: 100,
-        height: 100 * (props.object.h / props.object.w),
+        width: '100%',
+        height: '100%',
         parentNode: room.value,
         userInfo: {
           email: store.state.user.user?.email,
@@ -46,12 +46,6 @@ export default {
       };
       const api = new window.JitsiMeetExternalAPI(domain, options);
       console.log(api)
-    })
-
-    watchEffect(() => {
-      if (room.value) {
-        room.value.style.zoom = props.object.w / 100;
-      }
     })
 
     return { meeting, room };
@@ -69,7 +63,7 @@ export default {
   box-sizing: border-box;
   overflow: hidden;
   .room {
-    height: fit-content;
+    height: 100%;
   }
 }
 </style>
