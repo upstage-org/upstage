@@ -76,7 +76,7 @@ class UserPortalConfig(Base,db.Model):
     json_config = Column(Text, nullable=False, default='{"viewing_timezone":"US/Eastern"}')
     user = relationship(User, foreign_keys=[user_id])
 
-class OneTimeTOTPQRURL(Base, db.Model):
+class OneTimeTOTP(Base, db.Model):
     __tablename__ = 'admin_one_time_totp_qr_url'
 
     # This is a one-time link to get the QR code for the TOTP secret, for Google Authenticator, etc.

@@ -92,4 +92,26 @@ export default {
       }
     }
   `, variables),
+  requestPasswordReset: variables => client.request(gql`
+  mutation RequestPasswordReset($usernameOrEmail: String) {
+    requestPasswordReset(usernameOrEmail: $usernameOrEmail) {
+      message
+      username
+    }
+  }
+`, variables),
+  verifyPasswordReset: variables => client.request(gql`
+  mutation verifyPasswordReset($username: String, $otp: String) {
+    verifyPasswordReset(username: $username, otp: $otp) {
+      message
+    }
+  }
+`, variables),
+  passwordReset: variables => client.request(gql`
+  mutation PasswordReset($username: String, $otp: String, $password: String) {
+    passwordReset(username: $username, otp: $otp, password: $password) {
+      message
+    }
+  }
+`, variables)
 }
