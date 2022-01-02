@@ -148,7 +148,7 @@ export default {
           moveable.setState(
             {
               target: el.value,
-              keepRatio: props.object.type !== "text",
+              keepRatio: !["text", "meeting"].includes(props.object.type),
             },
             () => {
               if (e && props.object.type !== "text") {
