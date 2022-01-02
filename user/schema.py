@@ -22,7 +22,7 @@ from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
-from auth.auth_mutation import AuthMutation,RefreshMutation
+from auth.auth_mutation import AuthMutation, PasswordResetMutation,RefreshMutation,RequestPasswordResetMutation, VerifyPasswordResetMutation
 from user.user_utils import current_user
 from flask_jwt_extended import jwt_required,get_jwt_identity
 
@@ -305,6 +305,9 @@ class Mutation(graphene.ObjectType):
     changePassword = ChangePassword.Field()
     deleteUser = DeleteUser.Field()
     batchUserCreation = BatchUserCreation.Field()
+    requestPasswordReset = RequestPasswordResetMutation.Field()
+    verifyPasswordReset = VerifyPasswordResetMutation.Field()
+    passwordReset = PasswordResetMutation.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()

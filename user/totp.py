@@ -13,19 +13,19 @@ if projdir not in sys.path:
 from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,app)
 from config.settings import ENV_TYPE, URL_PREFIX
 
-from user.models import User,OneTimeTOTPQRURL
+from user.models import User,OneTimeTOTP
 
 def generate_user_totp(user_id):
 
     user = DBSession.query(User).filter(User.id==user_id).one()
     local_db_session = get_scoped_session()
 
-    local_db_session.query(OneTimeTOTPQRURL).filter(
-        OneTimeTOTPQRURL.user_id==user_id).delete(synchronize_session=False)
+    local_db_session.query(OneTimeTOTP).filter(
+        OneTimeTOTP.user_id==user_id).delete(synchronize_session=False)
 
     code=pyotp.random_base32()
 
-    totp_record = OneTimeTOTPQRURL(
+    totp_record = OneTimeTOTP(
         user_id=user_id,
         url=f'otpauth://totp/UPSTAGE_{ENV_TYPE}:{user.email}?secret={code}&issuer=Upstage',
         code=code,
@@ -44,8 +44,8 @@ def generate_user_totp(user_id):
 
 def verify_user_totp(user,num_value):
 
-    totp_record = DBSession.query(OneTimeTOTPQRURL).filter(
-        OneTimeTOTPQRURL.user_id==user.id).first()
+    totp_record = DBSession.query(OneTimeTOTP).filter(
+        OneTimeTOTP.user_id==user.id).first()
     if not totp_record:
         app.logger.warning("User's totp record does not exist:{}".format(user.id))
         return False
@@ -71,7 +71,7 @@ def dev_harness():
         print("Nope.")
         return
 
-    threesixthree = DBSession.query(OneTimeTOTPQRURL).filter(OneTimeTOTPQRURL.user_id==363).one()
+    threesixthree = DBSession.query(OneTimeTOTP).filter(OneTimeTOTP.user_id==363).one()
     for user in DBSession.query(User).filter(User.role.in_((4,8))).all():
         if not user.active:
             continue
@@ -79,11 +79,11 @@ def dev_harness():
             continue
         local_db_session = get_scoped_session()
 
-        totp_record = local_db_session.query(OneTimeTOTPQRURL).filter(
-            OneTimeTOTPQRURL.user_id==user.id).first()
+        totp_record = local_db_session.query(OneTimeTOTP).filter(
+            OneTimeTOTP.user_id==user.id).first()
 
         if not totp_record:
-            totp_record = OneTimeTOTPQRURL(
+            totp_record = OneTimeTOTP(
                 user_id=user.id,
                 )
             local_db_session.add(totp_record)
