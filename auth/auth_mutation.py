@@ -113,20 +113,25 @@ class RequestPasswordResetMutation(graphene.Mutation):
             local_db_session.flush()
             local_db_session.add(OneTimeTOTP(user_id=user.id, code=otp))
             local_db_session.flush()
-            send(email, f"Password Reset for {user.username}",
+            send(email, f"Password reset for account {user.username}",
                  f"""
+<p>
 Hi <b>{user.display_name if user.display_name else user.username}</b>,
 <br>
 <br>
-We received a request to reset your password. If you did not request this, please ignore this email. Otherwise, please use the following code to reset your password:
+We received a request to reset your forgotten password. Please use the following code to proceed your password reset:
 <b style="color: #007011">{otp}</b>
 <br>
 The code will expire in 30 minutes.
 <br>
 <br>
-Thanks,
+If you did not request a password reset, please ignore this email.
 <br>
-<i>The Upstage Team!</i>
+<br>
+Thanks you,
+<br>
+<i style="color: #007011">The Upstage Team!</i>
+</p>
 """)
 
         return RequestPasswordResetMutation(
