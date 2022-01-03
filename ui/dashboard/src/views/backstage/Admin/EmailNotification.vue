@@ -31,22 +31,7 @@
     />
   </HorizontalField>
   <HorizontalField title="Body">
-    <Editor
-      v-model="body"
-      :init="{
-        height: 500,
-        menubar: false,
-        plugins: [
-          'advlist autolink lists link image charmap print preview anchor',
-          'searchreplace visualblocks code fullscreen',
-          'insertdatetime media table paste code help wordcount',
-          'image',
-          'table'
-        ],
-        toolbar:
-          'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link | table | image | help'
-      }"
-    />
+    <RichTextEditor v-model="body" />
   </HorizontalField>
 </template>
 
@@ -57,9 +42,9 @@ import { ref } from 'vue';
 import MultiSelectList from '@/components/MultiSelectList.vue';
 import Field from '@/components/form/Field.vue';
 import HorizontalField from '@/components/form/HorizontalField.vue';
-import Editor from '@tinymce/tinymce-vue'
 import SaveButton from '@/components/form/SaveButton.vue';
 import { notification } from '@/utils/notification';
+import RichTextEditor from '@/components/form/RichTextEditor.vue';
 
 const { nodes: users, loading: loadingUsers } = useQuery(userGraph.userList);
 const selectedPlayers = ref([])

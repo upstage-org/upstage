@@ -32,7 +32,7 @@
     </div>
     <template v-if="edit == 'description'">
       <div class="column">
-        <textarea class="textarea" rows="4" v-model="description" />
+        <RichTextEditor v-model="description" />
       </div>
       <div class="column is-narrow">
         <button
@@ -43,7 +43,7 @@
       </div>
     </template>
     <template v-else>
-      <div class="column pre-wrap">{{ description }}</div>
+      <div class="column pre-wrap" v-html="description"></div>
       <div class="column is-narrow">
         <button class="button is-primary" @click="edit = 'description'">Edit</button>
       </div>
@@ -93,8 +93,10 @@ import { useStore } from "vuex";
 import { ref, watchEffect } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { configGraph } from "@/services/graphql";
+import RichTextEditor from "@/components/form/RichTextEditor.vue";
+
 export default {
-  components: { Field },
+  components: { Field, RichTextEditor },
   setup: () => {
     const store = useStore();
 
