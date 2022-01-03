@@ -37,6 +37,12 @@
               exact-active-class="is-active"
             >Foyer Customisation</router-link>
           </li>
+          <li>
+            <router-link
+              to="/backstage/admin/email-notification"
+              exact-active-class="is-active"
+            >Email Notification</router-link>
+          </li>
         </ul>
       </aside>
     </div>
