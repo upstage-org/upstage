@@ -71,7 +71,7 @@ const send = async () => {
   if (!selectedPlayers.value.length && !additionalReceivers.value.trim()) {
     return notification.error('Please select at least one player or provide an email address');
   }
-  await save(`Notification has been sent to ${selectedPlayers.value.map(u => u.displayName || u.username).concat(additionalReceivers.value).join(', ')} successfully!`, {
+  await save(`Notification has been successfully sent to ${selectedPlayers.value.map(u => u.displayName || u.username).concat(additionalReceivers.value.trim() || []).join(', ')} !`, {
     subject: subject.value,
     body: body.value,
     recipients: selectedPlayers.value.map(p => p.email).join(',').concat(additionalReceivers.value)
