@@ -94,6 +94,11 @@ const routes = [
             path: 'foyer-customisation',
             name: 'Foyer Customisation',
             component: () => import('../views/backstage/Admin/FoyerCustomisation.vue'),
+          },
+          {
+            path: 'email-notification',
+            name: 'Email Notification',
+            component: () => import('../views/backstage/Admin/EmailNotification.vue'),
           }
         ]
       },
