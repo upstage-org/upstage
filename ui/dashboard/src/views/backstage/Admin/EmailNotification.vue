@@ -2,8 +2,7 @@
   <SaveButton :loading="loading" @click="send">
     <span class="icon is-small">
       <i class="fas fa-paper-plane"></i>
-    </span>
-    Send
+    </span> Send
   </SaveButton>
   <HorizontalField title="Subject" class="mt-4">
     <Field placeholder="Provide a subject for your email" v-model="subject" />
@@ -71,7 +70,7 @@ const send = async () => {
   if (!selectedPlayers.value.length && !additionalReceivers.value.trim()) {
     return notification.error('Please select at least one player or provide an email address');
   }
-  await save(`Notification has been successfully sent to ${selectedPlayers.value.map(u => u.displayName || u.username).concat(additionalReceivers.value.trim() || []).join(', ')} !`, {
+  await save(`Notification has been successfully sent to ${selectedPlayers.value.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
     subject: subject.value,
     body: body.value,
     recipients: selectedPlayers.value.map(p => p.email).join(',').concat(additionalReceivers.value)
