@@ -36,7 +36,6 @@ class UserAttribute:
     last_name = graphene.String(description="Last Name")
     display_name = graphene.String(description="Display Name")
     active =  graphene.Boolean(description="Active record or not")
-    agreed_to_terms = graphene.Boolean(description="Agreed to terms")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
 
@@ -270,7 +269,6 @@ class BatchUserCreation(graphene.Mutation):
                 user = UserModel(
                     username=item.username,
                     active=True,
-                    agreed_to_terms=True,
                     role=GUEST
                 )
                 # Add validation for non-empty passwords, etc.

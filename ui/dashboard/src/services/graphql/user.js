@@ -14,7 +14,6 @@ export const userFragment = gql`
     email
     active
     createdOn
-    agreedToTerms
     role
     uploadLimit
   }
@@ -32,8 +31,8 @@ export default {
     ${userFragment}
   `, variables),
   updateUser: (variables) => client.request(gql`
-    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $password: String, $agreedToTerms: Boolean, $active: Boolean, $role: Int, $uploadLimit: Int) {
-      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, password: $password, agreedToTerms: $agreedToTerms, active: $active, role: $role, uploadLimit: $uploadLimit}) {
+    mutation UpdateUser($id: ID!, $displayName: String, $firstName: String, $lastName: String, $email: String, $password: String, $active: Boolean, $role: Int, $uploadLimit: Int) {
+      updateUser(inbound: {id: $id, displayName: $displayName, firstName: $firstName, lastName: $lastName, email: $email, password: $password, active: $active, role: $role, uploadLimit: $uploadLimit}) {
         user {
           ...userFragment
         }

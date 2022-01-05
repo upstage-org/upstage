@@ -34,12 +34,6 @@
               label="Active"
               disabled
             />
-            &nbsp;
-            <Switch
-              v-model="form.agreedToTerms"
-              className="is-rounded is-success"
-              label="Agreed to terms"
-            />
           </div>
         </div>
       </div>
