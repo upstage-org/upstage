@@ -128,7 +128,7 @@ The code will expire in 30 minutes.
 If you did not request a password reset, please ignore this email.
 <br>
 <br>
-Thanks you,
+Thank you,
 <br>
 <i style="color: #007011">The Upstage Team!</i>
 </p>
