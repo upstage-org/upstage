@@ -68,6 +68,6 @@ export default {
   left: 0;
   top: 0;
   width: 100%;
-  height: auto;
+  height: 100%;
 }
 </style>

@@ -3,14 +3,16 @@ import { useQuery } from '@vue/apollo-composable';
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
-import { ref, computed, inject, Ref, createVNode, watch } from 'vue'
+import { ref, computed, inject, Ref, createVNode, watch, reactive } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { CopyrightLevel, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { AvatarVoice as Voice, CopyrightLevel, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
 import { editingMediaVar, inquiryVar } from '../../../apollo';
 import MediaPermissions from './MediaPermissions.vue';
+import AvatarVoice from './AvatarVoice.vue';
+import { getDefaultAvatarVoice, getDefaultVariant } from '../../../services/speech/voice';
 const files = inject<Ref<UploadFile[]>>("files")
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`{ editingMedia @client }`);
@@ -28,12 +30,16 @@ watch(editingMediaResult, () => {
       files.value = frames.map((frame, id) => ({
         id,
         preview: absolutePath(frame),
-        url: frame,
-        status: 'uploaded',
+        url: attributes.isRTMP ? frame.split("?")[0] : frame,
+        status: attributes.isRTMP ? 'virtual' : 'uploaded',
         file: {
           name: editingMedia.name,
         } as File
       }));
+    }
+    Object.assign(voice, getDefaultAvatarVoice());
+    if (attributes.voice && attributes.voice.voice) {
+      Object.assign(voice, attributes.voice);
     }
     if (editingMedia.stages) {
       stageIds.value = editingMedia.stages.map(stage => stage.id);
@@ -57,9 +63,9 @@ const mediaName = computed(() => {
   return ''
 })
 const copyrightLevel = ref<CopyrightLevel>(0)
+const voice = reactive<Voice>(getDefaultAvatarVoice())
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
-  console.log(event)
   event.preventDefault()
   if (!clearMode.value) {
     return
@@ -146,6 +152,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       w: frameSize.value.width,
       h: frameSize.value.height,
       urls: [],
+      voice,
     }
   }
 }, id => {
@@ -158,7 +165,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
 watch(files as Ref, ([firstFile]) => {
   if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('audio')) {
     type.value = 'audio'
-  } else if (firstFile && firstFile.status === 'local' && firstFile.file.type.includes('video')) {
+  } else if (firstFile && ((firstFile.status === 'local' && firstFile.file.type.includes('video')) || firstFile.status === 'virtual')) {
     type.value = 'stream'
   } else if (firstFile && firstFile.status === 'local' && (!type.value || type.value === 'stream' || type.value === 'audio')) {
     type.value = 'avatar'
@@ -195,6 +202,12 @@ const handleImageLoad = (e: Event, index: number) => {
     }
   }
 }
+const clearSign = () => {
+  editingMediaVar({
+    ...editingMediaVar()!,
+    sign: ''
+  })
+}
 </script>
 
 <template>
@@ -210,20 +223,28 @@ const handleImageLoad = (e: Event, index: number) => {
           <a-select :options="mediaTypes" v-model:value="type"></a-select>
           <a-input v-model:value="name" :placeholder="mediaName"></a-input>
         </a-input-group>
-        <a-button type="primary" @click="visibleDropzone = true">
-          <UploadOutlined />Upload frame
-        </a-button>
-        <a-button type="primary" @click="addExistingFrame">
-          <PlusCircleOutlined />Add existing frame
-        </a-button>
-        <a-button
-          v-if="files!.length > 1"
-          :type="clearMode ? 'primary' : 'dashed'"
-          danger
-          @click="clearMode = !clearMode"
-        >
-          <ClearOutlined />Clear frames
-        </a-button>
+        <template v-if="!['stream', 'audio'].includes(type)">
+          <a-button type="primary" @click="visibleDropzone = true">
+            <UploadOutlined />Upload frame
+          </a-button>
+          <a-button type="primary" @click="addExistingFrame">
+            <PlusCircleOutlined />Add existing frame
+          </a-button>
+          <a-button
+            v-if="files!.length > 1"
+            :type="clearMode ? 'primary' : 'dashed'"
+            danger
+            @click="clearMode = !clearMode"
+          >
+            <ClearOutlined />Clear frames
+          </a-button>
+        </template>
+        <a-input
+          v-else-if="files && files.length"
+          v-model:value="files![0].url"
+          placeholder="Unique key"
+          @focus="clearSign"
+        ></a-input>
       </a-space>
     </template>
     <a-row :gutter="12">
@@ -232,9 +253,21 @@ const handleImageLoad = (e: Event, index: number) => {
           <audio v-if="type === 'audio'" controls class="w-48">
             <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
           </audio>
-          <video v-else-if="type === 'stream'" controls class="w-48">
-            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
-          </video>
+          <template v-else-if="type === 'stream'">
+            <div
+              v-if="files && files.length && files[0].status === 'virtual'"
+              controls
+              class="w-48"
+            >
+              <LarixQRCode
+                :stream="{ name, src: files[0].url, sign: editingMediaResult?.editingMedia.sign }"
+                :size="192"
+              />
+            </div>
+            <video v-else controls class="w-48">
+              <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
+            </video>
+          </template>
           <SlickList
             v-else
             axis="y"
@@ -278,12 +311,8 @@ const handleImageLoad = (e: Event, index: number) => {
                 :media="editingMediaResult?.editingMedia"
               />
             </a-tab-pane>
-            <a-tab-pane key="voice" tab="Voice">
-              <a-result title="UNDER CONSTRUCTION" sub-title="Please come back later!">
-                <template #icon>
-                  <BuildOutlined />
-                </template>
-              </a-result>
+            <a-tab-pane v-if="type === 'avatar'" key="voice" tab="Voice">
+              <AvatarVoice :voice="voice" />
             </a-tab-pane>
           </a-tabs>
         </div>

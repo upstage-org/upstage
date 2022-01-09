@@ -22,7 +22,7 @@ from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
-from auth.auth_mutation import AuthMutation,RefreshMutation
+from auth.auth_mutation import AuthMutation, PasswordResetMutation,RefreshMutation,RequestPasswordResetMutation, VerifyPasswordResetMutation
 from user.user_utils import current_user
 from flask_jwt_extended import jwt_required,get_jwt_identity
 
@@ -36,7 +36,6 @@ class UserAttribute:
     last_name = graphene.String(description="Last Name")
     display_name = graphene.String(description="Display Name")
     active =  graphene.Boolean(description="Active record or not")
-    agreed_to_terms = graphene.Boolean(description="Agreed to terms")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
 
@@ -270,7 +269,6 @@ class BatchUserCreation(graphene.Mutation):
                 user = UserModel(
                     username=item.username,
                     active=True,
-                    agreed_to_terms=True,
                     role=GUEST
                 )
                 # Add validation for non-empty passwords, etc.
@@ -305,6 +303,9 @@ class Mutation(graphene.ObjectType):
     changePassword = ChangePassword.Field()
     deleteUser = DeleteUser.Field()
     batchUserCreation = BatchUserCreation.Field()
+    requestPasswordReset = RequestPasswordResetMutation.Field()
+    verifyPasswordReset = VerifyPasswordResetMutation.Field()
+    passwordReset = PasswordResetMutation.Field()
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()

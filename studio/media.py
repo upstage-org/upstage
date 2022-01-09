@@ -242,7 +242,22 @@ class UploadFile(graphene.Mutation):
         return UploadFile(url=file_location)
 
 
-class SaveStageInput(graphene.InputObjectType):
+class AvatarVoice:
+    voice = graphene.String(required=False, description="Voice name")
+    variant = graphene.String(required=True, description="Voice variant")
+    pitch = graphene.Int(
+        required=True, description="Voice pitch, range from 0 to 100")
+    speed = graphene.Int(
+        required=True, description="Voice speed, range from 0 to 350")
+    amplitude = graphene.Int(
+        required=True, description="Voice amplitude, range from 0 to 100")
+
+
+class AvatarVoiceInput(graphene.InputObjectType, AvatarVoice):
+    pass
+
+
+class SaveMediaInput(graphene.InputObjectType):
     """Arguments to update a stage."""
     name = graphene.String(
         required=True, description="Name of the media")
@@ -260,6 +275,7 @@ class SaveStageInput(graphene.InputObjectType):
         graphene.String, description="Media tags")
     w = graphene.Int(description="Width of the media")
     h = graphene.Int(description="Height of the media")
+    voice = AvatarVoiceInput(description="Voice settings", required=False)
 
 
 class SaveMedia(graphene.Mutation):
@@ -268,7 +284,7 @@ class SaveMedia(graphene.Mutation):
         lambda: Asset, description="Media saved by this mutation.")
 
     class Arguments:
-        input = SaveStageInput(required=True)
+        input = SaveMediaInput(required=True)
 
     @jwt_required()
     def mutate(self, info, input):
@@ -295,7 +311,20 @@ class SaveMedia(graphene.Mutation):
             if asset:
                 asset.name = name
                 asset.asset_type = asset_type
-                asset.file_location = urls[0]
+                file_location = urls[0]
+                if file_location:
+                    if "?" in file_location:
+                        file_location = file_location[:file_location.index(
+                            "?")]
+                    if asset.id and file_location != asset.file_location and '/' not in file_location:
+                        existedAsset = local_db_session.query(AssetModel).filter(
+                            AssetModel.file_location == file_location).filter(AssetModel.id != asset.id).first()
+                        if existedAsset:
+                            raise Exception(
+                                "Stream with the same key already existed, please pick another unique key!")
+                    asset.file_location = file_location
+                else:
+                    asset.file_location = uuid.uuid4()
                 asset.copyright_level = copyright_level
                 asset.updated_on = datetime.utcnow()
                 local_db_session.flush()
@@ -324,7 +353,14 @@ class SaveMedia(graphene.Mutation):
                     attributes['frames'] = []
                 attributes['w'] = w
                 attributes['h'] = h
-
+                if asset_type.name == 'stream' and '/' not in file_location:
+                    attributes['isRTMP'] = True
+                if 'voice' in input:
+                    voice = input['voice']
+                    if voice and voice.voice:
+                        attributes['voice'] = voice
+                    elif 'voice' in attributes:
+                        del attributes['voice']
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
 
@@ -427,3 +463,38 @@ class RequestPermission(graphene.Mutation):
                 local_db_session.flush()
                 local_db_session.commit()
         return ConfirmPermission(success=True)
+
+
+class VoiceOutput(graphene.ObjectType, AvatarVoice):
+    pass
+
+
+class Voice(graphene.ObjectType):
+    voice = graphene.Field(VoiceOutput, description="The voice")
+    avatar = graphene.Field(Asset, description="The avatar owned this voice")
+
+    class Meta:
+        interfaces = (graphene.relay.Node,)
+
+
+def resolve_voices(self, info):
+    voices = []
+    for media in DBSession.query(AssetModel).filter(AssetModel.asset_type.has(AssetTypeModel.name == 'avatar')).all():
+        if media.description:
+            attributes = json.loads(media.description)
+            if 'voice' in attributes:
+                voice = attributes['voice']
+                if voice and voice['voice']:
+                    av = AvatarVoice()
+                    av.voice = voice['voice']
+                    av.variant = voice['variant']
+                    for key in ['pitch', 'speed', 'amplitude']:
+                        if key in voice:
+                            setattr(av, key, int(voice[key]))
+                        else:
+                            if key == 'speed':
+                                setattr(av, key, 175)
+                            else:
+                                setattr(av, key, 50)
+                    voices.append(Voice(avatar=media, voice=av))
+    return voices

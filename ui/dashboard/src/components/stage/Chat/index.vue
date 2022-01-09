@@ -5,7 +5,7 @@
       :key="chatPosition"
       v-show="chatVisibility"
       class="card is-light"
-      :class="{ collapsed }"
+      :class="{ collapsed, dark: chatDarkMode }"
       :style="{
         opacity,
         fontSize,
@@ -87,6 +87,9 @@ export default {
     const store = useStore();
     const chatVisibility = computed(
       () => store.state.stage.settings.chatVisibility
+    );
+    const chatDarkMode = computed(
+      () => store.state.stage.settings.chatDarkMode
     );
 
     const messages = computed(() => store.state.stage.chat.messages);
@@ -177,6 +180,7 @@ export default {
       opacity,
       fontSize,
       chatVisibility,
+      chatDarkMode,
       enter,
       leave,
       increateFontSize,
@@ -225,6 +229,10 @@ export default {
   .card-footer-item {
     flex-wrap: wrap;
     padding-top: 0;
+  }
+
+  &.dark {
+    filter: invert(1) hue-rotate(180deg); /* This will flip the color back to its original value.*/
   }
 
   &.collapsed {

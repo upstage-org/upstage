@@ -40,4 +40,6 @@ let configs = {
     }
 }
 
+localStorage.setItem('configs', JSON.stringify(configs));
+
 export default configs;
