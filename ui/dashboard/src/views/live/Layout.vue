@@ -1,16 +1,17 @@
 <template>
-  <div id="live-logo" v-if="canPlay">
-    <Popover>
+  <div id="live-logo">
+    <ContextMenu>
       <template #trigger>
         <Logo />
       </template>
-      <div class="submenu">
-        <router-link to="/backstage" class="navbar-item">Backstage</router-link>
-        <router-link to="/" class="navbar-item">Foyer</router-link>
-      </div>
-    </Popover>
+      <template #context>
+        <div class="submenu" v-if="canPlay">
+          <router-link to="/backstage" class="navbar-item">Backstage</router-link>
+          <router-link to="/" class="navbar-item">Foyer</router-link>
+        </div>
+      </template>
+    </ContextMenu>
   </div>
-  <Logo v-else id="live-logo" />
   <div id="main-content">
     <Preloader />
     <template v-if="ready">
@@ -29,7 +30,7 @@
 
 <script>
 import Logo from "@/components/Logo";
-import Popover from "@/components/Popover.vue";
+import ContextMenu from "@/components/ContextMenu.vue";
 import SettingPopup from "@/components/stage/SettingPopup";
 import Chat from "@/components/stage/Chat/index";
 import PlayerChat from "@/components/stage/Chat/PlayerChat";
@@ -56,7 +57,7 @@ export default {
     AudioPlayer,
     ConnectionStatus,
     MasqueradingStatus,
-    Popover
+    ContextMenu
   },
   setup: () => {
     const store = useStore();
@@ -101,8 +102,7 @@ export default {
   max-width: 200px;
   z-index: 1;
 
-  &.preloader,
-  &:hover {
+  &.preloader {
     z-index: 20001;
   }
 
