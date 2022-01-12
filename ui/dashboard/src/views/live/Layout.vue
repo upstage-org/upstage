@@ -1,16 +1,6 @@
 <template>
   <div id="live-logo">
-    <ContextMenu>
-      <template #trigger>
-        <Logo />
-      </template>
-      <template #context>
-        <div class="submenu" v-if="canPlay">
-          <router-link to="/backstage" class="navbar-item">Backstage</router-link>
-          <router-link to="/" class="navbar-item">Foyer</router-link>
-        </div>
-      </template>
-    </ContextMenu>
+    <Logo :to="loggedIn ? '/backstage' : '/'" />
   </div>
   <div id="main-content">
     <Preloader />
@@ -30,7 +20,6 @@
 
 <script>
 import Logo from "@/components/Logo";
-import ContextMenu from "@/components/ContextMenu.vue";
 import SettingPopup from "@/components/stage/SettingPopup";
 import Chat from "@/components/stage/Chat/index";
 import PlayerChat from "@/components/stage/Chat/PlayerChat";
@@ -44,6 +33,8 @@ import MasqueradingStatus from "./MasqueradingStatus";
 import { useStore } from "vuex";
 import { computed, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
+import { loggedIn } from "@/utils/auth";
+
 export default {
   components: {
     Logo,
@@ -57,7 +48,6 @@ export default {
     AudioPlayer,
     ConnectionStatus,
     MasqueradingStatus,
-    ContextMenu
   },
   setup: () => {
     const store = useStore();
@@ -81,6 +71,7 @@ export default {
     return {
       ready,
       canPlay,
+      loggedIn
     };
   },
 };
