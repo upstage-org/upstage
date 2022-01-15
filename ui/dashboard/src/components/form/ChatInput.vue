@@ -35,7 +35,7 @@
         </slot>
       </button>
       <transition :css="false" @enter="pickerEnter" @leave="pickerLeave">
-        <emoji-picker v-show="isPicking" class="light" />
+        <emoji-picker v-show="isPicking" :class="{ dark: chatDarkMode, light: !chatDarkMode }" />
       </transition>
     </div>
   </div>
@@ -59,6 +59,7 @@ export default {
     const isPicking = ref(false);
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
+    const chatDarkMode = computed(() => store.state.stage.settings.chatDarkMode);
 
     const isHoldingShift = useHoldingShift();
 
@@ -126,7 +127,7 @@ export default {
       }[behavior.value];
     });
 
-    return { input, isPicking, pickerEnter, pickerLeave, dynamicClass, dynamicTooltip };
+    return { input, isPicking, pickerEnter, pickerLeave, dynamicClass, dynamicTooltip, chatDarkMode };
   },
 };
 </script>

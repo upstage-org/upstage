@@ -48,13 +48,15 @@ export default {
         frameAnimation.currentFrame = currentFrame
       }
       clearInterval(frameAnimation.interval);
-      frameAnimation.interval = setInterval(() => {
-        let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
-        if (nextFrame >= frames.length) {
-          nextFrame = 0;
-        }
-        frameAnimation.currentFrame = frames[nextFrame];
-      }, 100 / speed);
+      if (frames) {
+        frameAnimation.interval = setInterval(() => {
+          let nextFrame = frames.indexOf(frameAnimation.currentFrame) + 1;
+          if (nextFrame >= frames.length) {
+            nextFrame = 0;
+          }
+          frameAnimation.currentFrame = frames[nextFrame];
+        }, 100 / speed);
+      }
     }, { immediate: true });
 
     return { backgroundOpacity, transitionDuration, src }
