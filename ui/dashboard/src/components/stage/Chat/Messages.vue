@@ -6,7 +6,7 @@
     </div>
   </div>
   <div v-else>
-    <p v-for="item in messages" :key="item" :style="{ opacity: item.isPlayer ? 1 : 0.5 }">
+    <p v-for="item in messages" :key="item" :class="{ guest: !item.isPlayer }">
       <template v-if="item.clear">
         <Divider>Clear Chat</Divider>
       </template>
@@ -144,5 +144,8 @@ export default {
     position: absolute;
     right: -16px;
   }
+}
+.guest {
+  opacity: 0.5;
 }
 </style>
