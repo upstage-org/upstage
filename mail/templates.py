@@ -58,7 +58,7 @@ Here is your account information:
 {footer}
 """
 
-def admin_registration_notification(user):
+def admin_registration_notification(user, approval_url):
     return f"""
 <p>
 Dear Admins,
@@ -67,7 +67,7 @@ Dear Admins,
 A new user has registered with the Upstage platform. Please approve the user by clicking on the following link:
 <br>
 <br>
-<a href="{user.approval_url}">{user.approval_url}</a>
+<a href="{approval_url}">{approval_url}</a>
 <br>
 <br>
 The user's information is:
