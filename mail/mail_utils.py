@@ -1,4 +1,4 @@
-import threading
+from multiprocessing import Process
 from email.mime.text import MIMEText
 from smtplib import (
     SMTP_SSL as SMTP,)  # this invokes the secure SMTP protocol (port 465, uses SSL)
@@ -26,5 +26,4 @@ def send_sync(to, subject, content):
         conn.quit()
 
 def send(to, subject, content):
-    thread = threading.Thread(target=send_sync, args=(to, subject, content))
-    thread.start()
+    Process(target=send_sync, args=(to, subject, content)).start()

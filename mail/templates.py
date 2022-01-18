@@ -4,7 +4,7 @@ footer = """<br>
 <br>
 Thank you,
 <br>
-<i style="color: #007011">The Upstage Team!</i>
+<b style="color: #007011">The UpStage Team!</b>
 </p>
 """
 
@@ -46,7 +46,7 @@ def user_approved(user):
 Hi <b>{display_user(user)}</b>,
 <br>
 <br>
-Thank you for registering with us. Your account has been approved! You can now login to the Upstage platform.
+Thank you for registering with us. Your account has been approved! You can now login to UpStage.
 <br>
 <br>
 Here is your account information:
@@ -64,7 +64,7 @@ def admin_registration_notification(user, approval_url):
 Dear Admins,
 <br>
 <br>
-A new user has registered with the Upstage platform. Please approve the user by clicking on the following link:
+A new user has registered with UpStage. Please approve the user by clicking on the following link:
 <br>
 <br>
 <a href="{approval_url}">{approval_url}</a>
@@ -75,10 +75,8 @@ The user's information is:
 <br>
 <b>Username:</b> {user.username}
 <br>
+<b>Full Name:</b> {user.first_name} {user.last_name}
+<br>
 <b>Email:</b> {user.email}
-<br>
-<b>Display Name:</b> {user.display_name}
-<br>
-<br>
 {footer}
 """

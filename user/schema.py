@@ -84,8 +84,8 @@ class CreateUser(graphene.Mutation):
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         send(user.email, f"Welcome to UpStage!", user_registration(user))
         admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
-        approval_url = f"{request.url_root}/backstage/admin/player-management"
-        send(','.join(admin_emails), f"Registration approval required for {user.username}", admin_registration_notification(user, approval_url))
+        approval_url = f"{request.url_root}backstage/admin/player-management"
+        send(','.join(admin_emails), f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute):
