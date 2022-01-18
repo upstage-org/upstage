@@ -1,5 +1,8 @@
 # -*- coding: iso8859-15 -*-
+from datetime import datetime
 from auth.models import UserSession
+from mail.mail_utils import send
+from mail.templates import admin_registration_notification, user_approved, user_registration
 import performance_config.models
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
 import sys,os
@@ -77,6 +80,10 @@ class CreateUser(graphene.Mutation):
             user_id = user.id
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
+        send(user.email, f"Welcome to UpStage!", user_registration(user))
+        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_(SUPER_ADMIN,ADMIN)).all()]
+        
+        send(','.join(admin_emails), f"Registration approval required for {user.username}", admin_registration_notification(user))
         return CreateUser(user=user)
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute):
@@ -109,6 +116,12 @@ class UpdateUser(graphene.Mutation):
             else:
                 del data['password']
             for key, value in data.items():
+                if key == 'active':
+                    if value and not user.active and not user.deactivated_on:
+                        send(user.email, f"Registration approved for user {user.username}", user_approved(user))
+                    if not value and user.active:
+                        user.deactivated_on = datetime.now()
+
                 if hasattr(user, key):
                     setattr(user, key, value)
 
