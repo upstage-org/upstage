@@ -81,8 +81,7 @@ class CreateUser(graphene.Mutation):
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         send(user.email, f"Welcome to UpStage!", user_registration(user))
-        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_(SUPER_ADMIN,ADMIN)).all()]
-        
+        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
         send(','.join(admin_emails), f"Registration approval required for {user.username}", admin_registration_notification(user))
         return CreateUser(user=user)
 

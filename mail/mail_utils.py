@@ -1,3 +1,4 @@
+import threading
 from email.mime.text import MIMEText
 from smtplib import (
     SMTP_SSL as SMTP,)  # this invokes the secure SMTP protocol (port 465, uses SSL)
@@ -7,8 +8,7 @@ import re
 
 from config.settings import EMAIL_HOST, EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS
 
-
-def send(to, subject, content):
+def send_sync(to, subject, content):
 
     msg = MIMEText(content, "html")
     msg["Subject"] = subject
@@ -24,3 +24,7 @@ def send(to, subject, content):
         conn.sendmail(EMAIL_HOST_USER, recipients, msg.as_string())
     finally:
         conn.quit()
+
+def send(to, subject, content):
+    thread = threading.Thread(target=send_sync, args=(to, subject, content))
+    thread.start()
