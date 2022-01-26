@@ -4,7 +4,6 @@ from sqlalchemy import desc
 from graphql_relay.node.node import from_global_id, to_global_id
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from config.settings import VERSION
 from event_archive.models import Event as EventModel
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
 from flask_graphql import GraphQLView
@@ -450,7 +449,7 @@ class Query(graphene.ObjectType):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 stage_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{VERSION}/stage_graphql/', view_func=GraphQLView.as_view(
+    f'/stage_graphql/', view_func=GraphQLView.as_view(
         "stage_graphql", schema=stage_schema,
         graphiql=True
     )

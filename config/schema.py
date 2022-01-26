@@ -4,7 +4,7 @@ from os import name
 from flask_jwt_extended.view_decorators import jwt_required
 from config.project_globals import DBSession, ScopedSession, app
 from flask_graphql import GraphQLView
-from config.settings import NGINX_CONFIG_FILE, VERSION
+from config.settings import NGINX_CONFIG_FILE
 from graphene import relay
 import graphene
 from config.models import Config as ConfigModel
@@ -163,7 +163,7 @@ class Mutation(graphene.ObjectType):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 config_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{VERSION}/config_graphql/', view_func=GraphQLView.as_view(
+    f'/config_graphql/', view_func=GraphQLView.as_view(
         "config_graphql", schema=config_schema,
         graphiql=True
     )
