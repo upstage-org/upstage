@@ -216,7 +216,7 @@ export default {
       }
     };
 
-    const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay', 'stage_graphql', 'user_graphql', 'config_graphql', 'studio_graphql', 'access_token'];
+    const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay', 'api']
     const shortNameValid = ref(!!stage.value.id);
     const { loading: validatingShortName, fetch } = useRequest(
       stageGraph.stageList

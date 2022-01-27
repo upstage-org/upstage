@@ -19,6 +19,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,
     app,api,ScopedSession)
+from config.settings import URL_PREFIX
 from auth.auth_api import jwt_required
 from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
@@ -339,7 +340,7 @@ class Query(graphene.ObjectType):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    f'/{URL_PREFIX}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
 ))
 
