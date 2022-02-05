@@ -34,10 +34,13 @@ export const voices: { [key: string]: string } = {
 };
 
 export const getVoiceList = () => {
-    return Object.keys(voices).map(key => ({
+    return [{
+        value: "",
+        label: "No voice",
+    }].concat(Object.keys(voices).map(key => ({
         value: key,
         label: voices[key]
-    }))
+    })))
 }
 
 export const getDefaultVoice = () => {

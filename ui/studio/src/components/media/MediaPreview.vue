@@ -29,7 +29,7 @@ const attributes = computed<MediaAttributes>(() => {
     </video>
   </template>
   <template v-else>
-    <a-image :src="absolutePath(props.media.src)" class="w-24" />
+    <a-image :src="absolutePath(props.media.src)" class="w-24 max-h-24 object-contain" />
     <a-popover v-if="attributes.multi" placement="right">
       <template #title>
         <b>Multiframes</b>
