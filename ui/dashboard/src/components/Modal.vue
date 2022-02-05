@@ -9,12 +9,10 @@
       <div class="modal-card" :style="{ width, height }">
         <slot>
           <header v-if="$slots.header" class="modal-card-head">
-            <p class="modal-card-title"><slot name="header" /></p>
-            <button
-              class="delete"
-              aria-label="close"
-              @click="closeModal"
-            ></button>
+            <p class="modal-card-title">
+              <slot name="header" />
+            </p>
+            <button class="delete" aria-label="close" @click="closeModal"></button>
           </header>
           <section v-if="$slots.content" class="modal-card-body">
             <slot name="content" :close-modal="closeModal" />
@@ -29,7 +27,7 @@
 </template>
 
 <script>
-import { provide, ref, watch, watchEffect } from "vue";
+import { provide, ref, watchEffect } from "vue";
 export default {
   props: {
     modelValue: Boolean,
@@ -46,15 +44,6 @@ export default {
   setup: (props, { emit }) => {
     const isActive = ref(props.modelValue);
     watchEffect(() => (isActive.value = props.modelValue));
-    watch(isActive, (value) => {
-      if (value) {
-        document.body.style.height = "100vh";
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.height = "unset";
-        document.body.style.overflow = "unset";
-      }
-    });
 
     const setVisible = (visible) => {
       isActive.value = visible;
