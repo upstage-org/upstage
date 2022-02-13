@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
   "version": "1.16.0",
-  "versionAlias": "Augustiner",
+  "versionAlias": "Tegenseer",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
