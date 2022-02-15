@@ -364,7 +364,7 @@ class SaveMedia(graphene.Mutation):
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
 
-            if stage_ids:
+            if stage_ids != None:
                 asset.stages.delete()
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
