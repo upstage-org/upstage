@@ -88,7 +88,7 @@ class Mutation(graphene.ObjectType):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 studio_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{URL_PREFIX}/studio_graphql/', view_func=GraphQLView.as_view(
+    f'/{URL_PREFIX}studio_graphql/', view_func=GraphQLView.as_view(
         "studio_graphql", schema=studio_schema,
         graphiql=True
     )
