@@ -309,7 +309,7 @@ const clearSign = () => {
         <div class="card-container pr-4">
           <a-tabs>
             <a-tab-pane key="stages" tab="Stages" class="pb-4">
-              <StageAssignment v-model="stageIds" />
+              <StageAssignment v-model="(stageIds as any)" />
             </a-tab-pane>
             <a-tab-pane key="permissions" tab="Permissions">
               <MediaPermissions

@@ -11,6 +11,8 @@ import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
 import RequestPermission from './MediaForm/RequestPermission.vue';
 import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
+import { ColumnType, TablePaginationConfig } from 'ant-design-vue/lib/table';
+import { SorterResult } from 'ant-design-vue/lib/table/interface';
 
 const files = inject<Ref<UploadFile[]>>("files")
 
@@ -78,7 +80,7 @@ watch(params, () => {
   })
 })
 
-const columns = [
+const columns: ColumnType<Media>[] = [
   {
     title: "Preview",
     align: "center",
@@ -166,9 +168,9 @@ interface Sorter {
   order: "ascend" | "descend"
 }
 
-const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: Sorter | Sorter[]) => {
+const handleTableChange = ({ current = 1, pageSize = 10 }: TablePaginationConfig, _: any, sorter: SorterResult<Media> | SorterResult<Media>[]) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
-    .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
+    .sort((a, b) => (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
   Object.assign(tableParams, {
     cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
