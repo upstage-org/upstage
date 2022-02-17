@@ -42,6 +42,8 @@ watch(editingMediaResult, () => {
     if (attributes.voice && attributes.voice.voice) {
       Object.assign(voice, attributes.voice);
     }
+    link.url = '';
+    link.blank = true;
     if (attributes.link) {
       Object.assign(link, attributes.link);
     }
