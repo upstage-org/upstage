@@ -142,7 +142,7 @@ const createRTMPStream = () => {
       class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
     >
       <a-space class="flex-wrap">
-        <a-button v-if="composingMode" type="danger" @click="composingMode = false">
+        <a-button v-if="composingMode" type="primary" danger @click="composingMode = false">
           <template #icon>
             <RollbackOutlined />
           </template>
@@ -207,8 +207,8 @@ const createRTMPStream = () => {
         ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
-          v-model:value="dates"
-          :ranges="ranges"
+          v-model:value="(dates as any)"
+          :ranges="(ranges as any)"
         />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters

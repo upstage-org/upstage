@@ -85,7 +85,7 @@ export const getDefaultVariant = () => {
 
 export const getDefaultAvatarVoice = () => {
     return {
-        voice: null,
+        voice: '',
         variant: getDefaultVariant(),
         pitch: 50,
         speed: 175,

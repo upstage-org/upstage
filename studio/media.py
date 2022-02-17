@@ -252,10 +252,15 @@ class AvatarVoice:
     amplitude = graphene.Int(
         required=True, description="Voice amplitude, range from 0 to 100")
 
-
 class AvatarVoiceInput(graphene.InputObjectType, AvatarVoice):
     pass
 
+class Link:
+    url = graphene.String(required=True, description="Link url")
+    blank = graphene.Boolean(required=True, description="Open in new tab?")
+
+class LinkInput(graphene.InputObjectType, Link):
+    pass
 
 class SaveMediaInput(graphene.InputObjectType):
     """Arguments to update a stage."""
@@ -276,6 +281,7 @@ class SaveMediaInput(graphene.InputObjectType):
     w = graphene.Int(description="Width of the media")
     h = graphene.Int(description="Height of the media")
     voice = AvatarVoiceInput(description="Voice settings", required=False)
+    link = LinkInput(description="On click action link", required=False)
 
 
 class SaveMedia(graphene.Mutation):
@@ -355,12 +361,21 @@ class SaveMedia(graphene.Mutation):
                 attributes['h'] = h
                 if asset_type.name == 'stream' and '/' not in file_location:
                     attributes['isRTMP'] = True
+                    
                 if 'voice' in input:
                     voice = input['voice']
                     if voice and voice.voice:
                         attributes['voice'] = voice
                     elif 'voice' in attributes:
                         del attributes['voice']
+
+                if 'link' in input:
+                    link = input['link']
+                    if link and link.url:
+                        attributes['link'] = link
+                    elif 'link' in attributes:
+                        del attributes['link']
+
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
 

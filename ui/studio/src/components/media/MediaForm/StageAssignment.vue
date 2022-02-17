@@ -3,10 +3,11 @@ import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { ref, computed, watchEffect, PropType } from 'vue';
 import { Stage, StudioGraph } from '../../../models/studio';
+import { TransferItem } from 'ant-design-vue/lib/transfer'
 
 const props = defineProps({
   modelValue: {
-    type: Array as PropType<number[]>,
+    type: Array as PropType<string[]>,
     required: true
   }
 });
@@ -34,7 +35,7 @@ const stages = computed(() => {
 
 
 const targetKeys = ref(props.modelValue);
-const filterOption = (inputValue: string, option: Stage) => {
+const filterOption = (inputValue: string, option: TransferItem) => {
   return option.name.toLowerCase().indexOf(inputValue.toLowerCase()) > -1;
 };
 
@@ -46,7 +47,7 @@ watchEffect(() => {
   targetKeys.value = props.modelValue;
 })
 
-const renderItem = (item: Stage) => item.name;
+const renderItem = (item: TransferItem) => item.name;
 </script>
 
 <template>
@@ -63,7 +64,7 @@ const renderItem = (item: Stage) => item.name;
     }"
     :titles="[' available', ' assigned']"
     v-model:target-keys="targetKeys"
-    :data-source="stages"
+    :data-source="(stages as any)"
     show-search
     :filter-option="filterOption"
     :render="renderItem"

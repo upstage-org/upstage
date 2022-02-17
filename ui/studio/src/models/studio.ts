@@ -130,7 +130,7 @@ export interface Notification {
 }
 
 export interface AvatarVoice {
-  voice: string | null
+  voice: string
   variant: string
   pitch: number
   speed: number
