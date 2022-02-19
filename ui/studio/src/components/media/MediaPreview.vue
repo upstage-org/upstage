@@ -27,7 +27,9 @@ const showStreamInstruction = ref(false);
     <div v-if="attributes.isRTMP" controls class="w-48">
       <LarixQRCode @click="showStreamInstruction = true" :stream="media" :size="192" />
       <a-modal v-model:visible="showStreamInstruction" :footer="null" :width="1000">
-        <template #title>{{ props.media.name }}</template>
+        <template #title>
+          <h3 class="mb-0">{{ props.media.name }} Setup Info</h3>
+        </template>
         <a-row :gutter="12">
           <a-col :span="6">
             <span>Scan this QR Code to start streaming with Larix:</span>

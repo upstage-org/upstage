@@ -12,7 +12,7 @@
             <code class="text-red-600 bg-gray-200 p-1 text-sm">Settings</code>
         </div>
         <div>
-            <img :src="`${configs.UPSTAGE_URL}/instructions/obs/1.png`" alt="Step 1" />
+            <img class="w-full" :src="`${configs.UPSTAGE_URL}/instructions/obs/1.png`" alt="Step 1" />
         </div>
     </div>
     <div>
@@ -28,7 +28,7 @@
             <d-copy :value="streamKey" />
         </div>
         <div>
-            <img :src="`${configs.UPSTAGE_URL}/instructions/obs/2.png`" alt="Step 2" />
+            <img class="w-full" :src="`${configs.UPSTAGE_URL}/instructions/obs/2.png`" alt="Step 2" />
         </div>
     </div>
     <div>
@@ -40,7 +40,7 @@
             have any issue, please contact UpStage Admin for help.
         </div>
         <div>
-            <img :src="`${configs.UPSTAGE_URL}/instructions/obs/3.png`" alt="Step 3" />
+            <img class="w-full" :src="`${configs.UPSTAGE_URL}/instructions/obs/3.png`" alt="Step 3" />
         </div>
     </div>
 </template>
