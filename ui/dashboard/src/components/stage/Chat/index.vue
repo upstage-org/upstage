@@ -14,6 +14,15 @@
         left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
       }"
     >
+      <transition @enter="bounceUnread">
+        <span
+          v-if="collapsed && unreadMessages"
+          :key="unreadMessages"
+          :data-tooltip="`${unreadMessages} new message${unreadMessages > 1 ? 's' : ''}`"
+          class="unread clickable tag is-danger is-small"
+          @click="collapsed = false"
+        >{{ unreadMessages }}</span>
+      </transition>
       <div class="actions">
         <Reaction v-if="collapsed" />
         <button
@@ -72,7 +81,7 @@
 </template>
 
 <script>
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, ref, watch, watchEffect } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 import ChatInput from "@/components/form/ChatInput";
@@ -169,6 +178,26 @@ export default {
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const stageSize = computed(() => store.getters["stage/stageSize"]);
 
+    watchEffect(() => {
+      if (!collapsed.value) {
+        messages.value.forEach((message) => {
+          if (!message.read) {
+            message.read = true;
+          }
+        });
+      }
+    });
+    const unreadMessages = computed(() => messages.value.filter((message) => !message.read).length);
+    const bounceUnread = (el) => {
+      {
+        anime({
+          targets: el,
+          scale: [1.2, 1],
+          duration: 1000,
+        });
+      }
+    }
+
     return {
       messages,
       message,
@@ -188,6 +217,8 @@ export default {
       chatPosition,
       canPlay,
       stageSize,
+      unreadMessages,
+      bounceUnread
     };
   },
 };
@@ -288,6 +319,12 @@ export default {
   }
   .control.has-icons-right .input {
     padding-right: 50px !important;
+  }
+
+  .unread {
+    position: absolute;
+    left: 12px;
+    top: 6px;
   }
 }
 .reaction-bar {
