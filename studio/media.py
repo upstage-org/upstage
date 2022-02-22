@@ -521,7 +521,7 @@ class QuickAssignMutation(graphene.Mutation):
 
     class Arguments:
         id = graphene.ID(description="ID of the media")
-        stage_id = graphene.ID(description="ID of the stage")
+        stage_id = graphene.Int(description="ID of the stage")
 
     @jwt_required()
     def mutate(self, info, id, stage_id):
