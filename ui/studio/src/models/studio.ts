@@ -42,6 +42,7 @@ export interface User {
   dbId: number;
   displayName: string;
   username: string;
+  role: number;
   roleName: string;
 }
 

@@ -36,6 +36,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
   whoami {
     username
     displayName
+    role
     roleName
   }
   media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
@@ -245,6 +246,8 @@ const filterTag = (tag: string) => {
     tags: [tag]
   })
 }
+
+const isAdmin = computed(() => [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(result.value?.whoami?.role ?? 0))
 </script>
 
 <template>
@@ -332,7 +335,7 @@ const filterTag = (tag: string) => {
             <small>Please wait for the media owner's approval</small>
           </a-space>
           <a-space v-else>
-            <template v-if="record.owner.username === result?.whoami.username">
+            <template v-if="isAdmin || record.owner.username === result?.whoami.username">
               <a-button type="primary" @click="editMedia(record)">
                 <EditOutlined />Edit
               </a-button>
