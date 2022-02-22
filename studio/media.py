@@ -310,6 +310,13 @@ class SaveMedia(graphene.Mutation):
                 id = from_global_id(input['id'])[1]
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
+
+                if asset:
+                    code, error, user, timezone = current_user()
+                    if not user.role in (ADMIN, SUPER_ADMIN):
+                        if not user.id == asset.owner_id:
+                            raise Exception("You don't have permission to edit this media")
+
             else:
                 asset = AssetModel(owner_id=current_user_id)
                 local_db_session.add(asset)

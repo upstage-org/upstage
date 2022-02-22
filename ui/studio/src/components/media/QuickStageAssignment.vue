@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useQuery } from '@vue/apollo-composable';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
-import { computed, PropType, ref } from 'vue';
+import { computed, inject, PropType, ref } from 'vue';
 import { StudioGraph } from '../../models/studio';
-import { Media } from '../../models/studio'
+import { Media, Stage } from '../../models/studio'
 const props = defineProps({
   media: {
     type: Object as PropType<Media>,
@@ -14,7 +15,7 @@ const props = defineProps({
 const visible = ref(false);
 const keyword = ref('');
 
-const { result, loading, refetch } = useQuery<StudioGraph>(gql`
+const { result, loading } = useQuery<StudioGraph>(gql`
 {
   whoami {
     username
@@ -51,6 +52,25 @@ const dataSource = computed(() => {
   }
   return []
 })
+
+const { mutate } = useMutation<{ quickAssignMutation: { asset: Media } }, { id: string, stageId: number }>(gql`
+    mutation QuickAssignMutation($id: ID, $stageId: Int) {
+      quickAssignMutation(id: $id, stageId: $stageId) {
+        success
+        message
+      }
+    }
+  `)
+
+const refresh = inject('refresh', () => { })
+const quickAssign = async (stage: Stage) => {
+  await mutate({
+    id: props.media.id,
+    stageId: stage.dbId,
+  })
+  message.success(`${props.media.name} had been assigned to ${stage.name} successfully!`)
+  refresh()
+}
 </script>
 
 <template>
@@ -87,9 +107,9 @@ const dataSource = computed(() => {
               </a-button>
             </a-tooltip>
             <a-tooltip v-else :title="`Assign ${media.name} to this stage`" placement="topRight">
-              <a-button type="primary">
+              <smart-button :action="() => quickAssign(item)" type="primary">
                 <plus-outlined />
-              </a-button>
+              </smart-button>
             </a-tooltip>
           </template>
           <a-list-item-meta>

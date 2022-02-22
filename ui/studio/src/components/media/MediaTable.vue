@@ -249,7 +249,7 @@ const filterTag = (tag: string) => {
 
 <template>
   <a-table
-    class="mx-4 shadow rounded-md bg-white w-full overflow-auto"
+    class="shadow rounded-md bg-white w-full overflow-auto"
     :columns="columns"
     :data-source="dataSource"
     rowKey="id"
