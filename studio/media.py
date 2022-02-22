@@ -513,3 +513,27 @@ def resolve_voices(self, info):
                                 setattr(av, key, 50)
                     voices.append(Voice(avatar=media, voice=av))
     return voices
+
+class QuickAssignMutation(graphene.Mutation):
+    """Mutation to assign a stage to a media"""
+    success = graphene.Boolean(description="Success")
+    message = graphene.String(description="Reason for why the mutation failed")
+
+    class Arguments:
+        id = graphene.ID(description="ID of the media")
+        stage_id = graphene.ID(description="ID of the stage")
+
+    @jwt_required()
+    def mutate(self, info, id, stage_id):
+        id = from_global_id(id)[1]
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).get(id)
+            if asset:
+                code, error, user, timezone = current_user()
+                stage = local_db_session.query(StageModel).get(stage_id)
+                if stage:
+                    asset.stages.append(ParentStage(stage_id=stage_id))
+                    local_db_session.flush()
+                    local_db_session.commit()
+                    return QuickAssignMutation(success=True)
+        return QuickAssignMutation(success=False, message="Stage not found")

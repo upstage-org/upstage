@@ -13,6 +13,7 @@ import RequestPermission from './MediaForm/RequestPermission.vue';
 import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
 import { ColumnType, TablePaginationConfig } from 'ant-design-vue/lib/table';
 import { SorterResult } from 'ant-design-vue/lib/table/interface';
+import QuickStageAssignment from './QuickStageAssignment.vue';
 
 const files = inject<Ref<UploadFile[]>>("files")
 
@@ -32,6 +33,11 @@ watch(inquiryResult, () => {
 
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
 query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
+  whoami {
+    username
+    displayName
+    roleName
+  }
   media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
     totalCount
     edges {
@@ -243,7 +249,7 @@ const filterTag = (tag: string) => {
 
 <template>
   <a-table
-    class="mx-4 shadow rounded-md bg-white"
+    class="mx-4 shadow rounded-md bg-white w-full overflow-auto"
     :columns="columns"
     :data-source="dataSource"
     rowKey="id"
@@ -326,31 +332,36 @@ const filterTag = (tag: string) => {
             <small>Please wait for the media owner's approval</small>
           </a-space>
           <a-space v-else>
-            <a-button type="primary" @click="editMedia(record)">
-              <EditOutlined />Edit
-            </a-button>
-            <a :href="absolutePath(record.src)" :download="record.name">
-              <a-button>
-                <template #icon>
-                  <DownloadOutlined />
-                </template>
+            <template v-if="record.owner.username === result?.whoami.username">
+              <a-button type="primary" @click="editMedia(record)">
+                <EditOutlined />Edit
               </a-button>
-            </a>
-            <a-popconfirm
-              title="Are you sure delete this media?"
-              ok-text="Yes"
-              cancel-text="No"
-              @confirm="deleteMedia(record)"
-              placement="left"
-              :ok-button-props="{ danger: true }"
-              loading="deleting"
-            >
-              <a-button type="dashed" danger>
-                <template #icon>
-                  <DeleteOutlined />
-                </template>
-              </a-button>
-            </a-popconfirm>
+              <a :href="absolutePath(record.src)" :download="record.name">
+                <a-button>
+                  <template #icon>
+                    <DownloadOutlined />
+                  </template>
+                </a-button>
+              </a>
+              <a-popconfirm
+                title="Are you sure delete this media?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="deleteMedia(record)"
+                placement="left"
+                :ok-button-props="{ danger: true }"
+                loading="deleting"
+              >
+                <a-button type="dashed" danger>
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                </a-button>
+              </a-popconfirm>
+            </template>
+            <template v-else>
+              <QuickStageAssignment :media="record" />
+            </template>
           </a-space>
         </template>
       </template>

@@ -32,6 +32,11 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       node {
         dbId
         name
+        createdOn
+        owner {
+          username
+          displayName
+        }
       }
     }
   }

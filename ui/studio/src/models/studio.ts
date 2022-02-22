@@ -49,6 +49,8 @@ export interface Stage {
   id: string;
   name: string;
   dbId: number;
+  createdOn: Date;
+  owner: User;
 }
 
 export interface Tag {
