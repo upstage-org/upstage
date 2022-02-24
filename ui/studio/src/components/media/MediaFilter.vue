@@ -8,7 +8,7 @@ import { StudioGraph, UploadFile } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
-import { capitalize } from '../../utils/common';
+import { capitalize, getSharedAuth } from '../../utils/common';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -55,8 +55,10 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   }
 }`)
 
+const sharedAuth = getSharedAuth();
+
 const name = ref('')
-const owners = ref([])
+const owners = ref(sharedAuth && sharedAuth.username ? [sharedAuth.username] : [])
 const types = ref([])
 const stages = ref([])
 const tags = ref([])
@@ -138,6 +140,10 @@ const createRTMPStream = () => {
     }]
   }
 }
+
+const VNodes = (_: any, { attrs }: { attrs: any }) => {
+  return attrs.vnodes;
+}
 </script>
 
 <template>
@@ -171,12 +177,24 @@ const createRTMPStream = () => {
           showArrow
           :filterOption="handleFilterOwnerName"
           mode="tags"
-          style="min-width: 96px"
+          style="min-width: 124px"
           placeholder="Owners"
           :loading="loading"
           v-model:value="owners"
           :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
-        ></a-select>
+        >
+          <template #dropdownRender="{ menuNode: menu }">
+            <v-nodes :vnodes="menu" />
+            <a-divider style="margin: 4px 0" />
+            <div
+              class="w-full cursor-pointer text-center"
+              @mousedown.prevent
+              @click.stop.prevent="owners = []"
+            >
+              <team-outlined />&nbsp;All players
+            </div>
+          </template>
+        </a-select>
         <a-select
           allowClear
           showArrow
