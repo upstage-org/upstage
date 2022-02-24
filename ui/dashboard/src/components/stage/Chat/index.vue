@@ -286,6 +286,10 @@ export default {
     :deep(.guest .tag) {
       color: #8c939a;
     }
+
+    .unread {
+      background-color: #cc0f35 !important;
+    }
   }
 
   &.collapsed {
