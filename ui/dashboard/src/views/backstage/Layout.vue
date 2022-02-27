@@ -32,6 +32,15 @@
             </span>
           </router-link>
         </template>
+        <template v-if="manual">
+          <div class="vertical-divider" />
+          <a class="navbar-item" :href="manual" target="_blank">
+            <span>
+              <i class="fas fa-book has-text-success"></i>
+              Manual
+            </span>
+          </a>
+        </template>
       </div>
     </div>
 
@@ -72,7 +81,9 @@ export default {
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
-    return { isAdmin, expanded, toggleExpanded, configs };
+    const manual = computed(() => store.getters["config/manual"] ?? 'alo');
+
+    return { isAdmin, expanded, toggleExpanded, configs, manual };
   },
 };
 </script>
