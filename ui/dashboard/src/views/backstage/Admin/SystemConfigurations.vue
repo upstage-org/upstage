@@ -75,7 +75,7 @@ export default {
     });
     const { loading, save: saveConfig } = useMutation(configGraph.saveConfig);
     const saveManual = () => {
-      saveConfig("Manual link updated successfully!", 'manual', manual.value);
+      saveConfig("Manual link updated successfully!", 'MANUAL', manual.value);
     };
 
     return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading };
