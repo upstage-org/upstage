@@ -113,8 +113,15 @@ export default {
       position: relative;
       width: 100px;
       height: 88px;
-      padding: 12px;
       background: $light;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      > div {
+        padding: 12px;
+      }
 
       &:first-child {
         float: left;

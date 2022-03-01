@@ -529,6 +529,17 @@ export default {
         },
         CREATE_ROOM(state, room) {
             state.tools.meetings.push(room)
+        },
+        REORDER_TOOLBOX(state, { from, to }) {
+            const toolName = from.type + 's'
+            if (state.tools[toolName]) {
+                const fromIndex = state.tools[toolName].findIndex(t => t.id === from.id)
+                const toIndex = state.tools[toolName].findIndex(t => t.id === to.id)
+                if (fromIndex > -1 && toIndex > -1) {
+                    const tool = state.tools[toolName].splice(fromIndex, 1)[0]
+                    state.tools[toolName].splice(toIndex, 0, tool)
+                }
+            }
         }
     },
     actions: {
