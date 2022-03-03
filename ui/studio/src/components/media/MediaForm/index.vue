@@ -5,13 +5,14 @@ import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
 import { ref, computed, inject, Ref, createVNode, watch, reactive } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { AvatarVoice as Voice, CopyrightLevel, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { AvatarVoice as Voice, CopyrightLevel, Link, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
 import { editingMediaVar, inquiryVar } from '../../../apollo';
 import MediaPermissions from './MediaPermissions.vue';
 import AvatarVoice from './AvatarVoice.vue';
+import PropLink from './PropLink.vue';
 import { getDefaultAvatarVoice, getDefaultVariant } from '../../../services/speech/voice';
 const files = inject<Ref<UploadFile[]>>("files")
 
@@ -41,6 +42,11 @@ watch(editingMediaResult, () => {
     if (attributes.voice && attributes.voice.voice) {
       Object.assign(voice, attributes.voice);
     }
+    link.url = '';
+    link.blank = true;
+    if (attributes.link) {
+      Object.assign(link, attributes.link);
+    }
     if (editingMedia.stages) {
       stageIds.value = editingMedia.stages.map(stage => stage.id);
     }
@@ -64,6 +70,7 @@ const mediaName = computed(() => {
 })
 const copyrightLevel = ref<CopyrightLevel>(0)
 const voice = reactive<Voice>(getDefaultAvatarVoice())
+const link = reactive<Link>({ url: '', blank: true });
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
   event.preventDefault()
@@ -153,6 +160,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       h: frameSize.value.height,
       urls: [],
       voice,
+      link
     }
   }
 }, id => {
@@ -212,7 +220,7 @@ const clearSign = () => {
 
 <template>
   <a-modal
-    :visible="files?.length && !composingMode"
+    :visible="!!files?.length && !composingMode"
     :body-style="{ padding: 0 }"
     :width="1000"
     @cancel="handleClose"
@@ -301,7 +309,7 @@ const clearSign = () => {
         <div class="card-container pr-4">
           <a-tabs>
             <a-tab-pane key="stages" tab="Stages" class="pb-4">
-              <StageAssignment v-model="stageIds" />
+              <StageAssignment v-model="(stageIds as any)" />
             </a-tab-pane>
             <a-tab-pane key="permissions" tab="Permissions">
               <MediaPermissions
@@ -313,6 +321,9 @@ const clearSign = () => {
             </a-tab-pane>
             <a-tab-pane v-if="type === 'avatar'" key="voice" tab="Voice">
               <AvatarVoice :voice="voice" />
+            </a-tab-pane>
+            <a-tab-pane v-if="type === 'avatar' || type === 'prop'" key="link" tab="Link">
+              <PropLink :link="link" />
             </a-tab-pane>
           </a-tabs>
         </div>

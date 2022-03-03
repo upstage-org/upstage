@@ -11,6 +11,7 @@ export default {
       }
       system {
         termsOfService
+        manual
       }
       foyer {
         title

@@ -17,8 +17,9 @@ let refreshing = false
 
 const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) => {
   if (graphQLErrors) {
+    const sharedAuth = getSharedAuth()!
     for (let err of graphQLErrors) {
-      const refreshToken = getSharedAuth()?.refresh_token
+      const refreshToken = sharedAuth.refresh_token
 
       if (err.message === 'Signature has expired') {
         if (!refreshing) {
@@ -51,7 +52,8 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
               refreshing = false
               setSharedAuth({
                 token: accessToken,
-                refresh_token: refreshToken ?? ''
+                refresh_token: refreshToken ?? '',
+                username: sharedAuth.username ?? ''
               })
               // modify the operation context with a new token
               operation.setContext({
