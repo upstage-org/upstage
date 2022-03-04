@@ -1,12 +1,12 @@
 <template>
-  <div @click="createRoom" class="is-pulled-left">
+  <div @click="createRoom" class="is-pulled-left room-skeleton">
     <div class="icon is-large">
       <Icon src="new.svg" size="36" />
     </div>
     <span class="tag is-light is-block">New Room</span>
   </div>
   <Skeleton v-for="room, i in rooms" :key="i" :data="room">
-    <div>
+    <div class="room-skeleton">
       <Icon src="backdrops.svg" size="36" />
       <span class="tag is-light is-block">{{ room.name }}</span>
     </div>
@@ -30,4 +30,7 @@ const createRoom = () => {
 </script>
 
 <style lang="scss" scoped>
+.room-skeleton {
+  flex: none;
+}
 </style>
