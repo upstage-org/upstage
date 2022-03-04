@@ -174,25 +174,27 @@ export default {
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .stream-key {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .skeleton {
-  transition-duration: 0.25s;
-  border-radius: 8px;
+  > * {
+    transition-duration: 0.25s;
+  }
 }
 .dropzone {
   background: repeating-radial-gradient(
     circle,
-    purple,
-    purple 10px,
-    #4b026f 10px,
-    #4b026f 20px
+    green,
+    green 10px,
+    #007011 10px,
+    #007011 20px
   );
-  padding-left: 50px !important;
-  border-left: 2px solid #4b026f;
+  > * {
+    transform: translateX(50%) !important;
+  }
 }
 </style>

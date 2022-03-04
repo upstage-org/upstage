@@ -1,9 +1,16 @@
 <template>
   <div @click="switchScene">
-    <ContextMenu style="height: 100%">
+    <ContextMenu style="width: 100%; height: 100%; padding: 0">
       <template #trigger>
-        <Image :src="scene.scenePreview" style="height: auto" />
-        <span class="tag is-light is-block">{{ scene.name }}</span>
+        <Skeleton :data="scene" nodrop>
+          <div
+            class="p-2 is-fullwidth is-flex is-flex-direction-column is-justify-content-space-between"
+            :title="scene.name"
+          >
+            <Image :src="scene.scenePreview" style="height: auto; border-radius: 4px;" />
+            <span class="tag mt-1 is-block">{{ scene.name }}</span>
+          </div>
+        </Skeleton>
       </template>
       <template #context>
         <a class="panel-block has-text-danger" @click="deleteScene">
@@ -25,9 +32,10 @@ import { useStore } from "vuex";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
+import Skeleton from "../../Skeleton.vue";
 
 export default {
-  components: { Icon, Image, ContextMenu },
+  components: { Icon, Image, ContextMenu, Skeleton },
   props: ["scene"],
   setup: (props) => {
     const store = useStore();
@@ -54,5 +62,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.tag {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 </style>

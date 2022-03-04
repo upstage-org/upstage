@@ -77,7 +77,6 @@ export default {
         },
         loadingRunningStreams: false,
         audioPlayers: [],
-        scenes: [],
         isSavingScene: false,
         isLoadingScenes: false,
         showPlayerChat: false,
@@ -532,7 +531,14 @@ export default {
         },
         REORDER_TOOLBOX(state, { from, to }) {
             console.log(from, to)
-            if (from.drawingId) { // is drawing
+            if (from.scenePreview) { // is scene
+                const fromIndex = state.model.scenes.findIndex(t => t.id === from.id)
+                const toIndex = state.model.scenes.findIndex(t => t.id === to.id)
+                if (fromIndex > -1 && toIndex > -1) {
+                    const tool = state.model.scenes.splice(fromIndex, 1)[0]
+                    state.model.scenes.splice(toIndex, 0, tool)
+                }
+            } else if (from.drawingId) { // is drawing
                 const fromIndex = state.board.drawings.findIndex(t => t.drawingId === from.drawingId)
                 const toIndex = state.board.drawings.findIndex(t => t.drawingId === to.drawingId)
                 if (fromIndex > -1 && toIndex > -1) {

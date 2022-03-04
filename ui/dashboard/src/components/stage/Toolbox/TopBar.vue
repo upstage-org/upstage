@@ -118,6 +118,7 @@ export default {
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      border-radius: 8px;
 
       > div {
         padding: 12px;
