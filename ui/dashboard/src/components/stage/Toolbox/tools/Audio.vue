@@ -157,6 +157,10 @@ export default {
   margin-top: -6px;
   height: 86px !important;
 
+  > div {
+    width: 100%;
+  }
+
   .buttons {
     display: flex;
     justify-content: center;

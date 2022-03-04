@@ -531,13 +531,30 @@ export default {
             state.tools.meetings.push(room)
         },
         REORDER_TOOLBOX(state, { from, to }) {
-            const toolName = from.type + 's'
-            if (state.tools[toolName]) {
-                const fromIndex = state.tools[toolName].findIndex(t => t.id === from.id)
-                const toIndex = state.tools[toolName].findIndex(t => t.id === to.id)
+            console.log(from, to)
+            if (from.drawingId) { // is drawing
+                const fromIndex = state.board.drawings.findIndex(t => t.drawingId === from.drawingId)
+                const toIndex = state.board.drawings.findIndex(t => t.drawingId === to.drawingId)
                 if (fromIndex > -1 && toIndex > -1) {
-                    const tool = state.tools[toolName].splice(fromIndex, 1)[0]
-                    state.tools[toolName].splice(toIndex, 0, tool)
+                    const tool = state.board.drawings.splice(fromIndex, 1)[0]
+                    state.board.drawings.splice(toIndex, 0, tool)
+                }
+            } else if (from.textId) { // is text
+                const fromIndex = state.board.texts.findIndex(t => t.textId === from.textId)
+                const toIndex = state.board.texts.findIndex(t => t.textId === to.textId)
+                if (fromIndex > -1 && toIndex > -1) {
+                    const tool = state.board.texts.splice(fromIndex, 1)[0]
+                    state.board.texts.splice(toIndex, 0, tool)
+                }
+            } else {
+                const toolName = from.type + 's'
+                if (state.tools[toolName]) {
+                    const fromIndex = state.tools[toolName].findIndex(t => t.id === from.id)
+                    const toIndex = state.tools[toolName].findIndex(t => t.id === to.id)
+                    if (fromIndex > -1 && toIndex > -1) {
+                        const tool = state.tools[toolName].splice(fromIndex, 1)[0]
+                        state.tools[toolName].splice(toIndex, 0, tool)
+                    }
                 }
             }
         }
