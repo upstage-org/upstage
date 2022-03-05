@@ -23,13 +23,20 @@
         right="fas fa-search"
         placeholder="Media name"
       />
+      <button
+        class="button ml-2"
+        :class="{ 'is-warning': reordering }"
+        @click="reordering = !reordering"
+      >Reorder Mode</button>
     </div>
     <div class="column">
       <SaveButton :loading="saving" :disabled="loading" @click="saveMedia" />
     </div>
   </div>
 
+  <Reorder v-if="reordering" v-model="selectedMedia" />
   <MultiSelectList
+    v-else
     :loading="loading"
     :titles="['Available Media', 'Selected Media']"
     :data="filteredMediaList"
@@ -78,9 +85,10 @@ import { displayName } from "@/utils/auth";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
 import MultiframePreview from "../Media/MultiframePreview";
+import Reorder from "./Reorder.vue";
 
 export default {
-  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview },
+  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview, Reorder },
   setup: () => {
     const store = useStore();
     const stage = inject("stage");
@@ -159,6 +167,8 @@ export default {
       }
     });
 
+    const reordering = ref(false);
+
     return {
       loading,
       mediaList,
@@ -170,6 +180,7 @@ export default {
       filteredMediaList,
       displayName,
       owners,
+      reordering
     };
   },
 };

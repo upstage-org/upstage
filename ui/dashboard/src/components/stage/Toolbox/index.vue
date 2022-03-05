@@ -4,11 +4,11 @@
     <div class="panel-body">
       <PanelItem name="Audio" icon="audio.svg" />
       <hr />
-      <PanelItem name="Backdrops" icon="backdrops.svg" />
+      <PanelItem name="Backdrops" icon="backdrop.svg" />
       <PanelItem name="Avatars" icon="avatar.svg" />
       <PanelItem name="Props" icon="prop.svg" />
-      <PanelItem name="Streams" icon="streams.svg" />
-      <PanelItem name="Meeting" icon="streams.svg" />
+      <PanelItem name="Streams" icon="stream.svg" />
+      <PanelItem name="Meeting" icon="stream.svg" />
       <PanelItem name="Whiteboard" icon="whiteboard.svg" label="Live drawing" />
       <PanelItem name="Draw" icon="object-drawing.svg" label="Object drawing" />
       <PanelItem name="Text" icon="text.svg" />

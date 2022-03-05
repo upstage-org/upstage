@@ -7,7 +7,7 @@
   </div>
   <Skeleton v-for="room, i in rooms" :key="i" :data="room">
     <div class="room-skeleton">
-      <Icon src="backdrops.svg" size="36" />
+      <Icon src="backdrop.svg" size="36" />
       <span class="tag is-light is-block">{{ room.name }}</span>
     </div>
   </Skeleton>
