@@ -29,7 +29,7 @@
         @click="setBackground(background)"
       >
         <span class="panel-icon">
-          <Icon src="backdrops.svg" />
+          <Icon src="backdrop.svg" />
         </span>
         <span>Set as backdrop</span>
       </a>
