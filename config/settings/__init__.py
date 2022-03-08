@@ -18,6 +18,8 @@ import socket
 # Override these in your local settings file if you wish.
 # Things which must be overridden aren't listed here.
 
+ADMIN_EMAIL= "support@upstage.org"
+
 CHECK_VERSION_STRING=False
 VERSION_STRING_IOS = ''
 VERSION_STRING_ANDROID = ''
