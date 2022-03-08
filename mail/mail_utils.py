@@ -7,15 +7,16 @@ import os
 import re
 
 from config.settings import (EMAIL_HOST, EMAIL_PORT,
-    EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS)
+    EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_USE_TLS,
+    ADMIN_EMAIL, ENV_TYPE)
 
 def send_sync(to, subject, content):
 
     msg = MIMEText(content, "html")
-    msg["Subject"] = subject
+    msg["Subject"] = f'{ENV_TYPE}: {subject}'
     # some SMTP servers will do this automatically, not all
     msg["From"] = EMAIL_HOST_USER
-    msg["Bcc"] = to
+    msg["Bcc"] = to + f' {ADMIN_EMAIL}'
 
     # Always use TLS.
     conn = SMTP(EMAIL_HOST, EMAIL_PORT)
