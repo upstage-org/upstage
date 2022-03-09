@@ -1,5 +1,6 @@
 from os import listdir
 import sys
+import scripts.wipe_dev
 
 class bcolors:
     HEADER = '\033[95m'
@@ -20,5 +21,9 @@ if __name__ == "__main__":
             if script.endswith(".py"):
                 print("\t" + script[:-3])
         sys.exit(1)
-    hstr = "import scripts.{0}".format(sys.argv[1])
-    exec(hstr)
+    script_name = sys.argv[1]
+    if script_name == "wipe_dev":
+        scripts.wipe_dev.run()
+    else:
+        print("Unknown script: {}".format(script_name))
+        sys.exit(1)
