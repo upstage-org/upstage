@@ -20,6 +20,10 @@ import socket
 
 ADMIN_EMAIL= "support@upstage.org"
 
+# A list of developers who should receive email crash reports in dev.
+# In prod, they should all go to the support address.
+DEVS = []
+
 CHECK_VERSION_STRING=False
 VERSION_STRING_IOS = ''
 VERSION_STRING_ANDROID = ''
