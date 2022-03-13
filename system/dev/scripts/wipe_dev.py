@@ -9,6 +9,7 @@ if projdir not in sys.path:
     
 from sqlalchemy import not_
 from asset.models import Asset, Stage, StageAttribute
+from licenses.models import AssetLicense, AssetUsage
 from performance_config.models import ParentStage, Performance, Scene
 from event_archive.db import build_pg_session
 from event_archive.models import Event
@@ -36,6 +37,8 @@ session.query(ParentStage).filter(ParentStage.stage_id.notin_(keep_ids)).delete(
 
 for asset in session.query(Asset).filter(not_(Asset.stages.any())).all():
     print("🗑️ Deleting asset: {}".format(asset.name))
+    session.query(AssetLicense).filter(AssetLicense.asset_id == asset.id).delete(synchronize_session=False)
+    session.query(AssetUsage).filter(AssetUsage.asset_id == asset.id).delete(synchronize_session=False)
     session.delete(asset)
 
 for type in os.listdir("ui/static/assets"):
