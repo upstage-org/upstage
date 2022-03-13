@@ -79,7 +79,7 @@
           <p>Please enter the OTP code that we've sent to your email:</p>
           <div class="field">
             <p class="control has-icons-left">
-              <input class="input" v-model="otp" placeholder="XXXXXX" required />
+              <input class="input" v-model="otp" placeholder="XXXXXX" required maxlength="6" />
               <span class="icon is-small is-left">
                 <i class="fas fa-key"></i>
               </span>
@@ -188,7 +188,7 @@ const toggleShowPassword = () => {
 }
 const submit = () => {
   const user = {
-    username: username.value,
+    username: username.value.trim(),
     password: password.value,
   };
   loading.value = true;
@@ -211,7 +211,7 @@ const requestPasswordReset = async () => {
     username.value = res.requestPasswordReset.username
     resetStep.value = 2
   }, {
-    usernameOrEmail: username.value
+    usernameOrEmail: username.value.trim()
   });
   loading.value = false;
 }
@@ -224,8 +224,8 @@ const verifyOTP = async () => {
     notification.success(res.verifyPasswordReset.message)
     resetStep.value = 3
   }, {
-    otp: otp.value,
-    username: username.value
+    otp: otp.value.trim(),
+    username: username.value.trim()
   });
   loading.value = false;
 }
@@ -239,8 +239,8 @@ const processPasswordReset = async () => {
     resetStep.value = 1
     resetMode.value = false
   }, {
-    otp: otp.value,
-    username: username.value,
+    otp: otp.value.trim(),
+    username: username.value.trim(),
     password: password.value
   });
   loading.value = false;
