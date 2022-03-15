@@ -183,6 +183,12 @@ watch(files as Ref, ([firstFile]) => {
 const visibleDropzone = inject('visibleDropzone')
 const composingMode = inject<Ref<boolean>>('composingMode')
 
+watch(visibleDropzone as Ref, (val) => {
+  if (files?.value && files.value.length === 0 && val) {
+    name.value = ''
+  }
+})
+
 const addExistingFrame = () => {
   if (composingMode) {
     composingMode.value = true
@@ -248,7 +254,7 @@ const clearSign = () => {
           </a-button>
         </template>
         <a-input
-          v-else-if="files && files.length"
+          v-else-if="type === 'stream' && files && files.length"
           v-model:value="files![0].url"
           placeholder="Unique key"
           @focus="clearSign"
@@ -258,7 +264,7 @@ const clearSign = () => {
     <a-row :gutter="12">
       <a-col :span="6">
         <div class="bg-gray-200 flex items-center justify-center h-full max-h-96">
-          <audio v-if="type === 'audio'" controls class="w-48">
+          <audio v-if="type === 'audio'" controls class="w-48" :key="files?.[0]?.preview">
             <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
           </audio>
           <template v-else-if="type === 'stream'">
@@ -272,7 +278,7 @@ const clearSign = () => {
                 :size="192"
               />
             </div>
-            <video v-else controls class="w-48">
+            <video v-else controls class="w-48" :key="files?.[0]?.preview">
               <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
             </video>
           </template>
