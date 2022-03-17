@@ -56,8 +56,10 @@
                   ? 'fas fa-times'
                   : 'fas'
           "
-          :help="!form.fileLocation && `From which the stage URL is created`"
+          :help="!form.fileLocation && `Shortname must be unique and can't be changed! Please watch out for typos, unnecessarily long urls and spaces inside shortname.`"
           :error="shortNameError"
+          :disabled="!!stage.id"
+          class="half-flex"
         />
       </div>
     </div>
@@ -223,7 +225,7 @@ export default {
     );
     const checkShortName = debounce(async () => {
       const shortname = form.fileLocation.trim()
-      if (!shortname || preservedPaths.includes(shortname)) {
+      if (!shortname || shortname.includes(' ') || preservedPaths.includes(shortname)) {
         shortNameValid.value = false
         return;
       }
@@ -240,6 +242,9 @@ export default {
     }, 500);
 
     const shortNameError = computed(() => {
+      if (form.fileLocation.includes(' ')) {
+        return 'Short name should not contain spaces!'
+      }
       if (preservedPaths.includes(form.fileLocation.trim())) {
         return `These shortname are not allowed: ${preservedPaths.join(', ')}`
       }
