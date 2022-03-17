@@ -56,10 +56,11 @@
                   ? 'fas fa-times'
                   : 'fas'
           "
-          :help="!form.fileLocation && `Shortname must be unique and can't be changed! Please watch out for typos, unnecessarily long urls and spaces inside shortname.`"
+          :help="!form.fileLocation && `Shortname must be unique and can't be changed! Please watch out for typos, unnecessarily long urls, spaces and punctuations inside shortname.`"
           :error="shortNameError"
           :disabled="!!stage.id"
           class="half-flex"
+          maxlength="50"
         />
       </div>
     </div>
@@ -223,9 +224,11 @@ export default {
     const { loading: validatingShortName, fetch } = useRequest(
       stageGraph.stageList
     );
+
+    const validRegex = /^[a-zA-Z0-9-_]*$/;
     const checkShortName = debounce(async () => {
       const shortname = form.fileLocation.trim()
-      if (!shortname || shortname.includes(' ') || preservedPaths.includes(shortname)) {
+      if (!shortname || !validRegex.test(shortname) || preservedPaths.includes(shortname)) {
         shortNameValid.value = false
         return;
       }
@@ -242,8 +245,8 @@ export default {
     }, 500);
 
     const shortNameError = computed(() => {
-      if (form.fileLocation.includes(' ')) {
-        return 'Short name should not contain spaces!'
+      if (!validRegex.test(form.fileLocation)) {
+        return "Shortname should not contain special characters or spaces!";
       }
       if (preservedPaths.includes(form.fileLocation.trim())) {
         return `These shortname are not allowed: ${preservedPaths.join(', ')}`
