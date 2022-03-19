@@ -56,7 +56,7 @@
                   ? 'fas fa-times'
                   : 'fas'
           "
-          :help="!form.fileLocation && `URL must be unique and can't be changed! Please avoid typos, unnecessarily long urls, spaces and punctuations inside URL.`"
+          :help="!form.fileLocation && `URL must be unique and can't be changed! Please avoid typos, unnecessarily long urls, spaces and punctuation inside URL.`"
           :error="urlError"
           :disabled="!!stage.id"
           class="half-flex"
