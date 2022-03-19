@@ -32,7 +32,7 @@ const deleteStage = async (complete) => {
     </p>
     <br />
     <p>
-      If you would like to download the stage's archive before deleting it, please click
+      If you would like to download the stage's archives before deleting it, please click
       <router-link
         :to="`/backstage/stage-management/${stage.id}/archive`"
         :data-tooltip="`Archives of ${stage.name}`"
