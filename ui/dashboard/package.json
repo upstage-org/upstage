@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
   "version": "1.17.0",
-  "versionAlias": "Franziskaner-18",
+  "versionAlias": "Rheineck-19",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
@@ -48,7 +48,7 @@
     "@vue/cli-plugin-pwa": "~4.5.13",
     "@vue/cli-plugin-router": "~4.5.13",
     "@vue/cli-plugin-vuex": "~4.5.13",
-    "@vue/cli-service": "~4.5.13",
+    "@vue/cli-service": "^4.5.16",
     "@vue/compiler-sfc": "^3.2.2",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
