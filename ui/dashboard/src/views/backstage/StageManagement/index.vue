@@ -4,10 +4,7 @@
       <template v-if="id">
         <h1 class="title" v-if="stage.name">
           {{ stage.name }}
-          <router-link
-            :to="`/${stage.fileLocation}`"
-            class="button is-light"
-          >
+          <router-link :to="`/${stage.fileLocation}`" class="button is-light">
             <span>ENTER</span>
             <span class="icon">
               <i class="fas fa-chevron-right"></i>
@@ -21,7 +18,7 @@
   </section>
   <div class="container-fluid">
     <div class="columns">
-      <div class="column is-narrow">
+      <div class="column is-3 is-2-fullhd">
         <aside class="menu box has-background-light mx-4">
           <ul class="menu-list">
             <li>
@@ -32,35 +29,26 @@
                     : '/backstage/new-stage'
                 "
                 exact-active-class="is-active"
-                >General Information</router-link
-              >
+              >General Information</router-link>
             </li>
             <template v-if="id">
               <li>
-                <router-link to="customisation" exact-active-class="is-active"
-                  >Customisation</router-link
-                >
+                <router-link to="customisation" exact-active-class="is-active">Customisation</router-link>
               </li>
               <li id="media-menu">
-                <router-link to="media" exact-active-class="is-active">
-                  Media
-                </router-link>
+                <router-link to="media" exact-active-class="is-active">Media</router-link>
               </li>
               <li>
-                <router-link to="archive" exact-active-class="is-active">
-                  Archive
-                </router-link>
+                <router-link to="archive" exact-active-class="is-active">Archive</router-link>
               </li>
               <li>
-                <router-link to="scenes" exact-active-class="is-active">
-                  Scenes
-                </router-link>
+                <router-link to="scenes" exact-active-class="is-active">Scenes</router-link>
               </li>
             </template>
           </ul>
         </aside>
       </div>
-      <div class="column">
+      <div class="column is-9 is-10-fullhd">
         <div class="pt-4 pr-4 pb-4">
           <Loading v-if="!!id && loading" />
           <router-view v-else />
