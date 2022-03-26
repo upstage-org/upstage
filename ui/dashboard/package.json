@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.17.0",
-  "versionAlias": "Franziskaner-18",
+  "version": "1.19.0",
+  "versionAlias": "Rheineck-19",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
