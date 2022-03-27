@@ -86,6 +86,7 @@ def create_demo_users():
         user.username = "user{}".format(i + 1)
         user.password = encrypt(test_user_password)
         user.email = "user{}@none.none".format(i + 1)
+        user.active = True
         session.add(user)
         session.commit()
         print("✅ Created user \"{}\" with password \"{}\"".format(user.username, test_user_password))
