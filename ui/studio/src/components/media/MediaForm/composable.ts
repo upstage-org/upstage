@@ -16,6 +16,7 @@ interface SaveMediaMutationVariables {
   urls: string[]
   mediaType: string
   copyrightLevel: CopyrightLevel
+  owner: string
   stageIds: number[]
   userIds: number[]
   tags: string[],

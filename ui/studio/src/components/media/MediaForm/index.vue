@@ -3,9 +3,9 @@ import { useQuery } from '@vue/apollo-composable';
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
-import { ref, computed, inject, Ref, createVNode, watch, reactive } from 'vue'
+import { ref, computed, inject, Ref, createVNode, watch, reactive, ComputedRef } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { AvatarVoice as Voice, CopyrightLevel, Link, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { AvatarVoice as Voice, CopyrightLevel, Link, Media, MediaAttributes, StudioGraph, UploadFile, User } from '../../../models/studio';
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
@@ -24,6 +24,7 @@ watch(editingMediaResult, () => {
     name.value = editingMedia.name;
     type.value = editingMedia.assetType.name;
     tags.value = editingMedia.tags;
+    owner.value = editingMedia.owner.username;
     copyrightLevel.value = editingMedia.copyrightLevel;
     const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
     if (files?.value) {
@@ -69,8 +70,18 @@ const mediaName = computed(() => {
   return ''
 })
 const copyrightLevel = ref<CopyrightLevel>(0)
+const owner = ref<string>('')
 const voice = reactive<Voice>(getDefaultAvatarVoice())
 const link = reactive<Link>({ url: '', blank: true });
+
+const whoami = inject<ComputedRef<User>>("whoami")
+if (whoami) {
+  watch(whoami, () => {
+    if (whoami.value) {
+      owner.value = whoami.value.username;
+    }
+  })
+}
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
   event.preventDefault()
@@ -153,6 +164,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       name: mediaName.value,
       mediaType: type.value,
       copyrightLevel: copyrightLevel.value,
+      owner: owner.value,
       stageIds: stageIds.value,
       userIds: userIds.value,
       tags: tags.value,
@@ -321,6 +333,7 @@ const clearSign = () => {
               <MediaPermissions
                 :key="editingMediaResult?.editingMedia?.id"
                 v-model="copyrightLevel"
+                v-model:owner="owner"
                 v-model:users="userIds"
                 :media="editingMediaResult?.editingMedia"
               />

@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+from graphql_server import json_encode
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '../../..'))
@@ -64,6 +65,8 @@ def create_media(type, path):
         os.makedirs(os.path.join(upload_assets_folder, type))
     shutil.copyfile(src_path, os.path.join(upload_assets_folder, dest_path))
     asset.file_location = dest_path
+    attributes = {}
+    asset.description = json_encode(attributes)
     session.add(asset)
     session.commit()
     created_media_ids.append(asset.id)
@@ -80,6 +83,8 @@ def create_demo_stage():
 
 def create_demo_users():
     count = input(bcolors.BOLD + "How many users would you like to create? (type 0 if you don't want to): " + bcolors.ENDC)
+    if not count:
+        count = 0
     test_user_password = '12345678'
     for i in range(int(count)):
         user = User()
