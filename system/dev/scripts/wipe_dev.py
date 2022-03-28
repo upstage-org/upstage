@@ -14,6 +14,7 @@ from performance_config.models import ParentStage, Performance, Scene
 from event_archive.db import build_pg_session
 from event_archive.models import Event
 from terminal_colors import bcolors
+from config.settings import UPLOAD_USER_CONTENT_FOLDER
 
 
 stages_to_be_kepts = ['demo', '8thMarch']
@@ -41,12 +42,14 @@ for asset in session.query(Asset).filter(not_(Asset.stages.any())).all():
     session.query(AssetUsage).filter(AssetUsage.asset_id == asset.id).delete(synchronize_session=False)
     session.delete(asset)
 
-for type in os.listdir("ui/static/assets"):
+upload_assets_folder = '{}'.format(UPLOAD_USER_CONTENT_FOLDER)
+
+for type in os.listdir(upload_assets_folder):
     if '.' not in type:
-        for media in os.listdir("ui/static/assets/{}".format(type)):
+        for media in os.listdir("{}/{}".format(upload_assets_folder, type)):
             if not session.query(Asset).filter(Asset.file_location == "{}/{}".format(type, media)).first():
                 print("🗑️ Deleting file {}/{}".format(type, media))
-                os.remove("ui/static/assets/{}/{}".format(type, media))
+                os.remove("{}/{}/{}".format(upload_assets_folder, type, media))
 
 for stage in session.query(Stage).all():
     if stage.file_location not in stages_to_be_kepts:
