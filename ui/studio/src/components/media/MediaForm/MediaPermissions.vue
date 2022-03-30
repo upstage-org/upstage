@@ -85,6 +85,15 @@ watch(isAdmin, console.log)
 
 <template>
     <a-space direction="vertical" class="w-full mb-4">
+        <div v-if="isAdmin">
+            👑 Owner:
+            <a-select
+                :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) as any : []"
+                style="min-width: 124px"
+                :value="owner"
+                @change="handleOwnerChange"
+            />
+        </div>
         <a-select class="w-80" placeholder="Media copyright level" v-model:value="copyrightLevel">
             <a-select-option
                 v-for="level in configs.MEDIA_COPYRIGHT_LEVELS"
@@ -92,10 +101,10 @@ watch(isAdmin, console.log)
                 :value="level.value"
             >
                 <span>{{ level.name }}</span>
-                <span class="relative top-1">
+                <span>
                     <a-tooltip placement="right">
                         <template #title>{{ level.description }}</template>
-                        <QuestionCircleOutlined class="float-right" />
+                        <QuestionCircleOutlined class="float-right relative top-1" />
                     </a-tooltip>
                 </span>
             </a-select-option>
@@ -170,14 +179,5 @@ watch(isAdmin, console.log)
                 :render="renderItem"
             />
         </template>
-        <div v-if="isAdmin">
-            👑 Owner:
-            <a-select
-                :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) as any : []"
-                style="min-width: 124px"
-                :value="owner"
-                @change="handleOwnerChange"
-            />
-        </div>
     </a-space>
 </template>
