@@ -49,6 +49,11 @@ def scan_demo_folder():
 created_media_ids = []
 upload_assets_folder = '{}'.format(UPLOAD_USER_CONTENT_FOLDER)
 
+def copy_file(src_path, dest_path, type):
+    if not os.path.exists(os.path.join(upload_assets_folder, type)):
+        os.makedirs(os.path.join(upload_assets_folder, type))
+    shutil.copyfile(src_path, os.path.join(upload_assets_folder, dest_path))
+
 def create_media(type, path):
     asset_type = session.query(AssetType).filter(AssetType.name == type).first()
     if not asset_type:
@@ -56,21 +61,35 @@ def create_media(type, path):
         session.add(asset_type)
         session.commit()
 
-    name = os.path.basename(path).split('.')[0]
-    asset = Asset(asset_type=asset_type, name=name, owner_id=owner_id)
-    # copy asset to uploads folder
-    src_path = os.path.join(demo_media_folder, type, path)
-    dest_path = os.path.join(type, path)
-    if not os.path.exists(os.path.join(upload_assets_folder, type)):
-        os.makedirs(os.path.join(upload_assets_folder, type))
-    shutil.copyfile(src_path, os.path.join(upload_assets_folder, dest_path))
-    asset.file_location = dest_path
+    asset = Asset(asset_type=asset_type, owner_id=owner_id)
     attributes = {}
+    if '.' in path:
+        asset.name = os.path.basename(path).split('.')[0]
+        # copy asset to uploads folder
+        src_path = os.path.join(demo_media_folder, type, path)
+        dest_path = os.path.join(type, path)
+        copy_file(src_path, dest_path, type)
+        asset.file_location = dest_path
+    else:
+        attributes['multi'] = True
+        asset.name = path
+        for frame in os.listdir(os.path.join(demo_media_folder, type, path)):
+            src_path = os.path.join(demo_media_folder, type, path, frame)
+            dest_path = os.path.join(type, "{}_{}".format(path, frame))
+            copy_file(src_path, dest_path, type)
+            if not asset.file_location:
+                asset.file_location = dest_path
+                attributes['frames'] = []
+            attributes['frames'].append(dest_path)
     asset.description = json_encode(attributes)
     session.add(asset)
     session.commit()
     created_media_ids.append(asset.id)
-    print("✅ Created {} {}".format(type, path))
+    print("✅ Created{} {} {}".format(' multi-frame' if 'multi' in attributes else '', type, path))
+
+def create_demo_media():
+    for type, path in scan_demo_folder():
+        create_media(type, path)
 
 def create_demo_stage():
     stage = Stage(name='Demo Stage', owner_id=owner_id, description='This is a demo stage to help you learn how to use and customise UpStage for your own performances.', file_location='demo')
@@ -96,8 +115,6 @@ def create_demo_users():
         session.commit()
         print("✅ Created user \"{}\" with password \"{}\"".format(user.username, test_user_password))
 
-
-for type, path in scan_demo_folder():
-    create_media(type, path)
+create_demo_media()
 create_demo_stage()
 create_demo_users()
