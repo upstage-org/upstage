@@ -177,6 +177,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
   }
 }, id => {
   if (files && refresh) {
+    editingMediaVar(undefined)
     files.value = []
     refresh()
   }
