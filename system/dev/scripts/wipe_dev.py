@@ -17,7 +17,7 @@ from terminal_colors import bcolors
 from config.settings import UPLOAD_USER_CONTENT_FOLDER
 
 
-stages_to_be_kepts = ['demo', '8thMarch']
+stages_to_be_kepts = ['8thMarch']
 
 print(bcolors.WARNING + "Are you sure you want to do the clean up? This will delete all stages except {0}!".format(stages_to_be_kepts) + bcolors.ENDC)
 print("If you want to keep any stages, please add them to the \"stages_to_be_kepts\" list in \"scripts/wipe_dev.py\".")
