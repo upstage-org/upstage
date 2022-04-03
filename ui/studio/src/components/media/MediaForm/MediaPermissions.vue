@@ -20,11 +20,14 @@ const props = defineProps({
         default: [],
     },
     media: Object as PropType<Media>,
+    note: {
+        type: String
+    },
     owner: {
         type: String
     },
 });
-const emits = defineEmits(['update:modelValue', 'update:users', 'update:owner']);
+const emits = defineEmits(['update:modelValue', 'update:users', 'update:owner', 'update:note']);
 
 const copyrightLevel = ref();
 const targetKeys = ref();
@@ -179,5 +182,12 @@ watch(isAdmin, console.log)
                 :render="renderItem"
             />
         </template>
+        <a-tooltip title="Notes">
+            <a-textarea
+                placeholder="You can put any notes here, like what the image is of, when or where taken, the actual copyright owner,..."
+                :value="note"
+                @change="$emit('update:note', $event.target.value)"
+            ></a-textarea>
+        </a-tooltip>
     </a-space>
 </template>
