@@ -22,6 +22,7 @@ interface SaveMediaMutationVariables {
   tags: string[],
   w: number,
   h: number,
+  note: string,
   voice: AvatarVoice
   link: Link
 }

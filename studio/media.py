@@ -281,6 +281,7 @@ class SaveMediaInput(graphene.InputObjectType):
         graphene.String, description="Media tags")
     w = graphene.Int(description="Width of the media")
     h = graphene.Int(description="Height of the media")
+    note = graphene.String(description="It would be useful to have a 'Notes' field on the permissions tab, where i could note the actual copyright owner when it's not me, and other information such as what the image is of, when or where taken, this kind of thing.")
     voice = AvatarVoiceInput(description="Voice settings", required=False)
     link = LinkInput(description="On click action link", required=False)
 
@@ -295,8 +296,8 @@ class SaveMedia(graphene.Mutation):
 
     @jwt_required()
     def mutate(self, info, input):
-        name, urls, media_type, copyright_level, owner, user_ids, stage_ids, tags, w, h = itemgetter(
-            'name', 'urls', 'media_type', 'copyright_level', 'owner', 'user_ids', 'stage_ids', 'tags', 'w', 'h')(input)
+        name, urls, media_type, copyright_level, owner, user_ids, stage_ids, tags, w, h, note = itemgetter(
+            'name', 'urls', 'media_type', 'copyright_level', 'owner', 'user_ids', 'stage_ids', 'tags', 'w', 'h', 'note')(input)
 
         code, error, user, timezone = current_user()
         current_user_id = user.id
@@ -393,6 +394,8 @@ class SaveMedia(graphene.Mutation):
                         attributes['link'] = link
                     elif 'link' in attributes:
                         del attributes['link']
+
+                attributes['note'] = note
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
