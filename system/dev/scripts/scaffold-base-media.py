@@ -92,7 +92,12 @@ def create_demo_media():
         create_media(type, path)
 
 def create_demo_stage():
+    if session.query(Stage).filter(Stage.name == 'Demo').first():
+        print("❌ A stage named \"Demo\" already exists.")
+        return
     stage = Stage(name='Demo Stage', owner_id=owner_id, description='This is a demo stage to help you learn how to use and customise UpStage for your own performances.', file_location='demo')
+    status = StageAttribute(name='status', description='live', stage=stage)
+    stage.attributes.append(status)
     session.add(stage)
     session.commit()
     for media_id in created_media_ids:
