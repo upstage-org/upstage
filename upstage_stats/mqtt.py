@@ -100,8 +100,7 @@ def build_client(client_id=get_client_id(), transport=MQTT_TRANSPORT):
 
 
 def get_not_alive_users():
-    current_time = datetime.utcnow()
-    two_minute_ago = current_time - timedelta(minutes=2)
+    two_minute_ago = datetime.utcnow() - timedelta(minutes=2)
     not_alive_clients = DBSession.query(ReceiveStat).filter(
         ReceiveStat.mqtt_timestamp < two_minute_ago).all()
     return [x.received_id for x in not_alive_clients]
