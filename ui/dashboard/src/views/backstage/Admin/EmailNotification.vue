@@ -76,7 +76,7 @@ const send = async () => {
   await save(`Notification has been successfully sent to ${selectedRecipients.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
     subject: subject.value,
     body: body.value,
-    recipients: selectedRecipients.map(p => p.email).join(',').concat(additionalReceivers.value)
+    recipients: selectedRecipients.map(p => p.email).join(',').concat(additionalReceivers.value ? `,${additionalReceivers.value}` : ''),
   })
 }
 </script>
