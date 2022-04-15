@@ -27,8 +27,11 @@ export default {
                         isRTMP: true,
                         autoDetect: true,
                         url: key,
-                        w: 100 * width / height,
-                        h: 100,
+                    }
+                    if (width > 0 && height > 0) {
+                        stream.w = 100 * width / height;
+                        stream.h = 100;
+                        stream.ready = true;
                     }
                     streams.push(stream)
                 }
