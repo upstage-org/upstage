@@ -61,7 +61,7 @@ const additionalReceivers = ref('');
 
 const { save, loading } = useMutation(configGraph.sendEmail);
 const send = async () => {
-  const selectedRecipientsIds = selectedPlayers.value[0];
+  const selectedRecipientsIds = selectedPlayers.value[0] ?? [];
   const selectedRecipients = users.value.filter(u => selectedRecipientsIds.includes(u.dbId));
   console.log(selectedRecipients);
   if (!subject.value) {
