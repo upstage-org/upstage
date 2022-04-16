@@ -233,6 +233,22 @@ const handleImageLoad = (e: Event, index: number) => {
     }
   }
 }
+const handleVideoLoad = (e: Event) => {
+  if (e.target) {
+    const { width, height } = e.target as HTMLVideoElement
+    if (width > height) {
+      frameSize.value = {
+        width: 100,
+        height: (100 * height) / width
+      }
+    } else {
+      frameSize.value = {
+        width: (100 * width) / height,
+        height: 100
+      }
+    }
+  }
+}
 const clearSign = () => {
   editingMediaVar({
     ...editingMediaVar()!,
@@ -242,12 +258,8 @@ const clearSign = () => {
 </script>
 
 <template>
-  <a-modal
-    :visible="!!files?.length && !composingMode"
-    :body-style="{ padding: 0 }"
-    :width="1000"
-    @cancel="handleClose"
-  >
+  <a-modal :visible="!!files?.length && !composingMode" :body-style="{ padding: 0 }" :width="1000"
+    @cancel="handleClose">
     <template #title>
       <a-space>
         <a-input-group compact>
@@ -261,72 +273,45 @@ const clearSign = () => {
           <a-button type="primary" @click="addExistingFrame">
             <PlusCircleOutlined />Add existing frame
           </a-button>
-          <a-button
-            v-if="files!.length > 1"
-            :type="clearMode ? 'primary' : 'dashed'"
-            danger
-            @click="clearMode = !clearMode"
-          >
+          <a-button v-if="files!.length > 1" :type="clearMode ? 'primary' : 'dashed'" danger
+            @click="clearMode = !clearMode">
             <ClearOutlined />Clear frames
           </a-button>
         </template>
-        <a-input
-          v-else-if="type === 'stream' && files && files.length"
-          v-model:value="files![0].url"
-          placeholder="Unique key"
-          @focus="clearSign"
-        ></a-input>
+        <a-input v-else-if="type === 'stream' && files && files.length" v-model:value="files![0].url"
+          placeholder="Unique key" @focus="clearSign"></a-input>
       </a-space>
     </template>
     <a-row :gutter="12">
       <a-col :span="6">
         <div class="bg-gray-200 flex items-center justify-center h-full" style="max-height: 600px;">
           <audio v-if="type === 'audio'" controls class="w-48" :key="files?.[0]?.preview">
-            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
+            <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio
+            element.
           </audio>
           <template v-else-if="type === 'stream'">
-            <div
-              v-if="files && files.length && files[0].status === 'virtual'"
-              controls
-              class="w-48"
-            >
-              <LarixQRCode
-                :stream="{ name, src: files[0].url, sign: editingMediaResult?.editingMedia.sign }"
-                :size="192"
-              />
+            <div v-if="files && files.length && files[0].status === 'virtual'" controls class="w-48">
+              <LarixQRCode :stream="{ name, src: files[0].url, sign: editingMediaResult?.editingMedia.sign }"
+                :size="192" />
             </div>
-            <video v-else controls class="w-48" :key="files?.[0]?.preview">
-              <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video tag.
+            <video v-else controls class="w-48" :key="files?.[0]?.preview" @load="handleVideoLoad">
+              <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video
+              tag.
             </video>
           </template>
-          <SlickList
-            v-else
-            axis="y"
-            v-model:list="files"
-            class="cursor-move w-full max-h-96 overflow-auto"
-            :class="{ 'cursor-not-allowed': clearMode }"
-            @sort-start="handleFrameClick"
-          >
+          <SlickList v-else axis="y" v-model:list="files" class="cursor-move w-full max-h-96 overflow-auto"
+            :class="{ 'cursor-not-allowed': clearMode }" @sort-start="handleFrameClick">
             <SlickItem v-for="(file, i) in files" :key="file.id" :index="i" style="z-index: 99999;">
               <div class="my-2 px-8 text-center">
-                <img
-                  show-handle
-                  :src="file.preview"
-                  class="max-w-full rounded-md max-h-24"
-                  @load="handleImageLoad($event, i)"
-                />
+                <img show-handle :src="file.preview" class="max-w-full rounded-md max-h-24"
+                  @load="handleImageLoad($event, i)" />
               </div>
             </SlickItem>
           </SlickList>
         </div>
-        <a-alert
-          v-if="files!.length > 1"
+        <a-alert v-if="files!.length > 1"
           :message="clearMode ? 'Click a frame to remove it' : 'Drag a frame to reorder its position'"
-          :type="clearMode ? 'error' : 'success'"
-          show-icon
-          closable
-          class="text-sm"
-        />
+          :type="clearMode ? 'error' : 'success'" show-icon closable class="text-sm" />
       </a-col>
       <a-col :span="18">
         <div class="card-container pr-4">
@@ -335,14 +320,9 @@ const clearSign = () => {
               <StageAssignment v-model="(stageIds as any)" />
             </a-tab-pane>
             <a-tab-pane key="permissions" tab="Permissions">
-              <MediaPermissions
-                :key="editingMediaResult?.editingMedia?.id"
-                v-model="copyrightLevel"
-                v-model:owner="owner"
-                v-model:users="userIds"
-                v-model:note="note"
-                :media="editingMediaResult?.editingMedia"
-              />
+              <MediaPermissions :key="editingMediaResult?.editingMedia?.id" v-model="copyrightLevel"
+                v-model:owner="owner" v-model:users="userIds" v-model:note="note"
+                :media="editingMediaResult?.editingMedia" />
             </a-tab-pane>
             <a-tab-pane v-if="type === 'avatar'" key="voice" tab="Voice">
               <AvatarVoice :voice="voice" />
@@ -354,29 +334,17 @@ const clearSign = () => {
         </div>
       </a-col>
     </a-row>
-    <a-progress
-      v-if="saving"
-      :stroke-color="{
-        from: '#108ee9',
-        to: '#87d068',
-      }"
-      :percent="progress"
-      status="active"
-      class="absolute left-0 bottom-10"
-      :show-info="false"
-    >
+    <a-progress v-if="saving" :stroke-color="{
+      from: '#108ee9',
+      to: '#87d068',
+    }" :percent="progress" status="active" class="absolute left-0 bottom-10" :show-info="false">
       <template #format></template>
     </a-progress>
     <template #footer>
       <a-space>
-        <a-select
-          class="text-left"
-          style="min-width: 200px;"
-          v-model:value="tags"
-          mode="tags"
-          placeholder="Tags"
-          :options="result ? result.tags.edges.map(({ node }) => ({ value: node.name, label: node.name })) : []"
-        ></a-select>
+        <a-select class="text-left" style="min-width: 200px;" v-model:value="tags" mode="tags" placeholder="Tags"
+          :options="result ? result.tags.edges.map(({ node }) => ({ value: node.name, label: node.name })) : []">
+        </a-select>
         <a-button key="submit" type="primary" :loading="saving" @click="saveMedia">
           <span v-if="saving">Saving {{ progress }}%</span>
           <span v-else>Save</span>
