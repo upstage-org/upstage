@@ -1,9 +1,9 @@
 <template>
-  <div v-for="stream in streams" :key="stream">
-    <Skeleton :data="stream">
+  <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
+    <Skeleton :data="stream" :nodrop="!stream.ready">
       <template v-if="stream.isRTMP">
         <div class="centered">
-          <RTMPStream v-if="stream.alive" :src="stream.url"></RTMPStream>
+          <RTMPStream v-if="stream.alive" :src="stream.url" @scan="scanVideo($event, stream)"></RTMPStream>
           <QRCodePopup v-else :stream="stream" />
         </div>
       </template>
@@ -60,8 +60,10 @@ export default {
         const index = res.findIndex((s) => s.url === stream.url);
         if (index >= 0) {
           res[index].alive = true;
-          res[index].w = stream.w
-          res[index].h = stream.h
+          if (stream.w > 0 && stream.h > 0) {
+            res[index].w = stream.w
+            res[index].h = stream.h
+          }
         } else {
           if (autoDetect.value) {
             res.push(stream);
@@ -72,20 +74,38 @@ export default {
       return res;
     });
 
-    return { streams, loading, fetchRunningStreams, autoDetect };
+    const scanVideo = ({ width, height }, stream) => {
+      console.log(stream, width, height)
+      if (!stream.ready) {
+        Object.assign(stream, {
+          w: 100 * width / height,
+          h: 100,
+          ready: true
+        })
+      }
+    }
+
+    return { streams, loading, fetchRunningStreams, autoDetect, scanVideo };
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "@/styles/mixins.scss";
+
 .fas.fa-plus {
   @include gradientText(#30ac45, #6fb1fc);
 }
+
 video {
   height: 100%;
 }
+
 .centered {
   margin: auto;
+}
+
+.pending-stream {
+  cursor: not-allowed;
 }
 </style>

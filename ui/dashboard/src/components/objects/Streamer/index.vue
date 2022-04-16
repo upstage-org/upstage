@@ -7,25 +7,11 @@
 
       <template #render>
         <Loading v-if="loading" height="100%" />
-        <video
-          v-bind:id="'video' + stream.id"
-          v-show="!loading"
-          ref="video"
-          :src="object.url"
-          :muted="localMuted"
-          preload="auto"
-          disablepictureinpicture
-          @loadeddata="loadeddata"
-          @ended="stream.isPlaying = false"
-          :style="{
+        <video v-bind:id="'video' + stream.id" v-show="!loading" ref="video" :src="object.url" :muted="localMuted"
+          preload="auto" disablepictureinpicture @loadeddata="loadeddata" @ended="stream.isPlaying = false" :style="{
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
-          }"
-        ></video>
-        <button
-          v-if="isPlayer"
-          class="button is-small mute-icon clickable"
-          @mousedown="toggleMuted"
-        >
+          }"></video>
+        <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -38,7 +24,7 @@
 import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
-import { useFlv } from "./composable";
+import { useFlv, useCatchup } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
 import MenuContent from '../Avatar/ContextMenu'
@@ -78,7 +64,15 @@ export default {
 
     if (props.object.isRTMP) {
       const fullUrl = computed(() => getSubsribeLink(props.object.url));
-      useFlv(video, fullUrl);
+      useCatchup(video);
+      const { playable } = useFlv(video, fullUrl);
+
+      watch(playable, value => {
+        console.log("playable", value);
+        if (!playable) {
+          store.dispatch("stage/deleteObject", props.object);
+        }
+      })
     }
 
     const clip = (shape) => {
