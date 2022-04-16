@@ -2,33 +2,15 @@
   <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
-        <h1 class="title" v-html="foyer.title" />
-        <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description" />
+        <div class="describe">
+          <h1 class="title" v-html="foyer.title" />
+          <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description" />
+        </div>
         <Loading v-if="loading" />
-        <div
-          v-else
-          class="links columns is-multiline my-4 pt-6"
-          data-masonry="{ 'itemSelector': '.column', 'columnWidth': 200 }"
-        >
-          <div v-for="stage in liveStages" :key="stage.id" class="column is-4">
-            <router-link
-              :to="`/${stage.fileLocation}`"
-              class="link"
-              :style="backgroundImage(stage.cover, 'live-stage.png')"
-            >
-              <PlayerAudienceCounter :stage-url="stage.fileLocation" class="counter" />
-              <span>{{ stage.name }}</span>
-            </router-link>
-          </div>
-          <div v-for="stage in upcomingStages" :key="stage.id" class="column is-4">
-            <router-link
-              :to="`/${stage.fileLocation}`"
-              class="link"
-              :style="backgroundImage(stage.cover, 'upcoming-performance.png')"
-            >
-              <span>{{ stage.name }}</span>
-            </router-link>
-          </div>
+        <div v-else class="stages my-4 pt-6">
+          <Entry v-for="stage in liveStages" :key="stage.id" :stage="stage" fallback-cover="live-stage.png" />
+          <Entry v-for="stage in upcomingStages" :key="stage.id" :stage="stage"
+            fallback-cover="upcoming-performance.png" />
         </div>
       </div>
     </div>
@@ -36,16 +18,15 @@
 </template>
 
 <script>
-import config from "@/../vue.config";
 import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Loading from "@/components/Loading";
 import { absolutePath } from "@/utils/common";
-import PlayerAudienceCounter from "@/components/stage/PlayerAudienceCounter";
+import Entry from "@/components/stage/Entry.vue";
 
 export default {
   name: "Home",
-  components: { Loading, PlayerAudienceCounter },
+  components: { Loading, Entry },
   setup: () => {
     const store = useStore();
 
@@ -55,13 +36,8 @@ export default {
     const upcomingStages = computed(
       () => store.getters["cache/upcomingStages"]
     );
-    const backgroundImage = (src, defaultSrc) => ({
-      "background-image": `url(${src ? absolutePath(src) : `${config.publicPath}img/${defaultSrc}`
-        })`,
-    });
 
     return {
-      backgroundImage,
       liveStages,
       loading,
       upcomingStages,
@@ -78,48 +54,51 @@ export default {
 
 #welcome {
   text-align: center;
+
   .title {
     @include textShadow;
     font-size: 50px;
   }
+
   .subtitle {
-    background: white;
-    border: 1px solid $black;
     padding: 0.5em;
     max-width: 800px;
     margin: auto;
-    box-shadow: 10px 10px 0 0 $primary;
     white-space: pre-wrap;
   }
-  .column {
-    padding: 2rem;
+
+  .stages {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: masonry;
   }
-  .link {
-    @include textShadow;
+
+  .describe {
     position: relative;
-    font-weight: bold;
-    font-size: 25px;
-    border: 1px solid $black;
-    border-top: 10px solid $primary;
-    display: table;
-    width: 100%;
-    height: 300px;
-    box-shadow: 10px 5px 0 0 $black;
-    color: white;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    background-color: white;
-    span {
-      display: table-cell;
-      vertical-align: middle;
-    }
-    .counter {
+
+    ::after {
+      content: '';
+      pointer-events: none;
       position: absolute;
-      right: 10px;
-      top: 10px;
-      width: auto !important;
+      width: 100%;
+      height: 100%;
+      background-image: url("/img/foyer-background.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      animation: fadeIn 1s;
+      opacity: 0.5;
     }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 0.5;
   }
 }
 </style>
