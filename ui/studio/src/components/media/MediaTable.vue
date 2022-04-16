@@ -248,6 +248,8 @@ const filterTag = (tag: string) => {
 }
 
 const isAdmin = computed(() => [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(result.value?.whoami?.role ?? 0))
+provide('whoami', computed(() => result.value?.whoami))
+provide('isAdmin', isAdmin)
 </script>
 
 <template>

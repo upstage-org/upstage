@@ -57,7 +57,7 @@ export default {
   `),
   userList: () => client.request(gql`
     query UserList($first: Int, $after: String) {
-      userList(sort: CREATED_ON_DESC, first: $first, after: $after) {
+      userList(sort: USERNAME_ASC, first: $first, after: $after) {
         totalCount
         edges {
           node {

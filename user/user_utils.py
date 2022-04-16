@@ -41,7 +41,7 @@ def current_user(user_id=None,admin_initial=False,internal_use=False):
         User.id==current_user_id).filter(
         User.active==True).first()
     if not user:
-        return 401,"Invalid user (1)",None,None,None,None
+        return 403,"Invalid user (1)",None,None,None,None
 
     if not user_id:
         user_session = DBSession.query(UserSession).filter(

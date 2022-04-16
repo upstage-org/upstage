@@ -41,6 +41,10 @@
       <Icon src="stream.svg" size="36" />
       <span class="tag is-light is-block stream-key">{{ data.name }}</span>
     </div>
+    <div v-else-if="data.type === 'meeting'" class="is-flex-grow-1 pt-2">
+      <Icon src="meeting.svg" size="48" />
+      <span class="tag is-light is-block stream-key">{{ data.name }}</span>
+    </div>
     <Image v-else :src="data.src" />
     <Icon
       v-if="data.multi"
