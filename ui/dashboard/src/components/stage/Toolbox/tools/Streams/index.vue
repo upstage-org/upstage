@@ -1,6 +1,6 @@
 <template>
   <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
-    <Skeleton :data="stream" :nodrop="!stream.ready">
+    <Skeleton :data="stream" :nodrop="stream.isRTMP && !stream.ready">
       <template v-if="stream.isRTMP">
         <div class="centered">
           <RTMPStream v-if="stream.alive" :src="stream.url" @scan="scanVideo($event, stream)"></RTMPStream>
