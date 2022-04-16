@@ -233,9 +233,9 @@ const handleImageLoad = (e: Event, index: number) => {
     }
   }
 }
-const handleVideoLoad = (e: Event) => {
+const handleVideoLoad = (e: any) => {
   if (e.target) {
-    const { width, height } = e.target as HTMLVideoElement
+    const { videoWidth: width, videoHeight: height } = e.target as HTMLVideoElement
     if (width > height) {
       frameSize.value = {
         width: 100,
@@ -294,7 +294,7 @@ const clearSign = () => {
               <LarixQRCode :stream="{ name, src: files[0].url, sign: editingMediaResult?.editingMedia.sign }"
                 :size="192" />
             </div>
-            <video v-else controls class="w-48" :key="files?.[0]?.preview" @load="handleVideoLoad">
+            <video v-else controls class="w-48" :key="files?.[0]?.preview" @loadedmetadata="handleVideoLoad">
               <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the video
               tag.
             </video>
