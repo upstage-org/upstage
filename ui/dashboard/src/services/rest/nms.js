@@ -19,7 +19,7 @@ export default {
         if (live) {
             Object.keys(live).forEach(key => {
                 const { publisher } = live[key]
-                if (publisher) {
+                if (publisher && publisher.video) {
                     const { width, height } = publisher.video
                     const stream = {
                         name: key,

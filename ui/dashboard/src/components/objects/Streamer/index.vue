@@ -69,7 +69,7 @@ export default {
 
       watch(playable, value => {
         console.log("playable", value);
-        if (!playable) {
+        if (!value) {
           store.dispatch("stage/deleteObject", props.object);
         }
       })

@@ -86,7 +86,12 @@ export const useFlv = (video, src) => {
             });
             flvPlayer.attachMediaElement(video.value);
             flvPlayer.load();
-            flvPlayer.on(flvjs.Events.ERROR, () => playable.value = false);
+            flvPlayer.on(flvjs.Events.ERROR, () => {
+                playable.value = false
+            });
+            video.value.addEventListener('ended', () => {
+                playable.value = false
+            }, { once: true });
         }
     };
 
