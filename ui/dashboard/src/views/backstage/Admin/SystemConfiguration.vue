@@ -45,6 +45,30 @@
       </div>
     </template>
   </div>
+  <div class="columns is-vcentered">
+    <div class="column is-narrow">
+      <b>Email Subject Prefix</b>
+    </div>
+    <template v-if="edit == 'esp'">
+      <div class="column">
+        <Field v-model="esp" />
+      </div>
+      <div class="column is-narrow">
+        <button
+          class="button is-primary"
+          :class="{ 'is-loading': loading }"
+          @click="saveESP"
+        >Save</button>
+      </div>
+    </template>
+    <template v-else>
+      <div class="column">{{ esp }}</div>
+      <div class="column is-narrow">
+        <button class="button is-primary" @click="edit = 'esp'">Edit</button>
+      </div>
+    </template>
+  </div>
+
 </template>
 
 <script>
@@ -78,7 +102,15 @@ export default {
       saveConfig("Manual link updated successfully!", 'MANUAL', manual.value);
     };
 
-    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading };
+    const esp = ref();
+    watchEffect(() => {
+      esp.value = store.getters["config/esp"];
+    });
+    const saveESP = () => {
+     saveConfig("Email Subject Prefix updated successfully!", 'EMAIL_SUBJECT_PREFIX', esp.value);
+    };
+
+    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP};
   },
 };
 </script>
