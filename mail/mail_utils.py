@@ -13,7 +13,7 @@ from config.settings import (EMAIL_HOST, EMAIL_PORT,
     ADMIN_EMAIL, ENV_TYPE)
 
 def send_sync(to, subject, content):
-    subject_prefix = DBSession.query(Config).filter(Config.name == 'EMAIL_SUBJECT_PREFIX').first()
+    subject_prefix = DBSession.query(Config).filter(Config.name == 'EMAIL_SUBJECT_PREFIX').first().value
     msg = MIMEText(content, "html")
     msg["Subject"] = f'{subject_prefix}: {subject}'
     # some SMTP servers will do this automatically, not all
