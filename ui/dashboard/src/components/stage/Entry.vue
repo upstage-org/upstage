@@ -44,7 +44,8 @@ const coverImage = (src) => src ? absolutePath(src) : `${config.publicPath}img/$
     width: 100%;
     box-shadow: 10px 5px 0 0 $black;
     color: white;
-
+    border-radius: 12px;
+    overflow: hidden;
 
     .cover {
         width: 100%;
