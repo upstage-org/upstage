@@ -183,7 +183,7 @@ export default {
       fileLocation: '',
       ...stage.value,
       ownerId: stage.value.owner?.id,
-      status: useAttribute(stage, "status").value,
+      status: useAttribute(stage, "status").value ?? "rehearsal",
       cover: useAttribute(stage, "cover").value,
     });
 
