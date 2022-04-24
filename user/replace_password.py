@@ -36,5 +36,5 @@ def replace_pass(the_id,new_password):
     db_session.close()
 
 if __name__ == "__main__":
-    replace_pass(363,'nnnnnnnnnnnnnnnn')
+    replace_pass(3,'refinery_test')
    
