@@ -82,6 +82,37 @@
       </div>
     </div>
 
+    <div class="field is-horizontal" v-if="stage">
+      <div class="field-label">
+        <label class="label">Status</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <div class="control">
+            <label class="radio">
+              <input type="radio" v-model="form.status" value="live" />
+              Live
+            </label>
+            <label class="radio">
+              <input type="radio" v-model="form.status" value="rehearsal" />
+              Rehearsal
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal" v-if="stage">
+      <div class="field-label">
+        <label class="label">Visibility</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <Switch v-model="form.visibility" />
+        </div>
+      </div>
+    </div>
+
     <div class="field is-horizontal">
       <div class="field-label is-normal">
         <label class="label">Player access</label>
@@ -106,30 +137,6 @@
           "
           v-model="playerAccess"
         />
-      </div>
-    </div>
-
-    <div class="field is-horizontal" v-if="stage">
-      <div class="field-label">
-        <label class="label">Stage Status</label>
-      </div>
-      <div class="field-body">
-        <div class="field is-narrow">
-          <div class="control">
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="live" />
-              Live
-            </label>
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="upcoming" />
-              Upcoming
-            </label>
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="rehearsal" />
-              Rehearsal
-            </label>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -164,6 +171,7 @@ import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
 import DeleteStage from "@/components/stage/DeleteStage";
 import { useStore } from "vuex";
+import Switch from "@/components/form/Switch.vue";
 
 export default {
   components: {
@@ -172,8 +180,9 @@ export default {
     SweepStage,
     MultiTransferColumn,
     ImagePicker,
-    DeleteStage
-  },
+    DeleteStage,
+    Switch
+},
   setup: () => {
     const store = useStore();
     const router = useRouter();
@@ -184,6 +193,7 @@ export default {
       ...stage.value,
       ownerId: stage.value.owner?.id,
       status: useAttribute(stage, "status").value ?? "rehearsal",
+      visibility: useAttribute(stage, "visibility").value,
       cover: useAttribute(stage, "cover").value,
     });
 

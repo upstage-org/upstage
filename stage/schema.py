@@ -37,7 +37,8 @@ class StageAttribute:
     name = graphene.String(description="Stage Name")
     description = graphene.String(description="Stage Description")
     file_location = graphene.String(description="Unique File Location")
-    status = graphene.String(description="Live/Upcoming/Rehearsal")
+    status = graphene.String(description="Live/Rehearsal")
+    visibility = graphene.Boolean(description="Show or hide the stage on the Foyer")
     cover = graphene.String(description="Cover image url")
     media = graphene.String(description="Media attached to stage")
     config = graphene.String(description="Stage configurations")
@@ -232,7 +233,9 @@ class UpdateStage(graphene.Mutation):
                     continue
                 if hasattr(stage, key):
                     setattr(stage, key, value)
-                elif value:
+                elif value != None:
+                    if not value:
+                        value = ''
                     attribute = stage.attributes.filter(
                         StageAttributeModel.name == key
                     ).first()

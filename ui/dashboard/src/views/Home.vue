@@ -8,9 +8,8 @@
         </div>
         <Loading v-if="loading" />
         <div v-else class="stages my-4 pt-6">
-          <Entry v-for="stage in liveStages" :key="stage.id" :stage="stage" fallback-cover="live-stage.png" />
-          <Entry v-for="stage in upcomingStages" :key="stage.id" :stage="stage"
-            fallback-cover="upcoming-performance.png" />
+          <Entry v-for="stage in visibleStages" :key="stage.id" :stage="stage"
+            :fallback-cover="stage.status === 'live' ? 'live-stage.png' : 'upcoming-performance.png'" />
         </div>
       </div>
     </div>
@@ -31,16 +30,12 @@ export default {
     const store = useStore();
 
     const loading = computed(() => store.getters["cache/loadingStages"]);
-    const liveStages = computed(() => store.getters["cache/liveStages"]);
+    const visibleStages = computed(() => store.getters["cache/visibleStages"]);
     const foyer = computed(() => store.getters["config/foyer"]);
-    const upcomingStages = computed(
-      () => store.getters["cache/upcomingStages"]
-    );
 
     return {
-      liveStages,
+      visibleStages,
       loading,
-      upcomingStages,
       absolutePath,
       foyer,
     };
