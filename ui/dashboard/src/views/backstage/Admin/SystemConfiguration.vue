@@ -8,11 +8,7 @@
         <Field v-model="termsOfService" />
       </div>
       <div class="column is-narrow">
-        <button
-          class="button is-primary"
-          :class="{ 'is-loading': loadingTOS }"
-          @click="saveToS"
-        >Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loadingTOS }" @click="saveToS">Save</button>
       </div>
     </template>
     <template v-else>
@@ -31,11 +27,7 @@
         <Field v-model="manual" />
       </div>
       <div class="column is-narrow">
-        <button
-          class="button is-primary"
-          :class="{ 'is-loading': loading }"
-          @click="saveManual"
-        >Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveManual">Save</button>
       </div>
     </template>
     <template v-else>
@@ -54,11 +46,7 @@
         <Field v-model="esp" />
       </div>
       <div class="column is-narrow">
-        <button
-          class="button is-primary"
-          :class="{ 'is-loading': loading }"
-          @click="saveESP"
-        >Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveESP">Save</button>
       </div>
     </template>
     <template v-else>
@@ -77,6 +65,7 @@ import { useStore } from "vuex";
 import { ref, watchEffect } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { configGraph } from "@/services/graphql";
+import { notification } from "@/utils/notification";
 export default {
   components: { Field },
   setup: () => {
@@ -89,7 +78,11 @@ export default {
 
     const { loading: loadingTOS, save } = useMutation(configGraph.updateTermsOfService);
     const saveToS = () => {
-      save("Terms of Services updated successfully!", {
+      save(() => {
+        notification.success("Terms of Services updated successfully!");
+        store.dispatch("config/fetchConfig");
+
+      }, {
         url: termsOfService.value,
       });
     };
@@ -99,18 +92,25 @@ export default {
     });
     const { loading, save: saveConfig } = useMutation(configGraph.saveConfig);
     const saveManual = () => {
-      saveConfig("Manual link updated successfully!", 'MANUAL', manual.value);
+      saveConfig(() => {
+        notification.success("Manual link updated successfully!");
+        store.dispatch("config/fetchConfig");
+      }, 'MANUAL', manual.value);
     };
 
     const esp = ref();
     watchEffect(() => {
       esp.value = store.getters["config/esp"];
     });
+
     const saveESP = () => {
-     saveConfig("Email Subject Prefix updated successfully!", 'EMAIL_SUBJECT_PREFIX', esp.value);
+      saveConfig(() => {
+        notification.success("Email Subject Prefix updated successfully!")
+        store.dispatch("config/fetchConfig");
+      }, 'EMAIL_SUBJECT_PREFIX', esp.value);
     };
 
-    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP};
+    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP };
   },
 };
 </script>
