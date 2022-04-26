@@ -1,5 +1,5 @@
 <template>
-  <div class="archive-actions">
+  <div class="has-text-right is-fullwidth pb-3">
     <button class="button ml-2 is-light" @click="downloadChatLog()">
       <span>Download All Chat</span>
     </button>
@@ -281,12 +281,5 @@ export default {
 .button.is-light > img {
   max-width: unset;
 }
-@media screen and (min-width: 1024px) {
-  .archive-actions {
-    position: relative;
-    top: -110px;
-    width: fit-content;
-    margin-left: auto;
-  }
-}
+
 </style>
