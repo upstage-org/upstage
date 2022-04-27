@@ -10,7 +10,7 @@ export const getPublishLink = (key: string) => {
 
 export const getLarixLink = (key: string, sign: string, name: string) => {
     if (key.includes('?')) {
-        key = key.substr(0, key.indexOf('?'))
+        key = key.substring(0, key.indexOf('?'))
     }
     const url = encodeURIComponent(getPublishLink(key) + `?sign=${sign}`)
     name = encodeURIComponent(name)
