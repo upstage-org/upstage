@@ -1,10 +1,7 @@
 <template>
     <p>
         Or follow this instruction if you're using OBS Studio. You can download OBS Studio
-        <a
-            href="https://obsproject.com/download"
-            target="_blank"
-        >here</a>.
+        <a href="https://obsproject.com/download" target="_blank">here</a>.
     </p>
     <div>
         <div class="mt-4">
@@ -34,9 +31,8 @@
     <div>
         <div class="mt-4">
             <b>Step 3:&nbsp;</b>Start Streaming! You should see the button changes to
-            <code
-                class="text-red-600 bg-gray-200 p-1 text-sm"
-            >Stop Streaming</code> and LIVE counter started to work. If you
+            <code class="text-red-600 bg-gray-200 p-1 text-sm">Stop Streaming</code> and LIVE counter started to work.
+            If you
             have any issue, please contact UpStage Admin for help.
         </div>
         <div>
@@ -61,7 +57,13 @@ const props = defineProps({
 });
 
 const publishUrl = configs.SHARED.STREAMING.publish;
-const streamKey = computed(() => `${props.url}?sign=${props.sign}`);
+const streamKey = computed(() => {
+    let key = props.url;
+    if (key.includes('?')) {
+        key = key.substring(0, key.indexOf('?'));
+    }
+    return `${key}?sign=${props.sign}`
+});
 </script>
 
 <style>
