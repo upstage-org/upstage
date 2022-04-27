@@ -6,7 +6,6 @@
           :disabled="!urlValid">Save Stage</button>
         <ClearChat />
         <SweepStage />
-        <button class="button ml-2 is-dark">Hide From Stage List</button>
         <DeleteStage :stage="stage" :refresh="afterDelete">
           <button class="button ml-2 is-danger">Delete Stage</button>
         </DeleteStage>
