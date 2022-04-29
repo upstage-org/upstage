@@ -12,6 +12,7 @@ export default {
       system {
         termsOfService
         manual
+        esp
       }
       foyer {
         title

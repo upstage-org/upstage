@@ -14,8 +14,11 @@ export default {
         termsOfService(state) {
             return state.system.termsOfService
         },
-        manual(state) {
+        manual(state) { 
             return state.system.manual
+        },
+        esp(state) {
+            return state.system.esp
         },
         foyer(state) {
             return state.foyer ?? {}

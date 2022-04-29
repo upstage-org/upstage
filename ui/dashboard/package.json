@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.19.0",
-  "versionAlias": "Rheineck-19",
+  "version": "1.20.0",
+  "versionAlias": "Schildbrau-20",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
