@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 import graphene
 from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
-from user.models import PLAYER, User as UserModel
+from user.models import GUEST, PLAYER, User as UserModel
 from config.project_globals import DBSession, ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -300,6 +300,9 @@ class SaveMedia(graphene.Mutation):
             'name', 'urls', 'media_type', 'copyright_level', 'owner', 'user_ids', 'stage_ids', 'tags', 'w', 'h', 'note')(input)
 
         code, error, user, timezone = current_user()
+        if user.role in (GUEST):
+            raise Exception("You don't have permission to create/update media")
+            
         current_user_id = user.id
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
