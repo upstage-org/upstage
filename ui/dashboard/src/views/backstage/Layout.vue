@@ -9,13 +9,15 @@
             Stages
           </span>
         </router-link>
-        <div class="vertical-divider" />
-        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
-          <span>
-            <i class="fas fa-magic has-text-info"></i>
-            Studio
-          </span>
-        </a>
+        <template v-if="!isGuest">
+          <div class="vertical-divider" />
+          <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
+            <span>
+              <i class="fas fa-magic has-text-info"></i>
+              Studio
+            </span>
+          </a>
+        </template>
         <div class="vertical-divider" />
         <router-link class="navbar-item" to="/backstage/profile/">
           <span>
@@ -46,13 +48,7 @@
 
     <div class="navbar-brand">
       <Logo />
-      <a
-        role="button"
-        class="navbar-burger"
-        aria-label="menu"
-        aria-expanded="false"
-        @click="toggleExpanded"
-      >
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -78,12 +74,13 @@ export default {
     const store = useStore();
 
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
+    const isGuest = computed(() => store.getters["user/isGuest"]);
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
     const manual = computed(() => store.getters["config/manual"] ?? 'alo');
 
-    return { isAdmin, expanded, toggleExpanded, configs, manual };
+    return { isAdmin, isGuest, expanded, toggleExpanded, configs, manual };
   },
 };
 </script>
@@ -92,12 +89,14 @@ export default {
 #main-content {
   min-height: calc(100vh - 120px);
 }
+
 @media screen and (max-width: 1023px) {
   .navbar-brand {
     position: absolute;
     top: 0;
     width: 100%;
   }
+
   .navbar-menu .navbar-item:first-child {
     margin-left: 8px;
     margin-top: 24px;
