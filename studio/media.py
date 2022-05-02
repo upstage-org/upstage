@@ -7,10 +7,19 @@ import time
 import uuid
 from base64 import b64decode
 from datetime import datetime, timedelta
-
 import graphene
+from flask import request
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
+from mail.mail_utils import send
+from mail.templates import permission_response_for_media, request_permission_for_media
 from user.models import PLAYER, User as UserModel
 from config.project_globals import DBSession, ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
@@ -26,12 +35,6 @@ from sqlalchemy.sql.expression import and_, or_
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
 from utils.graphql_utils import CountableConnection, input_to_dictionary
-
-appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, '..'))
-if projdir not in sys.path:
-    sys.path.append(appdir)
-    sys.path.append(projdir)
 
 
 absolutePath = os.path.dirname(appdir)
@@ -468,6 +471,11 @@ class ConfirmPermission(graphene.Mutation):
                 else:
                     local_db_session.delete(asset_usage)
                 local_db_session.flush()
+                studio_url = f"{request.url_root}studio"
+                send(asset_usage.user.email,
+                    f"Permission approved for media {asset_usage.asset.name}" if approved else f"Permission rejected for media {asset_usage.asset.name}",
+                    permission_response_for_media(asset_usage.user, asset_usage.asset, asset_usage.note, approved, studio_url)
+                )
         permissions = DBSession.query(AssetUsageModel).filter(
             AssetUsageModel.asset_id == asset_id).all()
         return ConfirmPermission(success=True, permissions=permissions)
@@ -498,6 +506,8 @@ class RequestPermission(graphene.Mutation):
                 local_db_session.add(asset_usage)
                 local_db_session.flush()
                 local_db_session.commit()
+                studio_url = f"{request.url_root}studio"
+                send(asset.owner.email, f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
         return ConfirmPermission(success=True)
 
 
