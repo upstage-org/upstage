@@ -254,8 +254,11 @@ def call_login_logout(app_entry=True,num_value=None):
                 ).filter(User.active==True).first()
 
         if user:
-            if not decrypt(user.password) == password:
-                return make_response(jsonify({"error": "Bad email or password (16)"}), 403)
+            try:
+                if not decrypt(user.password) == password:
+                    return make_response(jsonify({"error": "Incorrect username or password (16)"}), 403)
+            except:
+                return make_response(jsonify({"error": "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up (18)"}), 403)
         else:
             if '@' in username:
                 user = DBSession.query(User).filter(User.email==username
@@ -273,34 +276,6 @@ def call_login_logout(app_entry=True,num_value=None):
                 return make_response(jsonify({"error": "Bad email or password (17)"}), 403)
             else:
                 return make_response(jsonify({"error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!", "level": "warning"}), 403)
-
-            # Re-send their signup code.
-            existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
-            if not existing_code:
-                existing_code = new_security_code(user.id,SIGNUP_VALIDATION_MISSING_1ST_CODE)
-                '''
-                raise LostCodeError(
-                    "Something weird happened in the system, and this person's code got lost: user id {}".format(user.id)
-                    )
-                '''
-
-            if not send_acct_verification_code(user.phone,existing_code): # always sms
-                app.logger.warning(f"Tried to send this user a verification code but their phone number is invalid: user_id {user.id} phone {user.phone} ")
-
-            email_verification_code(user.email,existing_code)
-            return make_response(jsonify({"user_id":user.id,
-                "message": "User needs to verify account"}), 409)
-
-        # Admin Logins from the portal will pass a TOTP value that must be verified.
-        # Service providers will have an SMS code they have entered.
-
-        # Kludge: uncomment the below line. remove the line after.
-        if user.role in (SUPER_ADMIN,):
-            if not verify_user_totp(user,num_value):
-                return make_response(jsonify({"error": "Invalid code."}), 403)
-
-        elif user.role in (PLAYER,GUEST,ADMIN) and not app_entry: 
-            pass # password checked-out, that's all we need.
 
     # We may also have a fb/g login, if this is the first time a user is logging
     # in via fb/g.
