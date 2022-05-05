@@ -8,8 +8,12 @@
         </div>
         <Loading v-if="loading" />
         <div v-else class="stages my-4 pt-6">
-          <Entry v-for="stage in visibleStages" :key="stage.id" :stage="stage"
-            :fallback-cover="stage.status === 'live' ? 'live-stage.png' : 'upcoming-performance.png'" />
+          <masonry-wall :items="visibleStages" :ssr-columns="1" :column-width="300" :gap="32">
+            <template #default="{ item }">
+              <Entry :stage="item"
+                :fallback-cover="item.status === 'live' ? 'live-stage.png' : 'upcoming-performance.png'" />
+            </template>
+          </masonry-wall>
         </div>
       </div>
     </div>
@@ -22,10 +26,11 @@ import { useStore } from "vuex";
 import Loading from "@/components/Loading";
 import { absolutePath } from "@/utils/common";
 import Entry from "@/components/stage/Entry.vue";
+import MasonryWall from '@yeger/vue-masonry-wall'
 
 export default {
   name: "Home",
-  components: { Loading, Entry },
+  components: { Loading, Entry, MasonryWall },
   setup: () => {
     const store = useStore();
 
@@ -60,12 +65,6 @@ export default {
     max-width: 800px;
     margin: auto;
     white-space: pre-wrap;
-  }
-
-  .stages {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: masonry;
   }
 
   .describe {
