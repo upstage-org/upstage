@@ -13,11 +13,12 @@ from sqlalchemy import not_
 from asset.models import Asset, AssetType, Stage, StageAttribute
 from licenses.models import AssetLicense, AssetUsage
 from performance_config.models import ParentStage, Performance, Scene
-from user.models import User
+from user.models import ADMIN, GUEST, User
 from event_archive.db import build_pg_session
 from event_archive.models import Event
 from terminal_colors import bcolors
 from config.settings import UPLOAD_USER_CONTENT_FOLDER, ENV_TYPE
+from config.models import Config
 from auth.fernet_crypto import encrypt
 
 '''
@@ -108,20 +109,59 @@ def create_demo_stage():
     print("✅ Created demo stage")
 
 def create_demo_users():
-    count = input(bcolors.BOLD + "How many users would you like to create? (type 0 if you don't want to): " + bcolors.ENDC)
-    if not count:
-        count = 0
+    # - Super Admin: with email address support@upstage.live
+    # - Guest: one guest account?
+    # - Probably no other users as default 
+    admin_username = 'admin'
+    guest_username = 'guest'
     test_user_password = '12345678'
-    for i in range(int(count)):
-        user = User()
-        user.username = "user{}".format(i + 1)
-        user.password = encrypt(test_user_password)
-        user.email = "user{}@none.none".format(i + 1)
-        user.active = True
-        session.add(user)
-        session.commit()
-        print("✅ Created user \"{}\" with password \"{}\"".format(user.username, test_user_password))
+
+    if session.query(User).filter(User.username == admin_username).first():
+        print("❌ A user named \"{}\" already exists.".format(admin_username))
+    else:
+        admin = User()
+        admin.username = admin_username
+        admin.password = encrypt(test_user_password)
+        admin.email = "support@upstage.live"
+        admin.role = ADMIN
+        admin.active = True
+        session.add(admin)
+        print("✅ Created admin account with credentials: \"{}\" and password \"{}\"".format(admin_username, test_user_password))
+    
+    if session.query(User).filter(User.username == guest_username).first():
+        print("❌ A user named \"{}\" already exists.".format(guest_username))
+    else:
+        guest = User()
+        guest.username = guest_username
+        guest.password = encrypt(test_user_password)
+        guest.role = GUEST
+        guest.active = True
+        session.add(guest)
+        print("✅ Created guest account with credentials: \"{}\" and password \"{}\"".format(guest_username, test_user_password))
+
+    session.commit()
+
+def save_config(name, value):
+    config = session.query(Config).filter(Config.name == name).first()
+    if config:
+        config.value = value
+    else:
+        config = Config(name=name, value=value)
+        session.add(config)
+    session.commit()
+
+def scaffold_foyer():
+    save_config('FOYER_TITLE', 'Your New UpStage')
+    save_config('FOYER_DESCRIPTION', 'Welcome to your new UpStage! Click on the "Customise Foyer" above to change this message and other settings on this Foyer, then go to the Backstage to get started creating your cyberformance!')
+    print("✅ Foyer Scaffolding Completed")
+
+def scaffold_system_configuration():
+    save_config('TERMS_OF_SERVICE', 'https://raw.githubusercontent.com/upstage-org/upstage/main/LICENSE')
+    save_config('MANUAL', 'https://docs.upstage.live')
+    print("✅ System Configuration Scaffolding Completed")
 
 create_demo_media()
 create_demo_stage()
 create_demo_users()
+scaffold_foyer()
+scaffold_system_configuration()
