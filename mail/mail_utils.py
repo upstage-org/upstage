@@ -6,16 +6,20 @@ import sys
 import os
 import re
 from config.models import Config
-from config.project_globals import DBSession
+from config.project_globals import ScopedSession
 
 from config.settings import (EMAIL_HOST, EMAIL_PORT,
     EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST_DISPLAY_NAME,
     ADMIN_EMAIL, ENV_TYPE)
 
 def send_sync(to, subject, content):
-    subject_prefix = DBSession.query(Config).filter(Config.name == 'EMAIL_SUBJECT_PREFIX').first().value
+    with ScopedSession() as local_db_session:
+        subject_prefix = local_db_session.query(Config).filter(Config.name == 'EMAIL_SUBJECT_PREFIX').first().value
     msg = MIMEText(content, "html")
-    msg["Subject"] = f'{subject_prefix}: {subject}'
+    if subject_prefix:
+        msg["Subject"] = f'{subject_prefix}: {subject}'
+    else:
+        msg["Subject"] = subject
     # some SMTP servers will do this automatically, not all
     msg["From"] = f'{EMAIL_HOST_DISPLAY_NAME} <{EMAIL_HOST_USER}>'
     msg["To"] = to

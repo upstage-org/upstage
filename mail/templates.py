@@ -83,3 +83,30 @@ The user's information is:
 <b>Email:</b> {user.email}
 {footer}
 """
+
+def request_permission_for_media(user, media, note, studio_url):
+    return f"""
+<p>
+Hi <b>{display_user(media.owner)}</b>,
+<br>
+<br>
+{display_user(user)} has requested permission to use your media <b>{media.name}</b>. Please go to the <a href="{studio_url}">Studio</a> and click on the Notification icon to approve or deny the request.
+<br>
+Purpose: {note}
+<br>
+<br>
+{footer}
+"""
+
+def permission_response_for_media(user, media, note, approved, studio_url):
+    return f"""
+<p>
+Hi <b>{display_user(user)}</b>,
+<br>
+<br>
+Your permission request for <b>{media.name}</b> with purpose \"{note}\" has been {'approved' if approved else 'denied'} by the owner.
+{f'<br><br>You can now use the media in the <a href="{studio_url}">Studio</a>.' if approved else ''}
+<br>
+<br>
+{footer}
+"""
