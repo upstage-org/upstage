@@ -2,6 +2,7 @@ import os
 import sys
 import shutil
 from graphql_server import json_encode
+from PIL import Image
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '../../..'))
@@ -57,6 +58,18 @@ def copy_file(src_path, dest_path, type):
         os.makedirs(os.path.join(upload_assets_folder, type))
     shutil.copyfile(src_path, os.path.join(upload_assets_folder, dest_path))
 
+def detect_size(type, path):
+    if type == 'stream':
+        size = path.split('.')[0].split('_')[-1].split('x')
+        if len(size) == 2:
+            return int(size[0]), int(size[1])
+        else:
+            print("❌ Please put the video dimension in the stream name, otherwise stream will have square frame. For example \"Demo stream_800x600.mp4\". Current name: {}{}{}".format(bcolors.FAIL, path, bcolors.ENDC))
+            return 100, 100
+    else:
+        with Image.open(path) as img:
+            return img.size
+
 def create_media(type, path):
     asset_type = session.query(AssetType).filter(AssetType.name == type).first()
     if not asset_type:
@@ -66,6 +79,7 @@ def create_media(type, path):
 
     asset = Asset(asset_type=asset_type, owner_id=owner_id)
     attributes = {}
+    size = 0
     if '.' in path:
         asset.name = os.path.basename(path).split('.')[0]
         # copy asset to uploads folder
@@ -73,6 +87,9 @@ def create_media(type, path):
         dest_path = os.path.join(type, path)
         copy_file(src_path, dest_path, type)
         asset.file_location = dest_path
+        size += os.path.getsize(src_path)
+        if type != 'audio' and path[0] != '.':
+            attributes['w'], attributes['h'] = detect_size(type, src_path)
     else:
         attributes['multi'] = True
         asset.name = path
@@ -80,10 +97,13 @@ def create_media(type, path):
             src_path = os.path.join(demo_media_folder, type, path, frame)
             dest_path = os.path.join(type, "{}_{}".format(path, frame))
             copy_file(src_path, dest_path, type)
+            size += os.path.getsize(src_path)
             if not asset.file_location:
                 asset.file_location = dest_path
                 attributes['frames'] = []
+                attributes['w'], attributes['h'] = detect_size(type, src_path)
             attributes['frames'].append(dest_path)
+
     asset.description = json_encode(attributes)
     session.add(asset)
     session.commit()
