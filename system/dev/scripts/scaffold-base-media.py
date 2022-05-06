@@ -1,6 +1,7 @@
 import os
 import sys
 import shutil
+from tokenize import Number
 from graphql_server import json_encode
 from PIL import Image
 
@@ -62,13 +63,24 @@ def detect_size(type, path):
     if type == 'stream':
         size = path.split('.')[0].split('_')[-1].split('x')
         if len(size) == 2:
-            return int(size[0]), int(size[1])
+            return down_size(size)
         else:
             print("❌ Please put the video dimension in the stream name, otherwise stream will have square frame. For example \"Demo stream_800x600.mp4\". Current name: {}{}{}".format(bcolors.FAIL, path, bcolors.ENDC))
             return 100, 100
     else:
         with Image.open(path) as img:
-            return img.size
+            return down_size(img.size)
+
+def down_size(size):
+    w = int(size[0])
+    h = int(size[1])
+    if w > h:
+        w = 100
+        h = 100 * h / w
+    else:
+        h = 100
+        w = 100 * w / h
+    return w, h
 
 def create_media(type, path):
     asset_type = session.query(AssetType).filter(AssetType.name == type).first()
@@ -105,6 +117,7 @@ def create_media(type, path):
             attributes['frames'].append(dest_path)
 
     asset.description = json_encode(attributes)
+    asset.size = size
     session.add(asset)
     session.commit()
     created_media_ids.append(asset.id)
@@ -120,14 +133,22 @@ def create_demo_stage():
         return
     stage = Stage(name='Demo Stage', owner_id=owner_id, description='This is a demo stage to help you learn how to use and customise UpStage for your own performances.', file_location='demo')
     status = StageAttribute(name='status', description='live', stage=stage)
+    stage.attributes.append(status)
+
     visibility = StageAttribute(name='visibility', description='1', stage=stage)
+    stage.attributes.append(visibility)
+
     cover_src = os.path.join(demo_media_folder, 'demo-stage-cover.jpg')
     cover_path = os.path.join('media', 'demo-stage-cover.jpg')
     copy_file(cover_src, cover_path, 'media')
     cover = StageAttribute(name='cover', description=cover_path, stage=stage)
-    stage.attributes.append(status)
-    stage.attributes.append(visibility)
     stage.attributes.append(cover)
+
+    all_users = [x.id for x in session.query(User.id).all()]
+    accesses = [[],all_users]
+    player_access = StageAttribute(name='playerAccess', description=json_encode(accesses), stage=stage)
+    stage.attributes.append(player_access)
+
     session.add(stage)
     session.commit()
     for media_id in created_media_ids:
