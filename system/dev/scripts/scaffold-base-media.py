@@ -75,11 +75,11 @@ def down_size(size):
     w = int(size[0])
     h = int(size[1])
     if w > h:
-        w = 100
         h = 100 * h / w
+        w = 100
     else:
-        h = 100
         w = 100 * w / h
+        h = 100
     return w, h
 
 def create_media(type, path):
