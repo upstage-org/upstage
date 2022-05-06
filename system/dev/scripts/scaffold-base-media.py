@@ -100,7 +100,14 @@ def create_demo_stage():
         return
     stage = Stage(name='Demo Stage', owner_id=owner_id, description='This is a demo stage to help you learn how to use and customise UpStage for your own performances.', file_location='demo')
     status = StageAttribute(name='status', description='live', stage=stage)
+    visibility = StageAttribute(name='visibility', description='1', stage=stage)
+    cover_src = os.path.join(demo_media_folder, 'demo-stage-cover.jpg')
+    cover_path = os.path.join('media', 'demo-stage-cover.jpg')
+    copy_file(cover_src, cover_path, 'media')
+    cover = StageAttribute(name='cover', description=cover_path, stage=stage)
     stage.attributes.append(status)
+    stage.attributes.append(visibility)
+    stage.attributes.append(cover)
     session.add(stage)
     session.commit()
     for media_id in created_media_ids:
