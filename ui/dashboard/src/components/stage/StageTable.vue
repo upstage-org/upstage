@@ -39,6 +39,17 @@
         </span>
       </router-link>
     </template>
+    <template #status="{ item }">
+      <div class="field is-narrow">
+          <Switch :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'" :model-value="item.status === 'live'"
+            @update:model-value="item.status = $event ? 'live' : 'rehearsal'" />
+        </div>
+    </template>
+    <template #visibility="{ item }">
+      <div class="field is-narrow">
+          <Switch :data-tooltip="item.visibility ? 'On' : 'Off'" v-model="item.visibility" />
+        </div>
+    </template>
   </DataTable>
 </template>
 
@@ -52,6 +63,7 @@ import Icon from "@/components/Icon";
 import { displayName } from "@/utils/auth";
 import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
+import Switch from "@/components/form/Switch.vue";
 
 export default {
   components: {
@@ -60,7 +72,8 @@ export default {
     RecordActions,
     DuplicateStage,
     DeleteStage,
-    Icon
+    Icon,
+    Switch
   },
   props: { data: Array },
   setup: () => {
@@ -90,6 +103,16 @@ export default {
       {
         title: "Manage Stage",
         slot: "manage",
+        align: "center",
+      },
+      {
+        title: "Status",
+        slot: "status",
+        align: "center",
+      },
+      {
+        title: "Visibility",
+        slot: "visibility",
         align: "center",
       },
       {
