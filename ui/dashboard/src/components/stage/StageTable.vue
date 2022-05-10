@@ -41,14 +41,27 @@
     </template>
     <template #status="{ item }">
       <div class="field is-narrow">
-          <Switch :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'" :model-value="item.status === 'live'"
-            @update:model-value="item.status = $event ? 'live' : 'rehearsal'" />
-        </div>
+        <Switch
+          :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'"
+          :model-value="item.status === 'live'"
+          @update:model-value="
+            (item.status = $event ? 'live' : 'rehearsal'),
+            updateStageStatus(item.id)
+          "
+        />
+      </div>
     </template>
     <template #visibility="{ item }">
       <div class="field is-narrow">
-          <Switch :data-tooltip="item.visibility ? 'On' : 'Off'" v-model="item.visibility" />
-        </div>
+        <Switch
+          :data-tooltip="item.visibility ? 'On' : 'Off'"
+          v-model="item.visibility"
+          @update:model-value="
+            (item.visibility = $event), 
+            updateStageVisibility(item.id)
+          "
+        />
+      </div>
     </template>
   </DataTable>
 </template>
@@ -64,6 +77,9 @@ import { displayName } from "@/utils/auth";
 import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Switch from "@/components/form/Switch.vue";
+import { stageGraph } from "@/services/graphql";
+import { notification } from "@/utils/notification";
+import { useMutation } from "@/services/graphql/composable";
 
 export default {
   components: {
@@ -134,6 +150,30 @@ export default {
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
     return { headers, isAdmin, refresh };
+  },
+  methods: {
+    async updateStageStatus(stageId) {
+      try {
+        const { mutation } = useMutation(stageGraph.updateStatus, stageId);
+        await mutation().then((res) => {
+          notification.success("Stage Status updated successfully!");
+          return res.updateStatus.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    },
+    async updateStageVisibility(stageId) {
+      try {
+        const { mutation } = useMutation(stageGraph.updateVisibility, stageId);
+        await mutation().then((res) => {
+          notification.success("Stage Visibility updated successfully!");
+          return res.updateVisibility.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    },
   },
 };
 </script>
