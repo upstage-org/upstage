@@ -22,7 +22,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import URL_PREFIX
 from auth.auth_api import jwt_required
-from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
+from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, OneTimeTOTP, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -238,6 +238,7 @@ class DeleteUser(graphene.Mutation):
         with ScopedSession() as local_db_session:
             # Delete all existed user's sessions
             local_db_session.query(UserSession).filter(UserSession.user_id==data['id']).delete()
+            local_db_session.query(OneTimeTOTP).filter(OneTimeTOTP.user_id==data['id']).delete()
             # Delete all stages created by this user
             local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
             local_db_session.query(ParentStageModel).filter(ParentStageModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
