@@ -303,7 +303,7 @@ class SaveMedia(graphene.Mutation):
             'name', 'urls', 'media_type', 'copyright_level', 'owner', 'user_ids', 'stage_ids', 'tags', 'w', 'h', 'note')(input)
 
         code, error, user, timezone = current_user()
-        if user.role in (GUEST):
+        if user.role in (GUEST,):
             raise Exception("You don't have permission to create/update media")
             
         current_user_id = user.id
