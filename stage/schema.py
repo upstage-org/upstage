@@ -254,6 +254,60 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class UpdateAttributeStatus(graphene.Mutation):
+    """Mutation to update a stage status attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(from_global_id(stage_id)[1])
+            attribute = local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage_id == _id, StageAttributeModel.name == 'status').first()
+            if attribute is not None:
+                attribute.description = 'rehearsal' if attribute.description == 'live' else 'live'
+            else:
+                attribute = StageAttributeModel(
+                    stage_id=_id,
+                    name='status',
+                    description='live'
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+
+            return UpdateAttributeStatus(result=attribute.description)
+
+
+class UpdateAttributeVisibility(graphene.Mutation):
+    """Mutation to update a stage visibility attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(from_global_id(stage_id)[1])
+            attribute = local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage_id == _id, StageAttributeModel.name == 'visibility').first()
+            if attribute is not None:
+                attribute.description = True if not attribute.description else False
+            else:
+                attribute = StageAttributeModel(
+                    stage_id=_id,
+                    name='visibility',
+                    description=True
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+            return UpdateAttributeVisibility(result=attribute.description)
+
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
     media_ids = graphene.List(graphene.Int, description="Id of assigned media")
@@ -440,6 +494,8 @@ class Mutation(graphene.ObjectType):
     deletePerformance = DeletePerformance.Field()
     startRecording = StartRecording.Field()
     saveRecording = SaveRecording.Field()
+    updateStatus = UpdateAttributeStatus.Field()
+    updateVisibility = UpdateAttributeVisibility.Field()
 
 
 class Query(graphene.ObjectType):
