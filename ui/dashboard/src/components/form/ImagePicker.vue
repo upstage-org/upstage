@@ -34,9 +34,11 @@
               :render-value="(stage) => stage" style="width: 100%" fixed placeholder="All Stages" />
           </div>
         </div>
-        <div class="column is-2" v-for="item in availableImages" :key="item">
-          <div class="card-image clickable" @click="select(item, closeModal)">
-            <Asset :asset="item" />
+        <div class="column is-12 gallery">
+          <div v-for="item in availableImages" :key="item">
+            <div class="card-image clickable" @click="select(item, closeModal)">
+              <Asset :asset="item" />
+            </div>
           </div>
         </div>
       </div>
@@ -143,5 +145,16 @@ export default {
 
 .dropdown-content {
   margin-left: 1%;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 1.5rem;
+}
+
+.gallery img {
+  height: 10vw;
+  width: auto;
 }
 </style>
