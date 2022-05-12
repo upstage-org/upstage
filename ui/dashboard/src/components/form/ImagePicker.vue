@@ -79,26 +79,7 @@ export default {
       stage: null
     });
 
-    const availableImages = computed(() => {
-      let list = mediaList.value;
-      list = list.filter((m) => type_dis.includes(m.assetType.name))
-      if (filter.name) {
-        list = list.filter((media) => media.name.toLowerCase().includes(filter.name.toLowerCase()));
-      }
-      if (filter.mediaType && filter.mediaType.id) {
-        list = list.filter((media) => media.assetType.name === filter.mediaType.name);
-      }
-      if (filter.owner && filter.owner.id) {
-        list = list.filter((media) => media.owner.username === filter.owner.username);
-      }
-      if (filter.stage && filter.stage.id) {
-        list = list.filter((media) => media.stages.find((s) => s.id === filter.stage.dbId));
-      }
-      return list;
-    });
-
     const { nodes: typesData } = useQuery(stageGraph.assetTypeList);
-
     const types = computed(() => {
       const list = [];
       list.push({ id: null, name: "All Types" })
@@ -131,6 +112,24 @@ export default {
       return list;
     }
     );
+
+    const availableImages = computed(() => {
+      let list = mediaList.value;
+      list = list.filter((m) => type_dis.includes(m.assetType.name))
+      if (filter.name) {
+        list = list.filter((media) => media.name.toLowerCase().includes(filter.name.toLowerCase()));
+      }
+      if (filter.mediaType && filter.mediaType.id) {
+        list = list.filter((media) => media.assetType.name === filter.mediaType.name);
+      }
+      if (filter.owner && filter.owner.id) {
+        list = list.filter((media) => media.owner.username === filter.owner.username);
+      }
+      if (filter.stage && filter.stage.id) {
+        list = list.filter((media) => media.stages.find((s) => s.id === filter.stage.dbId));
+      }
+      return list;
+    });
 
     return { loading, availableImages, select, filter, types, users, displayName, stages };
   },
