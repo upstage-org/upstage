@@ -34,7 +34,7 @@
               :render-value="(stage) => stage" style="width: 100%" fixed placeholder="All Stages" />
           </div>
         </div>
-        <div class="column is-3" v-for="item in availableImages" :key="item">
+        <div class="column is-2" v-for="item in availableImages" :key="item">
           <div class="card-image clickable" @click="select(item, closeModal)">
             <Asset :asset="item" />
           </div>
@@ -138,4 +138,11 @@ export default {
 </script>
 
 <style>
+.dropdown .button {
+  width: 95%;
+}
+
+.dropdown-content {
+  margin-left: 1%;
+}
 </style>
