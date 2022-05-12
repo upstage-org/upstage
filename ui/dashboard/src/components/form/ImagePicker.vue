@@ -153,6 +153,10 @@ export default {
   grid-gap: 1.5rem;
 }
 
+.gallery .card-image{
+  display: flex;
+  justify-content: center;
+}
 .gallery img {
   height: 10vw;
   width: auto;
