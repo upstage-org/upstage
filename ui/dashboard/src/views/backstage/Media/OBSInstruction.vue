@@ -46,7 +46,7 @@
       <div class="columns">
         <div class="column is-4 mt-6">
           <b>Step 3:</b>Start Streaming! You should see the button changes to
-          <code>Stop Streaming</code> and LIVE counter started to work. If you
+          <code>{{ $t("stop_streaming") }}</code> and LIVE counter started to work. If you
           have any issue, please contact UpStage Admin for help.
         </div>
         <div class="column">

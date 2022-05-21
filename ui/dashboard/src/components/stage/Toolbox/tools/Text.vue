@@ -20,7 +20,7 @@
       <div class="icon is-large">
         <Icon size="36" src="new.svg" />
       </div>
-      <span class="tag is-block">New Text</span>
+      <span class="tag is-block">{{ $t("new_text") }}</span>
     </div>
     <div v-for="text in savedTexts" :key="text" class="is-pulled-left saved-text">
       <ContextMenu>
@@ -32,7 +32,7 @@
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permanently</span>
+            <span>{{ $t("delete_permanently") }}</span>
           </a>
         </template>
       </ContextMenu>

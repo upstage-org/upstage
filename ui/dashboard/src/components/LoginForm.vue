@@ -2,7 +2,7 @@
   <form v-if="!resetMode" @submit.prevent="submit">
     <div class="card">
       <header class="card-header">
-        <p class="card-header-title">Enter username and password to login</p>
+        <p class="card-header-title">{{ $t("enter_username_and_password_to_login") }}</p>
       </header>
       <div class="card-content">
         <div class="content">
@@ -27,7 +27,7 @@
               <a class="help has-text-right" @click="resetMode = true">Forgot password?</a>
             </p>
             <p>
-              By logging in, you are agreeing to our
+              {{ $t("tos.login") }}
               <TermsOfService />
             </p>
           </div>
@@ -47,7 +47,7 @@
   <form v-else @submit.prevent="resetPassword">
     <div class="card">
       <header class="card-header">
-        <p class="card-header-title">Reset your password</p>
+        <p class="card-header-title">{{ $t("reset_your_password") }}</p>
       </header>
       <div v-if="resetStep === 1" class="card-content">
         <div class="content">

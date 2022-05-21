@@ -1,6 +1,6 @@
 <template>
     <div class="card-header">
-        <span class="card-header-title">Volumne Setting</span>
+        <span class="card-header-title">{{ $t("volumne_setting") }}</span>
     </div>
     <div class="card-content voice-parameters">
         <div class="content">

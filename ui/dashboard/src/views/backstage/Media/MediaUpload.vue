@@ -18,7 +18,7 @@
           <span class="icon">
             <i class="fas fa-video"></i>
           </span>
-          <span>RTMP Stream</span>
+          <span>{{ $t("rtmp_stream") }}</span>
         </a>
       </div>
     </div>

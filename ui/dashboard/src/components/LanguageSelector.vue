@@ -1,7 +1,8 @@
 <template>
   <div class="locale-changer my-2">
     <Dropdown v-model="$i18n.locale" :data="$i18n.availableLocales"
-      :renderLabel="locale => `${flags[locale] ?? '🏳️‍🌈'} ${labels[locale] ?? locale}`" />
+      :renderLabel="locale => `${flags[locale] ?? '🏳️‍🌈'} ${labels[locale] ?? locale}`"
+      @update:modelValue="persistLocale" />
   </div>
 </template>
 
@@ -16,5 +17,8 @@ const labels = {
   en: 'English',
   de: 'Deutsch',
   vn: 'Tiếng Việt',
+}
+const persistLocale = (locale) => {
+  localStorage.setItem('locale', locale);
 }
 </script>

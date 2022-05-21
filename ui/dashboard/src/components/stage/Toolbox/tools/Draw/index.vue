@@ -71,7 +71,7 @@
         &nbsp;
         <Icon size="24" src="avatar.svg" />
       </div>
-      <span class="tag is-light is-block">Save as Avatar</span>
+      <span class="tag is-light is-block">{{ $t("save_as_avatar") }}</span>
     </div>
     <div class="drawing-tool" @click="save('prop')">
       <div class="icon is-large">
@@ -79,7 +79,7 @@
         &nbsp;
         <Icon size="24" src="prop.svg" />
       </div>
-      <span class="tag is-light is-block">Save as Prop</span>
+      <span class="tag is-light is-block">{{ $t("save_as_prop") }}</span>
     </div>
     <div class="drawing-tool" @click="cancel">
       <div class="icon is-large">
@@ -93,7 +93,7 @@
       <div class="icon is-large">
         <Icon src="new.svg" size="36" />
       </div>
-      <span class="tag is-light is-block">New Drawing</span>
+      <span class="tag is-light is-block">{{ $t("new_drawing") }}</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
       <ContextMenu>
@@ -108,7 +108,7 @@
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permanently</span>
+            <span>{{ $t("delete_permanently") }}</span>
           </a>
         </template>
       </ContextMenu>

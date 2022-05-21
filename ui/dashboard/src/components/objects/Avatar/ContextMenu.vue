@@ -11,7 +11,7 @@
         <span class="panel-icon">
           <Icon src="set-as-avatar.svg" />
         </span>
-        <span>Hold this avatar</span>
+        <span>{{ $t("hold_this_avatar") }}</span>
       </a>
     </template>
     <template v-else>
@@ -19,7 +19,7 @@
         <span class="panel-icon">
           <Icon src="clear.svg" />
         </span>
-        <span>Remove from avatar</span>
+        <span>{{ $t("remove_from_avatar") }}</span>
       </a>
       <a
         v-else-if="currentAvatar && object.type !== 'stream'"
@@ -29,7 +29,7 @@
         <span class="panel-icon">
           <Icon src="prop.svg" />
         </span>
-        <span>Add to avatar</span>
+        <span>{{ $t("add_to_avatar") }}</span>
       </a>
     </template>
     <template v-if="object.type === 'stream'">
@@ -72,32 +72,32 @@
         <span class="panel-icon">
           <Icon src="voice-setting.svg" />
         </span>
-        <span>Volumn setting</span>
+        <span>{{ $t("volumn_setting") }}</span>
       </a>
     </template>
     <a class="panel-block" @click="bringToFront">
       <span class="panel-icon">
         <Icon src="bring-to-front.svg" />
       </span>
-      <span>Bring forward</span>
+      <span>{{ $t("bring_forward") }}</span>
     </a>
     <a class="panel-block" @click="sendToBack">
       <span class="panel-icon">
         <Icon src="send-to-back.svg" />
       </span>
-      <span>Send back</span>
+      <span>{{ $t("send_back") }}</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="changeNickname">
       <span class="panel-icon">
         <Icon src="change-nickname.svg" />
       </span>
-      <span>Avatar name</span>
+      <span>{{ $t("avatar_name") }}</span>
     </a>
     <a v-if="holdable" class="panel-block" @click="openVoiceSetting">
       <span class="panel-icon">
         <Icon src="voice-setting.svg" />
       </span>
-      <span>Voice setting</span>
+      <span>{{ $t("voice_setting") }}</span>
     </a>
     <div class="field has-addons menu-group">
       <p class="control menu-group-title">
@@ -187,7 +187,7 @@
         <span class="panel-icon">
           <i class="fas fa-link"></i>
         </span>
-        <span>Open link</span>
+        <span>{{ $t("open_link") }}</span>
       </a>
     </template>
 
@@ -205,7 +205,7 @@
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
-      <span>Delete Permanently</span>
+      <span>{{ $t("delete_permanently") }}</span>
     </a>
     <div v-if="object.multi" class="field has-addons menu-group">
       <p class="control menu-group-item" @click="toggleAutoplayFrames()">

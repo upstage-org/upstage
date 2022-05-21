@@ -12,11 +12,11 @@
       <aside class="menu box has-background-light mx-4">
         <Loading v-if="loadingTypes" />
         <template v-else>
-          <p class="menu-label">Media Name</p>
+          <p class="menu-label">{{ $t("media_name") }}</p>
           <p>
             <Field v-model="filter.name" right="fas fa-filter" />
           </p>
-          <p class="menu-label">Media Type</p>
+          <p class="menu-label">{{ $t("media_type") }}</p>
           <ul class="menu-list">
             <li v-for="type in types" :key="type">
               <a
@@ -35,7 +35,7 @@
           <p class="menu-label">{{ $t("owner") }}</p>
           <ul class="menu-list">
             <li @click="filter.owner = null">
-              <a :class="{ 'is-active': filter.owner === null }">All Users</a>
+              <a :class="{ 'is-active': filter.owner === null }">{{ $t("all_users") }}</a>
             </li>
             <li v-for="user in users" :key="user" @click="filter.owner = user">
               <a :class="{ 'is-active': filter.owner === user }">{{
@@ -46,7 +46,7 @@
           <p class="menu-label">{{ $t("stage") }}</p>
           <ul class="menu-list">
             <li @click="filter.stage = null">
-              <a :class="{ 'is-active': filter.stage === null }">All Stages</a>
+              <a :class="{ 'is-active': filter.stage === null }">{{ $t("all_stages") }}</a>
             </li>
             <li
               v-for="stage in stageList"

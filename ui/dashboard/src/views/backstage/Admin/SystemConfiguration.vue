@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-vcentered">
     <div class="column is-narrow">
-      <b>Terms of Service</b>
+      <b>{{ $t("tos.terms_of_service") }}</b>
     </div>
     <template v-if="edit == 'tos'">
       <div class="column">
@@ -39,7 +39,7 @@
   </div>
   <div class="columns is-vcentered">
     <div class="column is-narrow">
-      <b>Email Subject Prefix</b>
+      <b>{{ $t("email_subject_prefix") }}</b>
     </div>
     <template v-if="edit == 'esp'">
       <div class="column">

@@ -11,9 +11,9 @@
             </span>
           </router-link>
         </h1>
-        <p class="subtitle">Stage Management</p>
+        <p class="subtitle">{{ $t("stage_management") }}</p>
       </template>
-      <h1 v-else class="title">Create new stage</h1>
+      <h1 v-else class="title">{{ $t("create_new_stage") }}</h1>
     </div>
   </section>
   <div class="container-fluid">
@@ -29,7 +29,7 @@
                     : '/backstage/new-stage'
                 "
                 exact-active-class="is-active"
-              >General Information</router-link>
+              >{{ $t("general_information") }}</router-link>
             </li>
             <template v-if="id">
               <li>

@@ -48,7 +48,7 @@ const drop = (event) => {
       <slot>
         <div class="button is-dark upload-frame">
           <i class="fas fa-upload"></i>
-          <span>Drag files here or click to upload</span>
+          <span>{{ $t("drag_files_here_or_click_to_upload") }}</span>
         </div>
       </slot>
     </label>

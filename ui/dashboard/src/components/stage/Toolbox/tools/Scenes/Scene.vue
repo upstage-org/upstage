@@ -17,7 +17,7 @@
           <span class="panel-icon">
             <Icon src="remove.svg" />
           </span>
-          <span>Delete Scene</span>
+          <span>{{ $t("delete_scene") }}</span>
         </a>
       </template>
     </ContextMenu>

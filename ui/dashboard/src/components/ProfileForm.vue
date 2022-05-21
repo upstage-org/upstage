@@ -2,7 +2,7 @@
   <form @submit.prevent="updateInformation">
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Full Name</label>
+        <label class="label">{{ $t("full_name") }}</label>
       </div>
       <div class="field-body">
         <Field placeholder="First Name" v-model="form.firstName" />

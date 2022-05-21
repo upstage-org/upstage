@@ -22,7 +22,7 @@
         <span class="panel-icon">
           <Icon src="backdrop.svg" />
         </span>
-        <span>Set as backdrop</span>
+        <span>{{ $t("set_as_backdrop") }}</span>
       </a>
       <div v-if="background.multi && background.id === currentBackground.id" class="field has-addons menu-group">
         <p class="control menu-group-item" @click="toggleAutoplayFrames()">

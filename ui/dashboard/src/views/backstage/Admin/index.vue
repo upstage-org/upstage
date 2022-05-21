@@ -14,13 +14,13 @@
             <router-link
               to="/backstage/admin/player-management"
               exact-active-class="is-active"
-            >Player Management</router-link>
+            >{{ $t("player_management") }}</router-link>
           </li>
           <li>
             <router-link
               to="/backstage/admin/batch-user-creation"
               exact-active-class="is-active"
-            >Batch User Creation</router-link>
+            >{{ $t("batch_user_creation") }}</router-link>
           </li>
         </ul>
         <p class="menu-label">{{ $t("system") }}</p>
@@ -29,19 +29,19 @@
             <router-link
               to="/backstage/admin/foyer-customisation"
               exact-active-class="is-active"
-            >Foyer Customisation</router-link>
+            >{{ $t("foyer_customisation") }}</router-link>
           </li>
           <li>
             <router-link
               to="/backstage/admin/email-notification"
               exact-active-class="is-active"
-            >Email Notification</router-link>
+            >{{ $t("email_notification") }}</router-link>
           </li>
           <li>
             <router-link
               to="/backstage/admin/system-configuration"
               exact-active-class="is-active"
-            >System Configuration</router-link>
+            >{{ $t("system_configuration") }}</router-link>
           </li>
         </ul>
       </aside>
