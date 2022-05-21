@@ -12,7 +12,7 @@ from config.settings import (EMAIL_HOST, EMAIL_PORT,
     EMAIL_HOST_USER, EMAIL_HOST_PASSWORD, EMAIL_HOST_DISPLAY_NAME,
     ADMIN_EMAIL, ENV_TYPE)
 
-def send_sync(to, subject, content, bcc=None):
+def send_sync(to, subject, content):
     with ScopedSession() as local_db_session:
         subject_prefix = local_db_session.query(Config).filter(Config.name == 'EMAIL_SUBJECT_PREFIX').first().value
     msg = MIMEText(content, "html")
@@ -24,8 +24,6 @@ def send_sync(to, subject, content, bcc=None):
     msg["From"] = f'{EMAIL_HOST_DISPLAY_NAME} <{EMAIL_HOST_USER}>'
     msg["To"] = to
     msg["Bcc"] = ADMIN_EMAIL
-    if bcc:
-        msg["Bcc"] += ',' + bcc
 
     # Always use TLS.
     conn = SMTP(EMAIL_HOST, EMAIL_PORT)
@@ -37,5 +35,5 @@ def send_sync(to, subject, content, bcc=None):
     finally:
         conn.quit()
 
-def send(to, subject, content, bcc=None):
-    Process(target=send_sync, args=(to, subject, content, bcc)).start()
+def send(to, subject, content):
+    Process(target=send_sync, args=(to, subject, content)).start()

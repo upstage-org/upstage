@@ -151,17 +151,15 @@ class SendEmail(graphene.Mutation):
             required=True, description="The body of the email. HTML is allowed.")
         recipients = graphene.String(
             required=True, description="The recipients of the email. Comma separated.")
-        bcc = graphene.String(
-            required=False, description="The bcc recipients of the email. Comma separated.")
 
     @jwt_required()
-    def mutate(self, info, subject, body, recipients, bcc):
+    def mutate(self, info, subject, body, recipients):
         code, error, user, timezone = current_user()
         if not user.role in (ADMIN, SUPER_ADMIN):
             raise Exception(
                 "Only Admin can send notification emails!")
 
-        send(recipients, subject, body, bcc)
+        send(recipients, subject, body)
         return SendEmail(success=True)
 
 
