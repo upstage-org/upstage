@@ -1,22 +1,10 @@
 # -*- coding: iso8859-15 -*-
-import re
-import graphene
-import sys
-import os
-import json
-
-appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, '..'))
-if projdir not in sys.path:
-    sys.path.append(appdir)
-    sys.path.append(projdir)
-
 from user.models import ADMIN, SUPER_ADMIN
 from sqlalchemy import desc
 from graphql_relay.node.node import from_global_id, to_global_id
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from config.settings import PERFORMANCE_TOPIC_RULE, URL_PREFIX
+from config.settings import URL_PREFIX
 from event_archive.models import Event as EventModel
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
 from flask_graphql import GraphQLView
@@ -32,6 +20,18 @@ from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
 from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
+import re
+import graphene
+import sys
+import os
+import json
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 
 class StageAttribute:
     name = graphene.String(description="Stage Name")
@@ -408,8 +408,6 @@ class DeleteStage(graphene.Mutation):
                     local_db_session.query(EventModel).filter(
                         EventModel.performance_id == performance.id).delete(synchronize_session=False)
                     local_db_session.delete(performance)
-                topic_prefix = PERFORMANCE_TOPIC_RULE.replace('#', stage.file_location)
-                local_db_session.query(EventModel).filter(EventModel.topic.startswith(topic_prefix)).delete(synchronize_session=False)
                 local_db_session.delete(stage)
                 local_db_session.flush()
                 local_db_session.commit()
