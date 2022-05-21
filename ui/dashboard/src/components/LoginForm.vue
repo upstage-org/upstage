@@ -36,7 +36,7 @@
       <footer class="card-footer">
         <button type="submit" class="card-footer-item is-white button has-text-primary"
           :class="{ 'is-loading': loading }">
-          <span>{{ $t("foyer.login") }}</span>
+          <span>{{ $t("login") }}</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
           </span>
@@ -109,7 +109,7 @@
       <footer class="card-footer">
         <button v-if="resetStep < 3" type="submit" class="card-footer-item is-white button has-text-primary"
           :class="{ 'is-loading': loading }">
-          <span>Next</span>
+          <span>{{ $t("next") }}</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
           </span>
@@ -117,7 +117,7 @@
         <button v-else type="submit" class="card-footer-item is-white button has-text-primary"
           :class="{ 'is-loading': loading }"
           :disabled="!password || !passwordConfirm || (password !== passwordConfirm)">
-          <span>Finish</span>
+          <span>{{ $t("finish") }}</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
           </span>

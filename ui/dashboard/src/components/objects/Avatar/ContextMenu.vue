@@ -5,7 +5,7 @@
         <span class="panel-icon">
           <Icon src="clear.svg" />
         </span>
-        <span>Release</span>
+        <span>{{ $t("release") }}</span>
       </a>
       <a v-else class="panel-block" @click="holdAvatar">
         <span class="panel-icon">
@@ -53,19 +53,19 @@
         <span class="panel-icon">
           <i class="fas fa-pause"></i>
         </span>
-        <span>Pause</span>
+        <span>{{ $t("pause") }}</span>
       </a>
       <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
         <span class="panel-icon">
           <i class="fas fa-play"></i>
         </span>
-        <span>Play</span>
+        <span>{{ $t("play") }}</span>
       </a>
       <a v-if="object.type === 'stream'" class="panel-block has-text-info" @click="restartStream">
         <span class="panel-icon">
           <i class="fas fa-sync"></i>
         </span>
-        <span>Restart</span>
+        <span>{{ $t("restart") }}</span>
       </a>
 
       <a class="panel-block" @click="openVolumePopup(slotProps)">
@@ -104,7 +104,7 @@
         <span class="panel-icon pt-1">
           <Icon src="rotation-slider.svg" />
         </span>
-        <span>Slider</span>
+        <span>{{ $t("slider") }}</span>
       </p>
       <p class="control menu-group-item">
         <button
@@ -155,7 +155,7 @@
         <span class="panel-icon pt-1">
           <Icon src="rotation-slider.svg" />
         </span>
-        <span>Flip</span>
+        <span>{{ $t("flip") }}</span>
       </p>
       <p class="control menu-group-item">
         <button
@@ -166,7 +166,7 @@
           @click="flipHorizontal"
           data-tooltip="Flip Horizontal"
         >
-          <span class="mt-1">Horizontal</span>
+          <span class="mt-1">{{ $t("horizontal") }}</span>
         </button>
       </p>
       <p class="control menu-group-item">
@@ -178,7 +178,7 @@
           @click="flipVertical"
           data-tooltip="Flip Vertical"
         >
-          <span class="mt-1">Vertical</span>
+          <span class="mt-1">{{ $t("vertical") }}</span>
         </button>
       </p>
     </div>
@@ -195,7 +195,7 @@
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
-      <span>Remove</span>
+      <span>{{ $t("remove") }}</span>
     </a>
     <a
       v-if="object.drawingId || object.textId"

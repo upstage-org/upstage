@@ -41,7 +41,7 @@
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Description</label>
+        <label class="label">{{ $t("description") }}</label>
       </div>
       <div class="field-body">
         <div class="field">
@@ -56,7 +56,7 @@
 
     <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
-        <label class="label">Status</label>
+        <label class="label">{{ $t("status") }}</label>
       </div>
       <div class="field-body">
         <div class="field is-narrow">
@@ -72,7 +72,7 @@
 
     <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
-        <label class="label">Visibility</label>
+        <label class="label">{{ $t("visibility") }}</label>
       </div>
       <div class="field-body">
         <div class="field is-narrow">

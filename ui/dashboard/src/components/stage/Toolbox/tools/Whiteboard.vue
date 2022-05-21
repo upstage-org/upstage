@@ -17,7 +17,7 @@
     <div class="icon is-large">
       <ColorPicker v-model="color" />
     </div>
-    <span class="tag is-light is-block">Colour</span>
+    <span class="tag is-light is-block">{{ $t("colour") }}</span>
   </div>
   <div class="drawing-tool" style="width: 200px">
     <div class="size-preview">
@@ -50,19 +50,19 @@
     <div class="icon is-large">
       <Icon size="36" src="erase.svg" />
     </div>
-    <span class="tag is-light is-block">Erase</span>
+    <span class="tag is-light is-block">{{ $t("erase") }}</span>
   </div>
   <div class="drawing-tool" @click="undo">
     <div class="icon is-large">
       <Icon size="36" src="undo.svg" />
     </div>
-    <span class="tag is-light is-block">Undo</span>
+    <span class="tag is-light is-block">{{ $t("undo") }}</span>
   </div>
   <div class="drawing-tool" @click="clear">
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
-    <span class="tag is-light is-block">Clear</span>
+    <span class="tag is-light is-block">{{ $t("clear") }}</span>
   </div>
 </template>
 

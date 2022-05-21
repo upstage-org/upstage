@@ -2,7 +2,7 @@
   <section class="hero is-small is-dark is-bold">
     <div class="hero-body">
       <Breadcrumb description="Upload and manage media" />
-      <h1 class="title is-inline">Media</h1>
+      <h1 class="title is-inline">{{ $t("media") }}</h1>
       &nbsp;
       <MediaUpload :special="true" v-if="!isGuest" />
     </div>
@@ -32,7 +32,7 @@
               </a>
             </li>
           </ul>
-          <p class="menu-label">Owner</p>
+          <p class="menu-label">{{ $t("owner") }}</p>
           <ul class="menu-list">
             <li @click="filter.owner = null">
               <a :class="{ 'is-active': filter.owner === null }">All Users</a>
@@ -43,7 +43,7 @@
               }}</a>
             </li>
           </ul>
-          <p class="menu-label">Stage</p>
+          <p class="menu-label">{{ $t("stage") }}</p>
           <ul class="menu-list">
             <li @click="filter.stage = null">
               <a :class="{ 'is-active': filter.stage === null }">All Stages</a>

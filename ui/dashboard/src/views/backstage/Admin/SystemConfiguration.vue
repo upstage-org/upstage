@@ -8,32 +8,32 @@
         <Field v-model="termsOfService" />
       </div>
       <div class="column is-narrow">
-        <button class="button is-primary" :class="{ 'is-loading': loadingTOS }" @click="saveToS">Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loadingTOS }" @click="saveToS">{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column">{{ termsOfService }}</div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'tos'">Edit</button>
+        <button class="button is-primary" @click="edit = 'tos'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>
   <div class="columns is-vcentered">
     <div class="column is-narrow">
-      <b>Manual</b>
+      <b>{{ $t("manual") }}</b>
     </div>
     <template v-if="edit == 'manual'">
       <div class="column">
         <Field v-model="manual" />
       </div>
       <div class="column is-narrow">
-        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveManual">Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveManual">{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column">{{ manual }}</div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'manual'">Edit</button>
+        <button class="button is-primary" @click="edit = 'manual'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>
@@ -46,13 +46,13 @@
         <Field v-model="esp" />
       </div>
       <div class="column is-narrow">
-        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveESP">Save</button>
+        <button class="button is-primary" :class="{ 'is-loading': loading }" @click="saveESP">{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column">{{ esp }}</div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'esp'">Edit</button>
+        <button class="button is-primary" @click="edit = 'esp'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>

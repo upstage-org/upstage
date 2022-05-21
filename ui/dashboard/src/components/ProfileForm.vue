@@ -24,7 +24,7 @@
       v-model="form.email"
     />
     <div class="field is-horizontal">
-      <div class="field-label"><label class="label">Status</label></div>
+      <div class="field-label"><label class="label">{{ $t("status") }}</label></div>
       <div class="field-body">
         <div class="field is-narrow">
           <div class="control">

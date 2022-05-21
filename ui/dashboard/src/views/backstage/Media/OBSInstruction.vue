@@ -15,12 +15,12 @@
         <a
           href="https://obsproject.com/download"
           target="_blank"
-        >here</a>.
+        >{{ $t("here") }}</a>.
       </p>
       <div class="columns">
         <div class="column is-4 mt-6">
           <b>Step 1:</b>Open OBS Studio and click
-          <code>Settings</code>
+          <code>{{ $t("settings") }}</code>
         </div>
         <div class="column">
           <img :src="`${publicPath}instructions/obs/1.png`" alt="Step 1" />

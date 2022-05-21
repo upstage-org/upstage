@@ -65,7 +65,7 @@
               :class="{ 'is-loading': loading }"
               type="submit"
             >
-              <span>Register</span>
+              <span>{{ $t("register") }}</span>
               <span class="icon is-medium">
                 <i class="fas fa-check"></i>
               </span>

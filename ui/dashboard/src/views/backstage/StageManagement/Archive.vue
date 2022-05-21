@@ -14,7 +14,7 @@
       </div>
       <small v-if="item.description" class="has-text-dark">{{ item.description }}</small>
       <small v-else class="has-text-dark">
-        <span v-if="item.recording">Recorded</span>
+        <span v-if="item.recording">{{ $t("recorded") }}</span>
         <span v-else>Auto recorded</span>
         <span v-if="item.chatless">on {{ date(item.createdOn) }}</span>
         <span v-else>from {{ date(item.begin) }} to {{ date(item.end) }}</span>
@@ -60,7 +60,7 @@
           <textarea class="textarea" v-model="item.description" rows="3"></textarea>
         </Field>
         <template #yes>
-          <span>Save</span>
+          <span>{{ $t("save") }}</span>
         </template>
         <template #trigger>
           <button class="button is-light">

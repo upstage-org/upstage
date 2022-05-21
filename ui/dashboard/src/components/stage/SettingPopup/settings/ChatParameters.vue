@@ -12,7 +12,7 @@
           :class="{ 'is-active': currentTab === 'params' }"
           @click="currentTab = 'params'"
         >
-          <a>Parameters</a>
+          <a>{{ $t("parameters") }}</a>
         </li>
       </ul>
     </div>

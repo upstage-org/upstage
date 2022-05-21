@@ -1,5 +1,3 @@
 export default {
-  foyer: {
-    login: 'Anmeldung'
-  }
+  login: 'Anmeldung'
 }

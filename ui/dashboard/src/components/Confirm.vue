@@ -13,7 +13,7 @@
           <span class="icon">
             <i class="fas fa-times"></i>
           </span>
-          <span>No</span>
+          <span>{{ $t("no") }}</span>
         </slot>
       </button>
       <SaveButton
@@ -25,7 +25,7 @@
           <span class="icon">
             <i class="fas fa-check"></i>
           </span>
-          <span>Yes</span>
+          <span>{{ $t("yes") }}</span>
         </slot>
       </SaveButton>
     </template>

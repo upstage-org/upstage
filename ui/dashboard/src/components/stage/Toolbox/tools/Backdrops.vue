@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
-    <span class="tag is-light is-block">Clear</span>
+    <span class="tag is-light is-block">{{ $t("clear") }}</span>
   </div>
   <ContextMenu v-for="background in backgrounds" :key="background" :title="background.name" :class="{
     active: background.id === currentBackground.id,

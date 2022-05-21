@@ -8,7 +8,7 @@
   <div class="columns" :class="{ 'is-loading': !user }">
     <div class="column is-narrow">
       <aside class="menu box has-background-light mx-4">
-        <p class="menu-label">Users</p>
+        <p class="menu-label">{{ $t("users") }}</p>
         <ul class="menu-list">
           <li>
             <router-link
@@ -23,7 +23,7 @@
             >Batch User Creation</router-link>
           </li>
         </ul>
-        <p class="menu-label">System</p>
+        <p class="menu-label">{{ $t("system") }}</p>
         <ul class="menu-list">         
           <li>
             <router-link

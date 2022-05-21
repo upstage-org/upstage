@@ -56,18 +56,18 @@
       <div class="navbar-end">
         <template v-if="loggedIn">
           <router-link to="/backstage" class="button is-primary m-2">
-            <strong>Backstage</strong>
+            <strong>{{ $t("backstage") }}</strong>
           </router-link>
           <button @click="logout" class="button m-2 mr-6">
-            <strong>Logout</strong>
+            <strong>{{ $t("logout") }}</strong>
           </button>
         </template>
         <template v-else>
           <router-link to="/login" class="button is-primary m-2">
-            <strong>Login</strong>
+            <strong>{{ $t("login") }}</strong>
           </router-link>
           <router-link to="/register" class="button is-primary m-2 mr-6">
-            <strong>Register</strong>
+            <strong>{{ $t("register") }}</strong>
           </router-link>
         </template>
       </div>

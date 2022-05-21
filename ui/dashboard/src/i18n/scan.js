@@ -17,13 +17,30 @@ const processFile = (path) => {
   if (extension === 'vue') {
     const regex = />[a-zA-Z0-9]+</g;
     const file = fs.readFileSync(path, 'utf8');
+    let found = false;
     const newContent = file.replace(regex, (match) => {
-      const word = match.substring(1, match.length - 1).toLowerCase().replace(' ', '_');
-      const toReplace = `>{{ $t("${word}") }}>`;
+      if (!found) {
+        console.log(`🔎 Found: ${path}`);
+        found = true;
+        fileChanged++;
+      }
+      const word = match.substring(1, match.length - 1);
+      const key = word.toLowerCase().replace(' ', '_');
+      map[key] = word;
+      const toReplace = `>{{ $t("${key}") }}<`;
+      console.log(`✅ Replacing "${word}" with "${`{{ $t("${key}") }}`}"`);
+      lineChanged++;
       return toReplace;
     });
-    console.log(newContent);
+    fs.writeFileSync(path, newContent);
   }
 }
 
+let fileChanged = 0;
+let lineChanged = 0;
+const map = {}
 scanFolder('./src')
+console.log(`📦 ${fileChanged} files changed`);
+console.log(`📝 ${lineChanged} lines changed`);
+console.log(`📄 Results:`);
+console.log(map);

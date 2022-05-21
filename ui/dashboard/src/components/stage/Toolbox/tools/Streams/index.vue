@@ -17,7 +17,7 @@
     <div class="icon is-large">
       <Icon src="refresh.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">Refresh</span>
+    <span class="tag is-light is-block">{{ $t("refresh") }}</span>
   </div>
 </template>
 

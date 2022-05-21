@@ -2,7 +2,7 @@
   <div class="dropdown is-hoverable">
     <div class="dropdown-trigger">
       <Upload v-if="!active" v-model="base64" @change="handleFileChange">
-        <span>New</span>
+        <span>{{ $t("new") }}</span>
         <span class="icon">
           <i class="fas fa-plus"></i>
         </span>
