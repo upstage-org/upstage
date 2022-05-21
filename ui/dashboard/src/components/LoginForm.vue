@@ -16,21 +16,12 @@
           </div>
           <div class="field">
             <p class="control has-icons-left has-icons-right">
-              <input
-                class="input"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Password"
-                v-model="password"
-                required
-              />
+              <input class="input" :type="showPassword ? 'text' : 'password'" placeholder="Password" v-model="password"
+                required />
               <span class="icon is-small is-left">
                 <i class="fas fa-lock"></i>
               </span>
-              <a
-                class="icon is-small is-right"
-                style="pointer-events: all"
-                @click="toggleShowPassword"
-              >
+              <a class="icon is-small is-right" style="pointer-events: all" @click="toggleShowPassword">
                 <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
               </a>
               <a class="help has-text-right" @click="resetMode = true">Forgot password?</a>
@@ -43,12 +34,9 @@
         </div>
       </div>
       <footer class="card-footer">
-        <button
-          type="submit"
-          class="card-footer-item is-white button has-text-primary"
-          :class="{ 'is-loading': loading }"
-        >
-          <span>Login</span>
+        <button type="submit" class="card-footer-item is-white button has-text-primary"
+          :class="{ 'is-loading': loading }">
+          <span>{{ $t("foyer.login") }}</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
           </span>
@@ -92,71 +80,43 @@
           <p>Please enter your new password:</p>
           <div class="field">
             <p class="control has-icons-left has-icons-right">
-              <input
-                class="input"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Password"
-                v-model="password"
-                required
-              />
+              <input class="input" :type="showPassword ? 'text' : 'password'" placeholder="Password" v-model="password"
+                required />
               <span class="icon is-small is-left">
                 <i class="fas fa-lock"></i>
               </span>
-              <a
-                class="icon is-small is-right"
-                style="pointer-events: all"
-                @click="toggleShowPassword"
-              >
+              <a class="icon is-small is-right" style="pointer-events: all" @click="toggleShowPassword">
                 <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
               </a>
             </p>
           </div>
           <div class="field">
             <p class="control has-icons-left has-icons-right">
-              <input
-                class="input"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Confirm Password"
-                v-model="passwordConfirm"
-                required
-              />
+              <input class="input" :type="showPassword ? 'text' : 'password'" placeholder="Confirm Password"
+                v-model="passwordConfirm" required />
               <span class="icon is-small is-left">
                 <i class="fas fa-lock"></i>
               </span>
-              <a
-                class="icon is-small is-right"
-                style="pointer-events: all"
-                @click="toggleShowPassword"
-              >
+              <a class="icon is-small is-right" style="pointer-events: all" @click="toggleShowPassword">
                 <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
               </a>
-              <span
-                class="help is-danger"
-                v-if="password && passwordConfirm && (password !== passwordConfirm)"
-              >Confirm password mismatch!</span>
+              <span class="help is-danger" v-if="password && passwordConfirm && (password !== passwordConfirm)">Confirm
+                password mismatch!</span>
             </p>
           </div>
         </div>
       </div>
       <footer class="card-footer">
-        <button
-          v-if="resetStep < 3"
-          type="submit"
-          class="card-footer-item is-white button has-text-primary"
-          :class="{ 'is-loading': loading }"
-        >
+        <button v-if="resetStep < 3" type="submit" class="card-footer-item is-white button has-text-primary"
+          :class="{ 'is-loading': loading }">
           <span>Next</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
           </span>
         </button>
-        <button
-          v-else
-          type="submit"
-          class="card-footer-item is-white button has-text-primary"
+        <button v-else type="submit" class="card-footer-item is-white button has-text-primary"
           :class="{ 'is-loading': loading }"
-          :disabled="!password || !passwordConfirm || (password !== passwordConfirm)"
-        >
+          :disabled="!password || !passwordConfirm || (password !== passwordConfirm)">
           <span>Finish</span>
           <span class="icon is-medium">
             <i class="fas fa-chevron-right"></i>
