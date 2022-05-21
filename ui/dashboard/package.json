@@ -9,7 +9,8 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build:dev": "NODE_ENV=production yarn build --mode dev",
-    "serve:localhost": "vue-cli-service serve --mode localhost"
+    "serve:localhost": "vue-cli-service serve --mode localhost",
+    "i18n": "node src/i18n/scan.js"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.1",

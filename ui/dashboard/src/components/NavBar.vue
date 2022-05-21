@@ -2,52 +2,32 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <Logo link="https://www.upstage.org.nz" />
-      <a
-        role="button"
-        class="navbar-burger"
-        aria-label="menu"
-        aria-expanded="false"
-        @click="toggleExpanded"
-      >
+      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
+    <LanguageSelector />
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
-        <div
-          v-if="!navigations"
-          class="navbar-item"
-          style="text-transform: none;"
-        >Cannot display navigation properly, please check your menu syntax in Admin section!</div>
+        <div v-if="!navigations" class="navbar-item" style="text-transform: none;">Cannot display navigation properly,
+          please check your menu syntax in Admin section!</div>
         <template v-else>
           <template v-for="(menu, i) in navigations" :key="i">
             <div v-if="menu.children" class="navbar-item has-dropdown is-hoverable">
-              <a
-                v-if="menu.url"
-                class="navbar-link is-arrowless"
-                :href="menu.url"
-                :target="menu.url?.startsWith('http') ? '_blank' : ''"
-              >{{ menu.title }}</a>
+              <a v-if="menu.url" class="navbar-link is-arrowless" :href="menu.url"
+                :target="menu.url?.startsWith('http') ? '_blank' : ''">{{ menu.title }}</a>
               <a v-else class="navbar-link is-arrowless">{{ menu.title }}</a>
               <div class="navbar-dropdown">
-                <a
-                  v-for="(submenu, j) in menu.children"
-                  :key="{ j }"
-                  class="navbar-item"
-                  :href="submenu.url"
-                  :target="submenu.url?.startsWith('http') ? '_blank' : ''"
-                >{{ submenu.title }}</a>
+                <a v-for="(submenu, j) in menu.children" :key="{ j }" class="navbar-item" :href="submenu.url"
+                  :target="submenu.url?.startsWith('http') ? '_blank' : ''">{{ submenu.title }}</a>
               </div>
             </div>
-            <a
-              v-else
-              class="navbar-item"
-              :href="menu.url"
-              :target="menu.url?.startsWith('http') ? '_blank' : ''"
-            >{{ menu.title }}</a>
+            <a v-else class="navbar-item" :href="menu.url" :target="menu.url?.startsWith('http') ? '_blank' : ''">{{
+                menu.title
+            }}</a>
             <div v-if="i < navigations.length - 1" class="vertical-divider" />
           </template>
         </template>
@@ -78,11 +58,12 @@
 <script>
 import { computed, ref } from "vue";
 import { loggedIn, logout } from "@/utils/auth";
-import Logo from "./Logo";
 import { useStore } from "vuex";
+import Logo from "./Logo";
+import LanguageSelector from "./LanguageSelector.vue";
 
 export default {
-  components: { Logo },
+  components: { Logo, LanguageSelector },
   setup() {
     const store = useStore();
     const expanded = ref(false);
@@ -107,6 +88,7 @@ export default {
     position: absolute;
     width: 100%;
   }
+
   .navbar-end a {
     margin-left: auto;
   }

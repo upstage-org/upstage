@@ -40,7 +40,7 @@ let fileChanged = 0;
 let lineChanged = 0;
 const map = {}
 scanFolder('./src')
-console.log(`📦 ${fileChanged} files changed`);
+console.log(`📄 ${fileChanged} files changed`);
 console.log(`📝 ${lineChanged} lines changed`);
-console.log(`📄 Results:`);
+console.log(`📦 Results:`);
 console.log(map);
