@@ -65,7 +65,6 @@ export default {
   search: 'Search',
   workshop: 'WORKSHOP',
   replaying: 'REPLAYING',
-  false: 'false',
   tips: 'Tips',
   esc: 'Esc',
   warning: 'Warning'

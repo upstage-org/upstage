@@ -13,9 +13,9 @@ const scanFolder = (path) => {
 
 const processFile = (path) => {
   const filename = path.substring(path.lastIndexOf('/') + 1);
-  const [name, extension] = filename.split('.');
+  const [_, extension] = filename.split('.');
   if (extension === 'vue') {
-    const regex = />[a-zA-Z0-9]+</g;
+    const regex = />[a-zA-Z0-9 ]+</g;
     const file = fs.readFileSync(path, 'utf8');
     let found = false;
     const newContent = file.replace(regex, (match) => {
@@ -24,8 +24,8 @@ const processFile = (path) => {
         found = true;
         fileChanged++;
       }
-      const word = match.substring(1, match.length - 1);
-      const key = word.toLowerCase().replace(' ', '_');
+      const word = match.substring(1, match.length - 1).trim();
+      const key = word.toLowerCase().replace(/ /g, '_');
       map[key] = word;
       const toReplace = `>{{ $t("${key}") }}<`;
       console.log(`✅ Replacing "${word}" with "${`{{ $t("${key}") }}`}"`);
