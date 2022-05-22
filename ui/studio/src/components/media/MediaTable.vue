@@ -301,7 +301,7 @@ provide('isAdmin', isAdmin)
         <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
           <d-size :value="text" />
         </a-tag>
-        <a-tag v-else>No size</a-tag>
+        <a-tag v-else>{{ $t("no_size") }}</a-tag>
       </template>
       <template v-if="column.key === 'copyrightLevel'">
         <span

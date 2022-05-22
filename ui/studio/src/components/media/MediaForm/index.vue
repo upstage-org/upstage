@@ -347,7 +347,7 @@ const clearSign = () => {
         </a-select>
         <a-button key="submit" type="primary" :loading="saving" @click="saveMedia">
           <span v-if="saving">Saving {{ progress }}%</span>
-          <span v-else>Save</span>
+          <span v-else>{{ $t("save") }}</span>
         </a-button>
       </a-space>
     </template>

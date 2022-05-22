@@ -214,10 +214,10 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           <template #overlay>
             <a-menu>
               <a :href="to('backstage')">
-                <a-menu-item>Backstage</a-menu-item>
+                <a-menu-item>{{ $t("backstage") }}</a-menu-item>
               </a>
               <a :href="to('')">
-                <a-menu-item>Foyer</a-menu-item>
+                <a-menu-item>{{ $t("foyer") }}</a-menu-item>
               </a>
             </a-menu>
           </template>
