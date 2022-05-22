@@ -7,7 +7,8 @@
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "build:dev": "vue-tsc --noEmit --skipLibCheck && vite build --mode development",
     "serve:localhost": "vite --mode localhost",
-    "start": "vite preview"
+    "start": "vite preview",
+    "i18n": "node ../dashboard/src/i18n/scan.js"
   },
   "dependencies": {
     "@apollo/client": "^3.4.16",
@@ -25,6 +26,7 @@
     "tailwindcss": "^2.2.17",
     "unplugin-vue-components": "^0.15.6",
     "vue": "^3.2.16",
+    "vue-i18n": "9",
     "vue-slicksort": "^2.0.0-alpha.5"
   },
   "devDependencies": {
