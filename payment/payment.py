@@ -18,14 +18,14 @@ ACCEPT_TYPE = ['card']
 ACCEPT_CURRENCIES = ['usd']
 
 
-def generate_card_token(card_number, exp_month, exp_year, cvv):
+def generate_card_token(card_number, exp_month, exp_year, cvc):
     ''' Generate card token '''
     data = stripe.Token.create(
         card={
             "number": str(card_number),
             "exp_month": int(exp_month),
             "exp_year": int(exp_year),
-            "cvc": str(cvv),
+            "cvc": str(cvc),
         })
     card_token = data['id']
 
@@ -89,7 +89,7 @@ def update_email_customer(customer_id, email):
     return customer
 
 
-def create_payment_card(card_number, exp_month, exp_year, cvv):
+def create_payment_card(card_number, exp_month, exp_year, cvc):
     ''' Create payment by card '''
     payment_method = stripe.PaymentMethod.create(
         type="card",
@@ -97,7 +97,7 @@ def create_payment_card(card_number, exp_month, exp_year, cvv):
             "number": str(card_number),
             "exp_month": int(exp_month),
             "exp_year": int(exp_year),
-            "cvc": str(cvv),
+            "cvc": str(cvc),
         })
     return payment_method
 

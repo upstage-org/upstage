@@ -82,7 +82,10 @@ export default {
         showPlayerChat: false,
         lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
         runningStreams: [],
-        masquerading: false
+        masquerading: false,
+        purchasePopup: {
+            isActive: false,
+        },
     },
     getters: {
         ready(state) {
@@ -563,7 +566,10 @@ export default {
                     }
                 }
             }
-        }
+        },
+        SET_PURCHASE_POPUP(state, purchase) {
+            state.purchasePopup = purchase;
+        },
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -1161,6 +1167,13 @@ export default {
         },
         sendClearWhiteboard() {
             mqtt.sendMessage(TOPICS.DRAW, { type: DRAW_ACTIONS.CLEAR })
+        },
+        closePurchasePopup({ commit }) {
+            commit('SET_PURCHASE_POPUP', { isActive: false })
+        },
+        openPurchasePopup({ commit }, setting) {
+            setting.isActive = true;
+            commit('SET_PURCHASE_POPUP', setting)
         },
     },
 };

@@ -118,3 +118,5 @@ WEATHER_API_KEY=""
 CIPHER_KEY='' # Paste the result from fernet_crypto.py
 SECRET_KEY='' # Paste the result from running __init__.py
 STREAM_KEY='' # Paste the secret key from node media server config
+STRIPE_KEY = "sk_test_4eC39HqLyjWDarjtT1zdp7dc"
+STRIPE_PRODUCT_ID = "prod_Lj0KTFGmKZRp7d"

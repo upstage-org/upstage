@@ -27,7 +27,7 @@ class CardAttribute(graphene.InputObjectType):
     card_number = graphene.String(description="Card number")
     exp_year = graphene.Int(description="Expired year")
     exp_month = graphene.Int(description="Expired month")
-    cvv = graphene.Int(description="Cvv number")
+    cvc = graphene.Int(description="Cvc number")
     amount = graphene.Float(description='Amount payment')
     currency = graphene.String(description='Currency payment')
 
@@ -40,18 +40,18 @@ class OneTimePurchase(graphene.Mutation):
     class Arguments:
         input = CardAttribute(required=True)
 
-    @jwt_required()
+    # @jwt_required()
     def mutate(self, info, input):
         data = graphql_utils.input_to_dictionary(input)
         card_number = data['card_number']
         card_expyear = data['exp_year']
         card_expmonth = data['exp_month']
-        card_cvv = data['cvv']
+        card_cvc = data['cvc']
         amount = data['amount']
-        print(card_number, card_expyear, card_expmonth, card_cvv)
+        print(card_number, card_expyear, card_expmonth, card_cvc, amount)
 
         tokenid = generate_card_token(
-            card_number, card_expmonth, card_expyear, card_cvv)
+            card_number, card_expmonth, card_expyear, card_cvc)
 
         payment_done = create_payment_charge(tokenid, amount)
 
@@ -79,11 +79,11 @@ class CreateSubscription(graphene.Mutation):
             card_number = data['card_number']
             card_expyear = data['exp_year']
             card_expmonth = data['exp_month']
-            card_cvv = data['cvv']
+            card_cvc = data['cvc']
             amount = data['amount']
             currency = data['currency']
             payment_method = create_payment_card(
-                card_number, card_expmonth, card_expyear, card_cvv)
+                card_number, card_expmonth, card_expyear, card_cvc)
             customer = create_customer(email)
             price = create_price(amount, currency)
             subscription = create_subscription(
