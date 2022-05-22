@@ -23,9 +23,10 @@ def send_sync(to, subject, content, bcc=None):
     # some SMTP servers will do this automatically, not all
     msg["From"] = f'{EMAIL_HOST_DISPLAY_NAME} <{EMAIL_HOST_USER}>'
     msg["To"] = to
-    msg["Bcc"] = ADMIN_EMAIL
     if bcc:
-        msg["Bcc"] += ',' + bcc
+        msg["Bcc"] = ADMIN_EMAIL + ',' + bcc
+    else:
+        msg["Bcc"] = ADMIN_EMAIL
 
     # Always use TLS.
     conn = SMTP(EMAIL_HOST, EMAIL_PORT)
