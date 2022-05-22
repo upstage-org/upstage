@@ -118,7 +118,7 @@ export default {
   player_management: 'Quản lý người chơi',
   batch_user_creation: 'Tạo người dùng hàng loạt',
   foyer_customisation: 'Tùy chỉnh tiền sảnh',
-  email_notification: 'thông báo có email',
+  email_notification: 'Thông báo qua email',
   system_configuration: 'Cấu hình hệ thông',
   rtmp_stream: 'Luồng RTMP',
   stop_streaming: 'Ngừng phát trực tuyến',
