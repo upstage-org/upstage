@@ -8,7 +8,7 @@
     <div class="icon is-large">
       <Icon src="save.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">Save Scene</span>
+    <span class="tag is-light is-block">{{ $t("save_scene") }}</span>
   </div>
 </template>
 

@@ -1,9 +1,9 @@
 <template>
   <Modal>
     <template #trigger>
-      <a>Terms of Service</a>
+      <a>{{ $t("tos.terms_of_service") }}</a>
     </template>
-    <template #header>Terms of Service</template>
+    <template #header>{{ $t("tos.terms_of_service") }}</template>
     <template #content>
       <Loading v-if="loading" />
       <div v-else v-html="content"></div>

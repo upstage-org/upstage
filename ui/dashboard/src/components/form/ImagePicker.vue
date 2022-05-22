@@ -4,9 +4,9 @@
       <Asset class="clickable" v-if="modelValue" :asset="{
         src: modelValue,
       }" />
-      <button v-else class="button">Choose an image</button>
+      <button v-else class="button">{{ $t("choose_an_image") }}</button>
     </template>
-    <template #header> Choose an existing image or upload new </template>
+    <template #header>{{ $t("choose_an_existing_image_or_upload_new") }}</template>
     <template #content="{ closeModal }">
       <div class="columns is-multiline ">
         <div class="colum px-3 pt-1">

@@ -1,7 +1,7 @@
 <template>
   <div class="columns is-vcentered">
     <div class="column is-2">
-      <b>Title</b>
+      <b>{{ $t("title") }}</b>
     </div>
     <template v-if="edit == 'title'">
       <div class="column">
@@ -16,19 +16,19 @@
           class="button is-primary"
           :class="{ 'is-loading': loading }"
           @click="save('Foyer title saved successfully!', 'FOYER_TITLE', title); edit = null"
-        >Save</button>
+        >{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column">{{ title }}</div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'title'">Edit</button>
+        <button class="button is-primary" @click="edit = 'title'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>
   <div class="columns is-vcentered">
     <div class="column is-2">
-      <b>Description</b>
+      <b>{{ $t("description") }}</b>
     </div>
     <template v-if="edit == 'description'">
       <div class="column">
@@ -39,13 +39,13 @@
           class="button is-primary"
           :class="{ 'is-loading': loading }"
           @click="save('Foyer description saved successfully!', 'FOYER_DESCRIPTION', description); edit = null"
-        >Save</button>
+        >{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column pre-wrap" v-html="description"></div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'description'">Edit</button>
+        <button class="button is-primary" @click="edit = 'description'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>
@@ -62,7 +62,7 @@ About
 > Contact (/contact)
 "
       >
-        <b>Menu</b>
+        <b>{{ $t("menu") }}</b>
         <i class="fas fa-info-circle ml-1"></i>
       </span>
     </div>
@@ -75,13 +75,13 @@ About
           class="button is-primary"
           :class="{ 'is-loading': loading }"
           @click="save('Foyer menu saved successfully!', 'FOYER_MENU', menu); edit = null"
-        >Save</button>
+        >{{ $t("save") }}</button>
       </div>
     </template>
     <template v-else>
       <div class="column pre-wrap">{{ menu }}</div>
       <div class="column is-narrow">
-        <button class="button is-primary" @click="edit = 'menu'">Edit</button>
+        <button class="button is-primary" @click="edit = 'menu'">{{ $t("edit") }}</button>
       </div>
     </template>
   </div>

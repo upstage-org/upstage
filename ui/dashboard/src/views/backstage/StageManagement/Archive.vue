@@ -1,10 +1,10 @@
 <template>
   <div class="has-text-right is-fullwidth pb-3">
     <button class="button ml-2 is-light" @click="downloadChatLog()">
-      <span>Download All Chat</span>
+      <span>{{ $t("download_all_chat") }}</span>
     </button>
     <ClearChat />
-    <SweepStage>Archive Performance</SweepStage>
+    <SweepStage>{{ $t("archive_performance") }}</SweepStage>
   </div>
 
   <DataTable :data="sessions" :headers="headers">
@@ -14,8 +14,8 @@
       </div>
       <small v-if="item.description" class="has-text-dark">{{ item.description }}</small>
       <small v-else class="has-text-dark">
-        <span v-if="item.recording">Recorded</span>
-        <span v-else>Auto recorded</span>
+        <span v-if="item.recording">{{ $t("recorded") }}</span>
+        <span v-else>{{ $t("auto_recorded") }}</span>
         <span v-if="item.chatless">on {{ date(item.createdOn) }}</span>
         <span v-else>from {{ date(item.begin) }} to {{ date(item.end) }}</span>
       </small>
@@ -60,7 +60,7 @@
           <textarea class="textarea" v-model="item.description" rows="3"></textarea>
         </Field>
         <template #yes>
-          <span>Save</span>
+          <span>{{ $t("save") }}</span>
         </template>
         <template #trigger>
           <button class="button is-light">
@@ -78,7 +78,7 @@
           Deleting this performance will also delete
           <span
             class="has-text-danger"
-          >all of its replay and chat</span>. This
+          >{{ $t("all_of_its_replay_and_chat") }}</span>. This
           cannot be undo!
           <strong>Are you sure you want to continue?</strong>
         </div>

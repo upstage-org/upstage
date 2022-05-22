@@ -9,7 +9,7 @@
   </HorizontalField>
   <div class="field is-horizontal recipients">
     <div class="field-label is-normal">
-      <label class="label">Receiver</label>
+      <label class="label">{{ $t("to") }}</label>
       <p class="help">
         Click on a player's name to move them to the column to the right. Use
         a right-click to move them back to the left.

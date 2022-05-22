@@ -17,7 +17,7 @@
       <span class="icon">
         <i class="fas fa-times"></i>
       </span>
-      <span> Clear </span>
+      <span>{{ $t("clear") }}</span>
     </button>
   </HorizontalField>
 </template>

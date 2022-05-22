@@ -20,7 +20,7 @@
       <div class="icon is-large">
         <Icon size="36" src="new.svg" />
       </div>
-      <span class="tag is-block">New Text</span>
+      <span class="tag is-block">{{ $t("new_text") }}</span>
     </div>
     <div v-for="text in savedTexts" :key="text" class="is-pulled-left saved-text">
       <ContextMenu>
@@ -32,7 +32,7 @@
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permanently</span>
+            <span>{{ $t("delete_permanently") }}</span>
           </a>
         </template>
       </ContextMenu>
@@ -40,7 +40,7 @@
   </template>
   <template v-else>
     <div class="text-tool" style="width: 200px; z-index: 1005">
-      <span class="tag muted is-block">Font</span>
+      <span class="tag muted is-block">{{ $t("font") }}</span>
       <Dropdown
         class="font-dropdown"
         v-model="options.fontFamily"
@@ -61,38 +61,38 @@
       />
     </div>
     <div class="text-tool" style="z-index: 1003">
-      <span class="tag muted is-block">Colour</span>
+      <span class="tag muted is-block">{{ $t("colour") }}</span>
       <ColorPicker v-model="options.color" />
     </div>
     <div class="text-tool" :class="{ active: options.fontWeight }" @click="toggleBold">
       <div class="icon is-large">
         <Icon size="36" src="bold.svg" />
       </div>
-      <span class="tag is-block">Bold</span>
+      <span class="tag is-block">{{ $t("bold") }}</span>
     </div>
     <div class="text-tool" :class="{ active: options.fontStyle }" @click="toggleItalic">
       <div class="icon is-large">
         <Icon size="36" src="italic.svg" />
       </div>
-      <span class="tag is-block">Italic</span>
+      <span class="tag is-block">{{ $t("italic") }}</span>
     </div>
     <div class="text-tool" :class="{ active: options.textDecoration }" @click="toggleUnderline">
       <div class="icon is-large">
         <Icon size="36" src="underline.svg" />
       </div>
-      <span class="tag is-block">Underline</span>
+      <span class="tag is-block">{{ $t("underline") }}</span>
     </div>
     <div class="text-tool has-tooltip-bottom" @click="saveText">
       <div class="icon is-large">
         <Icon size="40" src="check.svg" />
       </div>
-      <span class="tag is-block">Save</span>
+      <span class="tag is-block">{{ $t("save") }}</span>
     </div>
     <div class="text-tool" @click="cancelWriting">
       <div class="icon is-large">
         <Icon size="32" src="cancel.svg" />
       </div>
-      <span class="tag is-block">Cancel</span>
+      <span class="tag is-block">{{ $t("cancel") }}</span>
     </div>
   </template>
 </template>

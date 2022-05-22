@@ -3,10 +3,10 @@
   <section>
     <div :key="i" class="field is-grouped">
       <p class="control is-expanded">
-        <label class="label">Username</label>
+        <label class="label">{{ $t("username") }}</label>
       </p>
       <p class="control is-expanded">
-        <label class="label">Password</label>
+        <label class="label">{{ $t("password") }}</label>
       </p>
       <p class="control">
         <a
@@ -44,7 +44,7 @@
       </p>
     </div>
     <a class="button is-primary is-block" @click="append()">
-      <span>New</span>
+      <span>{{ $t("new") }}</span>
       <span class="icon">
         <i class="fas fa-plus"></i>
       </span>

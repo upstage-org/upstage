@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
-    <span class="tag is-light is-block">Clear</span>
+    <span class="tag is-light is-block">{{ $t("clear") }}</span>
   </div>
   <ContextMenu v-for="background in backgrounds" :key="background" :title="background.name" :class="{
     active: background.id === currentBackground.id,
@@ -22,7 +22,7 @@
         <span class="panel-icon">
           <Icon src="backdrop.svg" />
         </span>
-        <span>Set as backdrop</span>
+        <span>{{ $t("set_as_backdrop") }}</span>
       </a>
       <div v-if="background.multi && background.id === currentBackground.id" class="field has-addons menu-group">
         <p class="control menu-group-item" @click="toggleAutoplayFrames()">

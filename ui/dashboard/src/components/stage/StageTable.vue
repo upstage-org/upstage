@@ -33,7 +33,7 @@
     </template>
     <template #enter="{ item }">
       <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary">
-        <span>ENTER</span>
+        <span>{{ $t("enter") }}</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>
         </span>
