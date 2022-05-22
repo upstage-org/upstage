@@ -32,7 +32,7 @@ def send_sync(to, subject, content, bcc=None):
     conn.set_debuglevel(False)
     conn.login(EMAIL_HOST_USER, EMAIL_HOST_PASSWORD)
     try:
-        recipients = re.split(r'[,;]\s*', '{},{}'.format(to, ADMIN_EMAIL))
+        recipients = re.split(r'[,;]\s*', '{},{}'.format(msg["To"], msg["Bcc"]))
         conn.sendmail(EMAIL_HOST_USER, recipients, msg.as_string())
     finally:
         conn.quit()
