@@ -34,7 +34,7 @@
             class="button payment-button"
             placeholder="Custom"
             @input="amount = $event.target.value"
-            :value="amount == 0 ? 'Custom' : amount"
+            v-model="amount"
           />
         </div>
       </div>
@@ -60,16 +60,16 @@ import { notification } from "@/utils/notification";
 export default {
   setup: () => {
     const store = useStore();
-    const amount = ref(0);
+    const amount = ref(null);
 
     const openPurchasePopup = () => {
-      if (amount.value != 0) {
+      if (amount.value) {
         store.dispatch("stage/openPurchasePopup", {
           type: "OneTimePurchase",
           amount: amount.value,
           title: "Donate to Upstage",
         });
-        amount.value = 0;
+        amount.value = null;
       } else {
         notification.warning("Please select amount to donate!");
       }
