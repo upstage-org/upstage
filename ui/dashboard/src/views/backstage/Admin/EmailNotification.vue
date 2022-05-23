@@ -81,7 +81,7 @@ const send = async () => {
   if (!body.value) {
     return notification.error('Please provide a body for your email');
   }
-  if (!selectedRecipients.length && !additionalReceivers.value.trim()) {
+  if (!selectedRecipients.length && !additionalReceivers.value.trim() && !selectedBccs.length && !additionalBcc.value.trim()) {
     return notification.error('Please select at least one player or provide an email address');
   }
   await save(`Notification has been successfully sent to ${selectedRecipients.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
