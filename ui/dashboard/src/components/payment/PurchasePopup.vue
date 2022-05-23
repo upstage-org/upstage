@@ -50,11 +50,6 @@
                     @input="
                       $event.target.value = formatExp($event.target.value)
                     "
-                    @keydown.delete="
-                      $event.target.value = deleteKeyDownExp(
-                        $event.target.value
-                      )
-                    "
                   />
                 </div>
                 <div class="input">
@@ -104,7 +99,6 @@ export default {
   components: { Icon },
   setup: () => {
     const store = useStore();
-    console.log(store.state.stage.purchasePopup);
     const isActive = computed(() => store.state.stage.purchasePopup.isActive);
     const title = computed(() => store.state.stage.purchasePopup.title);
     const amount = computed(() => store.state.stage.purchasePopup.amount);
@@ -122,14 +116,9 @@ export default {
     };
 
     const formatExp = (value) => {
-      if (value.length == 3 && !value.includes("/")) {
-        value = `${value.substring(0, 2)}/${value.slice(-1)}`;
-      }
-      return value;
-    };
-    const deleteKeyDownExp = (value) => {
-      if (value.length == 4 && value[2] == "/") {
-        value = value.slice(0, -1);
+      value = value.replaceAll("/", "");
+      if (value.length > 2) {
+        value = `${value.substring(0, 2)}/${value.substring(2)}`;
       }
       return value;
     };
@@ -144,7 +133,6 @@ export default {
       paymentGraph,
       loading,
       formatExp,
-      deleteKeyDownExp,
     };
   },
   methods: {
