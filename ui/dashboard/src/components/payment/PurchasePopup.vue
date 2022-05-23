@@ -47,8 +47,7 @@
                     class="card-input input"
                     type="tel"
                     placeholder="MM/YY"
-                    @input="
-                      $event.target.value = formatExp($event.target.value)
+                    @input="card.exp = formatExp($event.target.value)
                     "
                   />
                 </div>

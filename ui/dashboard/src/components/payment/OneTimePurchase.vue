@@ -63,7 +63,7 @@ export default {
     const amount = ref(null);
 
     const openPurchasePopup = () => {
-      if (amount.value) {
+      if (amount.value && amount.value != 0) {
         store.dispatch("stage/openPurchasePopup", {
           type: "OneTimePurchase",
           amount: amount.value,
