@@ -25,9 +25,9 @@ from payment.payment import (ACCEPT_TYPE, cancel_subscription, create_customer,
 
 class CardAttribute(graphene.InputObjectType):
     card_number = graphene.String(description="Card number")
-    exp_year = graphene.Int(description="Expired year")
-    exp_month = graphene.Int(description="Expired month")
-    cvc = graphene.Int(description="Cvc number")
+    exp_year = graphene.String(description="Expired year")
+    exp_month = graphene.String(description="Expired month")
+    cvc = graphene.String(description="Cvc number")
     amount = graphene.Float(description='Amount payment')
     currency = graphene.String(description='Currency payment')
 

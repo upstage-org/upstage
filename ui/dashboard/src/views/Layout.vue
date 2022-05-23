@@ -5,14 +5,14 @@
     <OneTimePurchase />
     <PurchasePopup />
   </div>
-  <Footer/>
+  <Footer />
 </template>
 
 <script>
 import NavBar from "@/components/NavBar";
 import Footer from "@/components/Footer";
-import OneTimePurchase from "@/components/stage/Payment/OneTimePurchase";
-import PurchasePopup from "@/components/stage/Payment/PurchasePopup";
+import OneTimePurchase from "@/components/payment/OneTimePurchase";
+import PurchasePopup from "@/components/payment/PurchasePopup";
 export default {
   components: { NavBar, Footer, OneTimePurchase, PurchasePopup },
 };
