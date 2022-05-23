@@ -157,5 +157,15 @@ export default {
     login: 'Ấn vào nút đăng nhập cũng có nghĩa là bạn đã đọc đồng ý với ',
     register: 'Tôi đã đọc và đồng ý với ',
     terms_of_service: 'Điều khoản dịch vụ',
-  }
+  },
+  upload_hint: 'Kéo và thả ảnh vào đây để tải lên. Bạn có thể tải lên nhiều ảnh trong một lần để tạo phương tiện hoạt hình.',
+  upload_accepted_format: 'Định dạng file được hỗ trợ: {image} cho hình ảnh, {audio} cho âm thanh và {video} cho các đoạn phim.',
+  preview: 'Xem trước',
+  name: 'Tên',
+  type: 'Thể loại',
+  copyright_level: 'Cấp độ bảo mật',
+  tags: 'Thẻ',
+  size: 'Kích cỡ',
+  date: 'Ngày',
+  manage_media: 'Quản lý phương tiện',
 }

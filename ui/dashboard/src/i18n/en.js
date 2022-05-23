@@ -157,5 +157,15 @@ export default {
     login: 'By logging in, you are agreeing to our',
     register: 'I agree to the',
     terms_of_service: 'Điều khoản dịch vụ',
-  }
+  },
+  upload_hint: 'Drag files here to upload. You can drop multiple files to make a multiframes media',
+  upload_accepted_format: 'Accepted file formats: {image} for images, {audio} for audios and {video} for videos',
+  preview: 'Preview',
+  name: 'Name',
+  type: 'Type',
+  copyright_level: 'Copyright Level',
+  tags: 'Tags',
+  size: 'Size',
+  date: 'Date',
+  manage_media: 'Manage Media',
 }

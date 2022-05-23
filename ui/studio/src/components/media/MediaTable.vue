@@ -14,7 +14,9 @@ import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
 import { ColumnType, TablePaginationConfig } from 'ant-design-vue/lib/table';
 import { SorterResult } from 'ant-design-vue/lib/table/interface';
 import QuickStageAssignment from './QuickStageAssignment.vue';
+import { useI18n } from 'vue-i18n';
 
+const { t } = useI18n();
 const files = inject<Ref<UploadFile[]>>("files")
 
 const tableParams = reactive({
@@ -89,13 +91,13 @@ watch(params, () => {
 
 const columns: ColumnType<Media>[] = [
   {
-    title: "Preview",
+    title: t("preview"),
     align: "center",
     width: 96,
     key: 'preview'
   },
   {
-    title: "Name",
+    title: t("name"),
     dataIndex: "name",
     key: "name",
     sorter: {
@@ -103,7 +105,7 @@ const columns: ColumnType<Media>[] = [
     },
   },
   {
-    title: "Type",
+    title: t("type"),
     dataIndex: ['assetType', 'name'],
     key: 'asset_type_id',
     sorter: {
@@ -111,7 +113,7 @@ const columns: ColumnType<Media>[] = [
     },
   },
   {
-    title: "Owner",
+    title: t("owner"),
     dataIndex: 'owner',
     key: 'owner_id',
     sorter: {
@@ -119,24 +121,24 @@ const columns: ColumnType<Media>[] = [
     },
   },
   {
-    title: "Copyright Level",
+    title: t("copyright_level"),
     dataIndex: "copyrightLevel",
     key: "copyrightLevel",
   },
   {
-    title: "Stages",
+    title: t("stages"),
     key: 'stages',
     dataIndex: 'stages',
     width: 250
   },
   {
-    title: "Tags",
+    title: t("tags"),
     key: 'tags',
     dataIndex: 'tags',
     width: 250
   },
   {
-    title: "Size",
+    title: t("size"),
     dataIndex: "size",
     key: "size",
     sorter: {
@@ -144,7 +146,7 @@ const columns: ColumnType<Media>[] = [
     },
   },
   {
-    title: "Date",
+    title: t("date"),
     dataIndex: "createdOn",
     key: "created_on",
     sorter: {
@@ -153,7 +155,7 @@ const columns: ColumnType<Media>[] = [
     defaultSortOrder: 'descend'
   },
   {
-    title: "Manage Media",
+    title: t("manage_media"),
     align: "center",
     fixed: "right",
     key: 'actions'
