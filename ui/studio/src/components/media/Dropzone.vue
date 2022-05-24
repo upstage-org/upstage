@@ -31,24 +31,22 @@ const handleUpload = (file: any) => {
 </script>
 
 <template>
-  <a-modal
-    :footer="null"
-    :visible="visible"
-    @cancel="visible = false"
-    width="100%"
-    wrapClassName="fullscreen-dragzone"
-    class="h-full top-0 p-0"
-  >
+  <a-modal :footer="null" :visible="visible" @cancel="visible = false" width="100%" wrapClassName="fullscreen-dragzone"
+    class="h-full top-0 p-0">
     <a-upload-dragger :show-upload-list="false" :custom-request="handleUpload" multiple>
       <p class="ant-upload-drag-icon">
         <UploadOutlined />
       </p>
-      <p
-        class="ant-upload-text"
-      >Drag files here to upload. You can drop multiple files to make a multiframes media</p>
-      <p
-        class="ant-upload-hint"
-      >Accepted file formats: {{ configs.ALLOWED_EXTENSIONS.IMAGE }} for images, {{ configs.ALLOWED_EXTENSIONS.AUDIO }} for audios and {{ configs.ALLOWED_EXTENSIONS.VIDEO }} for videos</p>
+      <p class="ant-upload-text">{{ $t("upload_hint") }}</p>
+      <p class="ant-upload-hint">
+        {{
+            $t("upload_accepted_format", {
+              image: configs.ALLOWED_EXTENSIONS.IMAGE,
+              audio: configs.ALLOWED_EXTENSIONS.AUDIO,
+              video: configs.ALLOWED_EXTENSIONS.VIDEO
+            })
+        }}
+      </p>
     </a-upload-dragger>
   </a-modal>
   <slot></slot>
@@ -57,9 +55,11 @@ const handleUpload = (file: any) => {
 <style lang="less">
 .fullscreen-dragzone {
   z-index: 999999;
+
   .ant-modal-content {
     height: 100%;
   }
+
   .ant-modal-body {
     padding: 0;
     height: 100%;

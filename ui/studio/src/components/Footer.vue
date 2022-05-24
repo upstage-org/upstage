@@ -2,7 +2,7 @@
     <a-layout-footer style="text-align: center">
         UpStage v{{ version }} -
         <span v-if="release">{{ release }}</span>
-        <span v-else>Under construction</span>
+        <span v-else>{{ $t("under_construction") }}</span>
     </a-layout-footer>
 </template>
 
