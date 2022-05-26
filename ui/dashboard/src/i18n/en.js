@@ -148,7 +148,6 @@ export default {
   click_anywhere_to_enter_the_stage: 'Click anywhere to enter the stage',
   enter_as_audience: 'Enter as Audience',
   player_login: 'Player Login',
-  under_construction: 'Under construction',
   approve: 'Approve',
   reject: 'Reject',
   multiframes: 'Multiframes',

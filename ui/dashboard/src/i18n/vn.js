@@ -148,7 +148,6 @@ export default {
   click_anywhere_to_enter_the_stage: 'Nhấp vào bất kỳ đâu để vào sân khấu',
   enter_as_audience: 'Nhập với tư cách là đối tượng',
   player_login: 'Đăng nhập người chơi',
-  under_construction: 'Công trình đang thi công',
   approve: 'Chấp thuận',
   reject: 'Từ chối',
   multiframes: 'Hoạt hình',
