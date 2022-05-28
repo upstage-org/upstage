@@ -38,7 +38,7 @@
         <Moveable v-model:active="active" :controlable="controlable" :object="object">
           <div
             class="object"
-            :class="{ 'has-link': hasLink }"
+            :class="{ 'link-hover-effect': hasLink && object.link.effect }"
             :style="{
               width: '100%',
               height: '100%',
@@ -209,10 +209,10 @@ div[tabindex] {
 }
 .object {
   z-index: 10;
-  &.has-link {
+  &.link-hover-effect {
     transition: transform v-bind(transition);
   }
-  &.has-link:hover {
+  &.link-hover-effect:hover {
     transform: scale(1.2) !important;
   }
 }

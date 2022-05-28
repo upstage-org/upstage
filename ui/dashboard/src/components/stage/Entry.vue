@@ -1,11 +1,9 @@
 <template>
-    <div class="p-4">
-        <router-link :to="`/${stage.fileLocation}`" class="stage">
-            <img class="cover" :src="coverImage(stage.cover)" lazy>
-            <PlayerAudienceCounter :stage-url="stage.fileLocation" class="counter" />
-            <span class="name">{{ stage.name }}</span>
-        </router-link>
-    </div>
+    <router-link :to="`/${stage.fileLocation}`" class="stage">
+        <img class="cover" :src="coverImage(stage.cover)" lazy>
+        <PlayerAudienceCounter :stage-url="stage.fileLocation" class="counter" />
+        <span class="name">{{ stage.name }}</span>
+    </router-link>
 </template>
 
 <script setup>

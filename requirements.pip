@@ -26,3 +26,4 @@ uwsgi
 vimeo
 websockets
 pymongo
+stripe

@@ -11,7 +11,7 @@
         <span class="icon">
           <i ref="dot" class="fas fa-circle"></i>
         </span>
-        <span class="status-text">REPLAYING</span>
+        <span class="status-text">{{ $t("replaying") }}</span>
       </template>
       <template v-else>
         <span class="icon" v-show="status !== 'OFFLINE'">

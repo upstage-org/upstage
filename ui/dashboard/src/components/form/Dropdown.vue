@@ -43,7 +43,7 @@
           </a>
         </template>
         <div v-else class="dropdown-item">
-          <p class="has-text-dark">No Content</p>
+          <p class="has-text-dark">{{ $t("no_content") }}</p>
         </div>
       </div>
     </div>

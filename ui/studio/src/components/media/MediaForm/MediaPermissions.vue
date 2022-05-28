@@ -151,11 +151,11 @@ watch(isAdmin, console.log)
                         <smart-button
                             type="primary"
                             :action="() => confirm(request.id, true)"
-                        >Approve</smart-button>
+                        >{{ $t("approve") }}</smart-button>
                         <smart-button
                             type="danger"
                             :action="() => confirm(request.id, false)"
-                        >Reject</smart-button>
+                        >{{ $t("reject") }}</smart-button>
                     </a-space>
                     <br />
                     <small class="text-gray-500">

@@ -3,17 +3,12 @@
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
-    <span class="tag is-light is-block">Clear</span>
+    <span class="tag is-light is-block">{{ $t("clear") }}</span>
   </div>
-  <ContextMenu
-    v-for="background in backgrounds"
-    :key="background"
-    :title="background.name"
-    :class="{
-      active: background.id === currentBackground.id,
-      flex: !(background.multi && background.id === currentBackground.id),
-    }"
-  >
+  <ContextMenu v-for="background in backgrounds" :key="background" :title="background.name" :class="{
+    active: background.id === currentBackground.id,
+    flex: !(background.multi && background.id === currentBackground.id),
+  }">
     <template #trigger>
       <Skeleton :data="background" nodrop>
         <Image :src="background.src" @click="setBackground(background)" />
@@ -23,55 +18,34 @@
       </Skeleton>
     </template>
     <template #context>
-      <a
-        v-if="background.id !== currentBackground.id"
-        class="panel-block px-4"
-        @click="setBackground(background)"
-      >
+      <a v-if="background.id !== currentBackground.id" class="panel-block px-4" @click="setBackground(background)">
         <span class="panel-icon">
           <Icon src="backdrop.svg" />
         </span>
-        <span>Set as backdrop</span>
+        <span>{{ $t("set_as_backdrop") }}</span>
       </a>
-      <div
-        v-if="background.multi && background.id === currentBackground.id"
-        class="field has-addons menu-group"
-      >
+      <div v-if="background.multi && background.id === currentBackground.id" class="field has-addons menu-group">
         <p class="control menu-group-item" @click="toggleAutoplayFrames()">
           <button class="button is-light">
             <Icon :src="currentBackground.speed > 0 ? 'pause.svg' : 'play.svg'" />
           </button>
         </p>
-        <p
-          v-for="frame in background.frames"
-          :key="frame"
-          @click="switchBackdropFrame(frame)"
-          class="control menu-group-item"
-        >
+        <p v-for="frame in background.frames" :key="frame" @click="switchBackdropFrame(frame)"
+          class="control menu-group-item">
           <button class="button is-light">
             <img :src="frame" style="height: 100%" />
           </button>
         </p>
       </div>
-      <div
-        v-if="background.id === currentBackground.id"
-        class="field has-addons menu-group px-4 my-2"
-      >
+      <div v-if="background.id === currentBackground.id" class="field has-addons menu-group px-4 my-2">
         <p class="control menu-group-title">
           <span class="panel-icon pt-1">
             <Icon src="animation-slider.svg" />
           </span>
         </p>
         <p class="control menu-group-item is-fullwidth">
-          <input
-            class="slider is-fullwidth is-primary mt-0"
-            step="0.01"
-            min="0"
-            max="1"
-            :value="currentBackground.speed"
-            @change="changeBackdropSpeed"
-            type="range"
-          />
+          <input class="slider is-fullwidth is-primary mt-0" step="0.01" min="0" max="1"
+            :value="currentBackground.speed" @change="changeBackdropSpeed" type="range" />
         </p>
       </div>
       <div class="field has-addons menu-group px-4 my-2">
@@ -81,16 +55,9 @@
           </span>
         </p>
         <p class="control menu-group-item is-fullwidth">
-          <input
-            class="slider is-fullwidth is-primary my-0"
-            step="0.01"
-            min="0"
-            max="1"
-            :value="opacity(background)"
+          <input class="slider is-fullwidth is-primary my-0" step="0.01" min="0" max="1" :value="opacity(background)"
             @input="adjustOpacity(background, $event.target.value, true)"
-            @change="adjustOpacity(background, $event.target.value, false)"
-            type="range"
-          />
+            @change="adjustOpacity(background, $event.target.value, false)" type="range" />
         </p>
       </div>
     </template>
@@ -148,14 +115,14 @@ export default {
 
     const setBackgroundThrottled = throttle(setBackground, 100);
 
-    const adjustOpacity = (background, opacity, shouldShrottle) => {
+    const adjustOpacity = (background, opacity, shouldThrottle) => {
       background.opacity = opacity;
       if (background.id === currentBackground.value.id) {
-        if (shouldShrottle) {
-          setBackgroundThrottled(background);
-        } else {
-          setBackground(background);
-        }
+        const f = shouldThrottle ? setBackgroundThrottled : setBackground;
+        f({
+          ...currentBackground.value,
+          opacity,
+        })
       }
     };
 

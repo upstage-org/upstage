@@ -98,6 +98,7 @@ export interface MediaAttributes {
 
 export interface Link {
   blank: boolean;
+  effect: boolean;
   url: string;
 }
 

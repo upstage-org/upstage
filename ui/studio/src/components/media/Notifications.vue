@@ -52,11 +52,11 @@ const refresh = () => refetch();
                   <smart-button
                     type="primary"
                     :action="() => confirmPermission({ approved: true, id: notification.mediaUsage.id }).then(refresh)"
-                  >Approve</smart-button>
+                  >{{ $t("approve") }}</smart-button>
                   <smart-button
                     type="danger"
                     :action="() => confirmPermission({ approved: false, id: notification.mediaUsage.id }).then(refresh)"
-                  >Reject</smart-button>
+                  >{{ $t("reject") }}</smart-button>
                 </a-space>
               </template>
               <template #description>

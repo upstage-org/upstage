@@ -6,13 +6,13 @@
           :class="{ 'is-active': currentTab === 'nickname' }"
           @click="currentTab = 'nickname'"
         >
-          <a>Change your nickname</a>
+          <a>{{ $t("change_your_nickname") }}</a>
         </li>
         <li
           :class="{ 'is-active': currentTab === 'params' }"
           @click="currentTab = 'params'"
         >
-          <a>Parameters</a>
+          <a>{{ $t("parameters") }}</a>
         </li>
       </ul>
     </div>
