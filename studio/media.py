@@ -261,6 +261,7 @@ class AvatarVoiceInput(graphene.InputObjectType, AvatarVoice):
 class Link:
     url = graphene.String(required=True, description="Link url")
     blank = graphene.Boolean(required=True, description="Open in new tab?")
+    effect = graphene.Boolean(required=True, description="Link effect")
 
 class LinkInput(graphene.InputObjectType, Link):
     pass
