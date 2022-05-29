@@ -5,6 +5,7 @@
     </div>
     <span class="tag is-light is-block">{{ $t("new_room") }}</span>
   </div>
+  <Yourself />
   <Skeleton v-for="room, i in rooms" :key="i" :data="room">
     <div class="room-skeleton">
       <Icon src="backdrop.svg" size="36" />
@@ -18,6 +19,7 @@ import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import Skeleton from "../../Skeleton.vue";
 import { computed } from "vue";
+import Yourself from "@/components/objects/Meeting/Yourself.vue";
 
 const store = useStore();
 const rooms = computed(() => store.state.stage.tools.meetings);
