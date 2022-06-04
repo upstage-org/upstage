@@ -933,6 +933,7 @@ export default {
                                 objects: [],
                                 drawings: [],
                                 texts: [],
+                                tracks: [],
                             },
                             audioPlayers: [],
                         }),
