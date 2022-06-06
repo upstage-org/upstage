@@ -2,6 +2,47 @@
   <div>
     <Object :object="stream">
       <template #menu="slotProps">
+        <div class="field has-addons menu-group">
+          <p class="control menu-group-item">
+            <button class="button is-light" @click="clip(null)">
+              <div class="icon">
+                <i class="fas fa-square"></i>
+              </div>
+            </button>
+          </p>
+          <p class="control menu-group-item" @click="clip('circle')">
+            <button class="button is-light">
+              <div class="icon">
+                <i class="fas fa-circle"></i>
+              </div>
+            </button>
+          </p>
+        </div>
+        <a v-if="stream.isPlaying" class="panel-block has-text-info" @click="pauseStream(slotProps)">
+          <span class="panel-icon">
+            <i class="fas fa-pause"></i>
+          </span>
+          <span>{{ $t("pause") }}</span>
+        </a>
+        <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
+          <span class="panel-icon">
+            <i class="fas fa-play"></i>
+          </span>
+          <span>{{ $t("play") }}</span>
+        </a>
+        <a v-if="object.type === 'stream'" class="panel-block has-text-info" @click="restartStream">
+          <span class="panel-icon">
+            <i class="fas fa-sync"></i>
+          </span>
+          <span>{{ $t("restart") }}</span>
+        </a>
+        <a class="panel-block" @click="openVolumePopup(slotProps)">
+          <span class="panel-icon">
+            <Icon src="voice-setting.svg" />
+          </span>
+          <span>{{ $t("volumn_setting") }}</span>
+        </a>
+
         <MenuContent :object="object" :stream="stream" v-bind="slotProps" v-model:active="active" />
       </template>
 
@@ -21,6 +62,7 @@
 </template>
 
 <script>
+import flvjs from "flv.js";
 import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
@@ -86,6 +128,53 @@ export default {
     const toggleMuted = () => {
       localMuted.value = !localMuted.value;
     };
+    const pauseStream = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          isPlaying: false,
+        })
+        .then(props.closeMenu);
+    };
+
+    const restartStream = () => {
+      store.dispatch("stage/getRunningStreams")
+      let video = document.getElementById('video' + props.stream.id);
+      if (stream.isPlaying && video) {
+        const fullUrl = computed(() => getSubsribeLink('your_stream_key'));
+
+        if (flvjs.isSupported()) {
+          const flvPlayer = flvjs.createPlayer({
+            type: "flv",
+            url: fullUrl.value + "?" + new Date(),
+          });
+          flvPlayer.attachMediaElement(video);
+          flvPlayer.load();
+          flvPlayer.play();
+        }
+
+        video.play()
+      } else {
+        video.pause()
+      }
+    }
+
+    const playStream = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          isPlaying: true,
+        })
+        .then(props.closeMenu);
+    };
+
+    const openVolumePopup = () => {
+      store
+        .dispatch("stage/openSettingPopup", {
+          type: "VolumeParameters",
+        })
+        .then(props.closeMenu);
+    };
 
     return {
       video,
@@ -97,6 +186,10 @@ export default {
       localMuted,
       toggleMuted,
       isPlayer,
+      pauseStream,
+      playStream,
+      restartStream,
+      openVolumePopup,
     };
   },
 };
