@@ -77,7 +77,7 @@ About
     </div>
     <div class="column">
       <Switch v-model="showRegistration"
-        @update:model-value="save(`${showRegistration ? 'Show' : 'Hide'} Registration button on the Foyer successfully!`, 'SHOW_REGISTRATION', showRegistration)"
+        @update:model-value="save(`${showRegistration ? 'Show' : 'Hide'} Registration button on the Foyer successfully!`, 'SHOW_REGISTRATION', showRegistration || '')"
         :loading="loading" />
     </div>
   </div>
