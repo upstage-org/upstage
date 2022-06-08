@@ -167,4 +167,5 @@ export default {
   size: 'Kích cỡ',
   date: 'Ngày',
   manage_media: 'Quản lý phương tiện',
+  registration_button: 'Nút đăng ký',
 }
