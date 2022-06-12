@@ -47,6 +47,7 @@
     </div>
 
     <div class="navbar-brand">
+      <LanguageSelector />
       <Logo />
       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
         <span aria-hidden="true"></span>
@@ -64,12 +65,13 @@
 <script>
 import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
+import LanguageSelector from "@/components/LanguageSelector";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import configs from "@/config";
 
 export default {
-  components: { Footer, Logo },
+  components: { Footer, Logo, LanguageSelector },
   setup: () => {
     const store = useStore();
 

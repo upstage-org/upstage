@@ -20,6 +20,12 @@
     :wrapper="false"
     numbered
   >
+    <template #username="{ item }">
+      {{ item.username }}
+      <span v-if="item.intro" :data-tooltip="item.intro">
+        <i class="fas fa-info-circle"></i>
+      </span>
+    </template>
     <template #status="{ item }">
       <registration-approval :user="item" />
     </template>
@@ -77,6 +83,7 @@ export default {
         title: "Username",
         key: "username",
         sortable: true,
+        slot: "username"
       },
       {
         title: "Display Name",

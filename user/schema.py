@@ -44,7 +44,7 @@ class UserAttribute:
     active =  graphene.Boolean(description="Active record or not")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
-    intro = graphene.String(description="Introduction", required=True)
+    intro = graphene.String(description="Introduction")
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")

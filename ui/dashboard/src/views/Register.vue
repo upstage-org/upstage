@@ -53,6 +53,14 @@
                 requiredMessage="Email is required"
                 :touched="touched"
               />
+              <Field
+                v-model="form.intro"
+                placeholder="Please say briefly who you are and why you would like an UpStage account."
+                type="textarea"
+                required
+                requiredMessage="Introduction is required"
+                :touched="touched"
+              />
               <label class="checkbox">
                 <input type="checkbox" v-model="agreed" />
                 {{ $t("tos.register") }} <TermsOfService />.
