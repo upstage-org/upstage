@@ -13,6 +13,7 @@ CREATE TABLE public.upstage_user (
         created_on timestamp without time zone default (now() at time zone 'utc'),
         deactivated_on timestamp without time zone default null,
         upload_limit INTEGER,
+        intro TEXT default null,
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

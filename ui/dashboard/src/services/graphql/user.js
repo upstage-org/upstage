@@ -16,13 +16,14 @@ export const userFragment = gql`
     createdOn
     role
     uploadLimit
+    intro
   }
 `
 
 export default {
   createUser: (variables) => client.request(gql`
-    mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String) {
-      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName}) {
+    mutation CreateUser($username: String!, $password: String!, $email: String, $firstName: String, $lastName: String, $intro: String) {
+      createUser(inbound: {username: $username, password: $password, email: $email, firstName: $firstName, lastName: $lastName, intro: $intro}) {
         user {
           ...userFragment
         }
