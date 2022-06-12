@@ -46,7 +46,7 @@
           <router-link to="/login" class="button is-primary m-2">
             <strong>{{ $t("login") }}</strong>
           </router-link>
-          <router-link to="/register" class="button is-primary m-2 mr-6">
+          <router-link v-if="foyer.showRegistration" to="/register" class="button is-primary m-2 mr-6">
             <strong>{{ $t("register") }}</strong>
           </router-link>
         </template>
@@ -70,13 +70,15 @@ export default {
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
     const navigations = computed(() => store.getters["config/navigations"]);
+    const foyer = computed(() => store.getters["config/foyer"]);
 
     return {
       expanded,
       toggleExpanded,
       loggedIn,
       logout,
-      navigations
+      navigations,
+      foyer
     };
   },
 };

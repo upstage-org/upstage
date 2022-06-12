@@ -60,6 +60,7 @@ class FoyerConfig(graphene.ObjectType):
     title = graphene.String()
     description = graphene.String()
     menu = graphene.String()
+    showRegistration = graphene.Boolean()
 
     def resolve_title(self, info):
         return get_config('FOYER_TITLE')
@@ -70,6 +71,8 @@ class FoyerConfig(graphene.ObjectType):
     def resolve_menu(self, info):
         return get_config('FOYER_MENU')
 
+    def resolve_showRegistration(self, info):
+        return get_config('SHOW_REGISTRATION')
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
