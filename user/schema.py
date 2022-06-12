@@ -44,6 +44,7 @@ class UserAttribute:
     active =  graphene.Boolean(description="Active record or not")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
+    intro = graphene.String(description="Introduction", required=True)
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
@@ -70,6 +71,8 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
+        if not data['intro']:
+            raise Exception("Introduction is required!")
 
         user = UserModel(**data)
         user_id = None
