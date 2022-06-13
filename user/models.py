@@ -61,6 +61,7 @@ class User(Base,db.Model):
     deactivated_on = Column(DateTime)
     upload_limit = Column(Integer, default=1024*1024)
     intro = Column(Text, default='')
+    can_send_email = Column(Boolean, default=False)
 
 class UserPushnot(Base,db.Model):
     __tablename__ = 'user_pushnot'

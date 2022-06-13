@@ -28,6 +28,7 @@ from stage import schema
 from config import schema
 from studio import schema
 from payment import schema
+from mail import schema
 
 # Below, duplicate names are actually app names.
 # See __init__.py in each directory to verify app name.

@@ -14,6 +14,7 @@ CREATE TABLE public.upstage_user (
         deactivated_on timestamp without time zone default null,
         upload_limit INTEGER,
         intro TEXT default null,
+        can_send_email BOOLEAN default false,
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
