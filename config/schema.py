@@ -164,7 +164,7 @@ class SendEmail(graphene.Mutation):
             raise Exception(
                 "Only Admin can send notification emails!")
 
-        send(recipients, subject, body, bcc)
+        send(recipients.split(','), subject, body, bcc.split(','))
         return SendEmail(success=True)
 
 
