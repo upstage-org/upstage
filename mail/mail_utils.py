@@ -3,6 +3,7 @@ import logging
 import os
 import re
 import sys
+from time import sleep
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -44,8 +45,8 @@ async def send_async(msg, user=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD):
     port = EMAIL_PORT
     smtp = aiosmtplib.SMTP(hostname=host, port=port, use_tls=EMAIL_USE_TLS)
     await smtp.connect()
-    if EMAIL_USE_TLS:
-        await smtp.starttls()
+    # if EMAIL_USE_TLS:
+    #     await smtp.starttls()
     if user:
         await smtp.login(user, password)
     await smtp.send_message(msg)
@@ -137,7 +138,9 @@ async def send_mail_from_queue():
                 msg = create_email(to=recipients, subject=subject,
                                    html=body, cc=cc, bcc=bcc, sender=sender,filenames=filenames)
                 await send_async(msg=msg, user=sender, password=password)
-
-            mail = queue.find_one_and_delete({})
         except Exception as e:
             logging.error(e)
+            sleep(5)
+            queue.insert_one(mail)
+        finally:
+            mail = queue.find_one_and_delete({})
