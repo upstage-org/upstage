@@ -3,6 +3,7 @@
     <Object :object="stream">
       <template #menu="slotProps">
         <div class="field has-addons menu-group">
+          <b class="m-2">{{ $t("shape") }}</b>
           <p class="control menu-group-item">
             <button class="button is-light" @click="clip(null)">
               <div class="icon">
@@ -18,30 +19,48 @@
             </button>
           </p>
         </div>
-        <a v-if="stream.isPlaying" class="panel-block has-text-info" @click="pauseStream(slotProps)">
-          <span class="panel-icon">
-            <i class="fas fa-pause"></i>
-          </span>
-          <span>{{ $t("pause") }}</span>
-        </a>
-        <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
-          <span class="panel-icon">
-            <i class="fas fa-play"></i>
-          </span>
-          <span>{{ $t("play") }}</span>
-        </a>
-        <a v-if="object.type === 'stream'" class="panel-block has-text-info" @click="restartStream">
-          <span class="panel-icon">
-            <i class="fas fa-sync"></i>
-          </span>
-          <span>{{ $t("restart") }}</span>
-        </a>
-        <a class="panel-block" @click="openVolumePopup(slotProps)">
-          <span class="panel-icon">
-            <Icon src="voice-setting.svg" />
-          </span>
-          <span>{{ $t("volumn_setting") }}</span>
-        </a>
+        <template v-if="object.isRTMP">
+          <a v-if="object.type === 'stream'" class="panel-block" @click="refreshStreams">
+            <span class="panel-icon">
+              <i class="fas fa-sync"></i>
+            </span>
+            <span>{{ $t("restart") }}</span>
+          </a>
+          <a class="panel-block" @click="openVolumePopup(slotProps)">
+            <span class="panel-icon">
+              <Icon src="voice-setting.svg" />
+            </span>
+            <span>{{ $t("volumn_setting") }}</span>
+          </a>
+        </template>
+        <template v-else>
+          <a v-if="stream.isPlaying" class="panel-block" @click="pauseStream(slotProps)">
+            <span class="panel-icon">
+              <i class="fas fa-pause"></i>
+            </span>
+            <span>{{ $t("pause") }}</span>
+          </a>
+          <a v-else class="panel-block" @click="playStream(slotProps)">
+            <span class="panel-icon">
+              <i class="fas fa-play"></i>
+            </span>
+            <span>{{ $t("play") }}</span>
+          </a>
+          <a v-if="object.type === 'stream'" class="panel-block" @click="restartVideo">
+            <span class="panel-icon">
+              <i class="fas fa-sync"></i>
+            </span>
+            <span>{{ $t("restart") }}</span>
+          </a>
+          <a class="panel-block" @click="toggleLoop">
+            <span class="panel-icon">
+              <i v-if="stream.loop" class="fas fa-infinity"></i>
+              <b v-else>1</b>
+            </span>
+            <span v-if="stream.loop">{{ $t("loop.on") }}</span>
+            <span v-else>{{ $t("loop.off") }}</span>
+          </a>
+        </template>
 
         <MenuContent :object="object" :stream="stream" v-bind="slotProps" v-model:active="active" />
       </template>
@@ -51,7 +70,7 @@
         <video v-bind:id="'video' + stream.id" v-show="!loading" ref="video" :src="object.url" :muted="localMuted"
           preload="auto" disablepictureinpicture @loadeddata="loadeddata" @ended="stream.isPlaying = false" :style="{
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
-          }"></video>
+          }" :loop="stream.loop"></video>
         <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
@@ -90,6 +109,10 @@ export default {
         video.value.pause();
       }
     };
+
+    watch(() => stream.replayed, () => {
+      video.value.currentTime = 0;
+    });
 
     watch(
       () => props.object,
@@ -137,7 +160,7 @@ export default {
         .then(props.closeMenu);
     };
 
-    const restartStream = () => {
+    const refreshStreams = () => {
       store.dispatch("stage/getRunningStreams")
       let video = document.getElementById('video' + props.stream.id);
       if (stream.isPlaying && video) {
@@ -168,6 +191,24 @@ export default {
         .then(props.closeMenu);
     };
 
+    const restartVideo = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          replayed: stream.replayed + 1,
+        })
+        .then(props.closeMenu);
+    }
+
+    const toggleLoop = () => {
+      store
+        .dispatch("stage/shapeObject", {
+          ...stream,
+          loop: !stream.loop,
+        })
+        .then(props.closeMenu);
+    };
+
     const openVolumePopup = () => {
       store
         .dispatch("stage/openSettingPopup", {
@@ -188,14 +229,20 @@ export default {
       isPlayer,
       pauseStream,
       playStream,
-      restartStream,
+      refreshStreams,
       openVolumePopup,
+      restartVideo,
+      toggleLoop
     };
   },
 };
 </script>
 
 <style lang="scss" scoped>
+.panel-block {
+  font-size: 14px;
+}
+
 .mute-icon {
   position: absolute;
   width: 24px;

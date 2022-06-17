@@ -1,5 +1,5 @@
 <template>
-  <div class="is-flex is-align-items-center skeleton" :class="{ dropzone }" draggable="true" @dragstart="dragstart"
+  <div class="is-flex is-align-items-center is-justify-content-center skeleton" :class="{ dropzone }" draggable="true" @dragstart="dragstart"
     @dragend="dragend" @dragenter.prevent @dragover.prevent="dropzone = true" @dragleave.prevent="dropzone = false"
     @drop.prevent="drop" @touchmove="touchmove" @touchend="touchend" @dblclick="hold" @mouseenter="showMovable" :style="{
       position: position.isDragging ? 'fixed' : 'static',
