@@ -98,7 +98,7 @@ export default {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
 
-    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
+    const stream = reactive({ ...props.object, isPlaying: props.object.isRTMP ? true : props.object.isPlaying, src: loading });
     const video = ref();
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
