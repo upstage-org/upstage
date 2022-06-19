@@ -1,6 +1,6 @@
 <template>
-  <div class="payment">
-    <div class="columns">
+  <div class="payment mb-4">
+    <div class="columns is-vcentered">
       <div class="column"></div>
       <div class="column"></div>
       <h4 class="column is-2">Pay What You Can:</h4>

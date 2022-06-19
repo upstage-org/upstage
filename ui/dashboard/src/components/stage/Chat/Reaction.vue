@@ -6,7 +6,7 @@
       :key="react"
       @click="sendReaction(react)"
     >{{ react }}</button>
-    <span v-if="customEmoji" style="position: absolute; margin-left: 40px">
+    <span v-if="customEmoji" style="position: absolute; margin-left: 28px">
       <ChatInput
         :picker-only="true"
         :style="{ height: '30px' }"

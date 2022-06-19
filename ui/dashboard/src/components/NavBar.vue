@@ -2,13 +2,14 @@
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <Logo link="https://www.upstage.org.nz" />
+      <LanguageSelector class="is-hidden-desktop" />
       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
       </a>
     </div>
-    <LanguageSelector />
+    <LanguageSelector class="is-hidden-mobile is-hidden-tablet-only" />
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">

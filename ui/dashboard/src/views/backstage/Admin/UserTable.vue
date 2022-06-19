@@ -1,25 +1,16 @@
 <template>
-  <Dropdown
-    :data="roles"
-    :render-label="(item) => item.label"
-    :render-value="(item) => item.value"
-    v-model="filter.role"
-  />
-  <Field
-    class="ml-2"
-    style="display: inline-block; vertical-align: top"
-    v-model="filter.keyword"
-    right="fas fa-search"
-    placeholder="Player name or email"
-  />
+  <div class="columns is-mobile">
+    <div class="column is-narrow">
+      <Dropdown :data="roles" :render-label="(item) => item.label" :render-value="(item) => item.value"
+        v-model="filter.role" />
+    </div>
+    <div class="column pl-0">
+      <Field style="display: inline-block; vertical-align: top;" class="is-fullwidth-mobile" v-model="filter.keyword"
+        right="fas fa-search" placeholder="Player name or email" />
+    </div>
+  </div>
   <Loading v-if="loading" />
-  <DataTable
-    v-show="!loading || !firstLoad"
-    :data="users"
-    :headers="headers"
-    :wrapper="false"
-    numbered
-  >
+  <DataTable v-show="!loading || !firstLoad" :data="users" :headers="headers" numbered>
     <template #username="{ item }">
       {{ item.username }}
       <span v-if="item.intro" :data-tooltip="item.intro">
