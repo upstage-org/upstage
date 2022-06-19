@@ -5,7 +5,7 @@ $text: $black;
 $text-strong: $black;
 // Set your colors
 $primary: #007011;
-$primary-light: $light;
+$primary-light: findLightColor($primary);
 $primary-dark: findDarkColor($primary);
 $primary-invert: findColorInvert($primary);
 $twitter: #007011;
