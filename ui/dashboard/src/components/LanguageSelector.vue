@@ -1,8 +1,12 @@
 <template>
-  <div class="locale-changer my-2">
+  <div class="locale-changer m-2">
     <Dropdown v-model="$i18n.locale" :data="$i18n.availableLocales"
       :renderLabel="locale => `${flags[locale] ?? '🏳️‍🌈'} ${labels[locale] ?? locale}`"
-      @update:modelValue="persistLocale" />
+      @update:modelValue="persistLocale">
+      <template #selected="{ item }">{{ flags[item] ?? '🏳️‍🌈' }} <span class="is-hidden-mobile">{{ labels[item] ??
+          item
+      }}</span></template>
+    </Dropdown>
   </div>
 </template>
 
