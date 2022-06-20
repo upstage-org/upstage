@@ -2,17 +2,16 @@
 import os
 import re
 import sys
-from time import sleep
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
-
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from time import sleep
 
 import aiosmtplib
 from config.models import Config
@@ -118,7 +117,7 @@ async def send_mail_from_queue():
     '''
     Pop email from queue and send
     '''
-    app.logger.info('Send email from queue queue process!')
+    app.logger.info('Send email from queue process!')
     client = build_mongo_client()
     db = client[MONGO_DB]
     queue = db[MONGODB_COLLECTION_EMAIL]
@@ -135,10 +134,10 @@ async def send_mail_from_queue():
                 cc = mail['cc']
                 filenames = mail['filenames']
                 msg = create_email(to=recipients, subject=subject,
-                                   html=body, cc=cc, bcc=bcc, sender=sender,filenames=filenames)
+                                   html=body, cc=cc, bcc=bcc, sender=sender, filenames=filenames)
                 await send_async(msg=msg, user=sender, password=password)
         except Exception as e:
             app.logger.error(f'Failed to send email: {e}')
-            sleep(5)
             queue.insert_one(mail)
+            sleep(5)
         mail = queue.find_one_and_delete({})
