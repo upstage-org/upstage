@@ -1,5 +1,4 @@
 # -*- coding: iso8859-15 -*-
-import logging
 import os
 import re
 import sys
@@ -17,7 +16,7 @@ from email.mime.text import MIMEText
 
 import aiosmtplib
 from config.models import Config
-from config.project_globals import ScopedSession
+from config.project_globals import ScopedSession, app
 from config.settings import (ADMIN_EMAIL, EMAIL_HOST, EMAIL_HOST_DISPLAY_NAME,
                              EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT,
                              EMAIL_USE_TLS, MONGO_DB, MONGODB_COLLECTION_EMAIL)
@@ -110,16 +109,16 @@ def push_mail_info_to_queue(email_info):
         db[MONGODB_COLLECTION_EMAIL].insert_one(
             email_info if isinstance(email_info, dict) else email_info.__dict__)
         client.close()
-        logging.info('push email success')
+        app.logger('Push email success')
     except Exception as e:
-        logging.error(e)
+        app.logger.error(f'Failed to push email to queue: {e}')
 
 
 async def send_mail_from_queue():
     '''
     Pop email from queue and send
     '''
-    print("Send email from queue queue process!")
+    app.logger.info('Send email from queue queue process!')
     client = build_mongo_client()
     db = client[MONGO_DB]
     queue = db[MONGODB_COLLECTION_EMAIL]
@@ -139,8 +138,7 @@ async def send_mail_from_queue():
                                    html=body, cc=cc, bcc=bcc, sender=sender,filenames=filenames)
                 await send_async(msg=msg, user=sender, password=password)
         except Exception as e:
-            logging.error(e)
+            app.logger.error(f'Failed to send email: {e}')
             sleep(5)
             queue.insert_one(mail)
-        finally:
-            mail = queue.find_one_and_delete({})
+        mail = queue.find_one_and_delete({})
