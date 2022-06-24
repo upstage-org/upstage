@@ -5,53 +5,48 @@
       <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
-  <div class="columns" :class="{ 'is-loading': !user }">
-    <div class="column is-narrow">
-      <aside class="menu box has-background-light mx-4">
-        <p class="menu-label">{{ $t("users") }}</p>
-        <ul class="menu-list">
-          <li>
-            <router-link
-              to="/backstage/admin/player-management"
-              exact-active-class="is-active"
-            >{{ $t("player_management") }}</router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/batch-user-creation"
-              exact-active-class="is-active"
-            >{{ $t("batch_user_creation") }}</router-link>
-          </li>
-        </ul>
-        <p class="menu-label">{{ $t("system") }}</p>
-        <ul class="menu-list">         
-          <li>
-            <router-link
-              to="/backstage/admin/foyer-customisation"
-              exact-active-class="is-active"
-            >{{ $t("foyer_customisation") }}</router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/email-notification"
-              exact-active-class="is-active"
-            >{{ $t("email_notification") }}</router-link>
-          </li>
-          <li>
-            <router-link
-              to="/backstage/admin/system-configuration"
-              exact-active-class="is-active"
-            >{{ $t("system_configuration") }}</router-link>
-          </li>
-        </ul>
-      </aside>
-    </div>
-    <div class="column">
-      <div class="pt-4 pr-4 pb-4">
+  <section class="section">
+    <div class="columns" :class="{ 'is-loading': !user }">
+      <div class="column is-narrow">
+        <aside class="menu box has-background-light">
+          <p class="menu-label">{{ $t("users") }}</p>
+          <ul class="menu-list">
+            <li>
+              <router-link to="/backstage/admin/player-management" exact-active-class="is-active">{{
+                  $t("player_management")
+              }}</router-link>
+            </li>
+            <li>
+              <router-link to="/backstage/admin/batch-user-creation" exact-active-class="is-active">{{
+                  $t("batch_user_creation")
+              }}</router-link>
+            </li>
+          </ul>
+          <p class="menu-label">{{ $t("system") }}</p>
+          <ul class="menu-list">
+            <li>
+              <router-link to="/backstage/admin/foyer-customisation" exact-active-class="is-active">{{
+                  $t("foyer_customisation")
+              }}</router-link>
+            </li>
+            <li>
+              <router-link to="/backstage/admin/email-notification" exact-active-class="is-active">{{
+                  $t("email_notification")
+              }}</router-link>
+            </li>
+            <li>
+              <router-link to="/backstage/admin/system-configuration" exact-active-class="is-active">{{
+                  $t("system_configuration")
+              }}</router-link>
+            </li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column is-expanded lite-scroller">
         <router-view v-if="user" />
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -69,5 +64,13 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+@media screen and (min-width: 769px) and (max-width: 1280px) {
+  .lite-scroller {
+    width: 0;
+    .table-wrapper {
+      padding-bottom: 0;
+    }
+  }
+}
 </style>

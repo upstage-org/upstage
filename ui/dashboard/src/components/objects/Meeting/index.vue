@@ -16,6 +16,7 @@ import Object from "../Object.vue";
 import Loading from "@/components/Loading.vue";
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
+import { useJitsiDomain } from "./composable";
 
 export default {
   components: { Object, Loading },
@@ -26,7 +27,7 @@ export default {
     const meeting = computed(() => props.object);
 
     onMounted(() => {
-      const domain = 'meet.jit.si';
+      const domain = useJitsiDomain();
       const options = {
         roomName: props.object.name,
         subject: 'Powered by Jitsi',
@@ -62,6 +63,7 @@ export default {
   border-radius: 8px;
   box-sizing: border-box;
   overflow: hidden;
+
   .room {
     height: 100%;
   }
