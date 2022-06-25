@@ -49,13 +49,19 @@ export default {
       default: 1,
     },
     style: Object,
+    preventClicking: {
+      type: Boolean,
+      default: false,
+    },
   },
   setup: (props) => {
     const isActive = ref(props.active);
     const position = reactive({ x: 100, y: 100 });
 
     const openMenu = (e) => {
-      e.currentTarget.click();
+      if (!props.preventClicking) {
+        e.currentTarget.click();
+      }
       position.x = e.clientX + props.padLeft;
       position.y = e.clientY + props.padTop;
       isActive.value = true;
