@@ -149,6 +149,7 @@ export default {
     const store = useStore();
     const router = useRouter();
     const stage = inject("stage");
+    const clearCache = inject("clearCache");
 
     const form = reactive({
       fileLocation: '',
@@ -192,6 +193,12 @@ export default {
       try {
         await mutation();
         notification.success("Stage updated successfully!");
+        store.commit('cache/UPDATE_STAGE_VISIBILITY', {
+          stageId: form.id,
+          visibility: form.visibility
+        })
+        console.log(clearCache);
+        clearCache();
       } catch (error) {
         notification.error(error);
       }

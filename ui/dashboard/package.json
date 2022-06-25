@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.20.0",
-  "versionAlias": "Schildbrau-20",
+  "version": "1.23.0",
+  "versionAlias": "Krombacher-23",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
