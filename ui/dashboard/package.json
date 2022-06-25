@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.22.0",
-  "versionAlias": "Stiegl-22",
+  "version": "1.23.0",
+  "versionAlias": "Krombacher-23",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
