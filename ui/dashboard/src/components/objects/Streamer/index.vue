@@ -130,14 +130,7 @@ export default {
     if (props.object.isRTMP) {
       const fullUrl = computed(() => getSubsribeLink(props.object.url));
       useCatchup(video);
-      const { playable } = useFlv(video, fullUrl);
-
-      watch(playable, value => {
-        console.log("playable", value);
-        if (!value) {
-          store.dispatch("stage/deleteObject", props.object);
-        }
-      })
+      useFlv(video, fullUrl);
     }
 
     const clip = (shape) => {
