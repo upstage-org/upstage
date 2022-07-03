@@ -2,7 +2,7 @@
   <div>
     <Object :object="meeting">
       <template #render>
-        <div class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }">
+        <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }">
           <Loading v-if="loading" height="100%" />
           <div class="room" ref="room"></div>
         </div>
@@ -67,5 +67,9 @@ export default {
   .room {
     height: 100%;
   }
+}
+
+.disable-pointer{
+  pointer-events: none;
 }
 </style>
