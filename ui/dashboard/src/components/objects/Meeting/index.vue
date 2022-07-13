@@ -2,7 +2,8 @@
   <div>
     <Object :object="meeting">
       <template #render>
-        <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }">
+        <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }"
+          :class="activeMovable ? 'disable-pointer' : ''">
           <Loading v-if="loading" height="100%" />
           <div class="room" ref="room"></div>
         </div>
@@ -49,7 +50,9 @@ export default {
       console.log(api)
     })
 
-    return { meeting, room };
+    const activeMovable = computed(() => store.getters["stage/activeMovable"]);
+
+    return { meeting, room, activeMovable };
   },
 };
 </script>
@@ -69,7 +72,7 @@ export default {
   }
 }
 
-.disable-pointer{
+.disable-pointer {
   pointer-events: none;
 }
 </style>
