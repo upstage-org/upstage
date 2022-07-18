@@ -153,7 +153,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 `, null, { fetchPolicy: "cache-only" })
 const mediaTypes = computed(() => {
   if (result.value?.mediaTypes) {
-    return result.value.mediaTypes.edges.map(({ node }) => ({ label: capitalize(node.name), value: node.name }))
+    return result.value.mediaTypes.edges.filter(({ node }) => node.name.toLowerCase() != 'media').map(({ node }) => ({ label: capitalize(node.name), value: node.name }))
   }
   return []
 })
