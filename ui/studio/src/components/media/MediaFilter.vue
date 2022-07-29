@@ -184,7 +184,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
         </a-select>
         <a-select allowClear showArrow filterOption mode="tags" style="min-width: 128px" placeholder="Media types"
           :loading="loading" v-model:value="types"
-          :options="result ? result.mediaTypes.edges.filter(e => !['stream', 'shape', 'media'].includes(e.node.name.toLowerCase())).map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []">
+          :options="result ? result.mediaTypes.edges.filter(e => !['shape', 'media'].includes(e.node.name.toLowerCase())).map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []">
         </a-select>
         <a-select allowClear showArrow :filterOption="handleFilterStageName" mode="tags" style="min-width: 160px"
           placeholder="Stages assigned" :loading="loading" v-model:value="stages"
