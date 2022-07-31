@@ -2,6 +2,8 @@
 Description=UpStage event archive service
 
 [Service]
+User=upstage
+Group=upstage
 Type=simple
 ExecStart=/usr/bin/python3 /home/upstage/upstage/run_event_archive.py
 
