@@ -13,7 +13,7 @@
 <script setup>
 import Dropdown from './form/Dropdown.vue';
 const flags = {
-  en: '🇺🇸',
+  en: '🇬🇧',
   de: '🇩🇪',
   vn: '🇻🇳',
 }
