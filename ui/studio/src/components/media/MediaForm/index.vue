@@ -154,7 +154,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 const mediaTypes = computed(() => {
   if (result.value?.mediaTypes) {
     return result.value.mediaTypes.edges
-      .filter(({ node }) => !(editingMediaResult.value ? ['media', 'stream'] : ['media']).includes(node.name.toLowerCase()))
+      .filter(({ node }) => !(editingMediaResult.value ? ['media', 'stream', 'shape'] : ['media', 'shape']).includes(node.name.toLowerCase()))
       .map(({ node }) => ({ label: capitalize(node.name), value: node.name }))
   }
   return []
