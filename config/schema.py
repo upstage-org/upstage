@@ -160,7 +160,7 @@ class SendEmail(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, subject, body, recipients, bcc):
         code, error, user, timezone = current_user()
-        if not user.role in (ADMIN, SUPER_ADMIN):
+        if not user.role in (ADMIN, SUPER_ADMIN) and not user.can_send_email:
             raise Exception(
                 "Only Admin can send notification emails!")
 
