@@ -1,28 +1,35 @@
 # -*- coding: iso8859-15 -*-
 import os
 import sys
-from flask_jwt_extended.view_decorators import jwt_required
-
-import graphene
-from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
-from auth.auth_mutation import RefreshMutation
-from config.project_globals import DBSession, app
-from config.settings import URL_PREFIX
-from flask_graphql import GraphQLView
-from graphene import relay
-from asset.models import Stage as StageModel, Tag as TagModel
-from stage.asset import DeleteMedia
-from studio.notification import Notification, resolve_notifications
-from user.models import ROLES, User as UserModel, role_conv
-from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, ConfirmPermission, QuickAssignMutation, RequestPermission, SaveMedia, UploadFile, Voice, resolve_voices)
-from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
+
+import graphene
+from asset.models import Stage as StageModel
+from asset.models import Tag as TagModel
+from auth.auth_mutation import RefreshMutation
+from config.project_globals import DBSession, app
+from config.settings import URL_PREFIX
+from flask_graphql import GraphQLView
+from flask_jwt_extended.view_decorators import jwt_required
+from graphene import relay
+from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from stage.asset import DeleteMedia
+from user.models import ROLES
+from user.models import User as UserModel
+from user.models import role_conv
+from user.user_utils import current_user
+
+from studio.media import (Asset, AssetConnectionField, AssetType, CalcSizes,
+                          ConfirmPermission, QuickAssignMutation,
+                          RequestPermission, SaveMedia, UploadFile, Voice,
+                          resolve_voices)
+from studio.notification import Notification, resolve_notifications
 
 
 class Stage(SQLAlchemyObjectType):
@@ -91,6 +98,6 @@ studio_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{URL_PREFIX}studio_graphql/', view_func=GraphQLView.as_view(
         "studio_graphql", schema=studio_schema,
-        graphiql=True
+        graphiql=True, executor=AsyncioExecutor()
     )
 )

@@ -1,35 +1,43 @@
 # -*- coding: iso8859-15 -*-
-from datetime import datetime
-from auth.models import UserSession
+from user.user_utils import current_user
+from user.models import User as UserModel
+from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, OneTimeTOTP
+from utils import graphql_utils
+from performance_config.models import Performance
+from performance_config.models import ParentStage as ParentStageModel
+from mail.templates import (admin_registration_notification, user_approved,
+                            user_registration)
 from mail.mail_utils import send
-from mail.templates import admin_registration_notification, user_approved, user_registration
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
+from graphene import relay
+from flask_jwt_extended import get_jwt_identity, jwt_required
+from flask_graphql import GraphQLView
+from flask import request
+from config.settings import URL_PREFIX
+from config.project_globals import (Base, DBSession, ScopedSession, api, app,
+                                    engine, metadata)
+from auth.models import UserSession
+from auth.fernet_crypto import decrypt, encrypt
+from auth.auth_mutation import (AuthMutation, PasswordResetMutation,
+                                RefreshMutation, RequestPasswordResetMutation,
+                                VerifyPasswordResetMutation)
+from auth.auth_api import jwt_required
+from asset.models import StageAttribute as StageAttributeModel
+from asset.models import Stage as StageModel
+from asset.models import Asset as AssetModel
 import performance_config.models
-from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
-from performance_config.models import ParentStage as ParentStageModel, Performance
-import sys,os
+import graphene
+from datetime import datetime
 import json
+import os
+import sys
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir,'..'))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
-
-import graphene
-from graphene import relay
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,
-    app,api,ScopedSession)
-from config.settings import URL_PREFIX
-from auth.auth_api import jwt_required
-from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, OneTimeTOTP, User as UserModel
-from flask_graphql import GraphQLView
-from auth.fernet_crypto import encrypt,decrypt
-from utils import graphql_utils
-from auth.auth_mutation import AuthMutation, PasswordResetMutation,RefreshMutation,RequestPasswordResetMutation, VerifyPasswordResetMutation
-from user.user_utils import current_user
-from flask_jwt_extended import jwt_required,get_jwt_identity
-from flask import request
 
 
 class UserAttribute:
@@ -41,24 +49,28 @@ class UserAttribute:
     first_name = graphene.String(description="First Name")
     last_name = graphene.String(description="Last Name")
     display_name = graphene.String(description="Display Name")
-    active =  graphene.Boolean(description="Active record or not")
+    active = graphene.Boolean(description="Active record or not")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
     intro = graphene.String(description="Introduction")
 
+
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
+
     class Meta:
         model = UserModel
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
-    
+
     def resolve_db_id(self, info):
         return self.id
+
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
     pass
+
 
 class CreateUser(graphene.Mutation):
     """Mutation to create a user."""
@@ -67,7 +79,7 @@ class CreateUser(graphene.Mutation):
     class Arguments:
         inbound = CreateUserInput(required=True)
 
-    def mutate(self, info, inbound):
+    async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
@@ -85,16 +97,18 @@ class CreateUser(graphene.Mutation):
             local_db_session.flush()
             user_id = user.id
 
-        user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
-        send([user.email], f"Welcome to UpStage!", user_registration(user))
-        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
+        user = DBSession.query(UserModel).filter(UserModel.id == user_id).first()
+        await send([user.email], f"Welcome to UpStage!", user_registration(user))
+        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN, ADMIN])).all()]
         approval_url = f"{request.url_root}backstage/admin/player-management"
-        send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
+        await send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)
 
-class UpdateUserInput(graphene.InputObjectType,UserAttribute):
+
+class UpdateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to update a user."""
     id = graphene.ID(required=True, description="Global Id of the user.")
+
 
 class UpdateUser(graphene.Mutation):
     """Update a user."""
@@ -104,19 +118,19 @@ class UpdateUser(graphene.Mutation):
         inbound = UpdateUserInput(required=True)
 
     @jwt_required()
-    def mutate(self, info, inbound):
+    async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
-        code,error,user,timezone = current_user()
-        if not user.role in (ADMIN,SUPER_ADMIN) :
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
             if not user.id == int(data['id']):
                 raise Exception("Permission denied!")
-        
+
         if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
 
         with ScopedSession() as local_db_session:
             user = local_db_session.query(UserModel)\
-                .filter(UserModel.id==data['id']).first()
+                .filter(UserModel.id == data['id']).first()
             if (data['password']):
                 data['password'] = encrypt(data['password'])
             else:
@@ -124,15 +138,16 @@ class UpdateUser(graphene.Mutation):
             for key, value in data.items():
                 if key == 'active':
                     if value and not user.active and not user.deactivated_on:
-                        send([user.email], f"Registration approved for user {user.username}", user_approved(user))
+                        await send([user.email], f"Registration approved for user {user.username}", user_approved(user))
                     if not value and user.active:
                         user.deactivated_on = datetime.now()
 
                 if hasattr(user, key):
                     setattr(user, key, value)
 
-        user = DBSession.query(UserModel).filter(UserModel.id==data['id']).first()
+        user = DBSession.query(UserModel).filter(UserModel.id == data['id']).first()
         return UpdateUser(user=user)
+
 
 class OneUserInput(graphene.InputObjectType):
     """ This is used to get one user's data, including their global ID.
@@ -143,6 +158,7 @@ class OneUserInput(graphene.InputObjectType):
     username = graphene.String(required=False)
     db_id = graphene.Int(required=False)
     email = graphene.String(required=False)
+
 
 class OneUser(graphene.ObjectType):
     #search = OneUserInput()
@@ -157,7 +173,7 @@ class OneUser(graphene.ObjectType):
     @jwt_required()
     def resolve_search(self, info, inbound):
         """ Get user from JWT token. """
-        code,error,this_user,timezone = current_user()
+        code, error, this_user, timezone = current_user()
         if code != 200:
             raise Exception(error)
 
@@ -168,12 +184,12 @@ class OneUser(graphene.ObjectType):
             data = graphql_utils.input_to_dictionary(inbound)
             lookup_user = DBSession.query(UserModel).filter_by(data).first()
 
-        access_token = request.headers.get(app.config['JWT_HEADER_NAME'],None)
+        access_token = request.headers.get(app.config['JWT_HEADER_NAME'], None)
         #app.logger.info("access token:{0}".format(access_token))
 
         # If latest user session access token doesn't match, kick them out.
         user_session = DBSession.query(UserSession).filter(
-            UserSession.user_id==user.id).order_by(
+            UserSession.user_id == user.id).order_by(
             UserSession.recorded_time.desc()).first()
 
         if not user_session:
@@ -182,27 +198,29 @@ class OneUser(graphene.ObjectType):
         if (user_session.access_token != access_token):
             TNL.add(access_token)
             # No. user session may be valid, from a newer login on a different device.
-            #TNL.add(user_session.refresh_token)
-            #TNL.add(user_session.access_token)
+            # TNL.add(user_session.refresh_token)
+            # TNL.add(user_session.access_token)
             raise Exception('Access token is invalid')
 
         self.result = {
-            'user_id':user.id,'role':user.role,
-            'phone':user.phone,
-            'first_name':user.first_name, 'last_name': user.last_name,
-            'email':user.email,
-            'timezone':timezone,
-            'groups':[],
-            'username':user.username,
-            }
-        #return result
+            'user_id': user.id, 'role': user.role,
+            'phone': user.phone,
+            'first_name': user.first_name, 'last_name': user.last_name,
+            'email': user.email,
+            'timezone': timezone,
+            'groups': [],
+            'username': user.username,
+        }
+        # return result
         return graphql_utils.json2obj(self.result)
 
-class ChangePasswordInput(graphene.InputObjectType,UserAttribute,):
+
+class ChangePasswordInput(graphene.InputObjectType, UserAttribute,):
     """Arguments to update a user."""
     id = graphene.ID(required=True, description="Global Id of the user.")
     oldPassword = graphene.String(required=True)
     newPassword = graphene.String(required=True)
+
 
 class ChangePassword(graphene.Mutation):
     success = graphene.Boolean(description="Password changed successful or not")
@@ -214,7 +232,7 @@ class ChangePassword(graphene.Mutation):
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         with ScopedSession() as local_db_session:
-            user = local_db_session.query(UserModel).filter(UserModel.id==data['id']).first()
+            user = local_db_session.query(UserModel).filter(UserModel.id == data['id']).first()
             if decrypt(user.password) != data['oldPassword']:
                 raise Exception('Old password incorrect')
             else:
@@ -222,9 +240,11 @@ class ChangePassword(graphene.Mutation):
             local_db_session.commit()
         return ChangePassword(success=True)
 
-class DeleteUserInput(graphene.InputObjectType,UserAttribute):
+
+class DeleteUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to update a user."""
     id = graphene.ID(required=True, description="Global Id of the user.")
+
 
 class DeleteUser(graphene.Mutation):
     success = graphene.Boolean(description="Password changed successful or not")
@@ -235,23 +255,23 @@ class DeleteUser(graphene.Mutation):
     @jwt_required()
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
-        code,error,user,timezone = current_user()
-        if not user.role in (ADMIN,SUPER_ADMIN) :
-                raise Exception("Permission denied!")
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
+            raise Exception("Permission denied!")
         with ScopedSession() as local_db_session:
             # Delete all existed user's sessions
-            local_db_session.query(UserSession).filter(UserSession.user_id==data['id']).delete()
-            local_db_session.query(OneTimeTOTP).filter(OneTimeTOTP.user_id==data['id']).delete()
+            local_db_session.query(UserSession).filter(UserSession.user_id == data['id']).delete()
+            local_db_session.query(OneTimeTOTP).filter(OneTimeTOTP.user_id == data['id']).delete()
             # Delete all stages created by this user
-            local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
-            local_db_session.query(ParentStageModel).filter(ParentStageModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
-            local_db_session.query(Performance).filter(Performance.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
-            local_db_session.query(StageModel).filter(StageModel.owner_id==data['id']).delete()
+            local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage.has(StageModel.owner_id == data['id'])).delete(synchronize_session='fetch')
+            local_db_session.query(ParentStageModel).filter(ParentStageModel.stage.has(StageModel.owner_id == data['id'])).delete(synchronize_session='fetch')
+            local_db_session.query(Performance).filter(Performance.stage.has(StageModel.owner_id == data['id'])).delete(synchronize_session='fetch')
+            local_db_session.query(StageModel).filter(StageModel.owner_id == data['id']).delete()
             # Change the owner of media uploaded by this user to the one who process the delete
             # Because delete the media would cause impact to other stage, this would be a workaround for now
-            local_db_session.query(AssetModel).filter(AssetModel.owner_id==data['id']).update({AssetModel.owner_id: user.id})
+            local_db_session.query(AssetModel).filter(AssetModel.owner_id == data['id']).update({AssetModel.owner_id: user.id})
             # Delete the actual user
-            local_db_session.query(UserModel).filter(UserModel.id==data['id']).delete()
+            local_db_session.query(UserModel).filter(UserModel.id == data['id']).delete()
             local_db_session.commit()
         return DeleteUser(success=True)
 
@@ -271,8 +291,8 @@ class BatchUserCreation(graphene.Mutation):
 
     @jwt_required()
     def mutate(self, info, users, stageIds=[]):
-        code,error,user,timezone = current_user()
-        if not user.role in (ADMIN,SUPER_ADMIN) :
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
             raise Exception("Permission denied!")
         ids = []
         with ScopedSession() as local_db_session:
@@ -298,7 +318,7 @@ class BatchUserCreation(graphene.Mutation):
                 local_db_session.add(user)
                 local_db_session.flush()
                 ids.append(user.id)
-            
+
             # Now assigns users into stages
             stages = DBSession.query(StageModel).filter(StageModel.id.in_(stageIds)).all()
             for stage in stages:
@@ -307,7 +327,7 @@ class BatchUserCreation(graphene.Mutation):
                     accesses = json.loads(player_access.description)
                     for user_id in ids:
                         if user_id not in accesses[0]:
-                            accesses[0].append(user_id) # append user id to player ids
+                            accesses[0].append(user_id)  # append user id to player ids
                     player_access.description = json.dumps(accesses)
                     local_db_session.flush()
 
@@ -315,7 +335,9 @@ class BatchUserCreation(graphene.Mutation):
         users = DBSession.query(UserModel).filter(UserModel.id.in_(ids)).all()
         return BatchUserCreation(users=users)
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
 class Mutation(graphene.ObjectType):
     """ Some mutations are imported from auth/ """
     createUser = CreateUser.Field()
@@ -329,6 +351,7 @@ class Mutation(graphene.ObjectType):
     verifyPasswordReset = VerifyPasswordResetMutation.Field()
     passwordReset = PasswordResetMutation.Field()
 
+
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     userList = SQLAlchemyConnectionField(User.connection)
@@ -339,15 +362,18 @@ class Query(graphene.ObjectType):
 
     @jwt_required()
     def resolve_currentUser(self, info):
-        code,error,user,timezone = current_user()
+        code, error, user, timezone = current_user()
         if error:
             raise Exception(error)
         return user
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{URL_PREFIX}user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
-    graphiql=True
-))
-
+    f'/{URL_PREFIX}user_graphql/',
+    view_func=GraphQLView.as_view(
+        "user_graphql",
+        schema=user_schema,
+        graphiql=True, executor=AsyncioExecutor()
+    ))

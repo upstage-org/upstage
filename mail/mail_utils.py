@@ -1,4 +1,5 @@
 # -*- coding: iso8859-15 -*-
+import json
 import os
 import re
 import sys
@@ -8,24 +9,36 @@ projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
+
+import threading
+import uuid
+from datetime import datetime
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from time import sleep
 
 import aiosmtplib
+import pymongo
+import requests
+from auth.fernet_crypto import decrypt, encrypt
 from config.models import Config
 from config.project_globals import ScopedSession, app
-from config.settings import (ADMIN_EMAIL, EMAIL_HOST, EMAIL_HOST_DISPLAY_NAME,
+from config.settings import (ACCEPT_EMAIL_HOST,
+                             ACCEPT_SERVER_SEND_EMAIL_EXTERNAL, ADMIN_EMAIL,
+                             EMAIL_HOST, EMAIL_HOST_DISPLAY_NAME,
                              EMAIL_HOST_PASSWORD, EMAIL_HOST_USER, EMAIL_PORT,
-                             EMAIL_USE_TLS, MONGO_DB, MONGODB_COLLECTION_EMAIL)
-from event_archive.db import build_mongo_client
+                             EMAIL_TIME_EXPIRED_TOKEN, EMAIL_USE_TLS, HOSTNAME,
+                             SEND_EMAIL_SERVER)
+from event_archive.db import get_mongo_token_collection
 
 
-def send(to, subject, content, bcc=[], cc=[], filenames=[]):
-    push_mail_info_to_queue({'sender': EMAIL_HOST_USER, 'password': EMAIL_HOST_PASSWORD,
-                             'subject': subject, 'body': content, 'recipients': to,
-                             'bcc': bcc, 'cc': cc, 'filenames': filenames})
+async def send(to, subject, content, bcc=[], cc=[], filenames=[]):
+    if HOSTNAME not in ACCEPT_EMAIL_HOST:
+        call_send_email_external_api(subject, content, to, cc, bcc, filenames)
+    else:
+        msg = create_email(to=to, subject=subject, html=content, cc=cc, bcc=bcc, filenames=filenames)
+        await send_async(msg=msg)
 
 
 def remove_html(raw_html):
@@ -98,46 +111,75 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
     return msg
 
 
-def push_mail_info_to_queue(email_info):
-    '''
-    Push email to queue
-    '''
-    try:
-        client = build_mongo_client()
-        db = client[MONGO_DB]
-        db[MONGODB_COLLECTION_EMAIL].insert_one(
-            email_info if isinstance(email_info, dict) else email_info.__dict__)
-        client.close()
-        app.logger.info('Push email success')
-    except Exception as e:
-        app.logger.error(f'Failed to push email to queue: {e}')
+def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
+    s = requests.Session()
+    url = f'{SEND_EMAIL_SERVER}/api/email_graphql/'
+    client = get_mongo_token_collection()
+    token = client.find_one({},  sort=[('_id', pymongo.DESCENDING)])
+    header = {'X-Email-Token': token['token']}
+    data = '''
+    mutation{
+        sendEmailExternal(
+            emailInfo: {
+                subject: "'''+subject+'''",
+                body: "'''+body+'''",
+                recipients: ''' + json.dumps(recipients) + ''',
+                cc: ''' + json.dumps(cc)+''',
+                bcc: ''' + json.dumps(bcc)+''',
+                filenames:''' + json.dumps(filenames)+'''
+            }
+        ){
+            success
+        }
+    }
+    '''.replace('\n', '')
+    result = s.post(url=url, data={"query": data}, headers=header)
+    print(result)
+    if result.ok and json.loads(result.text)['data']['sendEmailExternal']['success'] == True:
+        return True
+    else:
+        raise Exception(result)
 
 
-async def send_mail_from_queue():
-    '''
-    Pop email from queue and send
-    '''
-    app.logger.info('Send email from queue process!')
-    client = build_mongo_client()
-    db = client[MONGO_DB]
-    queue = db[MONGODB_COLLECTION_EMAIL]
-    mail = queue.find_one_and_delete({})
-    while mail:
-        try:
-            if mail:
-                sender = mail['sender']if mail['sender'] else EMAIL_HOST_USER
-                password = mail['password']if mail['password'] else EMAIL_HOST_PASSWORD
-                subject = mail['subject']
-                body = mail['body']
-                recipients = mail['recipients']
-                bcc = mail['bcc']
-                cc = mail['cc']
-                filenames = mail['filenames']
-                msg = create_email(to=recipients, subject=subject,
-                                   html=body, cc=cc, bcc=bcc, sender=sender, filenames=filenames)
-                await send_async(msg=msg, user=sender, password=password)
-        except Exception as e:
-            app.logger.error(f'Failed to send email: {e}')
-            queue.insert_one(mail)
-            sleep(5)
-        mail = queue.find_one_and_delete({})
+def save_email_token_client(token):
+    client = get_mongo_token_collection()
+    # client.delete_many({})
+    client.insert_one({'token': token, 'expired_date': datetime.utcnow()})
+
+
+def valid_token(token):
+    client = get_mongo_token_collection()
+    if client.find_one({'token': decrypt(token)}):
+        return True
+
+
+def generate_email_token_clients():
+    while True:
+        sleep(EMAIL_TIME_EXPIRED_TOKEN)
+
+        client = get_mongo_token_collection()
+        # client.delete_many({})
+        for client_server in ACCEPT_SERVER_SEND_EMAIL_EXTERNAL:
+            live_token = uuid.uuid4().hex
+            client.insert_one({'token': live_token, 'from_server': client_server, 'expired_date': datetime.utcnow()})
+
+            s = requests.Session()
+            url = f'{client_server}/api/email_graphql/'
+            data = '''
+            mutation{
+                postToken(token: "''' + encrypt(live_token) + '''"){
+                    success
+                }
+            }
+            '''
+            result = s.post(url=url, data={"query": data})
+            if result.ok:
+                app.logger.info(f'Send email token to {client_server} successfully')
+            else:
+                app.logger.info(f'Send email token to {client_server} failed')
+
+
+if HOSTNAME == 'app1':
+    import threading
+    t1 = threading.Thread(target=generate_email_token_clients)
+    t1.start()
