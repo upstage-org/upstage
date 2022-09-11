@@ -38,6 +38,7 @@ EMAIL_TIME_TRIGGER_SECONDS = 60 * 1 # 1 minute
 ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/']
 EMAIL_TIME_EXPIRED_TOKEN = 60 * 10 # 10 minute
 ACCEPT_EMAIL_HOST = ['dev_app1', 'app1']
+SEND_EMAIL_SERVER = 'https://dev-app1.upstage.live'
 
 MONGO_HOST = ""
 MONGO_PORT = 0

@@ -14,9 +14,9 @@ from config.settings import URL_PREFIX
 from flask import request
 from flask_graphql import GraphQLView
 from graphene import relay
+from graphql.execution.executors.asyncio import AsyncioExecutor
 
-from mail.mail_utils import (push_mail_info_to_queue, save_email_token_client,
-                             valid_token)
+from mail.mail_utils import save_email_token_client, send, valid_token
 
 
 class EmailAttribute(graphene.InputObjectType):
@@ -42,7 +42,8 @@ class SendEmailExternal(graphene.Mutation):
     class Arguments:
         email_info = EmailAttribute(required=True)
 
-    def mutate(self, info, email_info):
+    @staticmethod
+    async def mutate(self, info, email_info: EmailAttribute):
         token = request.headers.get('X-Email-Token')
         if not token:
             raise Exception('Missing X-Email-Token header')
@@ -53,8 +54,7 @@ class SendEmailExternal(graphene.Mutation):
         except:
             raise Exception('Invalid X-Email-Token')
 
-        # Push email to queue
-        push_mail_info_to_queue(email_info)
+        await send(to=email_info.recipients, subject=email_info.subject, content=email_info.body, bcc=email_info.bcc, cc=email_info.cc, filenames=email_info.filenames)
 
         return SendEmailExternal(success=True)
 
@@ -86,6 +86,6 @@ email_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{URL_PREFIX}/email_graphql/', view_func=GraphQLView.as_view(
         "email_graphql", schema=email_schema,
-        graphiql=True
+        graphiql=True, executor=AsyncioExecutor()
     )
 )

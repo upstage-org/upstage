@@ -127,3 +127,4 @@ EMAIL_HOST_PASSWORD = ''
 ADMIN_EMAIL = ''
 EMAIL_HOST_DISPLAY_NAME = ''
 ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = [] # Only config on upstage server
+SEND_EMAIL_SERVER = 'https://app1.upstage.live' # Send email server endpoint
