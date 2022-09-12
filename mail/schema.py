@@ -16,7 +16,8 @@ from flask_graphql import GraphQLView
 from graphene import relay
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-from mail.mail_utils import save_email_token_client, send, valid_token
+from mail.mail_utils import (create_email, save_email_token_client, send,
+                             send_async, valid_token)
 
 
 class EmailAttribute(graphene.InputObjectType):
@@ -54,7 +55,8 @@ class SendEmailExternal(graphene.Mutation):
         except:
             raise Exception('Invalid X-Email-Token')
 
-        await send(to=email_info.recipients, subject=email_info.subject, content=email_info.body, bcc=email_info.bcc, cc=email_info.cc, filenames=email_info.filenames)
+        msg = create_email(to=email_info.recipients, subject=email_info.subject, html=email_info.body, cc=email_info.cc, bcc=email_info.bcc, filenames=email_info.filenames, external=True)
+        await send_async(msg=msg)
 
         return SendEmailExternal(success=True)
 

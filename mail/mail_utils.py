@@ -64,16 +64,18 @@ async def send_async(msg, user=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD):
     await smtp.quit()
 
 
-def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HOST_USER):
+def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HOST_USER, external = False):
     '''
     Create an email
     '''
     msg = MIMEMultipart('fixed')
-    with ScopedSession() as local_db_session:
-        subject_prefix = local_db_session.query(Config).filter(
-            Config.name == 'EMAIL_SUBJECT_PREFIX').first()
-    if subject_prefix:
-        subject = f'{subject_prefix.value}: {subject}'
+    # Get Subject prefix in Upstage server 
+    if not external:
+        with ScopedSession() as local_db_session:
+            subject_prefix = local_db_session.query(Config).filter(
+                Config.name == 'EMAIL_SUBJECT_PREFIX').first()
+            if subject_prefix:
+                subject = f'{subject_prefix.value}: {subject}'
     msg.preamble = subject
     msg['Subject'] = subject
     msg['From'] = f'{EMAIL_HOST_DISPLAY_NAME} <{sender}>'
@@ -112,6 +114,12 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
 
 
 def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
+    # Get Subject prefix in client server 
+    with ScopedSession() as local_db_session:
+        subject_prefix = local_db_session.query(Config).filter(
+            Config.name == 'EMAIL_SUBJECT_PREFIX').first()
+        if subject_prefix:
+            subject = f'{subject_prefix.value}: {subject}'
     s = requests.Session()
     url = f'{SEND_EMAIL_SERVER}/api/email_graphql/'
     client = get_mongo_token_collection()
