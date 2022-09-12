@@ -17,6 +17,7 @@ from config.settings import NGINX_CONFIG_FILE, URL_PREFIX
 TERMS_OF_SERVICE = 'TERMS_OF_SERVICE'
 MANUAL = 'MANUAL'
 EMAIL_SUBJECT_PREFIX = 'EMAIL_SUBJECT_PREFIX'
+ENABLE_DONATE = 'ENABLE_DONATE'
 
 
 class NginxConfig(graphene.ObjectType):
@@ -48,6 +49,7 @@ class SystemConfig(graphene.ObjectType):
     termsOfService = graphene.String()
     manual = graphene.String()
     esp = graphene.String()
+    enableDonate = graphene.Boolean()
 
     def resolve_termsOfService(self, info):
         return get_config(TERMS_OF_SERVICE)
@@ -58,6 +60,8 @@ class SystemConfig(graphene.ObjectType):
     def resolve_esp(self, info):
         return get_config(EMAIL_SUBJECT_PREFIX)
 
+    def resolve_enableDonate(self, info):
+        return get_config(ENABLE_DONATE)
 
 class FoyerConfig(graphene.ObjectType):
     title = graphene.String()
