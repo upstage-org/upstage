@@ -152,6 +152,20 @@ SECRET_KEY='' # Paste the result from running __init__.py
 ```
 
 ```python
+# When setup Send Email Service, only the Upstage server has permission to send the email. The Client-server has to call the external API of the Upstage server. 
+# Upstage server will generate and send a token to each client server every 10 minutes. That token has expired in 10 minutes. Client-server stores that token in MongoDB and uses that token to call the sendEmailExternal API of the Upstage server
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'mail.gandi.net'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 465
+ADMIN_EMAIL = '' # A list admin email always in bcc
+EMAIL_HOST_DISPLAY_NAME = 'UpStage Support'
+ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/'] # This is setup only in app1 server, All client server endpoint having permission using Upstage Send Email service
+SEND_EMAIL_SERVER = 'https://app1.upstage.live' # Upstage server
+```
+
+```python
 # When setuping Streaming Service, a secret key is recommended so that we can set up password protection and prevent your streaming server from being used by strangers. You will need to paste that key here so that we can generate QR codes with correct stream sign, only then the players will be able to broadcast.
 STREAM_KEY=''
 ```
