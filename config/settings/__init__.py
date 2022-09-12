@@ -35,10 +35,10 @@ EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST_DISPLAY_NAME = ''
 EMAIL_TIME_TRIGGER_SECONDS = 60 * 1 # 1 minute
-ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/']
 EMAIL_TIME_EXPIRED_TOKEN = 60 * 10 # 10 minute
-ACCEPT_EMAIL_HOST = ['dev_app1', 'app1']
-SEND_EMAIL_SERVER = 'https://dev-app1.upstage.live'
+ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['https://dev-app1.upstage.live'] # All client server endpoints. Only config on upstage server
+SEND_EMAIL_SERVER = 'https://upstage.live' # Send email server endpoint
+ACCEPT_EMAIL_HOST = ['app1']
 
 MONGO_HOST = ""
 MONGO_PORT = 0
