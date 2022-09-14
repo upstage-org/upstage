@@ -11,7 +11,7 @@ export default {
       const store = useStore();
       store.dispatch("user/fetchCurrent");
       store.dispatch("config/fetchConfig");
-      store.dispatch("cache/fetchStages");
+      // store.dispatch("cache/fetchStages");
     });
   },
 };
