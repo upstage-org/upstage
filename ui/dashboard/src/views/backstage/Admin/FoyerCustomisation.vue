@@ -81,6 +81,16 @@ About
         :loading="loading" />
     </div>
   </div>
+  <div class="columns is-vcentered">
+    <div class="column is-2">
+      <b>{{ $t("enable_upstage_donate") }}</b>
+    </div>
+    <div class="column">
+      <Switch v-model="enableDonate"
+        @update:model-value="saveConfig(`${enableDonate ? 'Enable' : 'Disable'} donations for Upstage successfully!`, 'ENABLE_DONATE', enableDonate || '')"
+        :loading="loadingDonate" />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -102,6 +112,7 @@ export default {
     const menu = ref('')
     const edit = ref();
     const showRegistration = ref(false);
+    const enableDonate = ref(false);
 
     watchEffect(() => {
       if (store.state.config.foyer) {
@@ -114,7 +125,12 @@ export default {
 
     const { loading, save } = useMutation(configGraph.saveConfig);
 
-    return { title, description, menu, edit, save, loading, showRegistration };
+    const { loading: loadingDonate, save: saveConfig } = useMutation(configGraph.saveConfig);
+    watchEffect(() => {
+      enableDonate.value = store.getters["config/enableDonate"];
+    });
+
+    return { title, description, menu, edit, save, loading, showRegistration, enableDonate,loadingDonate, saveConfig };
   },
 };
 </script>

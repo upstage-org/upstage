@@ -56,16 +56,6 @@
       </div>
     </template>
   </div>
-  <div class="columns is-vcentered">
-    <div class="column  is-narrow">
-      <b>{{ $t("enable_upstage_donate") }}</b>
-    </div>
-    <div class="column  is-narrow">
-      <Switch v-model="enableDonate"
-        @update:model-value="saveConfig(`${enableDonate ? 'Enable' : 'Disable'} donations for Upstage successfully!`, 'ENABLE_DONATE', enableDonate || '')"
-        :loading="loading" />
-    </div>
-  </div>
 </template>
 
 <script>
@@ -75,9 +65,8 @@ import { ref, watchEffect } from "@vue/runtime-core";
 import { useMutation } from "@/services/graphql/composable";
 import { configGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
-import Switch from "@/components/form/Switch.vue";
 export default {
-  components: { Field, Switch },
+  components: { Field},
   setup: () => {
     const store = useStore();
     const termsOfService = ref();
@@ -120,12 +109,7 @@ export default {
       }, 'EMAIL_SUBJECT_PREFIX', esp.value);
     };
 
-    const enableDonate = ref(false);
-    watchEffect(() => {
-      enableDonate.value = store.getters["config/enableDonate"];
-    });
-
-    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP, enableDonate, saveConfig };
+    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP};
   },
 };
 </script>
