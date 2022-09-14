@@ -103,6 +103,19 @@ systemctl start upstage-streaming.service
 systemctl enable upstage-streaming.service
 ```
 
+7. Setup `Upstage Send Email Token To Cient Server`:
+```bash
+
+# Only setup on Upstage Prod
+# Create the systemd service using our example configuration
+cp system/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
+
+# Start the service
+systemctl start upstage_email_token.service
+
+# Enable the service if you want it start automatically on boot
+systemctl enable upstage_email_token.service
+```
 ## Configurations
 
 UpStage was designed to have multiple instances of it working independently. Each instance could have its own configurations set to get worked.
@@ -162,7 +175,6 @@ EMAIL_PORT = 465
 ADMIN_EMAIL = '' # A list admin email always in bcc
 EMAIL_HOST_DISPLAY_NAME = 'UpStage Support'
 ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/'] # This is setup only in app1 server, All client server endpoint having permission using Upstage Send Email service
-SEND_EMAIL_SERVER = 'https://app1.upstage.live' # Upstage server
 ```
 
 ```python
