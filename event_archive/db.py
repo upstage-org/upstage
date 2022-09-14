@@ -26,8 +26,12 @@ def build_pg_session():
 
 
 def get_mongo_token_collection():
-    mongo_connection = pymongo.MongoClient(f'mongodb://{MONGO_HOST}:{MONGO_PORT}/')
-    mongo_db = mongo_connection[MONGO_DB]
+    client = build_mongo_client()
+    mongo_db = client[MONGO_DB]
+    # queue = db[EVENT_COLLECTION]
+
+    # mongo_connection = pymongo.MongoClient(f'mongodb://{MONGO_HOST}:{MONGO_PORT}/')
+    # mongo_db = mongo_connection[MONGO_DB]
     collection = mongo_db[MONGODB_COLLECTION_TOKEN]
     if 'expired_date' in collection.index_information():
         collection.drop_index('expired_date')

@@ -163,10 +163,10 @@ def valid_token(token):
 
 def generate_email_token_clients():
     while True:
-        sleep(EMAIL_TIME_EXPIRED_TOKEN)
-
         client = get_mongo_token_collection()
+        app.logger.info(f'client_server {ACCEPT_SERVER_SEND_EMAIL_EXTERNAL}')
         # client.delete_many({})
+
         for client_server in ACCEPT_SERVER_SEND_EMAIL_EXTERNAL:
             live_token = uuid.uuid4().hex
             client.insert_one({'token': live_token, 'from_server': client_server, 'expired_date': datetime.utcnow()})
@@ -180,14 +180,13 @@ def generate_email_token_clients():
                 }
             }
             '''
+
             result = s.post(url=url, data={"query": data})
             if result.ok:
                 app.logger.info(f'Send email token to {client_server} successfully')
             else:
                 app.logger.info(f'Send email token to {client_server} failed')
+        
 
+        sleep(EMAIL_TIME_EXPIRED_TOKEN)
 
-if HOSTNAME == 'app1':
-    import threading
-    t1 = threading.Thread(target=generate_email_token_clients)
-    t1.start()
