@@ -155,6 +155,7 @@ const submit = () => {
   store
     .dispatch("auth/login", user)
     .then(() => {
+      store.dispatch("cache/fetchStages");
       emit("success");
     })
     .finally(() => {
