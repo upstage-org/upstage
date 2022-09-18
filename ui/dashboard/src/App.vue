@@ -7,11 +7,11 @@ import { onMounted } from "vue";
 import { useStore } from "vuex";
 export default {
   setup: () => {
-    onMounted(() => {
+    onMounted(async () => {
       const store = useStore();
       store.dispatch("user/fetchCurrent");
       store.dispatch("config/fetchConfig");
-      // store.dispatch("cache/fetchStages");
+      await store.dispatch("cache/fetchStages");
     });
   },
 };
