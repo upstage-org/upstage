@@ -124,29 +124,40 @@ def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
     url = f'{SEND_EMAIL_SERVER}/api/email_graphql/'
     client = get_mongo_token_collection()
     token = client.find_one({},  sort=[('_id', pymongo.DESCENDING)])
-    header = {'X-Email-Token': token['token']}
+    headers = {}
+    if token and 'token' in token:
+        headers['X-Email-Token'] =  token['token']
     data = '''
-    mutation{
+    mutation
+    sendEmailExternal($subject: String!, $body: String!, $recipients: [String!], $cc: [String!],$bcc: [String!], $filenames: [String!])
+    {
         sendEmailExternal(
             emailInfo: {
-                subject: "'''+subject+'''",
-                body: "'''+body+'''",
-                recipients: ''' + json.dumps(recipients) + ''',
-                cc: ''' + json.dumps(cc)+''',
-                bcc: ''' + json.dumps(bcc)+''',
-                filenames:''' + json.dumps(filenames)+'''
+                subject: $subject,
+                body: $body,
+                recipients: $recipients,
+                cc: $cc,
+                bcc: $bcc,
+                filenames:$filenames
             }
         ){
             success
         }
     }
-    '''.replace('\n', '')
-    result = s.post(url=url, data={"query": data}, headers=header)
-    print(result)
+    '''
+    variables = {
+        "subject":  subject,
+        "body": body,
+        "recipients": recipients,
+        "cc": cc,
+        "bcc": bcc,
+        "filenames":filenames
+    }
+    result = s.post(url=url, data={"query": data, "variables": json.dumps(variables)}, headers=headers)
     if result.ok and json.loads(result.text)['data']['sendEmailExternal']['success'] == True:
         return True
     else:
-        raise Exception(result)
+        raise Exception(json.loads(result.text))
 
 
 def save_email_token_client(token):
