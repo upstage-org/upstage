@@ -17,6 +17,7 @@ if projdir not in sys.path:
 
 import graphene
 from graphene import relay
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,
     app,api,ScopedSession)
@@ -67,7 +68,7 @@ class CreateUser(graphene.Mutation):
     class Arguments:
         inbound = CreateUserInput(required=True)
 
-    def mutate(self, info, inbound):
+    async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
@@ -86,10 +87,10 @@ class CreateUser(graphene.Mutation):
             user_id = user.id
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
-        send([user.email], f"Welcome to UpStage!", user_registration(user))
+        await send([user.email], f"Welcome to UpStage!", user_registration(user))
         admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
         approval_url = f"{request.url_root}backstage/admin/player-management"
-        send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
+        await send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute):
@@ -104,7 +105,7 @@ class UpdateUser(graphene.Mutation):
         inbound = UpdateUserInput(required=True)
 
     @jwt_required()
-    def mutate(self, info, inbound):
+    async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         code,error,user,timezone = current_user()
         if not user.role in (ADMIN,SUPER_ADMIN) :
@@ -124,7 +125,7 @@ class UpdateUser(graphene.Mutation):
             for key, value in data.items():
                 if key == 'active':
                     if value and not user.active and not user.deactivated_on:
-                        send([user.email], f"Registration approved for user {user.username}", user_approved(user))
+                        await send([user.email], f"Registration approved for user {user.username}", user_approved(user))
                     if not value and user.active:
                         user.deactivated_on = datetime.now()
 
@@ -348,6 +349,6 @@ class Query(graphene.ObjectType):
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{URL_PREFIX}user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
-    graphiql=True
+    graphiql=True, executor=AsyncioExecutor()
 ))
 

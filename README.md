@@ -103,6 +103,19 @@ systemctl start upstage-streaming.service
 systemctl enable upstage-streaming.service
 ```
 
+7. Setup `Upstage Send Email Token To Cient Server`:
+```bash
+
+# Only setup on Upstage Prod
+# Create the systemd service using our example configuration
+cp system/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
+
+# Start the service
+systemctl start upstage_email_token.service
+
+# Enable the service if you want it start automatically on boot
+systemctl enable upstage_email_token.service
+```
 ## Configurations
 
 UpStage was designed to have multiple instances of it working independently. Each instance could have its own configurations set to get worked.
@@ -149,6 +162,19 @@ PERFORMANCE_TOPIC_RULE = "#"
 # You can get these keys from running these python files below. Your users won't be able to log in if you change these keys after creating them, so don't touch them after generating them!
 CIPHER_KEY='' # Paste the result from fernet_crypto.py
 SECRET_KEY='' # Paste the result from running __init__.py
+```
+
+```python
+# When setup Send Email Service, only the Upstage server has permission to send the email. The Client-server has to call the external API of the Upstage server. 
+# Upstage server will generate and send a token to each client server every 10 minutes. That token has expired in 10 minutes. Client-server stores that token in MongoDB and uses that token to call the sendEmailExternal API of the Upstage server
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'mail.gandi.net'
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+EMAIL_PORT = 465
+ADMIN_EMAIL = '' # A list admin email always in bcc
+EMAIL_HOST_DISPLAY_NAME = 'UpStage Support'
+ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/'] # This is setup only in app1 server, All client server endpoint having permission using Upstage Send Email service
 ```
 
 ```python

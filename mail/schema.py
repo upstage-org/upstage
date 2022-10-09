@@ -11,13 +11,13 @@ if projdir not in sys.path:
 import graphene
 from config.project_globals import app
 from config.settings import URL_PREFIX
+from flask import request
 from flask_graphql import GraphQLView
-from flask_jwt_extended.view_decorators import jwt_required
 from graphene import relay
-from user.models import ADMIN, SUPER_ADMIN
-from user.user_utils import current_user
+from graphql.execution.executors.asyncio import AsyncioExecutor
 
-from mail.mail_utils import push_mail_info_to_queue
+from mail.mail_utils import (create_email, save_email_token_client, send,
+                             send_async, valid_token)
 
 
 class EmailAttribute(graphene.InputObjectType):
@@ -36,23 +36,42 @@ class EmailAttribute(graphene.InputObjectType):
         graphene.String, description="The attachments of the email", default_value=[])
 
 
-class SendEmail(graphene.Mutation):
+class SendEmailExternal(graphene.Mutation):
     """Mutation to send email."""
     success = graphene.Boolean(description="True if the config was saved.")
 
     class Arguments:
         email_info = EmailAttribute(required=True)
 
-    @jwt_required()
-    def mutate(self, info, email_info):
-        code, error, user, timezone = current_user()
-        if not user.role in (ADMIN, SUPER_ADMIN) and not user.can_send_email:
-            raise Exception("Send Email Permission denied")
+    @staticmethod
+    async def mutate(self, info, email_info: EmailAttribute):
+        token = request.headers.get('X-Email-Token')
+        if not token:
+            raise Exception('Missing X-Email-Token header')
 
-        # Push email to queue
-        push_mail_info_to_queue(email_info)
+        try:
+            if not valid_token(token):
+                raise Exception('Invalid X-Email-Token')
+        except:
+            raise Exception('Invalid X-Email-Token')
 
-        return SendEmail(success=True)
+        msg = create_email(to=email_info.recipients, subject=email_info.subject, html=email_info.body, cc=email_info.cc, bcc=email_info.bcc, filenames=email_info.filenames, external=True)
+        await send_async(msg=msg)
+
+        return SendEmailExternal(success=True)
+
+
+class PostToken(graphene.Mutation):
+    """Mutation to post email token from Upstage to accept request send email to Upstage."""
+    success = graphene.Boolean(description="True if post token success.")
+
+    class Arguments:
+        token = graphene.String(required=True)
+
+    def mutate(self, info, token):
+        save_email_token_client(token)
+
+        return PostToken(success=True)
 
 
 class Query(graphene.ObjectType):
@@ -60,7 +79,8 @@ class Query(graphene.ObjectType):
 
 
 class Mutation(graphene.ObjectType):
-    sendEmail = SendEmail.Field()
+    sendEmailExternal = SendEmailExternal.Field()
+    postToken = PostToken.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,6 +88,6 @@ email_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{URL_PREFIX}/email_graphql/', view_func=GraphQLView.as_view(
         "email_graphql", schema=email_schema,
-        graphiql=True
+        graphiql=True, executor=AsyncioExecutor()
     )
 )
