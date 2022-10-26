@@ -403,6 +403,9 @@ class DeleteStage(graphene.Mutation):
                     ParentStage.stage_id == id).delete(synchronize_session=False)
                 local_db_session.query(StageAttributeModel).filter(
                     StageAttributeModel.stage_id == id).delete(synchronize_session=False)
+                local_db_session.query(SceneModel).filter(
+                    SceneModel.stage_id == id).delete(synchronize_session=False)
+    
                 for performance in local_db_session.query(PerformanceModel).filter(
                         PerformanceModel.stage_id == id).all():
                     local_db_session.query(EventModel).filter(
