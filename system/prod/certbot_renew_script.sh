@@ -8,7 +8,7 @@ DOMAIN=SET_THIS_TO_THE_FULL_DOMAIN_NAME_NOT_HOSTNAME
 #SVC_SERVER=
 #SVC_SERVER=1
 #APP_SERVER=
-APP_SERVER=1
+#APP_SERVER=1
 
 CERTCHECK_FILE=/etc/letsencrypt/live/${DOMAIN}/cert.pem
 if [[ -n ${SVC_SERVER} ]]
@@ -18,28 +18,28 @@ else
     OTHER_COPY=
 fi
 
-now_seconds=`date +%s`
-sleep 2
 $CERTBOT renew
+cert_seconds=`/usr/bin/stat -c %Y $CERTCHECK_FILE`
 
 # See if certs were updated. certbot doesn't always return a 0 status when expected.
 # So ignore return code issued by certbot and do our own check.
-mod_seconds=`/usr/bin/stat -c %Y $CERTCHECK_FILE`
+if [[ ! -f "${OTHER_COPY}" ]]
+then
+    mos_seconds=0
+else
+    mos_seconds=`/usr/bin/stat -c %Y $OTHER_COPY`
+fi
 
-if [[ $now_seconds -lt $mod_seconds ]]
+if [[ $cert_seconds -ne $mos_seconds ]]
 then
     echo "Updating..."
     systemctl reload nginx
     if [[ -n ${SVC_SERVER} ]]
     then
-        other_seconds=`/usr/bin/stat -c %Y $OTHER_COPY`
-        if [[ $other_seconds -lt $mod_seconds ]]
-        then
-            cd /etc/letsencrypt/live/${DOMAIN}
-            cp * /etc/mosquitto/ca_certificates
-            chown -R mosquitto:mosquitto /etc/mosquitto/ca_certificates
-            systemctl reload mosquitto.service >> /var/log/le-renew.log 2>&1
-        fi
+        cd /etc/letsencrypt/live/${DOMAIN}
+        cp -Lpr * /etc/mosquitto/ca_certificates
+        chown -R mosquitto:mosquitto /etc/mosquitto/ca_certificates
+        systemctl reload mosquitto.service >> /var/log/le-renew.log 2>&1
     fi
 else
     echo "No update."
@@ -52,6 +52,8 @@ then
     systemctl restart event_archive.service >> /var/log/le-renew.log 2>&1
 elif [[ -n ${STREAMING_SERVER} ]]
 then
+    echo "Restarting our nodejs streaming service, in case streaming1 server certs were updated. This does not restart jitsi-videobridge, which uses its own cert files"then
     echo "Restarting our nodejs streaming service, in case streaming1 server certs were updated. This does not restart jitsi-videobridge, which uses its own cert files"
     systemctl restart upstage-streaming.service >> /var/log/le-renew.log 2>&1
 fi
+
