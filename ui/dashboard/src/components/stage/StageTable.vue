@@ -16,12 +16,6 @@
         >
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
-        <DuplicateStage :stage="item" />
-        <DeleteStage v-if="item.permission === 'owner' || isAdmin" :stage="item" :refresh="refresh">
-          <a class="button is-light is-small is-danger" data-tooltip="Delete stage">
-            <Icon src="delete.svg" />
-          </a>
-        </DeleteStage>
       </template>
       <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
@@ -70,11 +64,8 @@
 import DataTable from "@/components/DataTable/index";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import RecordActions from "./RecordActions";
-import DuplicateStage from "./DuplicateStage.vue";
-import DeleteStage from "./DeleteStage.vue";
-import Icon from "@/components/Icon";
 import { displayName } from "@/utils/auth";
-import { computed, inject } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Switch from "@/components/form/Switch.vue";
 import { stageGraph } from "@/services/graphql";
@@ -86,9 +77,6 @@ export default {
     DataTable,
     PlayerAudienceCounter,
     RecordActions,
-    DuplicateStage,
-    DeleteStage,
-    Icon,
     Switch
   },
   props: { data: Array },
@@ -144,12 +132,10 @@ export default {
       },
     ];
 
-    const refresh = inject("refresh");
-
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
-    return { headers, isAdmin, refresh };
+    return { headers, isAdmin };
   },
   methods: {
     async updateStageStatus(stageId) {
