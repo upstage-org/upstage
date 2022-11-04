@@ -40,8 +40,8 @@ export default {
     const name = ref("");
     const defaultName = computed(() => `A clone of ${props.stage.name}`);
     const refresh = inject("refresh");
-    const { loading, save } = useMutation(stageGraph.duplicateStage);
     const ClearCache = inject('afterDuplicate');
+    const { loading, save } = useMutation(stageGraph.duplicateStage);
     const duplicateStage = async (complete) => {
       const payload = {
         id: props.stage.id,

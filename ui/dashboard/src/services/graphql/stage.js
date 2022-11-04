@@ -115,8 +115,8 @@ export default {
     }
   `, variables),
   stageList: (variables) => client.request(gql`
-    query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
-      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {
+    query ListStage($id: ID, $nameLike: String, $fileLocation: String, $createdOn: DateTime) {
+      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation, createdOn: $createdOn, sort:[CREATED_ON_DESC, ID_DESC]) {
         totalCount
         edges {
           node {
