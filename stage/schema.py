@@ -506,7 +506,7 @@ class Mutation(graphene.ObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
-        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
+        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String(), created_on=graphene.DateTime())
     assetList = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
     assetTypeList = StageConnectionField(
