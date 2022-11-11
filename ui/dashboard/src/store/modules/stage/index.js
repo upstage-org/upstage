@@ -606,7 +606,7 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit, dispatch }) {
+        subscribe({ commit }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
@@ -619,7 +619,6 @@ export default {
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
-                dispatch('sendStatistics')
             }).catch(error => console.log(error))
         },
         async disconnect({ dispatch }) {
@@ -1114,7 +1113,7 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state, rootState, commit }) {
+        async joinStage({ rootGetters, state, rootState, commit, dispatch }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
             }
@@ -1126,6 +1125,7 @@ export default {
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
+            await dispatch('sendStatistics')
         },
         async leaveStage({ state, commit, dispatch }) {
             const id = state.session
