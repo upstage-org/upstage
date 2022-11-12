@@ -1130,8 +1130,8 @@ export default {
         },
         async leaveStage({ dispatch }) {
             await Promise.all([
-                dispatch('sendCounterLeave'),
-                dispatch('sendStatistics')])
+                dispatch('sendStatisticsBeforeDisconnect'),
+                dispatch('sendCounterLeave')])
         },
         async sendStatisticsBeforeDisconnect({rootGetters}){
             const isPlayer = rootGetters['auth/loggedIn'];
