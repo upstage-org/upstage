@@ -50,7 +50,7 @@ export default {
     ConnectionStatus,
     MasqueradingStatus,
     Shell
-},
+  },
   setup: () => {
     const store = useStore();
     const ready = computed(() => store.getters["stage/ready"]);
@@ -76,6 +76,11 @@ export default {
       loggedIn
     };
   },
+  beforeMount() {
+    window.addEventListener("beforeunload", () => {
+      this.store.dispatch("stage/disconnect");
+    });
+  }
 };
 </script>
 
@@ -83,12 +88,16 @@ export default {
 #main-content {
   min-height: calc(100vh - 120px);
 }
+
 #live-stage {
   *:not(input, textarea) {
-    -webkit-user-select: none; /* Safari */
-    user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+    -webkit-user-select: none;
+    /* Safari */
+    user-select: none;
+    /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
   }
 }
+
 #live-logo {
   position: fixed;
   right: 0px;
