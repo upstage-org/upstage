@@ -11,6 +11,7 @@ import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak, stopSpeaking } from '@/services/speech';
 import { nmsService } from "@/services/rest";
 import anime from 'animejs';
+import { Promise } from 'core-js';
 
 const mqtt = buildClient()
 
@@ -1128,8 +1129,9 @@ export default {
             await dispatch('sendStatistics')
         },
         async leaveStage({ dispatch }) {
-            await dispatch('sendStatisticsBeforeDisconnect')
-            await dispatch('sendCounterLeave')
+            await Promise.all([
+                dispatch('sendCounterLeave'),
+                dispatch('sendStatistics')])
         },
         async sendStatisticsBeforeDisconnect({rootGetters}){
             const isPlayer = rootGetters['auth/loggedIn'];
