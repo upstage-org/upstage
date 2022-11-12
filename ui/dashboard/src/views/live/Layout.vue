@@ -75,11 +75,6 @@ export default {
       canPlay,
       loggedIn
     };
-  },
-  beforeMount() {
-    window.addEventListener("beforeunload", () => {
-      this.store.dispatch("stage/disconnect");
-    });
   }
 };
 </script>
