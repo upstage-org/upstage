@@ -1127,12 +1127,21 @@ export default {
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
             await dispatch('sendStatistics')
         },
-        async leaveStage({ state, commit, getters }) {
+        async leaveStage({ state, commit, rootGetters }) {
             const id = state.session
+            const isPlayer = rootGetters['auth/loggedIn'];
+            let players = rootGetters['stage/players'].length;
+            let audiences = rootGetters['stage/audiences'].length;
             state.session = null
             commit('CLEAN_STAGE')
+
+            if (isPlayer) {
+                players =  players - 1 
+            } else {
+                audiences = audiences - 1 
+            }
+            await mqtt.sendMessage(TOPICS.STATISTICS, { players: players, audiences: audiences}, false, true);            
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
-            await mqtt.sendMessage(TOPICS.STATISTICS, { players: getters.players.length, audiences: getters.audiences.length }, false, true);
         },
         async sendStatistics({ state, getters }) {
             if (state.subscribeSuccess) {
