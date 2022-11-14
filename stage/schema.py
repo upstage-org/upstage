@@ -4,6 +4,7 @@ import graphene
 import sys
 import os
 import json
+import datetime
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -447,6 +448,7 @@ class DuplicateStage(graphene.Mutation):
                 stage.id = None
                 stage.name = name
                 stage.owner_id = user.id
+                stage.created_on = datetime.datetime.today()
                 shortname = re.sub(
                     '\s+', '-', re.sub('[^A-Za-z0-9 ]+', '', name)).lower()
 
