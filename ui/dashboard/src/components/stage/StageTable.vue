@@ -105,7 +105,7 @@ export default {
         align: "center",
       },
       {
-        title: "Manage Stage",
+        title: "Manage",
         slot: "manage",
         align: "center",
       },
