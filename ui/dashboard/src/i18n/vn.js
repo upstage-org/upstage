@@ -159,6 +159,7 @@ export default {
   },
   upload_hint: 'Kéo và thả ảnh vào đây để tải lên. Bạn có thể tải lên nhiều ảnh trong một lần để tạo phương tiện hoạt hình.',
   upload_accepted_format: 'Định dạng file được hỗ trợ: {image} cho hình ảnh, {audio} cho âm thanh và {video} cho các đoạn phim.',
+  over_limit_upload: 'Kích thước tệp {size} đang lớn hơn giới hạn tải lên là {limit}',
   preview: 'Xem trước',
   name: 'Tên',
   type: 'Thể loại',

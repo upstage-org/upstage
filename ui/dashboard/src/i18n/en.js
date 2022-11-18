@@ -159,6 +159,7 @@ export default {
   },
   upload_hint: 'Drag files here to upload. You can drop multiple files to make a multiframes media',
   upload_accepted_format: 'Accepted file formats: {image} for images, {audio} for audios and {video} for videos',
+  over_limit_upload: 'The file size is {size}, upper than your limit upload size of {limit}',
   preview: 'Preview',
   name: 'Name',
   type: 'Type',
