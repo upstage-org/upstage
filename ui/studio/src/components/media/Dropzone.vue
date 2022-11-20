@@ -7,6 +7,8 @@ import { useQuery } from '@vue/apollo-composable';
 import gql from 'graphql-tag';
 import { uploadDefault } from "../../models/studio"
 import   i18n  from '../../i18n';
+import { humanFileSize } from '../../utils/common'
+
 
 i18n.global.t
 
@@ -38,11 +40,8 @@ const toSrc = ({ file }: { file: File }) => {
 
 const IsCanNotUpload = (size: number) => {
   let uploadLimit = result.value?.whoami.uploadLimit
-  console.log('size',size / 1024 * 1024)
 
   if (uploadLimit) {
-  
-    console.log('asasasas',uploadLimit / 1024 * 1024)
 
     return size <= uploadLimit ? false : true;   
   }
@@ -56,8 +55,8 @@ const handleUpload = (file: any) => {
   if (!fileType.includes('video') && IsCanNotUpload(file.file.size)) {
     message.error(
       i18n.global.t("over_limit_upload", {
-        size: file.file.size,
-        limit: result.value?.whoami.uploadLimit,
+        size: humanFileSize(file.file.size),
+        limit: humanFileSize(result.value?.whoami.uploadLimit ?? 0),
     }))
     return
   }
@@ -103,7 +102,7 @@ const uploadFile = (file: any) => {
   z-index: 999999;
 
   .ant-modal-content {
-    height: 100%;
+    height: 100%; 
   }
 
   .ant-modal-body {
