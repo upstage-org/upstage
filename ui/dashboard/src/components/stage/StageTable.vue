@@ -162,7 +162,6 @@ export default {
       try {
         const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
         mutation().then((res) => {
-          notification.success("Stage last access updated successfully!");
           refresh()
           return res.updateLastAccess.result;
         });
