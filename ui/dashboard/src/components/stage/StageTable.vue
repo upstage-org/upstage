@@ -26,7 +26,7 @@
       <RecordActions :stage="item" />
     </template>
     <template #enter="{ item }">
-      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary">
+      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary" @click="updateLastAccess(item.dbId)" >
         <span>{{ $t("enter") }}</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>
@@ -93,6 +93,16 @@ export default {
         render: (item) => displayName(item.owner),
       },
       {
+        title: "Create Date",
+        description: "date of creation",
+        render: (item) => formatDate(item.createdOn),
+      },
+      {
+        title: "Last Access",
+        description: "date last used / accessed",
+        render: (item) => formatDate(item.lastAccess),
+      },
+      {
         title: "Statistics",
         description: "Players and audiences counter",
         slot: "statistics",
@@ -131,7 +141,18 @@ export default {
         align: "center",
       },
     ];
+    const formatDate = (val) => {
+      if (val == null) {
+        return null;
+      }
 
+      let date = new Date(val);
+      let year = date.getFullYear();
+      let month = (1 + date.getMonth()).toString().padStart(2, '0');
+      let day = date.getDate().toString().padStart(2, '0');
+    
+      return month + '/' + day + '/' + year;
+    }
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
@@ -155,6 +176,18 @@ export default {
         await mutation().then((res) => {
           notification.success("Stage Visibility updated successfully!");
           return res.updateVisibility.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    },
+    async updateLastAccess(stageId) {
+      try {
+        console.log("can click and go enter stage")
+        const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
+        await mutation().then((res) => {
+          notification.success("Stage last access updated successfully!");
+          return res.updateLastAccess.result;
         });
       } catch (error) {
         notification.error(error);

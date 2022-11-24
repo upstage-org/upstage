@@ -106,6 +106,13 @@ export default {
     }
   }
   `),
+  updateLastAccess: (stageId) => client.request(gql`
+  mutation {
+    updateLastAccess(stageId: "${stageId}" ) {
+      result
+    }
+  }
+  `),
   sweepStage: (variables) => client.request(gql`
     mutation SweepStage($id: ID!) {
       sweepStage(input: {id: $id}) {
@@ -121,6 +128,8 @@ export default {
         edges {
           node {
             ...stageFragment
+            createdOn
+            lastAccess
             activeRecording {
               id
               name

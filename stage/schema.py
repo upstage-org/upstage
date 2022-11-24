@@ -251,7 +251,7 @@ class UpdateStage(graphene.Mutation):
             local_db_session.commit()
             stage = DBSession.query(StageModel).filter(
                 StageModel.id == data['id']).first()
-
+            
             return UpdateStage(stage=stage)
 
 
@@ -308,6 +308,27 @@ class UpdateAttributeVisibility(graphene.Mutation):
             local_db_session.add(attribute)
             local_db_session.commit()
             return UpdateAttributeVisibility(result=attribute.description)
+
+
+class UpdateLastAccess(graphene.Mutation):
+    """Mutation to update a stage last access attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(stage_id)
+            stage = local_db_session.query(StageModel).filter(StageModel == _id).first()
+            if stage:
+                stage = StageModel()
+                stage.last_access = datetime.datetime.today();
+            local_db_session.add(stage)
+            local_db_session.commit()
+            return UpdateLastAccess(result=stage)
 
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
@@ -503,6 +524,7 @@ class Mutation(graphene.ObjectType):
     saveRecording = SaveRecording.Field()
     updateStatus = UpdateAttributeStatus.Field()
     updateVisibility = UpdateAttributeVisibility.Field()
+    updateLastAccess = UpdateLastAccess.Field()
 
 
 class Query(graphene.ObjectType):
