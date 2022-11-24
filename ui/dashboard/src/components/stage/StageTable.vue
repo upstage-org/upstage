@@ -65,7 +65,7 @@ import DataTable from "@/components/DataTable/index";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import RecordActions from "./RecordActions";
 import { displayName } from "@/utils/auth";
-import { computed } from "@vue/runtime-core";
+import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Switch from "@/components/form/Switch.vue";
 import { stageGraph } from "@/services/graphql";
@@ -141,11 +141,13 @@ export default {
         align: "center",
       },
     ];
+    
+    const refresh = inject("refresh");
+
     const formatDate = (val) => {
       if (val == null) {
         return null;
       }
-
       let date = new Date(val);
       let year = date.getFullYear();
       let month = (1 + date.getMonth()).toString().padStart(2, '0');
@@ -156,7 +158,19 @@ export default {
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
-    return { headers, isAdmin };
+    const updateLastAccess = (stageId) => {
+      try {
+        const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
+        mutation().then((res) => {
+          notification.success("Stage last access updated successfully!");
+          refresh()
+          return res.updateLastAccess.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    }
+    return { headers, isAdmin, updateLastAccess };
   },
   methods: {
     async updateStageStatus(stageId) {
@@ -181,18 +195,7 @@ export default {
         notification.error(error);
       }
     },
-    async updateLastAccess(stageId) {
-      try {
-        console.log("can click and go enter stage")
-        const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
-        await mutation().then((res) => {
-          notification.success("Stage last access updated successfully!");
-          return res.updateLastAccess.result;
-        });
-      } catch (error) {
-        notification.error(error);
-      }
-    },
+
   },
 };
 </script>

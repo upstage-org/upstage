@@ -317,18 +317,20 @@ class UpdateLastAccess(graphene.Mutation):
     class Arguments:
         stage_id = graphene.ID(
             required=True, description="Global Id of the stage.")
+        
 
     # decorate this with jwt login decorator.
     def mutate(self, info, stage_id):
         with ScopedSession() as local_db_session:
             _id = int(stage_id)
-            stage = local_db_session.query(StageModel).filter(StageModel == _id).first()
+            stage = local_db_session.query(StageModel).filter(StageModel.id == _id);
             if stage:
-                stage = StageModel()
-                stage.last_access = datetime.datetime.today();
-            local_db_session.add(stage)
+                stage.update({
+                StageModel.last_access: datetime.datetime.utcnow()
+                }, synchronize_session="fetch")
+
             local_db_session.commit()
-            return UpdateLastAccess(result=stage)
+            return UpdateLastAccess(result= datetime.datetime.utcnow())
 
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
@@ -469,7 +471,7 @@ class DuplicateStage(graphene.Mutation):
                 stage.id = None
                 stage.name = name
                 stage.owner_id = user.id
-                stage.created_on = datetime.datetime.today()
+                stage.created_on = datetime.datetime.utcnow()
                 shortname = re.sub(
                     '\s+', '-', re.sub('[^A-Za-z0-9 ]+', '', name)).lower()
 
