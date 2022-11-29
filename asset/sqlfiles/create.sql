@@ -33,7 +33,7 @@ CREATE TABLE "public"."stage" (
     "owner_id" integer NOT NULL,
     "file_location" character varying NOT NULL,
     "created_on" timestamp DEFAULT (now() at time zone 'utc'),
-    "last_access" timestamp,
+    "last_access" timestamp without time zone,
     PRIMARY KEY ("id"),
     FOREIGN KEY (owner_id) REFERENCES upstage_user(id)
 );
