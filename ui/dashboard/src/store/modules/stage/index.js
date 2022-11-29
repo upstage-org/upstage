@@ -11,6 +11,7 @@ import { useAttribute } from '@/services/graphql/composable';
 import { avatarSpeak, stopSpeaking } from '@/services/speech';
 import { nmsService } from "@/services/rest";
 import anime from 'animejs';
+import { Promise } from 'core-js';
 
 const mqtt = buildClient()
 
@@ -606,7 +607,7 @@ export default {
                 dispatch('handleMessage', payload);
             })
         },
-        subscribe({ commit, dispatch }) {
+        subscribe({ commit }) {
             const topics = {
                 [TOPICS.CHAT]: { qos: 2 },
                 [TOPICS.BOARD]: { qos: 2 },
@@ -619,7 +620,6 @@ export default {
             mqtt.subscribe(topics).then(res => {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
-                dispatch('sendStatistics')
             }).catch(error => console.log(error))
         },
         async disconnect({ dispatch }) {
@@ -1114,7 +1114,7 @@ export default {
                 commit('user/SET_AVATAR_ID', message.avatarId, { root: true });
             }
         },
-        async joinStage({ rootGetters, state, rootState, commit }) {
+        async joinStage({ rootGetters, state, rootState, commit, dispatch }) {
             if (!state.session) {
                 state.session = rootState.user.user?.id ?? uuidv4()
             }
@@ -1126,13 +1126,29 @@ export default {
             const at = +new Date();
             const payload = { id, isPlayer, nickname, at, avatarId }
             await mqtt.sendMessage(TOPICS.COUNTER, payload);
+            await dispatch('sendStatistics')
         },
-        async leaveStage({ state, commit, dispatch }) {
+        async leaveStage({ dispatch }) {
+            await Promise.all([
+                dispatch('sendStatisticsBeforeDisconnect'),
+                dispatch('sendCounterLeave')])
+        },
+        async sendStatisticsBeforeDisconnect({rootGetters}){
+            const isPlayer = rootGetters['auth/loggedIn'];
+            let players = rootGetters['stage/players'].length;
+            let audiences = rootGetters['stage/audiences'].length;
+            if (isPlayer) {
+                players =  players - 1 
+            } else {
+                audiences = audiences - 1 
+            }
+            await mqtt.sendMessage(TOPICS.STATISTICS, { players: players, audiences: audiences}, false, true);            
+        },
+        async sendCounterLeave({state, commit,}){
             const id = state.session
             state.session = null
             commit('CLEAN_STAGE')
             await mqtt.sendMessage(TOPICS.COUNTER, { id, leaving: true });
-            await dispatch('sendStatistics')
         },
         async sendStatistics({ state, getters }) {
             if (state.subscribeSuccess) {

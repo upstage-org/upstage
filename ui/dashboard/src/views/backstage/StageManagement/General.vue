@@ -6,6 +6,9 @@
           :disabled="!urlValid">{{ $t("save_stage") }}</button>
         <ClearChat />
         <SweepStage />
+        <DuplicateStage :stage="stage"> 
+          <button class="button ml-2 is-primary">{{ $t("duplicate") }}</button>
+        </DuplicateStage>
         <DeleteStage :stage="stage" :refresh="afterDelete">
           <button class="button ml-2 is-danger">{{ $t("delete_stage") }}</button>
         </DeleteStage>
@@ -121,7 +124,7 @@ import {
   useRequest,
 } from "@/services/graphql/composable";
 import { stageGraph, userGraph } from "@/services/graphql";
-import { inject, reactive, ref, watch, computed } from "vue";
+import { inject, reactive, ref, watch, computed, provide } from "vue";
 import Field from "@/components/form/Field";
 import ImagePicker from "@/components/form/ImagePicker";
 import MultiTransferColumn from "@/components/MultiTransferColumn";
@@ -131,6 +134,7 @@ import { displayName } from "@/utils/auth";
 import { debounce } from "@/utils/common";
 import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
+import DuplicateStage from "@/components/stage/DuplicateStage";
 import DeleteStage from "@/components/stage/DeleteStage";
 import { useStore } from "vuex";
 import Switch from "@/components/form/Switch.vue";
@@ -142,6 +146,7 @@ export default {
     SweepStage,
     MultiTransferColumn,
     ImagePicker,
+    DuplicateStage,
     DeleteStage,
     Switch
   },
@@ -246,6 +251,12 @@ export default {
       store.dispatch("cache/fetchStages");
       router.push("/backstage/stages");
     }
+
+    const afterDuplicate = () => {
+      store.dispatch("cache/fetchStages")
+    };
+
+    provide("afterDuplicate", afterDuplicate)
 
     return {
       form,

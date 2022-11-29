@@ -6,9 +6,7 @@
       :placeholder="defaultName"
     />
     <template #trigger>
-      <a class="button is-light is-small" data-tooltip="Duplicate stage">
-        <i class="fa fa-lg fa-clone has-text-warning"></i>
-      </a>
+      <slot></slot>
     </template>
 
     <template #no>
@@ -42,6 +40,7 @@ export default {
     const name = ref("");
     const defaultName = computed(() => `A clone of ${props.stage.name}`);
     const refresh = inject("refresh");
+    const ClearCache = inject('afterDuplicate');
     const { loading, save } = useMutation(stageGraph.duplicateStage);
     const duplicateStage = async (complete) => {
       const payload = {
@@ -53,6 +52,7 @@ export default {
         payload
       );
       complete();
+      ClearCache();
       refresh();
       router.push(
         `/backstage/stage-management/${result.duplicateStage.newStageId}/`

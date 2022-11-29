@@ -16,12 +16,6 @@
         >
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
-        <DuplicateStage :stage="item" />
-        <DeleteStage v-if="item.permission === 'owner' || isAdmin" :stage="item" :refresh="refresh">
-          <a class="button is-light is-small is-danger" data-tooltip="Delete stage">
-            <Icon src="delete.svg" />
-          </a>
-        </DeleteStage>
       </template>
       <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
@@ -32,7 +26,7 @@
       <RecordActions :stage="item" />
     </template>
     <template #enter="{ item }">
-      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary">
+      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary" @click="updateLastAccess(item.dbId)" >
         <span>{{ $t("enter") }}</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>
@@ -70,9 +64,6 @@
 import DataTable from "@/components/DataTable/index";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import RecordActions from "./RecordActions";
-import DuplicateStage from "./DuplicateStage.vue";
-import DeleteStage from "./DeleteStage.vue";
-import Icon from "@/components/Icon";
 import { displayName } from "@/utils/auth";
 import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
@@ -86,9 +77,6 @@ export default {
     DataTable,
     PlayerAudienceCounter,
     RecordActions,
-    DuplicateStage,
-    DeleteStage,
-    Icon,
     Switch
   },
   props: { data: Array },
@@ -105,6 +93,16 @@ export default {
         render: (item) => displayName(item.owner),
       },
       {
+        title: "Create Date",
+        description: "date of creation",
+        render: (item) => formatDate(item.createdOn),
+      },
+      {
+        title: "Last Access",
+        description: "date last used / accessed",
+        render: (item) => formatDate(item.lastAccess),
+      },
+      {
         title: "Statistics",
         description: "Players and audiences counter",
         slot: "statistics",
@@ -117,7 +115,7 @@ export default {
         align: "center",
       },
       {
-        title: "Manage Stage",
+        title: "Manage",
         slot: "manage",
         align: "center",
       },
@@ -143,13 +141,35 @@ export default {
         align: "center",
       },
     ];
-
+    
     const refresh = inject("refresh");
 
+    const formatDate = (val) => {
+      if (val == null) {
+        return null;
+      }
+      let date = new Date(val);
+      let year = date.getFullYear();
+      let month = (1 + date.getMonth()).toString().padStart(2, '0');
+      let day = date.getDate().toString().padStart(2, '0');
+    
+      return month + '/' + day + '/' + year;
+    }
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
-    return { headers, isAdmin, refresh };
+    const updateLastAccess = (stageId) => {
+      try {
+        const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
+        mutation().then((res) => {
+          refresh()
+          return res.updateLastAccess.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    }
+    return { headers, isAdmin, updateLastAccess };
   },
   methods: {
     async updateStageStatus(stageId) {
@@ -174,6 +194,7 @@ export default {
         notification.error(error);
       }
     },
+
   },
 };
 </script>

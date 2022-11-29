@@ -4,6 +4,7 @@ import graphene
 import sys
 import os
 import json
+import datetime
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
@@ -250,7 +251,7 @@ class UpdateStage(graphene.Mutation):
             local_db_session.commit()
             stage = DBSession.query(StageModel).filter(
                 StageModel.id == data['id']).first()
-
+            
             return UpdateStage(stage=stage)
 
 
@@ -307,6 +308,29 @@ class UpdateAttributeVisibility(graphene.Mutation):
             local_db_session.add(attribute)
             local_db_session.commit()
             return UpdateAttributeVisibility(result=attribute.description)
+
+
+class UpdateLastAccess(graphene.Mutation):
+    """Mutation to update a stage last access attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+        
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(stage_id)
+            stage = local_db_session.query(StageModel).filter(StageModel.id == _id);
+            if stage:
+                stage.update({
+                StageModel.last_access: datetime.datetime.utcnow()
+                }, synchronize_session="fetch")
+
+            local_db_session.commit()
+            return UpdateLastAccess(result= datetime.datetime.utcnow())
 
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
@@ -447,6 +471,7 @@ class DuplicateStage(graphene.Mutation):
                 stage.id = None
                 stage.name = name
                 stage.owner_id = user.id
+                stage.created_on = datetime.datetime.utcnow()
                 shortname = re.sub(
                     '\s+', '-', re.sub('[^A-Za-z0-9 ]+', '', name)).lower()
 
@@ -501,12 +526,13 @@ class Mutation(graphene.ObjectType):
     saveRecording = SaveRecording.Field()
     updateStatus = UpdateAttributeStatus.Field()
     updateVisibility = UpdateAttributeVisibility.Field()
+    updateLastAccess = UpdateLastAccess.Field()
 
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     stageList = StageConnectionField(
-        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String())
+        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String(), created_on=graphene.DateTime())
     assetList = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
     assetTypeList = StageConnectionField(
