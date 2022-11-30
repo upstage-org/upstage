@@ -19,23 +19,28 @@
           <template v-for="(menu, i) in navigations" :key="i">
             <div v-if="menu.children" class="navbar-item has-dropdown is-hoverable">
               <a v-if="menu.url" class="navbar-link is-arrowless" :href="menu.url"
-                :target="menu.url?.startsWith('http') ? '_blank' : ''">{{ menu.title }}</a>
+                :target="menu.url?.startsWith('http') ? '_blank' : ''">
+                {{ menu.title }}
+              </a>
               <a v-else class="navbar-link is-arrowless">{{ menu.title }}</a>
               <div class="navbar-dropdown">
                 <a v-for="(submenu, j) in menu.children" :key="{ j }" class="navbar-item" :href="submenu.url"
-                  :target="submenu.url?.startsWith('http') ? '_blank' : ''">{{ submenu.title }}</a>
+                  :target="submenu.url?.startsWith('http') ? '_blank' : ''">
+                  {{ submenu.title }}
+                </a>
               </div>
             </div>
-            <a v-else class="navbar-item" :href="menu.url" :target="menu.url?.startsWith('http') ? '_blank' : ''">{{
-                menu.title
-            }}</a>
-            <div v-if="i < navigations.length - 1" class="vertical-divider" />
+            <a v-else-if="isShow(menu.seeByAdmin)" class="navbar-item" :href="menu.url"
+              :target="menu.url?.startsWith('http') ? '_blank' : ''">
+              {{ menu.title }}
+            </a>
+            <div v-if="isAdmin && (i < navigations.length - 1)" class="vertical-divider" />
           </template>
         </template>
       </div>
 
       <div class="navbar-end">
-        <template v-if="loggedIn">
+        <template v-if="loggedIn && !isGuest">
           <router-link to="/backstage" class="button is-primary m-2">
             <strong>{{ $t("backstage") }}</strong>
           </router-link>
@@ -72,14 +77,27 @@ export default {
 
     const navigations = computed(() => store.getters["config/navigations"]);
     const foyer = computed(() => store.getters["config/foyer"]);
+    const isAdmin = computed(() => store.getters["user/isAdmin"]);
+    const isGuest = computed(() => store.getters["user/isGuest"]);
+
+    const isShow = (seeByAdmin) => {
+      if (isAdmin.value) {
+        return true
+      }
+
+      return !seeByAdmin
+    }
 
     return {
       expanded,
       toggleExpanded,
       loggedIn,
       logout,
+      foyer,
+      isShow,
       navigations,
-      foyer
+      isAdmin,
+      isGuest
     };
   },
 };

@@ -34,7 +34,7 @@
       </router-link>
     </template>
     <template #status="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">  
         <Switch
           :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'"
           :model-value="item.status === 'live'"
@@ -44,9 +44,10 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
     <template #visibility="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">
         <Switch
           :data-tooltip="item.visibility ? 'On' : 'Off'"
           v-model="item.visibility"
@@ -56,6 +57,7 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
   </DataTable>
 </template>
