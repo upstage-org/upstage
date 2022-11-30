@@ -40,8 +40,8 @@
       </div>
 
       <div class="navbar-end">
-        <template v-if="loggedIn && !isGuest">
-          <router-link to="/backstage" class="button is-primary m-2">
+        <template v-if="loggedIn">
+          <router-link v-if="!isGuest" to="/backstage" class="button is-primary m-2">
             <strong>{{ $t("backstage") }}</strong>
           </router-link>
           <button @click="logout" class="button m-2 mr-6">
