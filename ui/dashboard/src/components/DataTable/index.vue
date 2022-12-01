@@ -69,7 +69,7 @@
                 </template>
                 <template v-else-if="header.type === 'date'">
                   <span :title="moment(item[header.key])">
-                    {{ fromNow(item[header.key]) }}
+                    {{ handleFormatDate(item[header.key]) }}
                   </span>
                 </template>
                 <template v-else>{{ item[header.key] }}</template>
@@ -154,6 +154,18 @@ export default {
         this.sortBy = header;
       }
     },
+
+    handleFormatDate(date){
+      if (date == null) {
+        return null;
+      } 
+      
+      if (moment(this.now).diff(date, "weeks") > 1) {
+        return moment(date).format('DD/MM/yyyy')
+      }
+
+      return this.fromNow(date);
+    }
   },
   computed: {
     offset() {

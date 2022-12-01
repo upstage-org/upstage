@@ -215,8 +215,6 @@ router.beforeEach((to, from, next) => {
         next("/")
     }
 
-    // console.log('O Router beforEach:',from);
-
     next();
     document.title = `UpStage ${to.name && '- ' + to.name}`;
 });
