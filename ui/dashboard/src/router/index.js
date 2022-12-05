@@ -186,18 +186,16 @@ const router = createRouter({
     routes
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(  async (to, from, next) => {
     document.body.classList.add('waiting');
 
     const loggedIn = store.getters["auth/loggedIn"];
-    const isAdmin = store.getters["user/isAdmin"]
-    const isGuest = store.getters["user/isGuest"]
 
     if (to.matched.some((record) => record.meta.requireAuth) && !loggedIn) {
         next("/login");
     }
 
-    if (to.name === 'Login' && loggedIn && !isGuest) {
+    if (to.name === 'Login' && loggedIn) {
         next("/backstage");
     }
 
@@ -207,13 +205,18 @@ router.beforeEach((to, from, next) => {
         document.querySelector("meta[name=viewport]").setAttribute("content", "width=device-width,initial-scale=1.0");
     }
 
-    if (to.fullPath.includes('admin') && loggedIn && !isAdmin) {
-        next("/")
-    }
+    await store.dispatch("user/checkIsAdmin").then(isAdmin => {
 
-    if ((to.fullPath.includes("backstage") || to.fullPath.includes("studio")) && loggedIn && isGuest) {
-        next("/")
-    }
+        if (to.fullPath.includes('admin') && loggedIn && !isAdmin) {
+            next("/")
+        }
+    })
+
+    await store.dispatch("user/checkIsGuest").then(isGuest => {
+        if ((to.fullPath.includes("backstage") || to.fullPath.includes("studio")) && loggedIn && isGuest) {
+            next("/")
+        }
+    })
 
     next();
     document.title = `UpStage ${to.name && '- ' + to.name}`;
