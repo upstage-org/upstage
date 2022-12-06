@@ -186,7 +186,7 @@ export default {
             return render(a).localeCompare(render(b));
           }
           if (key) {
-            return a[key].localeCompare(b[key]);
+            return a[key]?.localeCompare(b[key]);
           }
         });
       }
