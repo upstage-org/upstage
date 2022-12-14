@@ -45,6 +45,7 @@
             <Icon src="setting.svg" size="32" />
           </span>
         </button>
+        <ClearChat option="public-chat"/>
       </div>
       <div class="card-content" ref="theContent">
         <Messages :messages="messages" :style="{ fontSize }" />
@@ -88,9 +89,10 @@ import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
 import Reaction from "./Reaction";
 import Messages from "./Messages";
+import ClearChat from "./ClearChat";
 
 export default {
-  components: { ChatInput, Reaction, Icon, Messages },
+  components: { ChatInput, Reaction, Icon, Messages, ClearChat },
   setup: () => {
     const theContent = ref();
     const store = useStore();
@@ -100,6 +102,8 @@ export default {
     const chatDarkMode = computed(
       () => store.state.stage.settings.chatDarkMode
     );
+
+    store.dispatch("stage/loadPermission")
 
     const messages = computed(() => store.state.stage.chat.messages);
     const loadingUser = computed(() => store.state.user.loadingUser);
