@@ -25,9 +25,9 @@ jobs:
     - name: Install ttf-mscorefonts-installer
       working-directory: ./ui/dashboard
       run: sudo apt install ttf-mscorefonts-installer
-    - name: Install libicu66
-      working-directory: ./ui/dashboard
-      run: sudo apt-get install libicu66
+    # - name: Install libicu66
+    #   working-directory: ./ui/dashboard
+    #   run: sudo apt-get install libicu66
     - name: Install Playwright Browsers
       working-directory: ./ui/dashboard
       run: npx playwright install --with-deps
