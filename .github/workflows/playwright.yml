@@ -19,9 +19,9 @@ jobs:
     - name: sudo update
       working-directory: ./ui/dashboard
       run: sudo apt-get update
-    - name: Install ttf-ubuntu-font-family
-      working-directory: ./ui/dashboard
-      run: sudo apt-get install ttf-ubuntu-font-family
+    # - name: Install ttf-ubuntu-font-family
+    #   working-directory: ./ui/dashboard
+    #   run: sudo apt-get install ttf-ubuntu-font-family
     - name: Install ttf-mscorefonts-installer
       working-directory: ./ui/dashboard
       run: sudo apt install ttf-mscorefonts-installer
