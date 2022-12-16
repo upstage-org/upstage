@@ -100,6 +100,34 @@ Purpose: {note}
 {footer}
 """
 
+def waiting_request_media_approve(user, media):
+    return f"""
+<p>
+Hi <b>{display_user(user)}</b>,
+<br>
+<br>
+Your permission request for media <b>{media.name}<b> has been sent to the owner, 
+<br>
+please wait to approve.
+<br>
+<br>
+{footer}
+"""
+
+def request_permission_acknowledgement(user, media, note):
+    return f"""
+<p>
+Hi <b>{display_user(media.owner)}</b>,
+<br>
+<br>
+{display_user(user)} has indicated that they wish to use your media <b>{media.name}</b> and will acknoweldege it as you have specified.
+<br>
+Purpose: {note}
+<br>
+<br>
+{footer}    
+"""
+
 def permission_response_for_media(user, media, note, approved, studio_url):
     return f"""
 <p>
