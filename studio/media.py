@@ -506,11 +506,11 @@ class RequestPermission(graphene.Mutation):
                 if asset.copyright_level == 2:
                     asset_usage.approved = False
                     studio_url = f"{request.url_root}studio"
-                    send([asset.owner.email], f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
-                    send(user.email,f"Waiting permission request for media {asset.name} approve", waiting_request_media_approve(user,asset))
+                    await send([asset.owner.email], f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
+                    await send(user.email,f"Waiting permission request for media {asset.name} approve", waiting_request_media_approve(user,asset))
                 else:
                     asset_usage.approved = True
-                    send(user.email, f"{display_user(user)} want to use yout media {asset.name} acknowledge media", request_permission_acknowledgement(user, asset, note))
+                    await send(user.email, f"{display_user(user)} want to use yout media {asset.name} acknowledge media", request_permission_acknowledgement(user, asset, note))
                 local_db_session.add(asset_usage)
                 local_db_session.flush()
                 local_db_session.commit()
