@@ -63,6 +63,48 @@ export default {
       commit('SET_AVATAR_ID', id);
       dispatch('stage/joinStage', null, { root: true });
     },
+    async checkIsAdmin({ commit }) {
+      commit("SET_LOADING_USER", true);
+      try {
+        const { currentUser } = await userGraph.currentUser();
+      return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(currentUser?.role);
+      } catch (error) {
+        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
+          logout();
+
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            notification.warning('You have been logged out of this session!');
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
+    },
+    async checkIsGuest({ commit }) {
+      commit("SET_LOADING_USER", true);
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        if (!currentUser) {
+          return true
+        }
+        if (currentUser.role === ROLES.GUEST) {
+          return true
+        }
+        return false
+      } catch (error) {
+        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
+          logout();
+
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            notification.warning('You have been logged out of this session!');
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
+    }
   },
   getters: {
     nickname(state) {

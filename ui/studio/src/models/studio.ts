@@ -1,3 +1,5 @@
+import { Static } from "vue";
+
 export interface Connection<T> {
   pageInfo: PageInfo;
   edges: Edge<T>[];
@@ -44,6 +46,7 @@ export interface User {
   username: string;
   role: number;
   roleName: string;
+  uploadLimit: number;
 }
 
 export interface Stage {
@@ -67,6 +70,8 @@ export interface AssignedStage {
 }
 
 export type CopyrightLevel = 0 | 1 | 2 | 3;
+
+export const uploadDefault = 1024 * 1024
 
 export interface Media {
   id: string;
