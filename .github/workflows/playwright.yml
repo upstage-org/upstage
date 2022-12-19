@@ -19,7 +19,7 @@ jobs:
     - name: Install Playwright Browsers
       working-directory: ./ui/dashboard
       # run: npx playwright install --with-deps
-      run: npx playwright@1.22.2 install-deps
+      run: npx playwright@1.19.2 install-deps
     - name: Run Playwright tests 
       working-directory: ./ui/dashboard
       run: yarn playwright test
