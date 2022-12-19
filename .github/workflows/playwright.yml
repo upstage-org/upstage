@@ -20,7 +20,10 @@ jobs:
       working-directory: ./ui/dashboard
       # run: npx playwright install --with-deps
       run: npm install playwright@1.22.2
-    - name: Run Playwright tests
+    - name: Install dependencies for Playwright 
+      working-directory: ./ui/dashboard
+      run: npx playwright install-deps
+    - name: Run Playwright tests 
       working-directory: ./ui/dashboard
       run: yarn playwright test
     - uses: actions/upload-artifact@v2
