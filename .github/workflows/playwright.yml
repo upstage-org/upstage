@@ -23,7 +23,7 @@ jobs:
 
     - name: Install libicu66:amd64
       working-directory: ./ui/dashboard
-      run: sudo apt-get install libicu66
+      run: sudo dpkg -i libicu66_66.1-2ubuntu2_amd64.deb
 
     - name: Install Playwright Browsers
       working-directory: ./ui/dashboard
