@@ -16,6 +16,15 @@ jobs:
     - name: Install dependencies
       working-directory: ./ui/dashboard
       run: yarn
+      
+    - name: Install fonts-unifont
+      working-directory: ./ui/dashboard
+      run: sudo apt-get install fonts-unifont
+
+    - name: Install libicu66:amd64
+      working-directory: ./ui/dashboard
+      run: sudo apt-get install libicu66:amd64
+
     - name: Install Playwright Browsers
       working-directory: ./ui/dashboard
       run: npx playwright install
