@@ -16,9 +16,10 @@ jobs:
     - name: Install dependencies
       working-directory: ./ui/dashboard
       run: yarn
+
     - name: Install Playwright Browsers
       working-directory: ./ui/dashboard
-      run:  npx playwright install
+      run:  sudo npx playwright install-deps 
 
     - name: Run Playwright tests 
       working-directory: ./ui/dashboard
