@@ -34,6 +34,7 @@ export default {
             color: randomMessageColor(),
             opacity: 0.9,
             fontSize: '14px',
+            playerFontSize: '14px'
         },
         board: {
             objects: [],
@@ -440,6 +441,9 @@ export default {
         SET_CHAT_PARAMETERS(state, { opacity, fontSize }) {
             state.chat.opacity = opacity;
             state.chat.fontSize = fontSize;
+        },
+        SET_PLAYER_CHAT_PARAMETERS(state, { playerFontSize }) {
+            state.chat.playerFontSize =playerFontSize;
         },
         UPDATE_SESSIONS_COUNTER(state, session) {
             const index = state.sessions.findIndex(s => s.id === session.id)

@@ -471,6 +471,7 @@ class DuplicateStage(graphene.Mutation):
                 stage.id = None
                 stage.name = name
                 stage.owner_id = user.id
+                stage.last_access = None
                 stage.created_on = datetime.datetime.utcnow()
                 shortname = re.sub(
                     '\s+', '-', re.sub('[^A-Za-z0-9 ]+', '', name)).lower()

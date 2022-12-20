@@ -34,7 +34,7 @@
       </router-link>
     </template>
     <template #status="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">  
         <Switch
           :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'"
           :model-value="item.status === 'live'"
@@ -44,9 +44,10 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
     <template #visibility="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">
         <Switch
           :data-tooltip="item.visibility ? 'On' : 'Off'"
           v-model="item.visibility"
@@ -56,6 +57,7 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
   </DataTable>
 </template>
@@ -71,6 +73,7 @@ import Switch from "@/components/form/Switch.vue";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import { useMutation } from "@/services/graphql/composable";
+
 
 export default {
   components: {
@@ -95,12 +98,18 @@ export default {
       {
         title: "Create Date",
         description: "date of creation",
-        render: (item) => formatDate(item.createdOn),
+        key: "createdOn",
+        type: "date",
+        sortable: true,
+        defaultSortOrder: false,
       },
       {
         title: "Last Access",
         description: "date last used / accessed",
-        render: (item) => formatDate(item.lastAccess),
+        type: "date",
+        key: "lastAccess",      
+        sortable: true,
+        defaultSortOrder: false,
       },
       {
         title: "Statistics",
@@ -143,18 +152,6 @@ export default {
     ];
     
     const refresh = inject("refresh");
-
-    const formatDate = (val) => {
-      if (val == null) {
-        return null;
-      }
-      let date = new Date(val);
-      let year = date.getFullYear();
-      let month = (1 + date.getMonth()).toString().padStart(2, '0');
-      let day = date.getDate().toString().padStart(2, '0');
-    
-      return month + '/' + day + '/' + year;
-    }
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 

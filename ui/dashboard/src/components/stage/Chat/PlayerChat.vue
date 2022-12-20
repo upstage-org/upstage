@@ -37,6 +37,20 @@
       </div>
       <footer class="card-footer">
         <div class="card-footer-item">
+          <div class="is-fullwidth my-1 reaction-bar">
+            <div class="font-size-controls">
+              <button
+                class="button is-small is-rounded mx-1"
+                data-tooltip="Increase font size"
+                @click="increateFontSize()"
+              >➕</button>
+              <button
+                data-tooltip="Decrease font size"
+                class="button is-small is-rounded"
+                @click="decreaseFontSize()"
+              >➖</button>
+            </div>
+          </div>
           <div class="control has-icons-right is-fullwidth">
             <ChatInput
               v-model="chat.privateMessage"
@@ -94,7 +108,7 @@ export default {
     onMounted(scrollToEnd);
 
     const opacity = computed(() => store.state.stage.chat.opacity);
-    const fontSize = computed(() => store.state.stage.chat.fontSize);
+    const fontSize = computed(() => store.state.stage.chat.playerFontSize);
 
     const enter = (el, complete) => {
       anime({
@@ -136,11 +150,11 @@ export default {
       moveable.on(
         "resize",
         ({ target, width, height, drag: { left, top } }) => {
-          console.log(width, height);
+          // console.log(left, top);
           if (width > 100) {
             target.style.width = `${width}px`;
           }
-          if (height > 120) {
+          if (height > 160) {
             target.style.height = `${height}px`;
           }
           target.style.left = `${left}px`;
@@ -166,6 +180,25 @@ export default {
       isMovingable.value = false;
     };
 
+    const increateFontSize = () => {
+      let incValue = fontSize.value?.replace("px", "");
+      incValue++;
+      const parameters = {
+        playerFontSize: `${incValue}px`,
+      };
+      store.commit("stage/SET_PLAYER_CHAT_PARAMETERS", parameters);
+      setTimeout(() => theContent.value.scrollTop = theContent.value.scrollHeight);
+    };
+
+    const decreaseFontSize = () => {
+      let decValue = fontSize.value?.replace("px", "");
+      decValue > 1 && decValue--;
+      const parameters = {
+        playerFontSize: `${decValue}px`,
+      };
+      store.commit("stage/SET_PLAYER_CHAT_PARAMETERS", parameters);
+    };
+
     return {
       messages,
       message,
@@ -182,6 +215,8 @@ export default {
       isMovingable,
       minimiseToToolbox,
       chat,
+      increateFontSize,
+      decreaseFontSize
     };
   },
 };
@@ -194,7 +229,7 @@ export default {
   position: fixed;
   left: 56px;
   bottom: 16px;
-  height: 200px;
+  height: 230px;
   max-width: unset;
   overflow: visible;
   z-index: 3;
@@ -207,7 +242,7 @@ export default {
   }
   .card-footer-item {
     flex-wrap: wrap;
-    padding-top: 6px;
+    padding-top: 0px;
     padding-bottom: 6px;
   }
 
@@ -225,6 +260,18 @@ export default {
   }
   .control.has-icons-right .input {
     padding-right: 50px !important;
+  }
+  .reaction-bar {
+  height: 30px;
+  position: relative;
+    .font-size-controls {
+      position: absolute;
+      top: 0;
+      right: 0;
+      .button.is-rounded {
+        width: 16px;
+      }
+    }
   }
 }
 </style>
