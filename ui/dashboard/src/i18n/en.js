@@ -128,6 +128,8 @@ export default {
   all_users: 'All Users',
   all_stages: 'All Stages',
   download_all_chat: 'Download All Chat',
+  download_all_audience_chat: 'Download All Audience Chat',
+  download_all_player_chat: 'Download All Player Chat',
   archive_performance: 'Archive Performance',
   auto_recorded: 'Auto recorded',
   all_of_its_replay_and_chat: 'all of its replay and chat',
