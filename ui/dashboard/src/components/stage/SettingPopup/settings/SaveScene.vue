@@ -27,6 +27,9 @@ export default {
     const store = useStore();
 
     const form = reactive({});
+
+    const payload = takeSnapshotFromStage()
+
     const saveScene = async () => {
       emit("close");
       if (form.name?.trim()) {
@@ -37,7 +40,6 @@ export default {
           const canvas = await html2canvas(el, { scale: 200 / width });
           const preview = cropImageFromCanvas(canvas)?.src;
           const stageId = store.state.stage.model.dbId;
-          const payload = takeSnapshotFromStage();
           const { name } = form;
           const { save } = useMutation(stageGraph.saveScene);
           await save("Scene saved successfully!", {

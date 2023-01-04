@@ -39,6 +39,14 @@ export default {
     const store = useStore();
     const switchScene = () => {
       store.dispatch("stage/switchScene", props.scene.id);
+      const audios = JSON.parse(props.scene.payload).audios;
+      const audioPlayers = JSON.parse(props.scene.payload).audioPlayers;
+      audios.forEach(( audio, index ) => {
+        audio.currentTime = audioPlayers[index].currentTime;
+        audio.changed = true;
+        audio.saken = true;
+        store.dispatch("stage/updateAudioStatus", audio);
+      });
     };
 
     const { mutation } = useMutation(stageGraph.deleteScene, props.scene.id);
