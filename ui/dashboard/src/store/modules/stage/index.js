@@ -84,6 +84,7 @@ export default {
         isLoadingScenes: false,
         showPlayerChat: false,
         showClearChatSetting:false,
+        showDownloadChatSetting:false,
         lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
         runningStreams: [],
         masquerading: false,
@@ -514,6 +515,9 @@ export default {
         },
         SET_SHOW_CLEAR_CHAT_SETTINGS(state, value) {
             state.showClearChatSetting = value
+        },
+        SET_SHOW_DOWNLOAD_CHAT_SETTINGS(state, value) {
+            state.showDownloadChatSetting = value
         },
         TAG_PLAYER(state, player) {
             state.chat.privateMessage += `@${player.nickname.trim()}`
@@ -1024,8 +1028,10 @@ export default {
             const permission = await stageGraph.loadPermission(state.model.fileLocation)
             if(permission=="owner"||permission=="editor"){
               commit('SET_SHOW_CLEAR_CHAT_SETTINGS',true)
+              commit('SET_SHOW_DOWNLOAD_CHAT_SETTINGS',true)
             }else{
                 commit('SET_SHOW_CLEAR_CHAT_SETTINGS',false)
+                commit('SET_SHOW_DOWNLOAD_CHAT_SETTINGS',false)
             }
         },
         async reloadScenes({ state }) {

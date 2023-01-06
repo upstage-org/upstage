@@ -14,6 +14,13 @@
         >
           <a>{{ $t("parameters") }}</a>
         </li>
+        <li
+          v-if="downloadChatVisibility"
+          :class="{ 'is-active': currentTab === 'download' }"
+          @click="currentTab = 'download'"
+        >
+          <a>{{ $t("download_chat") }}</a>
+        </li>
       </ul>
     </div>
   </header>
@@ -30,7 +37,7 @@
       </HorizontalField>
       <SaveButton @click="saveNickname" :loading="loading" />
     </div>
-    <div class="content" v-else>
+    <div class="content" v-else-if="currentTab === 'params'">
       <HorizontalField title="Chat transparency">
         <input
           v-model="parameters.opacity"
@@ -51,6 +58,34 @@
 
       <save-button @click="saveParameters" />
     </div>
+    <div class="content" v-else>
+      <h4>
+        Select the sections you want to download
+      </h4>
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <label class="label fix">{{ $t("audience_chat") }}</label>
+        </div>
+        <div class="field-body">
+          <div class="field is-narrow">
+            <Switch :data-tooltip="downloadOptions.audienceChat ? 'On' : 'Off' " v-model="downloadOptions.audienceChat" />
+          </div>
+        </div>
+      </div>
+      <div class="field is-horizontal">
+        <div class="field-label">
+          <label class="label fix">{{ $t("player_chat") }}</label>
+        </div>
+        <div class="field-body">
+          <div class="field is-narrow">
+            <Switch :data-tooltip="downloadOptions.playerChat ? 'On'  : 'Off' " v-model="downloadOptions.playerChat" />
+          </div>
+        </div>
+      </div>
+
+      <DownloadButton  @click="downloadChatLog" v-if="downloadOptions.audienceChat||downloadOptions.playerChat"/>
+      <DownloadButton disabled v-else/>
+    </div>
   </div>
 </template>
 
@@ -60,14 +95,28 @@ import { useStore } from "vuex";
 import HorizontalField from "@/components/form/HorizontalField.vue";
 import Field from "@/components/form/Field";
 import SaveButton from "@/components/form/SaveButton.vue";
+import DownloadButton from "@/components/form/DownloadButton.vue";
 import { notification } from "@/utils/notification";
+import Switch from "@/components/form/Switch.vue";
+
 export default {
-  components: { HorizontalField, Field, SaveButton },
+  components: { HorizontalField, Field, SaveButton, Switch , DownloadButton},
   setup: (props, { emit }) => {
     const form = reactive({});
     const loading = ref(false);
     const store = useStore();
     const nickname = computed(() => store.getters["user/chatname"]);
+    const downloadOptions = ref({
+      audienceChat : false,
+      playerChat: false
+    })
+
+    const chats = computed(() => store.state.stage.chat);
+    const downloadChatVisibility = computed(
+      () => store.state.stage.showDownloadChatSetting
+    );
+    const stageUrl = store.getters['stage/url']
+
     const saveNickname = () => {
       loading.value = true;
       store.dispatch("user/saveNickname", form).then((nickname) => {
@@ -77,6 +126,95 @@ export default {
         loading.value = false;
       });
     };
+
+    const makeTextFile = function (content) {
+      let textFile;
+      const data = new Blob(content, { type: "text/plain" });
+      if (textFile !== null) {
+        window.URL.revokeObjectURL(textFile);
+      }
+      textFile = window.URL.createObjectURL(data);
+      return textFile;
+    };
+
+    const downloadChatLog = () => {   
+      if (downloadOptions.value.audienceChat){
+        let link = document.createElement("a");
+        let content = [];
+        link.setAttribute(
+          "download",
+          `${stageUrl}-Audience-chat-${timeStamp()
+          }.txt`
+        );
+        content = chats.value.messages.map((item) => {
+          let line = "";
+          if (item.clear) {
+            line = "---------------- Clear Chat ----------------";
+          } else {
+            line = `${item.user}: ${item.message}`;
+          }
+          return `${line}\r\n`;
+        });
+        link.href = makeTextFile(content);
+        document.body.appendChild(link);
+        window.requestAnimationFrame(function () {
+          const event = new MouseEvent("click");
+          link.dispatchEvent(event);
+          document.body.removeChild(link);
+        });
+      }
+
+      if (downloadOptions.value.playerChat){
+        let link = document.createElement("a");
+        let content = [];
+        link.setAttribute(
+          "download",
+          `${stageUrl}-Player-chat-${timeStamp()
+          }.txt`
+        );
+        content = chats.value.privateMessages.map((item) => {
+          let line = "";
+          if (item.clearPlayerChat) {
+            line = "---------------- Clear Chat ----------------";
+          } else {
+            line = `${item.user}: ${item.message}`;
+          }
+          return `${line}\r\n`;
+        });
+        link.href = makeTextFile(content);
+        document.body.appendChild(link);
+        window.requestAnimationFrame(function () {
+          const event = new MouseEvent("click");
+          link.dispatchEvent(event);
+          document.body.removeChild(link);
+        });
+      }  
+      emit('close')   
+      notification.success("Download success");
+    };
+
+    const padTo2Digits=(num)=>{
+      return num.toString().padStart(2, '0');
+    }
+    const formatDate=(date)=> {
+      return (
+        [
+          padTo2Digits(date.getHours()),
+          padTo2Digits(date.getMinutes()),
+        ].join('')+
+        '-' +
+        [
+          padTo2Digits(date.getDate()),
+          padTo2Digits(date.getMonth() + 1),
+          date.getFullYear(),
+        ].join('') 
+        
+      );
+    }
+    const timeStamp = () => {
+      const date = new Date();
+      return formatDate(date)
+    }
 
     const changeFontSize = (value) => {
       parameters.fontSize = value.replace(/^\D+/g, "") + "px";
@@ -100,6 +238,9 @@ export default {
       form,
       currentTab,
       parameters,
+      downloadOptions,
+      downloadChatVisibility,
+      downloadChatLog,
       saveParameters,
       changeFontSize,
     };
@@ -108,4 +249,7 @@ export default {
 </script>
 
 <style>
+.fix{
+  width: 115px;
+}
 </style>
