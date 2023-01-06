@@ -132,6 +132,8 @@ export default {
   player_chat: 'Cuộc trò chuyện người chơi',
   download_chat: 'Tải xuống cuộc trò chuyện',
   download_all_chat: 'Tải xuống tất cả trò chuyện',
+  download_all_audience_chat: 'Tải xuống tất cả trò chuyện khán giả',
+  download_all_player_chat: 'Tải xuống tất cả trò chuyện người chơi',
   archive_performance: 'Hiệu suất lưu trữ',
   auto_recorded: 'Tự động ghi lại',
   all_of_its_replay_and_chat: 'tất cả phát lại và trò chuyện của nó',
