@@ -28,7 +28,7 @@ export default {
 
     const form = reactive({});
 
-    const payload = takeSnapshotFromStage()
+    const payload = takeSnapshotFromStage();
 
     const saveScene = async () => {
       emit("close");
