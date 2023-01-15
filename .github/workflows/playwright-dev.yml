@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ Stiegl-22 ]
+    branches: [ AnchorSteam-2.0.3 ]
   pull_request:
-    branches: [ Stiegl-22 ]
+    branches: [ AnchorSteam-2.0.3 ]
 jobs:
   test:
     timeout-minutes: 60
