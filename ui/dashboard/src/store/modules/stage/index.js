@@ -83,6 +83,8 @@ export default {
         isSavingScene: false,
         isLoadingScenes: false,
         showPlayerChat: false,
+        showClearChatSetting:false,
+        showDownloadChatSetting:false,
         lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
         runningStreams: [],
         masquerading: false,
@@ -279,6 +281,9 @@ export default {
         },
         CLEAR_CHAT(state) {
             state.chat.messages.length = 0
+        },
+        CLEAR_PLAYER_CHAT(state) {
+            state.chat.privateMessages.length = 0
         },
         REMOVE_MESSAGE(state, id) {
             state.chat.messages = state.chat.messages.filter(m => m.id !== id)
@@ -508,6 +513,12 @@ export default {
         SET_SHOW_PLAYER_CHAT(state, value) {
             state.showPlayerChat = value
         },
+        SET_SHOW_CLEAR_CHAT_SETTINGS(state, value) {
+            state.showClearChatSetting = value
+        },
+        SET_SHOW_DOWNLOAD_CHAT_SETTINGS(state, value) {
+            state.showDownloadChatSetting = value
+        },
         TAG_PLAYER(state, player) {
             state.chat.privateMessage += `@${player.nickname.trim()}`
         },
@@ -703,6 +714,10 @@ export default {
         handleChatMessage({ commit, state, rootGetters, dispatch }, { message }) {
             if (message.clear) {
                 commit('CLEAR_CHAT')
+                return;
+            }
+            if (message.clearPlayerChat) {
+                commit('CLEAR_PLAYER_CHAT')
                 return;
             }
             if (message.remove) {
@@ -1009,6 +1024,16 @@ export default {
                 state.model.permission = permission
             }
         },
+        async loadPermission({ state , commit}) {
+            const permission = await stageGraph.loadPermission(state.model.fileLocation)
+            if(permission=="owner"||permission=="editor"){
+              commit('SET_SHOW_CLEAR_CHAT_SETTINGS',true)
+              commit('SET_SHOW_DOWNLOAD_CHAT_SETTINGS',true)
+            }else{
+                commit('SET_SHOW_CLEAR_CHAT_SETTINGS',false)
+                commit('SET_SHOW_DOWNLOAD_CHAT_SETTINGS',false)
+            }
+        },
         async reloadScenes({ state }) {
             state.isLoadingScenes = true
             const scenes = await stageGraph.loadScenes(state.model.fileLocation)
@@ -1167,6 +1192,9 @@ export default {
         },
         clearChat() {
             mqtt.sendMessage(TOPICS.CHAT, { clear: true })
+        },
+        clearPlayerChat() {
+            mqtt.sendMessage(TOPICS.CHAT, { clearPlayerChat: true })
         },
         removeChat(action, messageId) {
             mqtt.sendMessage(TOPICS.CHAT, { remove: messageId })

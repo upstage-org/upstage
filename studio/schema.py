@@ -92,7 +92,6 @@ class Mutation(graphene.ObjectType):
     requestPermission = RequestPermission.Field()
     quickAssignMutation = QuickAssignMutation.Field()
 
-
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 studio_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
