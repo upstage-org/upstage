@@ -78,6 +78,7 @@ export function takeSnapshotFromStage() {
         board: originalBoard,
         settings,
         audioPlayers,
+        tools
     } = store.state.stage;
     const board = Object.assign({}, originalBoard)
     board.objects = originalBoard.objects.filter(o => o.liveAction).map(serializeObject)
@@ -88,6 +89,13 @@ export function takeSnapshotFromStage() {
         board,
         settings,
         audioPlayers,
+        audios: tools.audios
     });
+    tools.audios?.forEach((audio) => {
+        store.dispatch("stage/updateAudioStatus", {
+            ...audio,
+            isPlaying: false,
+        });
+    })
     return payload
 }

@@ -10,10 +10,20 @@
 <script>
 import Icon from "@/components/Icon";
 import { useStore } from "vuex";
+import { computed } from "@vue/runtime-core";
 export default {
   components: { Icon },
   setup: () => {
     const store = useStore();
+    const audios = computed(() => store.getters["stage/audios"]);
+
+    const stopAudio = (audio) => {
+      audio.currentTime = 0;
+      audio.saken = true;
+      audio.isPlaying = false;
+      store.dispatch("stage/updateAudioStatus", audio);
+    };
+
     const createScene = async () => {
       if (
         confirm(
@@ -21,6 +31,9 @@ export default {
         )
       ) {
         store.dispatch("stage/blankScene");
+        audios.value?.forEach((audio) => {
+          stopAudio(audio);
+        })
       }
     };
     return { createScene };

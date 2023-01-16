@@ -503,7 +503,13 @@ export default {
                 snapshot.board.objects.forEach(deserializeObject)
                 snapshot.board.tracks = state.board.tracks
                 Object.keys(snapshot).forEach(key => {
-                    state[key] = snapshot[key]
+                    if ( (key == "audioPlayers") && (snapshot[key].length == 0) && (state[key].length > 0) ) {
+                        state[key].forEach((audioPlayer) => {
+                          audioPlayer.currentTime = 0;
+                        })
+                    } else {
+                        state[key] = snapshot[key];
+                    } 
                 })
             }
         },
