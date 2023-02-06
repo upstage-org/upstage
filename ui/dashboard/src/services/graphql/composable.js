@@ -2,6 +2,7 @@ import store from "@/store";
 import { computed, reactive, ref } from "vue";
 import hash from 'object-hash';
 import { notification } from "@/utils/notification";
+import { configGraph } from '@/services/graphql';
 
 export const useRequest = (service, ...params) => {
     const loading = ref(false);
@@ -78,18 +79,27 @@ export const useRequest = (service, ...params) => {
 
 export const useMutation = (...params) => {
     const { refresh, ...rest } = useRequest(...params);
-    const mutation = refresh
+    const mutation = refresh;
+    const prm = params[0];
     const save = async (success, ...params) => {
         try {
             const response = await mutation(...params)
             if (typeof success === 'function') {
                 success(response)
             } else {
-                notification.success(success);
+                if( prm === configGraph.sendEmail){
+                    notification.emailSuccess(success);
+                }else{
+                    notification.success(success);
+                }
             }
             return response
         } catch (error) {
-            notification.error(error)
+            if( prm === configGraph.sendEmail){
+                notification.emailError(error);
+            }else{
+                notification.error(error);
+            }
         }
     }
 

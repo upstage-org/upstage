@@ -1,5 +1,6 @@
 import { toast as bulmaToast } from "bulma-toast";
 import anime from "animejs";
+const MaxSafe = 604800000;
 
 export const toast = props => {
     bulmaToast({
@@ -30,5 +31,11 @@ export const notification = {
     },
     error: message => {
         toast({ message, type: 'is-danger' })
+    },
+    emailSuccess: message => {
+        toast({ message, type: 'is-success', duration: MaxSafe })
+    },
+    emailError: message => {
+        toast({ message, type: 'is-danger', duration: MaxSafe })
     },
 }
