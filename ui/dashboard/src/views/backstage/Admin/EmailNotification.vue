@@ -68,6 +68,19 @@ const body = ref(`<div>
 const additionalReceivers = ref('');
 const additionalBcc = ref('');
 
+const reset = () => {
+  subject.value = '';
+  selectedPlayers.value = [];
+  body.value = `<div>
+  <p>&nbsp;</p>
+  <p>Thank you and best regards,</p>
+  </div>
+  <div><img class="avatar flex-shrink-0 mb-3 mr-3 mb-md-0 mr-md-4" src="https://docs.upstage.live/wp-content/uploads/2021/12/logo-upstage-official-300px.png" alt="@upstage-org" width="100" />
+  </div>`;
+  additionalReceivers.value = '';
+  additionalBcc.value = '';
+}
+
 const { save, loading } = useMutation(configGraph.sendEmail);
 const send = async () => {
   const selectedRecipientsIds = selectedPlayers.value[0] ?? [];
@@ -76,13 +89,13 @@ const send = async () => {
   const selectedBccs = users.value.filter(u => selectedBccIds.includes(u.dbId));
   console.log(selectedRecipients, selectedBccs);
   if (!subject.value) {
-    return notification.error('Please provide a subject for your email');
+    return notification.emailError('Please provide a subject for your email');
   }
   if (!body.value) {
-    return notification.error('Please provide a body for your email');
+    return notification.emailError('Please provide a body for your email');
   }
   if (!selectedRecipients.length && !additionalReceivers.value.trim() && !selectedBccs.length && !additionalBcc.value.trim()) {
-    return notification.error('Please select at least one player or provide an email address');
+    return notification.emailError('Please select at least one player or provide an email address');
   }
   await save(
     `Notification has been successfully sent to ${selectedRecipients
@@ -100,6 +113,7 @@ const send = async () => {
       bcc: selectedBccs.map(p => p.email).join(',').concat(additionalBcc.value ? `,${additionalBcc.value}` : ''),
     }
   )
+  reset();
 }
 </script>
 
