@@ -6,6 +6,7 @@
         :render-label="(item) => item.label"
         :render-value="(item) => item.value"
         :model-value="item.selectedRole ?? item.role"
+        :isUp="item.lastItem"
         @update:model-value="
           item.selectedRole = $event;
           confirm();

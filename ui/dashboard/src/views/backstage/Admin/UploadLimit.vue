@@ -7,6 +7,7 @@
         :render-label="(item) => item.label"
         :render-value="(item) => item.value"
         v-model="item.uploadLimit"
+        :isUp="item.lastItem"
         @update:model-value="
           item.selectSize = $event;
           confirm();

@@ -195,6 +195,19 @@ export default {
       }
       const start = this.offset;
       const end = start + this.limit;
+      let endR;
+      if (rows.length < end) {
+        endR = rows.length;
+      } else {
+        endR = end;
+      }
+      rows?.forEach(( row, index ) => {
+        if ((index == endR-1)||(index == endR-2)) {
+          row.lastItem = true;
+        } else {
+          row.lastItem = false;
+        }
+      })
       return rows.slice(start, end);
     },
   },
