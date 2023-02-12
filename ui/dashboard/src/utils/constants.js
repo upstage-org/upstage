@@ -89,3 +89,47 @@ export const MEDIA_COPYRIGHT_LEVELS = [
 export const imageExtensions = ".svg,.jpg,.jpeg,.png,.gif";
 export const audioExtensions = ".wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a";
 export const videoExtensions = ".mp4,.webm,.opgg,.3gp,.flv";
+export const orderTitle = [
+  {
+    label: "Newest",
+    value: (a, b) => {
+      return new Date(b.createdOn) - new Date(a.createdOn);
+    }
+  },
+  {
+    label: "Latest",
+    value: (a, b) => {
+      return new Date(a.createdOn) - new Date(b.createdOn);
+    }
+  },
+  {
+    label: "A → Z",
+    value: (a, b) => {
+      let fa = a.name.toLowerCase();
+      let fb = b.name.toLowerCase();
+
+      if (fa < fb) {
+          return -1;
+      }
+      if (fa > fb) {
+          return 1;
+      }
+      return 0;
+    }
+  },
+  {
+    label: "Z ← A",
+    value: (a, b) => {
+      let fa = a.name.toLowerCase();
+      let fb = b.name.toLowerCase();
+
+      if (fa > fb) {
+          return -1;
+      }
+      if (fa < fb) {
+          return 1;
+      }
+      return 0;
+    }
+  }
+]
