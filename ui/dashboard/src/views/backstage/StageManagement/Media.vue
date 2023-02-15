@@ -47,8 +47,9 @@
   <MultiSelectList
     v-else
     :loading="loading"
-    :titles="['Available Media', 'Selected Media']"
+    :titles="['Available Media', `Media assigned to this Stage`]"
     :data="filteredMediaList"
+    :sizeTotal="totalSize"
     :column-class="() => 'is-12'"
     v-model="selectedMedia"
   >
@@ -102,6 +103,7 @@ export default {
     const store = useStore();
     const stage = inject("stage");
     const selectedMedia = ref([]);
+    const totalSize = ref(0)
     const { loading, data } = useQuery(stageGraph.assignableMedia);
     const { loading: saving, save } = useMutation(stageGraph.saveStageMedia);
 
@@ -124,6 +126,11 @@ export default {
     watchEffect(() => {
       if (!stage.value || !mediaList.value) return;
       selectedMedia.value = stage.value.media.map(m => mediaList.value.find(media => media.dbId === m.id));
+      if(selectedMedia.value[0]){
+        totalSize.value = selectedMedia?.value.reduce(
+          (accumulator, currentValue) =>accumulator + currentValue.size, 0
+        );
+      }
     });
 
     const saveMedia = async () => {
@@ -187,7 +194,8 @@ export default {
       filteredMediaList,
       displayName,
       owners,
-      reordering
+      reordering,
+      totalSize
     };
   },
 };

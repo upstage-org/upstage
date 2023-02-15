@@ -29,7 +29,7 @@
       <div class="columns is-fullwidth">
         <div class="column">
           <Field label="Additional receivers - To" placeholder="someone@gmail.com,another@gmail.com"
-            help="You can send this notification to email addresses that haven't registered UpStage!"
+            help="You can send this notification to email addresses that haven't registered on UpStage!"
             v-model="additionalReceivers" />
         </div>
         <div class="column is-narrow">

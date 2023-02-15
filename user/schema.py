@@ -21,7 +21,7 @@ from graphql.execution.executors.asyncio import AsyncioExecutor
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,
     app,api,ScopedSession)
-from config.settings import URL_PREFIX
+from config.settings import URL_PREFIX,SUPPORT_EMAILS
 from auth.auth_api import jwt_required
 from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, OneTimeTOTP, User as UserModel
 from flask_graphql import GraphQLView
@@ -88,7 +88,9 @@ class CreateUser(graphene.Mutation):
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
         await send([user.email], f"Welcome to UpStage!", user_registration(user))
-        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
+        # No, don't send this to every admin.
+        #admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
+        admin_emails = SUPPORT_EMAILS
         approval_url = f"{request.url_root}backstage/admin/player-management"
         await send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)

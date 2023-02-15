@@ -36,6 +36,7 @@ export const assetFragment = gql`
   fragment assetFragment on Asset {
     id
     name
+    size
     description
     assetType {
       id

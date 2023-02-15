@@ -38,6 +38,7 @@
       <div class="column">
         <div class="box">
           <p v-if="titles" class="title is-5">{{ titles[1] }}</p>
+          <p v-if="sizeTotal || sizeTotal === 0" class="subtitle is-6">Total file size: {{ humanFileSize(sizeTotal) }}</p>
           <Loading v-if="loading" />
           <div v-else class="columns is-multiline">
             <template v-for="item in modelValue" :key="item">
@@ -64,6 +65,7 @@
 <script>
 import Loading from "@/components/Loading";
 import Selectable from "@/components/Selectable";
+import { humanFileSize } from "@/utils/common";
 
 export default {
   props: {
@@ -74,6 +76,7 @@ export default {
     data: Array,
     titles: Array,
     loading: Boolean,
+    sizeTotal: Number,
     columnClass: {
       type: Function,
       default: () => "",
@@ -108,7 +111,7 @@ export default {
       );
     };
 
-    return { select, remove, selectAll, removeAll };
+    return { select, remove, selectAll, removeAll, humanFileSize };
   },
 };
 </script>

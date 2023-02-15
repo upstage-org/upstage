@@ -172,7 +172,7 @@ EMAIL_HOST = 'mail.gandi.net'
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 EMAIL_PORT = 465
-ADMIN_EMAIL = '' # A list admin email always in bcc
+SUPPORT_EMAILS = '' # A list admin email always in bcc
 EMAIL_HOST_DISPLAY_NAME = 'UpStage Support'
 ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['http://127.0.0.1:8000/'] # This is setup only in app1 server, All client server endpoint having permission using Upstage Send Email service
 ```

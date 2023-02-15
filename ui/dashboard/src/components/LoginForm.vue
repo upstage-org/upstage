@@ -51,7 +51,7 @@
       </header>
       <div v-if="resetStep === 1" class="card-content">
         <div class="content">
-          <p>Please provide us your username or email so that we can send you a verify code:</p>
+          <p>Please provide us your username or email so that we can send you a verification code:</p>
           <div class="field">
             <p class="control has-icons-left">
               <input class="input" v-model="username" placeholder="Username or email" required />
