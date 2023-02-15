@@ -78,8 +78,12 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
                 subject = f'{subject_prefix.value}: {subject}'
     msg.preamble = subject
 
+    # Remove empty strings. Not sure how they get here.
     # Remove support admins if they've been listed as recipients.
     # They are implicitly added to all emails. No need to add them again.
+    to = [x for x in to if x not in ('',None)]
+    cc = [x for x in cc if x not in ('',None)]
+    bcc = [x for x in bcc if x not in ('',None)]
     if to and SUPPORT_EMAILS:
         to = list(set(to).difference(set(SUPPORT_EMAILS)))
     if cc and SUPPORT_EMAILS:
@@ -89,19 +93,15 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
 
     msg['Subject'] = subject
     msg['From'] = f'{EMAIL_HOST_DISPLAY_NAME} <{sender}>'
-    msg['To'] = ''
-    msg['Cc'] = ''
-    msg['Bcc'] = ''
-    if to:
-        msg['To'] = ', '.join(to)
-    if cc:
-        msg['Cc'] = ', '.join(cc)
+    msg['To'] = ', '.join(to) if to else ''
+    msg['Cc'] = ', '.join(cc) if cc else ''
     if bcc:
         if SUPPORT_EMAILS:
             msg['Bcc'] = ', '.join(SUPPORT_EMAILS) + ',' + ', '.join(bcc)
     else:
         if SUPPORT_EMAILS:
             msg['Bcc'] = ', '.join(SUPPORT_EMAILS)
+
     '''
     Multipart message prep. Send both plain text and html, to ensure
     that it can be read.
