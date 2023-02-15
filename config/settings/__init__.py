@@ -18,7 +18,8 @@ import socket
 # Override these in your local settings file if you wish.
 # Things which must be overridden aren't listed here.
 
-ADMIN_EMAIL= "support@upstage.org"
+ADMINS = ["support@upstage.org"]
+SUPPORT_EMAILS = ["support@upstage.org"]
 
 # A list of developers who should receive email crash reports in dev.
 # In prod, they should all go to the support address.
