@@ -1,6 +1,7 @@
 __pycache__/
 *.pyc
 .vscode/
+.fleet/
 .env/
 .venv/
 .virtualenv/
