@@ -1,6 +1,6 @@
 aiosmtplib==2.0.1
 arrow==1.2.3
-blinker
+blinker==1.5
 cryptography==39.0.1
 flask==2.2.3
 flask_caching==2.0.2
@@ -12,16 +12,16 @@ flask_restx==1.0.6
 flask_sqlalchemy==3.0.3
 flask_talisman==1.0.0
 gevent==22.10.2
-graphene
+graphene==2.1.9
 graphene_sqlalchemy==2.3.0
-graphql_core
+graphql_core==2.3.2
 paho_mqtt==1.6.1
 pillow==9.4.0
 psycopg2_binary==2.9.5
 pymongo==4.3.3
 pyotp==2.8.0
 pytz==2022.7.1
-qrcode
+qrcode==7.4.2
 requests==2.28.2
 stripe==5.2.0
 werkzeug==2.2.3
