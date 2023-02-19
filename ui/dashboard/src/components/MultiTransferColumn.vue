@@ -97,6 +97,19 @@ export default {
       positions[item] = (positions[item] ?? 1) - 1;
     };
 
+    const moveAll = (from, to) => {
+      for (let i = 0; i < props.data.length; i++) {
+        if ((positions[i] ?? 0) === from && shouldVisible(i, from)) {
+          positions[i] = to;
+        }
+      }
+    };
+
+    const reset = () =>{
+      moveAll(2, 0);
+      moveAll(1, 0)
+    }
+
     watch(positions, () => {
       let res = [];
       for (let i = 1; i < props.columns.length; i++) {
@@ -126,6 +139,9 @@ export default {
             }
           }
         }
+        if(!props.modelValue[0]){
+          reset()
+        }
       },
       { immediate: true }
     );
@@ -135,15 +151,8 @@ export default {
         ? props.data.filter((item, p) => (positions[p] ?? 0) === i).length
         : 0;
 
-    const moveAll = (from, to) => {
-      for (let i = 0; i < props.data.length; i++) {
-        if ((positions[i] ?? 0) === from && shouldVisible(i, from)) {
-          positions[i] = to;
-        }
-      }
-    };
 
-    return { shouldVisible, moveRight, moveLeft, count, searchs, moveAll };
+    return { shouldVisible, moveRight, moveLeft, count, searchs, moveAll, reset };
   },
 };
 </script>
