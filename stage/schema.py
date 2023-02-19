@@ -13,7 +13,7 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 from user.models import ADMIN, SUPER_ADMIN
-from sqlalchemy import desc, orm, or_
+from sqlalchemy import orm
 from graphql_relay.node.node import from_global_id, to_global_id
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
@@ -90,11 +90,11 @@ class Stage(SQLAlchemyObjectType):
         return self.id
 
     def resolve_events(self, info, performance_id=None, cursor=0):
-        events = DBSession.query(EventModel) \
-            .filter(EventModel.performance_id == performance_id) \
-            .filter(EventModel.id > cursor) \
-            .filter(EventModel.topic.like("%/{}/%".format(self.file_location))) \
-            .order_by(EventModel.mqtt_timestamp.asc()) \
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.performance_id == performance_id)\
+            .filter(EventModel.id > cursor)\
+            .filter(EventModel.topic.like("%/{}/%".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
             .all()
         return events
 
@@ -104,9 +104,9 @@ class Stage(SQLAlchemyObjectType):
         return performances
 
     def resolve_chats(self, info):
-        events = DBSession.query(EventModel) \
-            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location))) \
-            .order_by(EventModel.mqtt_timestamp.asc()) \
+        events = DBSession.query(EventModel)\
+            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location)))\
+            .order_by(EventModel.mqtt_timestamp.asc())\
             .all()
         return events
 
@@ -138,8 +138,8 @@ class Stage(SQLAlchemyObjectType):
         } for x in self.assets.all()]
 
     def resolve_scenes(self, info, performance_id=None):
-        query = DBSession.query(SceneModel) \
-            .filter(SceneModel.stage_id == self.db_id) \
+        query = DBSession.query(SceneModel)\
+            .filter(SceneModel.stage_id == self.db_id)\
             .order_by(SceneModel.scene_order.asc())
         if not performance_id:  # Only fetch disabled scene in performance replay
             query = query.filter(SceneModel.active == True)
@@ -147,10 +147,10 @@ class Stage(SQLAlchemyObjectType):
         return scenes
 
     def resolve_active_recording(self, info):
-        recording = DBSession.query(PerformanceModel) \
-            .filter(PerformanceModel.stage_id == self.db_id) \
-            .filter(PerformanceModel.recording == True) \
-            .filter(PerformanceModel.saved_on == None) \
+        recording = DBSession.query(PerformanceModel)\
+            .filter(PerformanceModel.stage_id == self.db_id)\
+            .filter(PerformanceModel.recording == True)\
+            .filter(PerformanceModel.saved_on == None)\
             .first()
         return recording
 
@@ -389,12 +389,12 @@ class SweepStage(graphene.Mutation):
     def mutate(self, info, input):
         data = graphql_utils.input_to_dictionary(input)
         with ScopedSession() as local_db_session:
-            stage = local_db_session.query(StageModel) \
-                .filter(StageModel.id == data['id']) \
+            stage = local_db_session.query(StageModel)\
+                .filter(StageModel.id == data['id'])\
                 .first()
 
-            events = DBSession.query(EventModel) \
-                .filter(EventModel.performance_id == None) \
+            events = DBSession.query(EventModel)\
+                .filter(EventModel.performance_id == None)\
                 .filter(EventModel.topic.like("%/{}/%".format(stage.file_location)))
 
             if events.count() > 0:
