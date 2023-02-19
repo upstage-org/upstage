@@ -74,6 +74,11 @@ SQLALCHEMY_ECHO = False
 SQLALCHEMY_POOL_SIZE = 300
 SQLALCHEMY_POOL_RECYCLE = 3600
 PAGE_LIMIT = 100
+URL_PREFIX='api/'
+
+# payment
+STRIPE_KEY=''
+STRIPE_PRODUCT_ID=''
 
 # user content defaults
 UPLOAD_USER_CONTENT_FOLDER = '/home/upstage/assets_all_releases'
