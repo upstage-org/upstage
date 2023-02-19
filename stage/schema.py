@@ -13,7 +13,7 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 from user.models import ADMIN, SUPER_ADMIN
-from sqlalchemy import desc
+from sqlalchemy import desc, orm, or_
 from graphql_relay.node.node import from_global_id, to_global_id
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
@@ -33,6 +33,7 @@ from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
 from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
+
 
 class StageAttribute:
     name = graphene.String(description="Stage Name")
@@ -89,11 +90,11 @@ class Stage(SQLAlchemyObjectType):
         return self.id
 
     def resolve_events(self, info, performance_id=None, cursor=0):
-        events = DBSession.query(EventModel)\
-            .filter(EventModel.performance_id == performance_id)\
-            .filter(EventModel.id > cursor)\
-            .filter(EventModel.topic.like("%/{}/%".format(self.file_location)))\
-            .order_by(EventModel.mqtt_timestamp.asc())\
+        events = DBSession.query(EventModel) \
+            .filter(EventModel.performance_id == performance_id) \
+            .filter(EventModel.id > cursor) \
+            .filter(EventModel.topic.like("%/{}/%".format(self.file_location))) \
+            .order_by(EventModel.mqtt_timestamp.asc()) \
             .all()
         return events
 
@@ -103,9 +104,9 @@ class Stage(SQLAlchemyObjectType):
         return performances
 
     def resolve_chats(self, info):
-        events = DBSession.query(EventModel)\
-            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location)))\
-            .order_by(EventModel.mqtt_timestamp.asc())\
+        events = DBSession.query(EventModel) \
+            .filter(EventModel.topic.like("%/{}/chat".format(self.file_location))) \
+            .order_by(EventModel.mqtt_timestamp.asc()) \
             .all()
         return events
 
@@ -137,8 +138,8 @@ class Stage(SQLAlchemyObjectType):
         } for x in self.assets.all()]
 
     def resolve_scenes(self, info, performance_id=None):
-        query = DBSession.query(SceneModel)\
-            .filter(SceneModel.stage_id == self.db_id)\
+        query = DBSession.query(SceneModel) \
+            .filter(SceneModel.stage_id == self.db_id) \
             .order_by(SceneModel.scene_order.asc())
         if not performance_id:  # Only fetch disabled scene in performance replay
             query = query.filter(SceneModel.active == True)
@@ -146,12 +147,21 @@ class Stage(SQLAlchemyObjectType):
         return scenes
 
     def resolve_active_recording(self, info):
-        recording = DBSession.query(PerformanceModel)\
-            .filter(PerformanceModel.stage_id == self.db_id)\
-            .filter(PerformanceModel.recording == True)\
-            .filter(PerformanceModel.saved_on == None)\
+        recording = DBSession.query(PerformanceModel) \
+            .filter(PerformanceModel.stage_id == self.db_id) \
+            .filter(PerformanceModel.recording == True) \
+            .filter(PerformanceModel.saved_on == None) \
             .first()
         return recording
+
+
+class FoyerStageConnectionField(SQLAlchemyConnectionField):
+
+    @classmethod
+    def get_query(cls, model, info, sort=None, **args):
+        query: orm.Query = super(FoyerStageConnectionField, cls).get_query(model, info, sort, **args)
+        query = query.filter(StageModel.attributes.any(name="visibility", description='true'))
+        return query
 
 
 class StageConnectionField(SQLAlchemyConnectionField):
@@ -251,7 +261,7 @@ class UpdateStage(graphene.Mutation):
             local_db_session.commit()
             stage = DBSession.query(StageModel).filter(
                 StageModel.id == data['id']).first()
-            
+
             return UpdateStage(stage=stage)
 
 
@@ -317,7 +327,6 @@ class UpdateLastAccess(graphene.Mutation):
     class Arguments:
         stage_id = graphene.ID(
             required=True, description="Global Id of the stage.")
-        
 
     # decorate this with jwt login decorator.
     def mutate(self, info, stage_id):
@@ -326,11 +335,12 @@ class UpdateLastAccess(graphene.Mutation):
             stage = local_db_session.query(StageModel).filter(StageModel.id == _id);
             if stage:
                 stage.update({
-                StageModel.last_access: datetime.datetime.utcnow()
+                    StageModel.last_access: datetime.datetime.utcnow()
                 }, synchronize_session="fetch")
 
             local_db_session.commit()
-            return UpdateLastAccess(result= datetime.datetime.utcnow())
+            return UpdateLastAccess(result=datetime.datetime.utcnow())
+
 
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
@@ -379,12 +389,12 @@ class SweepStage(graphene.Mutation):
     def mutate(self, info, input):
         data = graphql_utils.input_to_dictionary(input)
         with ScopedSession() as local_db_session:
-            stage = local_db_session.query(StageModel)\
-                .filter(StageModel.id == data['id'])\
+            stage = local_db_session.query(StageModel) \
+                .filter(StageModel.id == data['id']) \
                 .first()
 
-            events = DBSession.query(EventModel)\
-                .filter(EventModel.performance_id == None)\
+            events = DBSession.query(EventModel) \
+                .filter(EventModel.performance_id == None) \
                 .filter(EventModel.topic.like("%/{}/%".format(stage.file_location)))
 
             if events.count() > 0:
@@ -429,14 +439,15 @@ class DeleteStage(graphene.Mutation):
                     StageAttributeModel.stage_id == id).delete(synchronize_session=False)
                 local_db_session.query(SceneModel).filter(
                     SceneModel.stage_id == id).delete(synchronize_session=False)
-    
+
                 for performance in local_db_session.query(PerformanceModel).filter(
-                        PerformanceModel.stage_id == id).all():
+                    PerformanceModel.stage_id == id).all():
                     local_db_session.query(EventModel).filter(
                         EventModel.performance_id == performance.id).delete(synchronize_session=False)
                     local_db_session.delete(performance)
                 topic_prefix = PERFORMANCE_TOPIC_RULE.replace('#', stage.file_location)
-                local_db_session.query(EventModel).filter(EventModel.topic.startswith(topic_prefix)).delete(synchronize_session=False)
+                local_db_session.query(EventModel).filter(EventModel.topic.startswith(topic_prefix)).delete(
+                    synchronize_session=False)
                 local_db_session.delete(stage)
                 local_db_session.flush()
                 local_db_session.commit()
@@ -495,7 +506,8 @@ class DuplicateStage(graphene.Mutation):
                         stage_id=new_stage_id,
                         child_asset_id=ps.child_asset_id
                     ))
-                for attribute in local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage_id == original_stage_id).all():
+                for attribute in local_db_session.query(StageAttributeModel).filter(
+                    StageAttributeModel.stage_id == original_stage_id).all():
                     local_db_session.add(StageAttributeModel(
                         stage_id=new_stage_id,
                         name=attribute.name,
@@ -532,10 +544,13 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
+    foyerStageList = FoyerStageConnectionField(Stage.connection)
     stageList = StageConnectionField(
-        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String(), created_on=graphene.DateTime())
+        Stage.connection, id=graphene.ID(), name_like=graphene.String(), file_location=graphene.String(),
+        created_on=graphene.DateTime())
     assetList = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(), file_location=graphene.String())
+        Asset.connection, id=graphene.ID(), name_like=graphene.String(), asset_type=graphene.String(),
+        file_location=graphene.String())
     assetTypeList = StageConnectionField(
         AssetType.connection, id=graphene.ID(), name_like=graphene.String())
 

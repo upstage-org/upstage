@@ -1,6 +1,6 @@
-import { gql } from "graphql-request";
-import { stageGraph } from ".";
-import { createClient } from "./graphql";
+import {gql} from "graphql-request";
+import {stageGraph} from ".";
+import {createClient} from "./graphql";
 
 const client = createClient('stage_graphql')
 
@@ -67,8 +67,8 @@ export const sceneFragment = gql`
 `
 
 export default {
-  createStage: async (variables) => {
-    let result = await client.request(gql`
+    createStage: async (variables) => {
+        let result = await client.request(gql`
       mutation CreateStage($name: String, $fileLocation: String) {
         createStage(input: {name: $name, fileLocation: $fileLocation}) {
           stage {
@@ -77,13 +77,13 @@ export default {
         }
       }
     `, variables);
-    if (result) {
-      variables.id = result.createStage.stage.id
-      result = await stageGraph.updateStage(variables)
-      return result.updateStage.stage
-    }
-  },
-  updateStage: (variables) => client.request(gql`
+        if (result) {
+            variables.id = result.createStage.stage.id
+            result = await stageGraph.updateStage(variables)
+            return result.updateStage.stage
+        }
+    },
+    updateStage: (variables) => client.request(gql`
     mutation UpdateStage($id: ID!, $name: String, $description: String, $fileLocation: String, $status: String, $visibility: Boolean, $cover: String, $playerAccess: String) {
       updateStage(input: {id: $id, name: $name, description: $description, fileLocation: $fileLocation, status: $status, visibility: $visibility, cover: $cover, playerAccess: $playerAccess}) {
         stage {
@@ -93,28 +93,28 @@ export default {
     }
     ${stageFragment}
   `, variables),
-  updateStatus: (stageId) => client.request(gql`
+    updateStatus: (stageId) => client.request(gql`
   mutation {
     updateStatus(stageId: "${stageId}" ) {
       result
     }
   }
   `),
-  updateVisibility: (stageId) => client.request(gql`
+    updateVisibility: (stageId) => client.request(gql`
   mutation {
     updateVisibility(stageId: "${stageId}" ) {
       result
     }
   }
   `),
-  updateLastAccess: (stageId) => client.request(gql`
+    updateLastAccess: (stageId) => client.request(gql`
   mutation {
     updateLastAccess(stageId: "${stageId}" ) {
       result
     }
   }
   `),
-  sweepStage: (variables) => client.request(gql`
+    sweepStage: (variables) => client.request(gql`
     mutation SweepStage($id: ID!) {
       sweepStage(input: {id: $id}) {
         success
@@ -122,7 +122,7 @@ export default {
       }
     }
   `, variables),
-  stageList: (variables) => client.request(gql`
+    stageList: (variables) => client.request(gql`
     query ListStage($id: ID, $nameLike: String, $fileLocation: String, $createdOn: DateTime) {
       stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation, createdOn: $createdOn, sort:[CREATED_ON_DESC, ID_DESC]) {
         totalCount
@@ -142,7 +142,22 @@ export default {
     }
     ${stageFragment}
   `, variables),
-  getStage: (id) => client.request(gql`
+    foyerStageList: (variables) => client.request(gql`
+    query ListFoyerStage {
+      foyerStageList {
+        totalCount
+        edges {
+          node {
+            id
+            name
+            fileLocation
+            cover
+          }
+        }
+      }
+    }
+  `, variables),
+    getStage: (id) => client.request(gql`
     query ListStage($id: ID) {
       stageList(id: $id) {
         edges {
@@ -175,8 +190,8 @@ export default {
       }
     }
     ${stageFragment}
-  `, { id }),
-  loadStage: (fileLocation, performanceId) => client.request(gql`
+  `, {id}),
+    loadStage: (fileLocation, performanceId) => client.request(gql`
     query ListStage($fileLocation: String, $performanceId: Int) {
       stageList(fileLocation: $fileLocation) {
         edges {
@@ -197,12 +212,12 @@ export default {
     }
     ${stageFragment}
     ${sceneFragment}
-  `, { fileLocation, performanceId }).then(response => {
-    return {
-      stage: response.stageList.edges[0]?.node,
-    }
-  }),
-  loadPermission: (fileLocation) => client.request(gql`
+  `, {fileLocation, performanceId}).then(response => {
+        return {
+            stage: response.stageList.edges[0]?.node,
+        }
+    }),
+    loadPermission: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {
         edges {
@@ -212,8 +227,8 @@ export default {
         }
       }
     }
-  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.permission),
-  loadScenes: (fileLocation) => client.request(gql`
+  `, {fileLocation}).then(response => response.stageList.edges[0]?.node?.permission),
+    loadScenes: (fileLocation) => client.request(gql`
     query ListStage($fileLocation: String) {
       stageList(fileLocation: $fileLocation) {
         edges {
@@ -226,8 +241,8 @@ export default {
       }
     }
     ${sceneFragment}
-  `, { fileLocation }).then(response => response.stageList.edges[0]?.node?.scenes),
-  loadEvents: (fileLocation, cursor) => client.request(gql`
+  `, {fileLocation}).then(response => response.stageList.edges[0]?.node?.scenes),
+    loadEvents: (fileLocation, cursor) => client.request(gql`
     query ListStage($fileLocation: String, $cursor: Int) {
       stageList(fileLocation: $fileLocation) {
         edges {
@@ -242,8 +257,8 @@ export default {
         }
       }
     }
-  `, { fileLocation, cursor }).then(response => response.stageList.edges[0]?.node?.events),
-  uploadMedia: (variables) => client.request(gql`
+  `, {fileLocation, cursor}).then(response => response.stageList.edges[0]?.node?.events),
+    uploadMedia: (variables) => client.request(gql`
     mutation uploadMedia($name: String!, $base64: String!, $mediaType: String, $filename: String!) {
       uploadMedia(name: $name, base64: $base64, mediaType: $mediaType, filename: $filename) {
         asset {
@@ -253,7 +268,7 @@ export default {
     }
     ${assetFragment}
   `, variables),
-  mediaList: (variables) => client.request(gql`
+    mediaList: (variables) => client.request(gql`
     query AssetList($id: ID, $nameLike: String, $assetType: String) {
       assetList(id: $id, nameLike: $nameLike, assetType: $assetType, sort: ID_DESC) {
         edges {
@@ -270,7 +285,7 @@ export default {
     }
     ${assetFragment}
   `, variables),
-  assetTypeList: (variables) => client.request(gql`
+    assetTypeList: (variables) => client.request(gql`
     query AssetTypeList($id: ID, $nameLike: String) {
       assetTypeList(id: $id, nameLike: $nameLike) {
         edges {
@@ -283,7 +298,7 @@ export default {
       }
     }
   `, variables),
-  saveStageMedia: (id, mediaIds) => client.request(gql`
+    saveStageMedia: (id, mediaIds) => client.request(gql`
     mutation SaveStageMedia($id: ID!, $mediaIds: [Int]) {
       assignMedia(input: {id: $id, mediaIds: $mediaIds}) {
         stage {
@@ -292,8 +307,8 @@ export default {
       }
     }
     ${stageFragment}
-  `, { id, mediaIds }),
-  assignStages: (id, stageIds) => client.request(gql`
+  `, {id, mediaIds}),
+    assignStages: (id, stageIds) => client.request(gql`
     mutation AssignStages($id: ID!, $stageIds: [Int]) {
       assignStages(input: {id: $id, stageIds: $stageIds}) {
         asset {
@@ -301,8 +316,8 @@ export default {
         }
       }
     }
-  `, { id, stageIds }),
-  saveStageConfig: (id, config) => client.request(gql`
+  `, {id, stageIds}),
+    saveStageConfig: (id, config) => client.request(gql`
     mutation UpdateStage($id: ID!, $config: String) {
       updateStage(input: {id: $id, config: $config}) {
         stage {
@@ -311,8 +326,8 @@ export default {
       }
     }
     ${stageFragment}
-  `, { id, config }),
-  assignableMedia: () => client.request(gql`
+  `, {id, config}),
+    assignableMedia: () => client.request(gql`
     query AssignableMedia {
       avatars: assetList(assetType: "avatar") {
         edges {
@@ -359,7 +374,7 @@ export default {
     }
     ${assetFragment}
   `),
-  updateMedia: (variables) => client.request(gql`
+    updateMedia: (variables) => client.request(gql`
     mutation updateMedia($id: ID, $name: String!, $mediaType: String, $description: String, $fileLocation: String, $base64: String, $copyrightLevel: Int, $playerAccess: String, $uploadedFrames: [String]) {
       updateMedia(id: $id, name: $name, mediaType: $mediaType, description: $description, fileLocation: $fileLocation, base64: $base64, copyrightLevel: $copyrightLevel, playerAccess: $playerAccess, uploadedFrames: $uploadedFrames) {
         asset {
@@ -368,59 +383,59 @@ export default {
       }
     }  
   `, variables),
-  deleteMedia: (id) => client.request(gql`
+    deleteMedia: (id) => client.request(gql`
     mutation deleteMedia($id: ID!) {
       deleteMedia(id: $id) {
         success
         message
       }
     }
-  `, { id }),
-  deleteStage: (id) => client.request(gql`
+  `, {id}),
+    deleteStage: (id) => client.request(gql`
     mutation deleteStage($id: ID!) {
       deleteStage(id: $id) {
         success
       }
     }
-  `, { id }),
-  saveScene: (variables) => client.request(gql`
+  `, {id}),
+    saveScene: (variables) => client.request(gql`
     mutation SaveScene($stageId: Int!, $payload: String, $preview: String, $name: String) {
       saveScene(stageId: $stageId, payload: $payload, preview: $preview, name: $name) {
         id
       }
     }
   `, variables),
-  deleteScene: (id) => client.request(gql`
+    deleteScene: (id) => client.request(gql`
     mutation DeleteScene($id: Int!) {
       deleteScene(id: $id) {
         success
         message
       }
     }  
-  `, { id }),
-  duplicateStage: ({ id, name }) => client.request(gql`
+  `, {id}),
+    duplicateStage: ({id, name}) => client.request(gql`
     mutation duplicateStage($id: ID!, $name: String!) {
       duplicateStage(id: $id, name: $name) {
         success,
         newStageId
       }
     }
-  `, { id, name }),
-  deletePerformance: (id) => client.request(gql`
+  `, {id, name}),
+    deletePerformance: (id) => client.request(gql`
     mutation DeletePerformance($id: Int!) {
       deletePerformance(id: $id) {
         success
       }
     }  
-  `, { id }),
-  updatePerformance: (id, name, description) => client.request(gql`
+  `, {id}),
+    updatePerformance: (id, name, description) => client.request(gql`
     mutation updatePerformance($id: Int!, $name: String, $description: String) {
       updatePerformance(id: $id, name: $name, description: $description) {
         success
       }
     }
-  `, { id, name, description }),
-  startRecording: (stageId, name, description) => client.request(gql`
+  `, {id, name, description}),
+    startRecording: (stageId, name, description) => client.request(gql`
     mutation startRecording($stageId: ID!, $name: String, $description: String) {
       startRecording(stageId: $stageId, name: $name, description: $description) {
         recording {
@@ -428,8 +443,8 @@ export default {
         }
       }
     }
-  `, { stageId, name, description }),
-  saveRecording: (id) => client.request(gql`
+  `, {stageId, name, description}),
+    saveRecording: (id) => client.request(gql`
     mutation saveRecording($id: Int!) {
       saveRecording(id: $id) {
         recording {
@@ -437,8 +452,8 @@ export default {
         }
       }
     }
-  `, { id }),
-  getStreamSign: key => client.request(gql`
+  `, {id}),
+    getStreamSign: key => client.request(gql`
     query StreamSign($key: String) {
       assetList(fileLocation: $key) {
         edges {
@@ -448,5 +463,5 @@ export default {
         }
       }
     }
-  `, { key }).then(response => response.assetList.edges[0]?.node?.sign)
+  `, {key}).then(response => response.assetList.edges[0]?.node?.sign)
 }

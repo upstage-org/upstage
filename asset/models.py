@@ -2,6 +2,7 @@
 from config.project_globals import db, Base, metadata, app, api, DBSession
 from user.models import User
 from sqlalchemy.orm import relationship
+from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
 from datetime import datetime
 from licenses.models import AssetLicense
@@ -66,6 +67,10 @@ class Stage(Base, db.Model):
     owner = relationship(User, foreign_keys=[owner_id])
     attributes = relationship(lambda: StageAttribute, lazy='dynamic', back_populates='stage')
     assets = relationship('ParentStage', lazy='dynamic', back_populates='stage')
+
+    @hybrid_property
+    def cover(self):
+        return self.attributes.filter(StageAttribute.name == 'cover').first().description
 
 
 class AssetAttribute(Base, db.Model):
