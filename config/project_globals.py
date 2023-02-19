@@ -121,7 +121,7 @@ def get_scoped_session():
 api = Api(app,ui=False)
 
 db = SQLAlchemy(app)
-db.init_app(app)
+# db.init_app(app)
 
 Base = declarative_base()
 metadata = Base.metadata
