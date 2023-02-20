@@ -1,32 +1,41 @@
 <script lang="ts" setup>
-import { PropType, computed, ref } from 'vue';
-import { Media, MediaAttributes } from '../../models/studio';
-import { absolutePath } from '../../utils/common';
-import LarixQRCode from '../qrcode/LarixQRCode.vue';
-import OBSInstruction from '../OBSInstruction.vue';
+import { PropType, computed, ref } from "vue";
+import { Media, MediaAttributes } from "../../models/studio";
+import { absolutePath } from "../../utils/common";
+import LarixQRCode from "../qrcode/LarixQRCode.vue";
+import OBSInstruction from "../OBSInstruction.vue";
 
 const props = defineProps({
   media: {
     type: Object as PropType<Media>,
     required: true,
-  }
-})
+  },
+});
 
 const attributes = computed<MediaAttributes>(() => {
-  return JSON.parse(props.media.description || '{}');
-})
+  return JSON.parse(props.media.description || "{}");
+});
 
 const showStreamInstruction = ref(false);
 </script>
 
 <template>
   <audio v-if="props.media.assetType.name === 'audio'" controls class="w-48">
-    <source :src="absolutePath(props.media.src)" />Your browser does not support the audio element.
+    <source :src="absolutePath(props.media.src)" />
+    Your browser does not support the audio element.
   </audio>
   <template v-else-if="props.media.assetType.name === 'stream'">
     <div v-if="attributes.isRTMP" controls class="w-48">
-      <LarixQRCode @click="showStreamInstruction = true" :stream="media" :size="192" />
-      <a-modal v-model:visible="showStreamInstruction" :footer="null" :width="1000">
+      <LarixQRCode
+        @click="showStreamInstruction = true"
+        :stream="media"
+        :size="192"
+      />
+      <a-modal
+        v-model:visible="showStreamInstruction"
+        :footer="null"
+        :width="1000"
+      >
         <template #title>
           <h3 class="mb-0">{{ props.media.name }} Setup Info</h3>
         </template>
@@ -34,7 +43,11 @@ const showStreamInstruction = ref(false);
           <a-col :span="6">
             <span>Scan this QR Code to start streaming with Larix:</span>
             <div class="flex flex-row justify-center h-full max-h-96">
-              <LarixQRCode @click="showStreamInstruction = true" :stream="media" :size="256" />
+              <LarixQRCode
+                @click="showStreamInstruction = true"
+                :stream="media"
+                :size="256"
+              />
             </div>
           </a-col>
           <a-col :span="18">
@@ -46,11 +59,15 @@ const showStreamInstruction = ref(false);
       </a-modal>
     </div>
     <video v-else controls class="w-48">
-      <source :src="absolutePath(props.media.src)" />Your browser does not support the video tag.
+      <source :src="absolutePath(props.media.src)" />
+      Your browser does not support the video tag.
     </video>
   </template>
   <template v-else>
-    <a-image :src="absolutePath(props.media.src)" class="w-24 max-h-24 object-contain" />
+    <a-image
+      :src="absolutePath(props.media.src)"
+      class="w-24 max-h-24 object-contain"
+    />
     <a-popover v-if="attributes.multi" placement="right">
       <template #title>
         <b>{{ $t("multiframes") }}</b>
@@ -64,7 +81,11 @@ const showStreamInstruction = ref(false);
           </div>
         </div>
       </template>
-      <img src="../../assets/multi-frame.svg" alt="Multiframe" class="absolute left-4 bottom-4" />
+      <img
+        src="../../assets/multi-frame.svg"
+        alt="Multiframe"
+        class="absolute left-4 bottom-4"
+      />
     </a-popover>
   </template>
 </template>

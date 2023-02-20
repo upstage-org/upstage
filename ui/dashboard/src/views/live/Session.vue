@@ -31,7 +31,7 @@ export default {
 
     const tagPlayer = () => {
       if (props.session.isPlayer) {
-        store.commit('stage/TAG_PLAYER', props.session)
+        store.commit("stage/TAG_PLAYER", props.session);
         store.dispatch("stage/showPlayerChat", true);
       }
     };

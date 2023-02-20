@@ -31,8 +31,7 @@ export default {
             TOPICS.CHAT,
             stage.value.fileLocation
           );
-          mqttClient
-            .sendMessage(topicChat, { clear: true }, true)
+          mqttClient.sendMessage(topicChat, { clear: true }, true);
           mqttClient
             .sendMessage(topicChat, { clearPlayerChat: true }, true)
             .then(resolve);
@@ -48,5 +47,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

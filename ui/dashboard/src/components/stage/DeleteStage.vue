@@ -1,13 +1,13 @@
 <script setup>
-import { defineProps } from 'vue'
+import { defineProps } from "vue";
 import Confirm from "@/components/Confirm";
 import { stageGraph } from "@/services/graphql";
 import { useMutation } from "@/services/graphql/composable";
 
 const props = defineProps({
   stage: Object,
-  refresh: Function
-})
+  refresh: Function,
+});
 
 const { save, loading } = useMutation(stageGraph.deleteStage);
 const deleteStage = async (complete) => {
@@ -17,28 +17,28 @@ const deleteStage = async (complete) => {
     props.refresh();
   }
 };
-
 </script>
 
 <template>
   <Confirm @confirm="(complete) => deleteStage(complete)" :loading="loading">
     <p>
       Deleting
-      <b>{{ stage.name }}</b> will also remove all records and chat
-      that ever happened on this stage, there is no undo!
-      <span
-        class="has-text-danger"
-      >Are you sure you want to delete this stage?</span>
+      <b>{{ stage.name }}</b> will also remove all records and chat that ever
+      happened on this stage, there is no undo!
+      <span class="has-text-danger"
+        >Are you sure you want to delete this stage?</span
+      >
     </p>
     <br />
     <p>
-      If you would like to download the stage's archives before deleting it, please click
+      If you would like to download the stage's archives before deleting it,
+      please click
       <router-link
         :to="`/backstage/stage-management/${stage.id}/archive`"
         :data-tooltip="`Archives of ${stage.name}`"
       >
-        <b>{{ $t("here") }}</b>
-      </router-link>.
+        <b>{{ $t("here") }}</b> </router-link
+      >.
     </p>
     <template #trigger>
       <slot></slot>

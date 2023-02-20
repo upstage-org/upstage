@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import { message } from 'ant-design-vue';
-import { PropType, ref, inject } from 'vue';
-import { Media } from '../../../models/studio';
-import { absolutePath } from '../../../utils/common';
-import { useRequestPermission } from './composable';
+import { message } from "ant-design-vue";
+import { PropType, ref, inject } from "vue";
+import { Media } from "../../../models/studio";
+import { absolutePath } from "../../../utils/common";
+import { useRequestPermission } from "./composable";
 
 const props = defineProps({
   media: {
@@ -13,21 +13,21 @@ const props = defineProps({
 });
 
 const visible = ref(false);
-const note = ref('');
+const note = ref("");
 
-const refresh = inject('refresh', () => { });
-const { mutate, loading } = useRequestPermission()
+const refresh = inject("refresh", () => {});
+const { mutate, loading } = useRequestPermission();
 const handleOk = async () => {
   if (!note.value.trim()) {
-    message.warning('Please provide a reason!');
+    message.warning("Please provide a reason!");
     return;
   }
   const response = await mutate({
     assetId: props.media.id,
     note: note.value,
-  })
+  });
   if (response?.data?.requestPermission.success) {
-    message.success('Permission request sent');
+    message.success("Permission request sent");
     visible.value = false;
     refresh();
   }

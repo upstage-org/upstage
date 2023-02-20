@@ -21,15 +21,16 @@ export const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 export const logout = () => store.dispatch("auth/logout");
 
 export function displayName(user) {
-  if (user.displayName?.trim()) return user.displayName
-  if (user.firstName || user.lastName) return `${user.firstName ?? ''} ${user.lastName ?? ''}`.trim()
-  return user.username
+  if (user.displayName?.trim()) return user.displayName;
+  if (user.firstName || user.lastName)
+    return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+  return user.username;
 }
 
 export function displayRole(user) {
   for (const role in ROLES) {
     if (ROLES[role] === user.role) {
-      return titleCase(role)
+      return titleCase(role);
     }
   }
 }

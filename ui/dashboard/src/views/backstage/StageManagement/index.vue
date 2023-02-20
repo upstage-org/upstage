@@ -29,20 +29,31 @@
                     : '/backstage/new-stage'
                 "
                 exact-active-class="is-active"
-              >{{ $t("general_information") }}</router-link>
+                >{{ $t("general_information") }}</router-link
+              >
             </li>
             <template v-if="id">
               <li>
-                <router-link to="customisation" exact-active-class="is-active">{{ $t("customisation") }}</router-link>
+                <router-link
+                  to="customisation"
+                  exact-active-class="is-active"
+                  >{{ $t("customisation") }}</router-link
+                >
               </li>
               <li id="media-menu">
-                <router-link to="media" exact-active-class="is-active">{{ $t("media") }}</router-link>
+                <router-link to="media" exact-active-class="is-active">{{
+                  $t("media")
+                }}</router-link>
               </li>
               <li>
-                <router-link to="archive" exact-active-class="is-active">{{ $t("archive") }}</router-link>
+                <router-link to="archive" exact-active-class="is-active">{{
+                  $t("archive")
+                }}</router-link>
               </li>
               <li>
-                <router-link to="scenes" exact-active-class="is-active">{{ $t("scenes") }}</router-link>
+                <router-link to="scenes" exact-active-class="is-active">{{
+                  $t("scenes")
+                }}</router-link>
               </li>
             </template>
           </ul>
@@ -90,5 +101,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

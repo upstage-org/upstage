@@ -16,7 +16,7 @@
       <template v-else>
         <ContextMenu>
           <template #trigger>
-            <div style="position: relative;">
+            <div style="position: relative">
               <small style="font-size: 1em">
                 <b v-if="item.isPlayer">{{ item.user }}:</b>
                 <span v-else>{{ item.user }}:</span>
@@ -26,12 +26,18 @@
                 :style="{
                   'font-size': '1em',
                 }"
-                :class="messageClass[item.highlighted ? 'highlighted' : item.behavior]"
+                :class="
+                  messageClass[item.highlighted ? 'highlighted' : item.behavior]
+                "
                 :title="time(item.at)"
               >
                 <span
                   v-if="item.highlighted"
-                  :data-tooltip="canPlay ? 'Click to remove highlight' : 'This is a highlight message'"
+                  :data-tooltip="
+                    canPlay
+                      ? 'Click to remove highlight'
+                      : 'This is a highlight message'
+                  "
                   class="highlight-star has-tooltip-left"
                   @click="highlightChat(item)"
                 >
@@ -41,7 +47,10 @@
               </span>
             </div>
           </template>
-          <template v-if="canPlay || session === item.session" #context="{ closeMenu }">
+          <template
+            v-if="canPlay || session === item.session"
+            #context="{ closeMenu }"
+          >
             <div class="panel-block">
               <span>
                 <Linkify>{{ item.message }}</Linkify>
@@ -56,7 +65,10 @@
               </span>
             </div>
             <template v-if="item.id">
-              <a class="panel-block has-text-danger" @click="removeChat(item, closeMenu)">
+              <a
+                class="panel-block has-text-danger"
+                @click="removeChat(item, closeMenu)"
+              >
                 <span class="panel-icon">
                   <Icon src="remove.svg" />
                 </span>
@@ -89,7 +101,10 @@
               <span class="panel-icon">
                 <Icon src="clear.svg" />
               </span>
-              <small>Sorry but no actions can be performed against these legacy messages!</small>
+              <small
+                >Sorry but no actions can be performed against these legacy
+                messages!</small
+              >
             </div>
           </template>
         </ContextMenu>
@@ -111,31 +126,31 @@ export default {
   props: ["messages", "style"],
   components: { Linkify, Divider, ContextMenu, Icon },
   setup: () => {
-    const store = useStore()
+    const store = useStore();
     const messageClass = {
       think: "has-text-info has-background-info-light",
       shout: "has-text-danger",
-      highlighted: "has-background-warning"
-    }
+      highlighted: "has-background-warning",
+    };
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const session = computed(() => store.state.stage.session);
 
     const time = (value) => {
       return moment(value).fromNow();
-    }
+    };
 
     const removeChat = (item, closeMenu) => {
-      store.dispatch('stage/removeChat', item.id).then(closeMenu)
-    }
+      store.dispatch("stage/removeChat", item.id).then(closeMenu);
+    };
 
     const highlightChat = (item, closeMenu) => {
       if (canPlay.value) {
-        store.dispatch('stage/highlightChat', item.id).then(closeMenu)
+        store.dispatch("stage/highlightChat", item.id).then(closeMenu);
       }
-    }
+    };
 
-    return { messageClass, time, removeChat, highlightChat, canPlay, session }
-  }
+    return { messageClass, time, removeChat, highlightChat, canPlay, session };
+  },
 };
 </script>
 

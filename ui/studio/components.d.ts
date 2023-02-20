@@ -2,13 +2,13 @@
 // We suggest you to commit this file into source control
 // Read more: https://github.com/vuejs/vue-next/pull/3399
 
-declare module 'vue' {
+declare module "vue" {
   export interface GlobalComponents {
-    AAffix: typeof import('ant-design-vue/es')['Affix']
-    AButton: typeof import('ant-design-vue/es')['Button']
-    MediaFilter: typeof import('./src/components/media/MediaFilter.vue')['default']
-    MediaTable: typeof import('./src/components/media/MediaTable.vue')['default']
+    AAffix: typeof import("ant-design-vue/es")["Affix"];
+    AButton: typeof import("ant-design-vue/es")["Button"];
+    MediaFilter: typeof import("./src/components/media/MediaFilter.vue")["default"];
+    MediaTable: typeof import("./src/components/media/MediaTable.vue")["default"];
   }
 }
 
-export { }
+export {};

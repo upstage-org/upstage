@@ -12,32 +12,42 @@
           <p class="menu-label">{{ $t("users") }}</p>
           <ul class="menu-list">
             <li>
-              <router-link to="/backstage/admin/player-management" exact-active-class="is-active">{{
-                  $t("player_management")
-              }}</router-link>
+              <router-link
+                to="/backstage/admin/player-management"
+                exact-active-class="is-active"
+                >{{ $t("player_management") }}</router-link
+              >
             </li>
             <li>
-              <router-link to="/backstage/admin/batch-user-creation" exact-active-class="is-active">{{
-                  $t("batch_user_creation")
-              }}</router-link>
+              <router-link
+                to="/backstage/admin/batch-user-creation"
+                exact-active-class="is-active"
+                >{{ $t("batch_user_creation") }}</router-link
+              >
             </li>
           </ul>
           <p class="menu-label">{{ $t("system") }}</p>
           <ul class="menu-list">
             <li>
-              <router-link to="/backstage/admin/foyer-customisation" exact-active-class="is-active">{{
-                  $t("foyer_customisation")
-              }}</router-link>
+              <router-link
+                to="/backstage/admin/foyer-customisation"
+                exact-active-class="is-active"
+                >{{ $t("foyer_customisation") }}</router-link
+              >
             </li>
             <li>
-              <router-link to="/backstage/admin/email-notification" exact-active-class="is-active">{{
-                  $t("email_notification")
-              }}</router-link>
+              <router-link
+                to="/backstage/admin/email-notification"
+                exact-active-class="is-active"
+                >{{ $t("email_notification") }}</router-link
+              >
             </li>
             <li>
-              <router-link to="/backstage/admin/system-configuration" exact-active-class="is-active">{{
-                  $t("system_configuration")
-              }}</router-link>
+              <router-link
+                to="/backstage/admin/system-configuration"
+                exact-active-class="is-active"
+                >{{ $t("system_configuration") }}</router-link
+              >
             </li>
           </ul>
         </aside>

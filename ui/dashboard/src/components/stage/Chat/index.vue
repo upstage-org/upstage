@@ -18,10 +18,13 @@
         <span
           v-if="collapsed && unreadMessages"
           :key="unreadMessages"
-          :data-tooltip="`${unreadMessages} new message${unreadMessages > 1 ? 's' : ''}`"
+          :data-tooltip="`${unreadMessages} new message${
+            unreadMessages > 1 ? 's' : ''
+          }`"
           class="unread clickable tag is-danger is-small"
           @click="collapsed = false"
-        >{{ unreadMessages }}</span>
+          >{{ unreadMessages }}</span
+        >
       </transition>
       <div class="actions">
         <Reaction v-if="collapsed" />
@@ -45,7 +48,7 @@
             <Icon src="setting.svg" size="32" />
           </span>
         </button>
-        <ClearChat option="public-chat"/>
+        <ClearChat option="public-chat" />
       </div>
       <div class="card-content" ref="theContent">
         <Messages :messages="messages" :style="{ fontSize }" />
@@ -59,12 +62,16 @@
                 class="button is-small is-rounded mx-1"
                 data-tooltip="Increase font size"
                 @click="increateFontSize()"
-              >➕</button>
+              >
+                ➕
+              </button>
               <button
                 data-tooltip="Decrease font size"
                 class="button is-small is-rounded mx-1"
                 @click="decreaseFontSize()"
-              >➖</button>
+              >
+                ➖
+              </button>
             </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
@@ -103,7 +110,7 @@ export default {
       () => store.state.stage.settings.chatDarkMode
     );
 
-    store.dispatch("stage/loadPermission")
+    store.dispatch("stage/loadPermission");
 
     const messages = computed(() => store.state.stage.chat.messages);
     const loadingUser = computed(() => store.state.user.loadingUser);
@@ -125,7 +132,7 @@ export default {
     };
     onMounted(scrollToEnd);
     watch(messages.value, scrollToEnd);
-    watch(collapsed, val => {
+    watch(collapsed, (val) => {
       if (!val) {
         setTimeout(() => {
           scrollToEnd();
@@ -166,7 +173,9 @@ export default {
         fontSize: `${incValue}px`,
       };
       store.commit("stage/SET_CHAT_PARAMETERS", parameters);
-      setTimeout(() => theContent.value.scrollTop = theContent.value.scrollHeight);
+      setTimeout(
+        () => (theContent.value.scrollTop = theContent.value.scrollHeight)
+      );
     };
 
     const decreaseFontSize = () => {
@@ -191,7 +200,9 @@ export default {
         });
       }
     });
-    const unreadMessages = computed(() => messages.value.filter((message) => !message.read).length);
+    const unreadMessages = computed(
+      () => messages.value.filter((message) => !message.read).length
+    );
     const bounceUnread = (el) => {
       {
         anime({
@@ -200,7 +211,7 @@ export default {
           duration: 1000,
         });
       }
-    }
+    };
 
     return {
       messages,
@@ -222,7 +233,7 @@ export default {
       canPlay,
       stageSize,
       unreadMessages,
-      bounceUnread
+      bounceUnread,
     };
   },
 };

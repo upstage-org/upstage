@@ -1,7 +1,9 @@
 <template>
   <section class="hero is-small is-light is-bold">
     <div class="hero-body">
-      <Breadcrumb :description="user ? displayName(user) + '\'s profile' : ''" />
+      <Breadcrumb
+        :description="user ? displayName(user) + '\'s profile' : ''"
+      />
       <h1 class="title is-inline">{{ $route.name }}</h1>
     </div>
   </section>
@@ -11,12 +13,18 @@
         <aside class="menu box has-background-light">
           <ul class="menu-list">
             <li>
-              <router-link to="/backstage/profile/information" exact-active-class="is-active">
+              <router-link
+                to="/backstage/profile/information"
+                exact-active-class="is-active"
+              >
                 Update Information
               </router-link>
             </li>
             <li>
-              <router-link to="/backstage/profile/change-password" exact-active-class="is-active">
+              <router-link
+                to="/backstage/profile/change-password"
+                exact-active-class="is-active"
+              >
                 Change Password
               </router-link>
             </li>
@@ -46,5 +54,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

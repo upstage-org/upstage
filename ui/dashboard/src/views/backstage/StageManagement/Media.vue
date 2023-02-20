@@ -57,7 +57,11 @@
       <div class="mx-3 my-1">
         <div class="columns">
           <div class="column is-narrow media-preview">
-            <Asset v-if="!['audio', 'stream'].includes(item.mediaType)" :asset="item" show-type />
+            <Asset
+              v-if="!['audio', 'stream'].includes(item.mediaType)"
+              :asset="item"
+              show-type
+            />
           </div>
           <div class="type-icon">
             <Icon :src="item.mediaType + '.svg'" />
@@ -98,18 +102,28 @@ import MultiframePreview from "../Media/MultiframePreview";
 import Reorder from "./Reorder.vue";
 
 export default {
-  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview, Reorder },
+  components: {
+    MultiSelectList,
+    Asset,
+    SaveButton,
+    Dropdown,
+    Icon,
+    Field,
+    MultiframePreview,
+    Reorder,
+  },
   setup: () => {
     const store = useStore();
     const stage = inject("stage");
     const selectedMedia = ref([]);
-    const totalSize = ref(0)
+    const totalSize = ref(0);
     const { loading, data } = useQuery(stageGraph.assignableMedia);
     const { loading: saving, save } = useMutation(stageGraph.saveStageMedia);
 
     const mediaList = computed(() => {
       if (!data.value) return [];
-      const { avatars, props, backdrops, audios, streams, curtains } = data.value;
+      const { avatars, props, backdrops, audios, streams, curtains } =
+        data.value;
       const mediaList = []
         .concat(
           avatars.edges,
@@ -125,10 +139,13 @@ export default {
 
     watchEffect(() => {
       if (!stage.value || !mediaList.value) return;
-      selectedMedia.value = stage.value.media.map(m => mediaList.value.find(media => media.dbId === m.id));
-      if(selectedMedia.value[0]){
+      selectedMedia.value = stage.value.media.map((m) =>
+        mediaList.value.find((media) => media.dbId === m.id)
+      );
+      if (selectedMedia.value[0]) {
         totalSize.value = selectedMedia?.value.reduce(
-          (accumulator, currentValue) =>accumulator + currentValue.size, 0
+          (accumulator, currentValue) => accumulator + currentValue.size,
+          0
         );
       }
     });
@@ -195,7 +212,7 @@ export default {
       displayName,
       owners,
       reordering,
-      totalSize
+      totalSize,
     };
   },
 };

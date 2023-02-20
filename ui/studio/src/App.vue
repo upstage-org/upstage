@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import MediaFilter from './components/media/MediaFilter.vue';
-import MediaTable from './components/media/MediaTable.vue';
-import Authorized from './components/Authorized.vue';
-import { provide } from '@vue/runtime-core';
-import { DefaultApolloClient } from '@vue/apollo-composable'
-import { apolloClient } from './apollo';
-import Dropzone from './components/media/Dropzone.vue';
-import MediaUpload from './components/media/MediaForm/index.vue';
-import Footer from './components/Footer.vue';
+import MediaFilter from "./components/media/MediaFilter.vue";
+import MediaTable from "./components/media/MediaTable.vue";
+import Authorized from "./components/Authorized.vue";
+import { provide } from "@vue/runtime-core";
+import { DefaultApolloClient } from "@vue/apollo-composable";
+import { apolloClient } from "./apollo";
+import Dropzone from "./components/media/Dropzone.vue";
+import MediaUpload from "./components/media/MediaForm/index.vue";
+import Footer from "./components/Footer.vue";
 
-provide(DefaultApolloClient, apolloClient)
+provide(DefaultApolloClient, apolloClient);
 </script>
 
 <template>

@@ -35,7 +35,9 @@
           <p class="menu-label">{{ $t("owner") }}</p>
           <ul class="menu-list">
             <li @click="filter.owner = null">
-              <a :class="{ 'is-active': filter.owner === null }">{{ $t("all_users") }}</a>
+              <a :class="{ 'is-active': filter.owner === null }">{{
+                $t("all_users")
+              }}</a>
             </li>
             <li v-for="user in users" :key="user" @click="filter.owner = user">
               <a :class="{ 'is-active': filter.owner === user }">{{
@@ -46,7 +48,9 @@
           <p class="menu-label">{{ $t("stage") }}</p>
           <ul class="menu-list">
             <li @click="filter.stage = null">
-              <a :class="{ 'is-active': filter.stage === null }">{{ $t("all_stages") }}</a>
+              <a :class="{ 'is-active': filter.stage === null }">{{
+                $t("all_stages")
+              }}</a>
             </li>
             <li
               v-for="stage in stageList"

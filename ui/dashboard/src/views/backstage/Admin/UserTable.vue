@@ -1,16 +1,30 @@
 <template>
   <div class="columns is-mobile">
     <div class="column is-narrow">
-      <Dropdown :data="roles" :render-label="(item) => item.label" :render-value="(item) => item.value"
-        v-model="filter.role" />
+      <Dropdown
+        :data="roles"
+        :render-label="(item) => item.label"
+        :render-value="(item) => item.value"
+        v-model="filter.role"
+      />
     </div>
     <div class="column pl-0">
-      <Field style="display: inline-block; vertical-align: top;" class="is-fullwidth-mobile" v-model="filter.keyword"
-        right="fas fa-search" placeholder="Player name or email" />
+      <Field
+        style="display: inline-block; vertical-align: top"
+        class="is-fullwidth-mobile"
+        v-model="filter.keyword"
+        right="fas fa-search"
+        placeholder="Player name or email"
+      />
     </div>
   </div>
   <Loading v-if="loading" />
-  <DataTable v-show="!loading || !firstLoad" :data="users" :headers="headers" numbered>
+  <DataTable
+    v-show="!loading || !firstLoad"
+    :data="users"
+    :headers="headers"
+    numbered
+  >
     <template #username="{ item }">
       {{ item.username }}
       <span v-if="item.intro" :data-tooltip="item.intro">
@@ -28,9 +42,17 @@
     </template>
     <template #actions="{ item }">
       <div class="actions">
-        <profile-management :item="item" :display-name="displayName(item)" :refresh="refresh" />
+        <profile-management
+          :item="item"
+          :display-name="displayName(item)"
+          :refresh="refresh"
+        />
         <reset-password :user="item" :display-name="displayName(item)" />
-        <delete-user :item="item" :display-name="displayName(item)" :refresh="refresh" />
+        <delete-user
+          :item="item"
+          :display-name="displayName(item)"
+          :refresh="refresh"
+        />
       </div>
     </template>
   </DataTable>
@@ -74,7 +96,7 @@ export default {
         title: "Username",
         key: "username",
         sortable: true,
-        slot: "username"
+        slot: "username",
       },
       {
         title: "Display Name",
@@ -153,13 +175,22 @@ export default {
     });
 
     const firstLoad = ref(true);
-    watch(loading, value => {
+    watch(loading, (value) => {
       if (!value) {
         firstLoad.value = false;
       }
     });
 
-    return { headers, users, refresh, displayName, filter, roles, loading, firstLoad };
+    return {
+      headers,
+      users,
+      refresh,
+      displayName,
+      filter,
+      roles,
+      loading,
+      firstLoad,
+    };
   },
 };
 </script>

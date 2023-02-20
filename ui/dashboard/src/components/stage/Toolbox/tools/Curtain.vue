@@ -13,7 +13,11 @@
     }"
   >
     <Skeleton :data="curtain" nodrop>
-      <Image :src="curtain.src" :title="curtain.name" @click="toggleCurtain(curtain.src)" />
+      <Image
+        :src="curtain.src"
+        :title="curtain.name"
+        @click="toggleCurtain(curtain.src)"
+      />
     </Skeleton>
   </div>
 </template>
@@ -45,5 +49,4 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

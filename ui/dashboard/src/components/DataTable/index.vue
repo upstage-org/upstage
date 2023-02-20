@@ -155,17 +155,17 @@ export default {
       }
     },
 
-    handleFormatDate(date){
+    handleFormatDate(date) {
       if (date == null) {
         return null;
-      } 
-      
+      }
+
       if (moment(this.now).diff(date, "weeks") > 1) {
-        return moment(date).format('DD/MM/yyyy')
+        return moment(date).format("DD/MM/yyyy");
       }
 
       return this.fromNow(date);
-    }
+    },
   },
   computed: {
     offset() {
@@ -201,13 +201,13 @@ export default {
       } else {
         endR = end;
       }
-      rows?.forEach(( row, index ) => {
-        if ((index == endR-1)||(index == endR-2)) {
+      rows?.forEach((row, index) => {
+        if (index == endR - 1 || index == endR - 2) {
           row.lastItem = true;
         } else {
           row.lastItem = false;
         }
-      })
+      });
       return rows.slice(start, end);
     },
   },

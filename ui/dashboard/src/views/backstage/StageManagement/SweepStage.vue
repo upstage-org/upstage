@@ -4,7 +4,9 @@
       <button class="button is-warning is-loading"></button>
       <span>{{ status }}</span>
     </template>
-    <span v-else><slot>{{ $t("sweep_stage") }}</slot></span>
+    <span v-else
+      ><slot>{{ $t("sweep_stage") }}</slot></span
+    >
   </button>
 </template>
 
@@ -47,5 +49,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

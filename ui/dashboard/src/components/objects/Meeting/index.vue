@@ -2,8 +2,12 @@
   <div>
     <Object :object="meeting">
       <template #render>
-        <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }"
-          :class="activeMovable ? 'disable-pointer' : ''">
+        <div
+          id="meeting-room"
+          class="frame"
+          :style="{ width: object.w + 'px', height: object.h + 'px' }"
+          :class="activeMovable ? 'disable-pointer' : ''"
+        >
           <Loading v-if="loading" height="100%" />
           <div class="room" ref="room"></div>
         </div>
@@ -31,24 +35,24 @@ export default {
       const domain = useJitsiDomain();
       const options = {
         roomName: props.object.name,
-        subject: 'Powered by Jitsi',
-        width: '100%',
-        height: '100%',
+        subject: "Powered by Jitsi",
+        width: "100%",
+        height: "100%",
         parentNode: room.value,
         userInfo: {
           email: store.state.user.user?.email,
-          displayName: store.getters['user/chatname']
+          displayName: store.getters["user/chatname"],
         },
         configOverwrite: {
           prejoinPageEnabled: false,
           startVideoMuted: 1,
           startAudioMuted: 1,
         },
-        interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false }
+        interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false },
       };
       const api = new window.JitsiMeetExternalAPI(domain, options);
-      console.log(api)
-    })
+      console.log(api);
+    });
 
     const activeMovable = computed(() => store.getters["stage/activeMovable"]);
 

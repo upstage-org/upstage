@@ -3,7 +3,13 @@
     <div class="navbar-brand">
       <Logo link="https://www.upstage.org.nz" />
       <LanguageSelector class="is-hidden-desktop" />
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        @click="toggleExpanded"
+      >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -13,35 +19,64 @@
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
-        <div v-if="!navigations" class="navbar-item" style="text-transform: none;">Cannot display navigation properly,
-          please check your menu syntax in Admin section!</div>
+        <div
+          v-if="!navigations"
+          class="navbar-item"
+          style="text-transform: none"
+        >
+          Cannot display navigation properly, please check your menu syntax in
+          Admin section!
+        </div>
         <template v-else>
           <template v-for="(menu, i) in navigations" :key="i">
-            <div v-if="menu.children" class="navbar-item has-dropdown is-hoverable">
-              <a v-if="menu.url" class="navbar-link is-arrowless" :href="menu.url"
-                :target="menu.url?.startsWith('http') ? '_blank' : ''">
+            <div
+              v-if="menu.children"
+              class="navbar-item has-dropdown is-hoverable"
+            >
+              <a
+                v-if="menu.url"
+                class="navbar-link is-arrowless"
+                :href="menu.url"
+                :target="menu.url?.startsWith('http') ? '_blank' : ''"
+              >
                 {{ menu.title }}
               </a>
               <a v-else class="navbar-link is-arrowless">{{ menu.title }}</a>
               <div class="navbar-dropdown">
-                <a v-for="(submenu, j) in menu.children" :key="{ j }" class="navbar-item" :href="submenu.url"
-                  :target="submenu.url?.startsWith('http') ? '_blank' : ''">
+                <a
+                  v-for="(submenu, j) in menu.children"
+                  :key="{ j }"
+                  class="navbar-item"
+                  :href="submenu.url"
+                  :target="submenu.url?.startsWith('http') ? '_blank' : ''"
+                >
                   {{ submenu.title }}
                 </a>
               </div>
             </div>
-            <a v-else-if="isShow(menu.seeByAdmin)" class="navbar-item" :href="menu.url"
-              :target="menu.url?.startsWith('http') ? '_blank' : ''">
+            <a
+              v-else-if="isShow(menu.seeByAdmin)"
+              class="navbar-item"
+              :href="menu.url"
+              :target="menu.url?.startsWith('http') ? '_blank' : ''"
+            >
               {{ menu.title }}
             </a>
-            <div v-if="isAdmin && (i < navigations.length - 1)" class="vertical-divider" />
+            <div
+              v-if="isAdmin && i < navigations.length - 1"
+              class="vertical-divider"
+            />
           </template>
         </template>
       </div>
 
       <div class="navbar-end">
         <template v-if="loggedIn">
-          <router-link v-if="!isGuest" to="/backstage" class="button is-primary m-2">
+          <router-link
+            v-if="!isGuest"
+            to="/backstage"
+            class="button is-primary m-2"
+          >
             <strong>{{ $t("backstage") }}</strong>
           </router-link>
           <button @click="logout" class="button m-2 mr-6">
@@ -52,7 +87,11 @@
           <router-link to="/login" class="button is-primary m-2">
             <strong>{{ $t("login") }}</strong>
           </router-link>
-          <router-link v-if="foyer.showRegistration" to="/register" class="button is-primary m-2 mr-6">
+          <router-link
+            v-if="foyer.showRegistration"
+            to="/register"
+            class="button is-primary m-2 mr-6"
+          >
             <strong>{{ $t("register") }}</strong>
           </router-link>
         </template>
@@ -82,11 +121,11 @@ export default {
 
     const isShow = (seeByAdmin) => {
       if (isAdmin.value) {
-        return true
+        return true;
       }
 
-      return !seeByAdmin
-    }
+      return !seeByAdmin;
+    };
 
     return {
       expanded,
@@ -97,7 +136,7 @@ export default {
       isShow,
       navigations,
       isAdmin,
-      isGuest
+      isGuest,
     };
   },
 };

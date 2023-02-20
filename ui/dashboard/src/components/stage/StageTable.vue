@@ -17,7 +17,9 @@
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
       </template>
-      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
+      <span v-else data-tooltip="You don't have edit permission on this stage"
+        >🙅‍♀️🙅‍♂️</span
+      >
     </template>
     <template #statistics="{ item }">
       <PlayerAudienceCounter :stage-url="item.fileLocation" />
@@ -26,7 +28,11 @@
       <RecordActions :stage="item" />
     </template>
     <template #enter="{ item }">
-      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary" @click="updateLastAccess(item.dbId)" >
+      <router-link
+        :to="`/${item.fileLocation}`"
+        class="button is-small is-primary"
+        @click="updateLastAccess(item.dbId)"
+      >
         <span>{{ $t("enter") }}</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>
@@ -34,30 +40,43 @@
       </router-link>
     </template>
     <template #status="{ item }">
-      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">  
+      <div
+        class="field is-narrow"
+        v-if="
+          item.permission === 'editor' || item.permission === 'owner' || isAdmin
+        "
+      >
         <Switch
           :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'"
           :model-value="item.status === 'live'"
           @update:model-value="
             (item.status = $event ? 'live' : 'rehearsal'),
-            updateStageStatus(item.id)
+              updateStageStatus(item.id)
           "
         />
       </div>
-      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
+      <span v-else data-tooltip="You don't have edit permission on this stage"
+        >🙅‍♀️🙅‍♂️</span
+      >
     </template>
     <template #visibility="{ item }">
-      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">
+      <div
+        class="field is-narrow"
+        v-if="
+          item.permission === 'editor' || item.permission === 'owner' || isAdmin
+        "
+      >
         <Switch
           :data-tooltip="item.visibility ? 'On' : 'Off'"
           v-model="item.visibility"
           @update:model-value="
-            (item.visibility = $event), 
-            updateStageVisibility(item.id)
+            (item.visibility = $event), updateStageVisibility(item.id)
           "
         />
       </div>
-      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
+      <span v-else data-tooltip="You don't have edit permission on this stage"
+        >🙅‍♀️🙅‍♂️</span
+      >
     </template>
   </DataTable>
 </template>
@@ -74,13 +93,12 @@ import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import { useMutation } from "@/services/graphql/composable";
 
-
 export default {
   components: {
     DataTable,
     PlayerAudienceCounter,
     RecordActions,
-    Switch
+    Switch,
   },
   props: { data: Array },
   setup: () => {
@@ -107,7 +125,7 @@ export default {
         title: "Last Access",
         description: "date last used / accessed",
         type: "date",
-        key: "lastAccess",      
+        key: "lastAccess",
         sortable: true,
         defaultSortOrder: false,
       },
@@ -150,7 +168,7 @@ export default {
         align: "center",
       },
     ];
-    
+
     const refresh = inject("refresh");
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
@@ -159,13 +177,13 @@ export default {
       try {
         const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
         mutation().then((res) => {
-          refresh()
+          refresh();
           return res.updateLastAccess.result;
         });
       } catch (error) {
         notification.error(error);
       }
-    }
+    };
     return { headers, isAdmin, updateLastAccess };
   },
   methods: {
@@ -191,7 +209,6 @@ export default {
         notification.error(error);
       }
     },
-
   },
 };
 </script>

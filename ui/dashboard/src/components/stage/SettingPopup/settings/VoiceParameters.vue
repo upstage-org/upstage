@@ -100,7 +100,7 @@ export default {
   setup: (props, { emit }) => {
     const store = useStore();
     const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
-    const voices = [{ id: undefined, name: 'No voice' }].concat(getVoiceList());
+    const voices = [{ id: undefined, name: "No voice" }].concat(getVoiceList());
     const variants = getVariantList();
     const parameters = reactive(
       props.modelValue ? props.modelValue : currentAvatar.value?.voice

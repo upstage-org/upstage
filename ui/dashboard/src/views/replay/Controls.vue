@@ -15,7 +15,11 @@
         >
           <i class="fas fa-pause"></i>
         </button>
-        <button v-else class="button is-primary is-rounded reaction mx-1" @click="play">
+        <button
+          v-else
+          class="button is-primary is-rounded reaction mx-1"
+          @click="play"
+        >
           <i class="fas fa-play"></i>
         </button>
         <button
@@ -26,7 +30,10 @@
         </button>
         <Modal width="500px">
           <template #trigger>
-            <button class="button minimise is-rounded is-light is-small" @click="collapsed = true">
+            <button
+              class="button minimise is-rounded is-light is-small"
+              @click="collapsed = true"
+            >
               <span class="icon">
                 <Icon src="minimise.svg" size="24" class="mt-4" />
               </span>
@@ -36,13 +43,17 @@
           <template #content>
             <p>
               Replay controls are hidden! You can toggle the
-              <code>{{ $t("esc") }}</code> key to quickly hide the replay controls or bring
-              it back 👌
+              <code>{{ $t("esc") }}</code> key to quickly hide the replay
+              controls or bring it back 👌
             </p>
           </template>
         </Modal>
         <teleport v-if="!collapsed" to="body">
-          <Modal width="500px" @confirm="(close) => saveRole(item, close)" :loading="loading">
+          <Modal
+            width="500px"
+            @confirm="(close) => saveRole(item, close)"
+            :loading="loading"
+          >
             <template #render="{ open }">
               <Dropdown
                 style="position: absolute; left: 24px; bottom: 64px"
@@ -66,10 +77,9 @@
       </div>
     </div>
     <footer class="card-footer">
-      <div
-        class="card-footer-item"
-        style="width: 60px"
-      >{{ displayTimestamp(timestamp.current - timestamp.begin) }}</div>
+      <div class="card-footer-item" style="width: 60px">
+        {{ displayTimestamp(timestamp.current - timestamp.begin) }}
+      </div>
       <div class="card-footer-item">
         <input
           type="range"
@@ -82,10 +92,9 @@
         />
         <EventIndicator />
       </div>
-      <div
-        class="card-footer-item"
-        style="width: 60px"
-      >{{ displayTimestamp(timestamp.end - timestamp.begin) }}</div>
+      <div class="card-footer-item" style="width: 60px">
+        {{ displayTimestamp(timestamp.end - timestamp.begin) }}
+      </div>
     </footer>
   </div>
 </template>
@@ -98,7 +107,7 @@ import { computed, ref } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import EventIndicator from "./EventIndicator.vue";
 import { useShortcut } from "@/components/stage/composable";
-import { displayTimestamp } from '@/utils/common';
+import { displayTimestamp } from "@/utils/common";
 
 export default {
   components: { Dropdown, EventIndicator, Icon, Modal },
@@ -120,8 +129,6 @@ export default {
     const pause = () => {
       store.dispatch("stage/pauseReplay");
     };
-
-
 
     const changeSpeed = (speed, open) => {
       store.commit("stage/SET_REPLAY", { speed });

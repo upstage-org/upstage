@@ -25,5 +25,4 @@ const copy = () => {
   </code>
 </template>
 
-<style>
-</style>
+<style></style>

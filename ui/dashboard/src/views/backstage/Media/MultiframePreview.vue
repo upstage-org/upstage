@@ -1,5 +1,9 @@
 <template>
-  <div v-if="meta.multi" data-tooltip="This is a multiframe media" class="has-tooltip-bottom">
+  <div
+    v-if="meta.multi"
+    data-tooltip="This is a multiframe media"
+    class="has-tooltip-bottom"
+  >
     <Icon src="multi-frame.svg" />
     <Image
       v-for="frame in meta.frames"
@@ -33,5 +37,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

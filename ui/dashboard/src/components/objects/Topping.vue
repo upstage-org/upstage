@@ -90,7 +90,7 @@ export default {
         count++;
       }
       const duration = config.value?.animations?.bubbleSpeed ?? 1000;
-      console.log(config.value?.animations?.bubbleSpeed)
+      console.log(config.value?.animations?.bubbleSpeed);
       switch (config.value?.animations?.bubble) {
         case "fade":
           anime({

@@ -9,7 +9,7 @@ import { getSubsribeLink } from "@/utils/streaming";
 import { useFlv } from "./objects/Streamer/composable";
 export default {
   props: ["src"],
-  emits: ['scan'],
+  emits: ["scan"],
   setup: (props, { emit }) => {
     const video = ref();
     const fullUrl = computed(() => getSubsribeLink(props.src));
@@ -17,18 +17,17 @@ export default {
     const { playable } = useFlv(video, fullUrl);
     onMounted(() => {
       video.value.addEventListener("loadedmetadata", () => {
-        emit('scan', {
+        emit("scan", {
           width: video.value.videoWidth,
           height: video.value.videoHeight,
           duration: video.value.duration,
-          video: video.value
+          video: video.value,
         });
       });
-    })
+    });
     return { video, playable };
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>

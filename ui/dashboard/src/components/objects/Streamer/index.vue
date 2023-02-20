@@ -20,7 +20,11 @@
           </p>
         </div>
         <template v-if="object.isRTMP">
-          <a v-if="object.type === 'stream'" class="panel-block" @click="refreshStreams">
+          <a
+            v-if="object.type === 'stream'"
+            class="panel-block"
+            @click="refreshStreams"
+          >
             <span class="panel-icon">
               <i class="fas fa-sync"></i>
             </span>
@@ -34,7 +38,11 @@
           </a>
         </template>
         <template v-else>
-          <a v-if="stream.isPlaying" class="panel-block" @click="pauseStream(slotProps)">
+          <a
+            v-if="stream.isPlaying"
+            class="panel-block"
+            @click="pauseStream(slotProps)"
+          >
             <span class="panel-icon">
               <i class="fas fa-pause"></i>
             </span>
@@ -46,7 +54,11 @@
             </span>
             <span>{{ $t("play") }}</span>
           </a>
-          <a v-if="object.type === 'stream'" class="panel-block" @click="restartVideo">
+          <a
+            v-if="object.type === 'stream'"
+            class="panel-block"
+            @click="restartVideo"
+          >
             <span class="panel-icon">
               <i class="fas fa-sync"></i>
             </span>
@@ -62,16 +74,36 @@
           </a>
         </template>
 
-        <MenuContent :object="object" :stream="stream" v-bind="slotProps" v-model:active="active" />
+        <MenuContent
+          :object="object"
+          :stream="stream"
+          v-bind="slotProps"
+          v-model:active="active"
+        />
       </template>
 
       <template #render>
         <Loading v-if="loading" height="100%" />
-        <video v-bind:id="'video' + stream.id" v-show="!loading" ref="video" :src="object.url" :muted="localMuted"
-          preload="auto" disablepictureinpicture @loadeddata="loadeddata" @ended="stream.isPlaying = false" :style="{
+        <video
+          v-bind:id="'video' + stream.id"
+          v-show="!loading"
+          ref="video"
+          :src="object.url"
+          :muted="localMuted"
+          preload="auto"
+          disablepictureinpicture
+          @loadeddata="loadeddata"
+          @ended="stream.isPlaying = false"
+          :style="{
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
-          }" :loop="stream.loop"></video>
-        <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
+          }"
+          :loop="stream.loop"
+        ></video>
+        <button
+          v-if="isPlayer"
+          class="button is-small mute-icon clickable"
+          @mousedown="toggleMuted"
+        >
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -88,17 +120,21 @@ import { useStore } from "vuex";
 import { useFlv, useCatchup } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
-import MenuContent from '../Avatar/ContextMenu'
+import MenuContent from "../Avatar/ContextMenu";
 
 export default {
   components: { Object, Loading, MenuContent },
   emits: ["update:active", "hold"],
-  props: ["object", "setSliderMode",],
+  props: ["object", "setSliderMode"],
   setup: (props) => {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
 
-    const stream = reactive({ ...props.object, isPlaying: props.object.isRTMP ? true : props.object.isPlaying, src: loading });
+    const stream = reactive({
+      ...props.object,
+      isPlaying: props.object.isRTMP ? true : props.object.isPlaying,
+      src: loading,
+    });
     const video = ref();
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
@@ -110,9 +146,12 @@ export default {
       }
     };
 
-    watch(() => stream.replayed, () => {
-      video.value.currentTime = 0;
-    });
+    watch(
+      () => stream.replayed,
+      () => {
+        video.value.currentTime = 0;
+      }
+    );
 
     watch(
       () => props.object,
@@ -154,10 +193,10 @@ export default {
     };
 
     const refreshStreams = () => {
-      store.dispatch("stage/getRunningStreams")
-      let video = document.getElementById('video' + props.stream.id);
+      store.dispatch("stage/getRunningStreams");
+      let video = document.getElementById("video" + props.stream.id);
       if (stream.isPlaying && video) {
-        const fullUrl = computed(() => getSubsribeLink('your_stream_key'));
+        const fullUrl = computed(() => getSubsribeLink("your_stream_key"));
 
         if (flvjs.isSupported()) {
           const flvPlayer = flvjs.createPlayer({
@@ -169,11 +208,11 @@ export default {
           flvPlayer.play();
         }
 
-        video.play()
+        video.play();
       } else {
-        video.pause()
+        video.pause();
       }
-    }
+    };
 
     const playStream = () => {
       store
@@ -191,7 +230,7 @@ export default {
           replayed: stream.replayed + 1,
         })
         .then(props.closeMenu);
-    }
+    };
 
     const toggleLoop = () => {
       store
@@ -225,7 +264,7 @@ export default {
       refreshStreams,
       openVolumePopup,
       restartVideo,
-      toggleLoop
+      toggleLoop,
     };
   },
 };

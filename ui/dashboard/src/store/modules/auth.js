@@ -60,15 +60,20 @@ export default {
     },
     // eslint-disable-next-line no-unused-vars
     fetchRefreshToken({ commit, state }) {
-      return userGraph.refreshUser({
-        refreshToken: state.refresh_token
-      }, {
-        'X-Access-Token': state.refresh_token
-      }).then(response => {
-        const token = response.refreshUser.newToken
-        commit('SET_TOKEN', token)
-        return token
-      })
+      return userGraph
+        .refreshUser(
+          {
+            refreshToken: state.refresh_token,
+          },
+          {
+            "X-Access-Token": state.refresh_token,
+          }
+        )
+        .then((response) => {
+          const token = response.refreshUser.newToken;
+          commit("SET_TOKEN", token);
+          return token;
+        });
     },
   },
   getters: {

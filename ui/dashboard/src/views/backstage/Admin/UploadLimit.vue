@@ -1,6 +1,8 @@
 <template>
   <Confirm
-    @confirm="(close) => saveUploadLimit(item, close)" :loading="loading">
+    @confirm="(close) => saveUploadLimit(item, close)"
+    :loading="loading"
+  >
     <template #render="{ confirm }">
       <Dropdown
         :data="limitSize"
@@ -33,7 +35,6 @@ import { computed } from "@vue/runtime-core";
 import { UPDATE_LIMIT } from "@/utils/constants";
 import Dropdown from "@/components/form/Dropdown.vue";
 
-
 export default {
   components: { Confirm, Dropdown },
   props: ["user", "displayName"],
@@ -52,7 +53,7 @@ export default {
     limitSize.push({
       label: humanFileSize(nginxLimit.value),
       value: nginxLimit.value,
-    })
+    });
 
     const { save, loading } = useMutation(userGraph.updateUser);
     const saveUploadLimit = async (user, close) => {
@@ -78,5 +79,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

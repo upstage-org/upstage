@@ -105,10 +105,10 @@ export default {
       }
     };
 
-    const reset = () =>{
+    const reset = () => {
       moveAll(2, 0);
-      moveAll(1, 0)
-    }
+      moveAll(1, 0);
+    };
 
     watch(positions, () => {
       let res = [];
@@ -139,8 +139,8 @@ export default {
             }
           }
         }
-        if(!props.modelValue[0]){
-          reset()
+        if (!props.modelValue[0]) {
+          reset();
         }
       },
       { immediate: true }
@@ -151,8 +151,15 @@ export default {
         ? props.data.filter((item, p) => (positions[p] ?? 0) === i).length
         : 0;
 
-
-    return { shouldVisible, moveRight, moveLeft, count, searchs, moveAll, reset };
+    return {
+      shouldVisible,
+      moveRight,
+      moveLeft,
+      count,
+      searchs,
+      moveAll,
+      reset,
+    };
   },
 };
 </script>

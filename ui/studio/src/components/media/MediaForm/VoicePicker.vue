@@ -1,11 +1,15 @@
 <script lang="ts" setup>
-import { useQuery } from '@vue/apollo-composable';
-import gql from 'graphql-tag';
-import { computed, ref } from 'vue';
-import { AvatarVoice, StudioGraph, VoiceGraph } from '../../../models/studio';
-import { avatarSpeak } from '../../../services/speech';
-import { defaultTestMessage, variants, voices } from '../../../services/speech/voice';
-import { absolutePath } from '../../../utils/common';
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import { computed, ref } from "vue";
+import { AvatarVoice, StudioGraph, VoiceGraph } from "../../../models/studio";
+import { avatarSpeak } from "../../../services/speech";
+import {
+  defaultTestMessage,
+  variants,
+  voices,
+} from "../../../services/speech/voice";
+import { absolutePath } from "../../../utils/common";
 
 const emits = defineEmits(["change"]);
 
@@ -19,30 +23,31 @@ const showDrawer = () => {
   visible.value = true;
 };
 const { result, loading, refetch } = useQuery<StudioGraph>(gql`
-{
-  voices {
-    voice {
-      voice
-      variant
-      pitch
-      speed
-      amplitude
-    }
-    avatar {
-      name
-      src
-      owner {
-        displayName
-        username
+  {
+    voices {
+      voice {
+        voice
+        variant
+        pitch
+        speed
+        amplitude
+      }
+      avatar {
+        name
+        src
+        owner {
+          displayName
+          username
+        }
       }
     }
   }
-}`)
+`);
 
 const voiceDescription = ({ voice, avatar }: VoiceGraph) => {
   return `${voices[voice.voice!]} - ${variants[voice.variant]}`;
-}
-const keyword = ref('');
+};
+const keyword = ref("");
 const dataSource = computed(() => {
   if (result.value) {
     const s = keyword.value.trim();
@@ -59,17 +64,17 @@ const dataSource = computed(() => {
       return false;
     });
   }
-  return []
-})
+  return [];
+});
 
 const test = ref(defaultTestMessage);
 const tryVoice = (voice: AvatarVoice) => {
   avatarSpeak(voice, test.value || defaultTestMessage);
-}
+};
 const select = ({ __typename, ...voice }: any) => {
-  emits('change', voice);
+  emits("change", voice);
   visible.value = false;
-}
+};
 </script>
 
 <template>
@@ -86,7 +91,11 @@ const select = ({ __typename, ...voice }: any) => {
     @after-visible-change="afterVisibleChange"
   >
     <div class="flex">
-      <a-input-search class="mr-2" placeholder="Search for avatar" v-model:value="keyword"></a-input-search>
+      <a-input-search
+        class="mr-2"
+        placeholder="Search for avatar"
+        v-model:value="keyword"
+      ></a-input-search>
       <a-input placeholder="Test voice" v-model:value="test"></a-input>
     </div>
     <a-list
@@ -113,9 +122,12 @@ const select = ({ __typename, ...voice }: any) => {
             <template #title>
               <a-button type="text" class="p-0">
                 {{ item.avatar.name }}
-                <span
-                  class="text-xs text-gray-400"
-                >&nbsp;- created by {{ item.avatar.owner.displayName || item.avatar.owner.username }}</span>
+                <span class="text-xs text-gray-400"
+                  >&nbsp;- created by
+                  {{
+                    item.avatar.owner.displayName || item.avatar.owner.username
+                  }}</span
+                >
               </a-button>
             </template>
             <template #avatar>

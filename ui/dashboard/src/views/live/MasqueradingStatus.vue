@@ -21,8 +21,8 @@ export default {
     const store = useStore();
     const masquerading = computed(() => store.state.stage.masquerading);
     const exitAudienceView = () => {
-      store.commit('stage/TOGGLE_MASQUERADING');
-    }
+      store.commit("stage/TOGGLE_MASQUERADING");
+    };
 
     return { masquerading, exitAudienceView };
   },

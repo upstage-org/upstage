@@ -1,25 +1,25 @@
 <script>
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from "vue";
 
 export default {
   props: {
-    track: Object
+    track: Object,
   },
   setup(props) {
-    const el = ref()
+    const el = ref();
     onMounted(() => {
       props.track.attach(el.value);
-    })
+    });
     onUnmounted(() => {
       props.track.detach();
-    })
-    if (props.track.getType() === 'video') {
-      return () => <video autoplay ref={el}></video>
+    });
+    if (props.track.getType() === "video") {
+      return () => <video autoplay ref={el}></video>;
     } else {
-      return () => <audio autoplay ref={el}></audio>
+      return () => <audio autoplay ref={el}></audio>;
     }
-  }
-}
+  },
+};
 </script>
 
 <style scoped>

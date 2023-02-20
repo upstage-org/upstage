@@ -1,7 +1,10 @@
 <template>
   <Modal v-if="visible" v-model="open">
     <template #trigger>
-      <span class="tag is-small is-warning clickable" style="vertical-align: top">
+      <span
+        class="tag is-small is-warning clickable"
+        style="vertical-align: top"
+      >
         <span class="icon" ref="icon">
           <Icon src="firefox-logo.svg" />
         </span>
@@ -11,7 +14,10 @@
       <Icon size="24" src="firefox-logo.svg" />&nbsp;Caution Firefox Users!
     </template>
     <template #content>
-      <p>A Firefox setting needs to be changed to allow you to access UpStage on Firefox.</p>
+      <p>
+        A Firefox setting needs to be changed to allow you to access UpStage on
+        Firefox.
+      </p>
       <div class="columns">
         <div class="column is-3 mt-6">
           <b>Step 1:</b>&nbsp;Open a new tab and go to
@@ -21,10 +27,15 @@
           <img :src="`${publicPath}/instruction/firefox/1.png`" alt="Step 1" />
           <div class="columns">
             <div class="column is-4 mt-6">
-              <code>Note:</code>&nbsp;If you see this screen, click to continue. Don't worry, the setting change needed for UpStage to work will not impact on performance or security of Firefox.
+              <code>Note:</code>&nbsp;If you see this screen, click to continue.
+              Don't worry, the setting change needed for UpStage to work will
+              not impact on performance or security of Firefox.
             </div>
             <div class="column">
-              <img :src="`${publicPath}/instruction/firefox/1.2.png`" alt="Step 1.2" />
+              <img
+                :src="`${publicPath}/instruction/firefox/1.2.png`"
+                alt="Step 1.2"
+              />
             </div>
           </div>
         </div>
@@ -58,7 +69,7 @@ import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
 import Copy from "@/components/Copy.vue";
 import anime from "animejs";
-import { publicPath } from '@/../vue.config';
+import { publicPath } from "@/../vue.config";
 
 export default {
   components: { Icon, Modal, Copy },
@@ -66,7 +77,11 @@ export default {
     const store = useStore();
     const isFirefox = navigator.userAgent.indexOf("Firefox") != -1;
     const status = computed(() => store.state.stage.status);
-    const visible = computed(() => isFirefox && (status.value === "CONNECTING" || status.value === "OFFLINE"));
+    const visible = computed(
+      () =>
+        isFirefox &&
+        (status.value === "CONNECTING" || status.value === "OFFLINE")
+    );
     const open = ref(true);
 
     const reload = () => window.location.reload();
@@ -91,5 +106,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

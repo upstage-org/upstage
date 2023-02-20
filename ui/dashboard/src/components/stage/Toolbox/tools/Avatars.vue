@@ -1,7 +1,7 @@
 <template>
-    <div v-for="avatar in avatars" :key="avatar">
-      <Skeleton :data="avatar" />
-    </div>
+  <div v-for="avatar in avatars" :key="avatar">
+    <Skeleton :data="avatar" />
+  </div>
 </template>
 
 <script>
@@ -18,5 +18,4 @@ export default {
 };
 </script>
 
-<style scoped lang="scss">
-</style>
+<style scoped lang="scss"></style>

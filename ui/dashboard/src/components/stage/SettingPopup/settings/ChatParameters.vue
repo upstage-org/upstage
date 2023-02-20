@@ -59,16 +59,17 @@
       <save-button @click="saveParameters" />
     </div>
     <div class="content" v-else>
-      <h4>
-        Select the sections you want to download
-      </h4>
+      <h4>Select the sections you want to download</h4>
       <div class="field is-horizontal">
         <div class="field-label">
           <label class="label fix">{{ $t("audience_chat") }}</label>
         </div>
         <div class="field-body">
           <div class="field is-narrow">
-            <Switch :data-tooltip="downloadOptions.audienceChat ? 'On' : 'Off' " v-model="downloadOptions.audienceChat" />
+            <Switch
+              :data-tooltip="downloadOptions.audienceChat ? 'On' : 'Off'"
+              v-model="downloadOptions.audienceChat"
+            />
           </div>
         </div>
       </div>
@@ -78,13 +79,19 @@
         </div>
         <div class="field-body">
           <div class="field is-narrow">
-            <Switch :data-tooltip="downloadOptions.playerChat ? 'On'  : 'Off' " v-model="downloadOptions.playerChat" />
+            <Switch
+              :data-tooltip="downloadOptions.playerChat ? 'On' : 'Off'"
+              v-model="downloadOptions.playerChat"
+            />
           </div>
         </div>
       </div>
 
-      <DownloadButton  @click="downloadChatLog" v-if="downloadOptions.audienceChat||downloadOptions.playerChat"/>
-      <DownloadButton disabled v-else/>
+      <DownloadButton
+        @click="downloadChatLog"
+        v-if="downloadOptions.audienceChat || downloadOptions.playerChat"
+      />
+      <DownloadButton disabled v-else />
     </div>
   </div>
 </template>
@@ -100,22 +107,22 @@ import { notification } from "@/utils/notification";
 import Switch from "@/components/form/Switch.vue";
 
 export default {
-  components: { HorizontalField, Field, SaveButton, Switch , DownloadButton},
+  components: { HorizontalField, Field, SaveButton, Switch, DownloadButton },
   setup: (props, { emit }) => {
     const form = reactive({});
     const loading = ref(false);
     const store = useStore();
     const nickname = computed(() => store.getters["user/chatname"]);
     const downloadOptions = ref({
-      audienceChat : false,
-      playerChat: false
-    })
+      audienceChat: false,
+      playerChat: false,
+    });
 
     const chats = computed(() => store.state.stage.chat);
     const downloadChatVisibility = computed(
       () => store.state.stage.showDownloadChatSetting
     );
-    const stageUrl = store.getters['stage/url']
+    const stageUrl = store.getters["stage/url"];
 
     const saveNickname = () => {
       loading.value = true;
@@ -137,14 +144,13 @@ export default {
       return textFile;
     };
 
-    const downloadChatLog = () => {   
-      if (downloadOptions.value.audienceChat){
+    const downloadChatLog = () => {
+      if (downloadOptions.value.audienceChat) {
         let link = document.createElement("a");
         let content = [];
         link.setAttribute(
           "download",
-          `${stageUrl}-Audience-chat-${timeStamp()
-          }.txt`
+          `${stageUrl}-Audience-chat-${timeStamp()}.txt`
         );
         content = chats.value.messages.map((item) => {
           let line = "";
@@ -164,13 +170,12 @@ export default {
         });
       }
 
-      if (downloadOptions.value.playerChat){
+      if (downloadOptions.value.playerChat) {
         let link = document.createElement("a");
         let content = [];
         link.setAttribute(
           "download",
-          `${stageUrl}-Player-chat-${timeStamp()
-          }.txt`
+          `${stageUrl}-Player-chat-${timeStamp()}.txt`
         );
         content = chats.value.privateMessages.map((item) => {
           let line = "";
@@ -188,33 +193,31 @@ export default {
           link.dispatchEvent(event);
           document.body.removeChild(link);
         });
-      }  
-      emit('close')   
+      }
+      emit("close");
       notification.success("Download success");
     };
 
-    const padTo2Digits=(num)=>{
-      return num.toString().padStart(2, '0');
-    }
-    const formatDate=(date)=> {
+    const padTo2Digits = (num) => {
+      return num.toString().padStart(2, "0");
+    };
+    const formatDate = (date) => {
       return (
-        [
-          padTo2Digits(date.getHours()),
-          padTo2Digits(date.getMinutes()),
-        ].join('')+
-        '-' +
+        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
+          ""
+        ) +
+        "-" +
         [
           padTo2Digits(date.getDate()),
           padTo2Digits(date.getMonth() + 1),
           date.getFullYear(),
-        ].join('') 
-        
+        ].join("")
       );
-    }
+    };
     const timeStamp = () => {
       const date = new Date();
-      return formatDate(date)
-    }
+      return formatDate(date);
+    };
 
     const changeFontSize = (value) => {
       parameters.fontSize = value.replace(/^\D+/g, "") + "px";
@@ -249,7 +252,7 @@ export default {
 </script>
 
 <style>
-.fix{
+.fix {
   width: 115px;
 }
 </style>

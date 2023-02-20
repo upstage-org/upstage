@@ -21,5 +21,4 @@ const code = computed(() =>
   <QRCode :value="code" :size="size" />
 </template>
 
-<style>
-</style>
+<style></style>

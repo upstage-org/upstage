@@ -1,13 +1,13 @@
-import { getSharedConfig } from "./utils/common"
+import { getSharedConfig } from "./utils/common";
 
 const configs = {
-  MODE: import.meta.env.MODE as 'development' | 'production',
+  MODE: import.meta.env.MODE as "development" | "production",
   UPSTAGE_URL: window.location.origin,
   SHARED: getSharedConfig(),
   ALLOWED_EXTENSIONS: {
-    IMAGE: '.svg,.jpg,.jpeg,.png,.gif',
-    AUDIO: '.wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a',
-    VIDEO: '.mp4,.webm,.opgg,.3gp,.flv'
+    IMAGE: ".svg,.jpg,.jpeg,.png,.gif",
+    AUDIO: ".wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a",
+    VIDEO: ".mp4,.webm,.opgg,.3gp,.flv",
   },
   ROLES: {
     GUEST: 4,
@@ -41,6 +41,6 @@ const configs = {
         "Only the owner can assign this media item to a stage. Once it is assigned to a stage it can be used there by players who have access to that stage.",
     },
   ],
-}
+};
 
-export default configs
+export default configs;

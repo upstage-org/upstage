@@ -1,19 +1,39 @@
 <template>
-  <section id="live-stage" class="hero bg-cover is-fullheight" :style="{ 'background-color': backdropColor }">
-    <div id="board" @dragenter.prevent @dragover.prevent @drop.prevent="drop" :style="{
-      width: stageSize.width + 'px',
-      height: stageSize.height + 'px',
-      transform:
-        'translateX(' +
-        stageSize.left +
-        'px) translateY(' +
-        stageSize.top +
-        'px)',
-    }">
+  <section
+    id="live-stage"
+    class="hero bg-cover is-fullheight"
+    :style="{ 'background-color': backdropColor }"
+  >
+    <div
+      id="board"
+      @dragenter.prevent
+      @dragover.prevent
+      @drop.prevent="drop"
+      :style="{
+        width: stageSize.width + 'px',
+        height: stageSize.height + 'px',
+        transform:
+          'translateX(' +
+          stageSize.left +
+          'px) translateY(' +
+          stageSize.top +
+          'px)',
+      }"
+    >
       <Backdrop />
-      <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
-        <component v-for="object in objects" :id="object.id" :key="object.id"
-          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'" :object="object" />
+      <transition-group
+        name="stage-avatars"
+        :css="false"
+        @enter="avatarEnter"
+        @leave="avatarLeave"
+      >
+        <component
+          v-for="object in objects"
+          :id="object.id"
+          :key="object.id"
+          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'"
+          :object="object"
+        />
       </transition-group>
     </div>
   </section>
@@ -59,7 +79,9 @@ export default {
     const objects = computed(() => store.getters["stage/objects"]);
 
     const drop = (e) => {
-      const { object, isReal, nodrop } = JSON.parse(e.dataTransfer.getData("text"));
+      const { object, isReal, nodrop } = JSON.parse(
+        e.dataTransfer.getData("text")
+      );
       if (isReal) {
         if (
           confirm("Are you sure you want to take this object out of the stage?")
@@ -68,13 +90,15 @@ export default {
         }
       } else {
         if (e.clientX > 0 && e.clientY > 0 && !nodrop) {
-          store.dispatch("stage/placeObjectOnStage", {
-            ...object,
-            x: e.clientX - 50 - stageSize.value.left,
-            y: e.clientY - 50 - stageSize.value.top,
-          }).then(({ id }) => {
-            store.dispatch("stage/autoFocusMoveable", id);
-          });
+          store
+            .dispatch("stage/placeObjectOnStage", {
+              ...object,
+              x: e.clientX - 50 - stageSize.value.left,
+              y: e.clientY - 50 - stageSize.value.top,
+            })
+            .then(({ id }) => {
+              store.dispatch("stage/autoFocusMoveable", id);
+            });
         }
       }
     };
@@ -86,7 +110,7 @@ export default {
         translateY: [-200, 0],
         duration: config.value.animateDuration,
         easing: "easeInOutQuad",
-        complete
+        complete,
       });
     };
     const avatarLeave = (el, complete) => {

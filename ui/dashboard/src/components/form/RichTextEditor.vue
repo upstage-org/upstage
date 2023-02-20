@@ -8,15 +8,15 @@
         'searchreplace visualblocks code fullscreen',
         'insertdatetime media table paste code help wordcount',
         'image',
-        'table'
+        'table',
       ],
       toolbar:
-        'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link | table | image | code | help'
+        'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link | table | image | code | help',
     }"
     v-bind="$attrs"
   />
 </template>
 
 <script setup>
-import Editor from '@tinymce/tinymce-vue';
+import Editor from "@tinymce/tinymce-vue";
 </script>

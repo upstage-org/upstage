@@ -1,10 +1,11 @@
 import { gql } from "graphql-request";
 import { createClient } from "./graphql";
 
-const client = createClient('payment_graphql')
+const client = createClient("payment_graphql");
 
 export default {
-  oneTimePurchase: (input) => client.request(gql`
+  oneTimePurchase: (input) =>
+    client.request(gql`
     mutation{
       oneTimePurchase(
         input: {
@@ -18,4 +19,4 @@ export default {
         success 
       }
     }`),
-}
+};

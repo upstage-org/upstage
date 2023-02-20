@@ -5,7 +5,9 @@
       v-for="react in reactions"
       :key="react"
       @click="sendReaction(react)"
-    >{{ react }}</button>
+    >
+      {{ react }}
+    </button>
     <span v-if="customEmoji" style="position: absolute; margin-left: 28px">
       <ChatInput
         :picker-only="true"
@@ -32,12 +34,14 @@
               top: react.y + 'px',
               fontSize: '42px',
             }"
-          >{{ react.reaction }}</div>
+          >
+            {{ react.reaction }}
+          </div>
         </transition-group>
       </div>
     </teleport>
   </template>
-  <div class="my-1" style="float: left;" v-else>
+  <div class="my-1" style="float: left" v-else>
     Your nickname is:
     <a @click="openChatSetting">{{ nickname }}</a>
   </div>
@@ -58,11 +62,11 @@ export default {
     const reactionVisibility = computed(
       () => store.state.stage.settings.reactionVisibility
     );
-    watch(reactionVisibility, console.log)
+    watch(reactionVisibility, console.log);
     const nickname = computed(() => {
-      const nickname = store.getters['user/nickname'];
+      const nickname = store.getters["user/nickname"];
       if (nickname.length > 15) {
-        return nickname.slice(0, 10) + '...';
+        return nickname.slice(0, 10) + "...";
       }
       return nickname;
     });
@@ -110,7 +114,7 @@ export default {
       sendCustomReaction,
       reactionVisibility,
       nickname,
-      openChatSetting
+      openChatSetting,
     };
   },
 };

@@ -3,9 +3,19 @@
     <template #render>
       <Loading v-if="!videoTrack && !audioTrack" height="100%" />
       <template v-else>
-        <video autoplay ref="videoEl" :style="{ 'border-radius': object.shape === 'circle' ? '100%' : '12px' }"></video>
+        <video
+          autoplay
+          ref="videoEl"
+          :style="{
+            'border-radius': object.shape === 'circle' ? '100%' : '12px',
+          }"
+        ></video>
         <audio autoplay ref="audioEl" :muted="localMuted"></audio>
-        <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
+        <button
+          v-if="isPlayer"
+          class="button is-small mute-icon clickable"
+          @mousedown="toggleMuted"
+        >
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -48,9 +58,17 @@ export default {
     const store = useStore();
     const videoEl = ref();
     const audioEl = ref();
-    const tracks = computed(() => store.getters['stage/jitsiTracks'].filter(t => t.getParticipantId() === props.object.participantId));
-    const videoTrack = computed(() => tracks.value.find(t => t.type === 'video'));
-    const audioTrack = computed(() => tracks.value.find(t => t.type === 'audio'));
+    const tracks = computed(() =>
+      store.getters["stage/jitsiTracks"].filter(
+        (t) => t.getParticipantId() === props.object.participantId
+      )
+    );
+    const videoTrack = computed(() =>
+      tracks.value.find((t) => t.type === "video")
+    );
+    const audioTrack = computed(() =>
+      tracks.value.find((t) => t.type === "audio")
+    );
 
     const loadTrack = () => {
       if (tracks.value.length) {
@@ -62,22 +80,29 @@ export default {
             audioTrack.value.attach(audioEl.value);
           }
         } catch (error) {
-          console.log('Error on attaching track', error);
+          console.log("Error on attaching track", error);
         }
       }
-    }
+    };
 
-    const joined = inject('joined');
-    const jitsi = inject('jitsi');
+    const joined = inject("joined");
+    const jitsi = inject("jitsi");
 
-    watch(joined, val => {
-      if (val) {
-        const participants = jitsi.room.getParticipants().map(p => p.getId()).concat(jitsi.room.myUserId());
-        if (!participants.some(p => p === props.object.participantId)) {
-          store.dispatch('stage/deleteObject', props.object);
+    watch(
+      joined,
+      (val) => {
+        if (val) {
+          const participants = jitsi.room
+            .getParticipants()
+            .map((p) => p.getId())
+            .concat(jitsi.room.myUserId());
+          if (!participants.some((p) => p === props.object.participantId)) {
+            store.dispatch("stage/deleteObject", props.object);
+          }
         }
-      }
-    }, { immediate: true })
+      },
+      { immediate: true }
+    );
 
     onMounted(loadTrack);
 
@@ -94,7 +119,16 @@ export default {
     };
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
-    return { videoTrack, audioTrack, videoEl, audioEl, clip, localMuted, toggleMuted, isPlayer };
+    return {
+      videoTrack,
+      audioTrack,
+      videoEl,
+      audioEl,
+      clip,
+      localMuted,
+      toggleMuted,
+      isPlayer,
+    };
   },
 };
 </script>

@@ -22,13 +22,20 @@
       </div>
       <span class="tag is-block">{{ $t("new_text") }}</span>
     </div>
-    <div v-for="text in savedTexts" :key="text" class="is-pulled-left saved-text">
+    <div
+      v-for="text in savedTexts"
+      :key="text"
+      class="is-pulled-left saved-text"
+    >
       <ContextMenu>
         <template #trigger>
           <Skeleton :data="text" />
         </template>
         <template #context>
-          <a class="panel-block has-text-danger" @click="deleteTextPermanently(text)">
+          <a
+            class="panel-block has-text-danger"
+            @click="deleteTextPermanently(text)"
+          >
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
@@ -64,19 +71,31 @@
       <span class="tag muted is-block">{{ $t("colour") }}</span>
       <ColorPicker v-model="options.color" />
     </div>
-    <div class="text-tool" :class="{ active: options.fontWeight }" @click="toggleBold">
+    <div
+      class="text-tool"
+      :class="{ active: options.fontWeight }"
+      @click="toggleBold"
+    >
       <div class="icon is-large">
         <Icon size="36" src="bold.svg" />
       </div>
       <span class="tag is-block">{{ $t("bold") }}</span>
     </div>
-    <div class="text-tool" :class="{ active: options.fontStyle }" @click="toggleItalic">
+    <div
+      class="text-tool"
+      :class="{ active: options.fontStyle }"
+      @click="toggleItalic"
+    >
       <div class="icon is-large">
         <Icon size="36" src="italic.svg" />
       </div>
       <span class="tag is-block">{{ $t("italic") }}</span>
     </div>
-    <div class="text-tool" :class="{ active: options.textDecoration }" @click="toggleUnderline">
+    <div
+      class="text-tool"
+      :class="{ active: options.textDecoration }"
+      @click="toggleUnderline"
+    >
       <div class="icon is-large">
         <Icon size="36" src="underline.svg" />
       </div>
@@ -199,7 +218,7 @@ export default {
         content: el.value.innerHTML,
         w: width + 10,
         h: height + 10,
-        textId
+        textId,
       });
     };
 
@@ -235,7 +254,7 @@ export default {
     };
 
     onUnmounted(() => {
-      const topbar = document.querySelector("#topbar")
+      const topbar = document.querySelector("#topbar");
       if (topbar) {
         topbar.style.overflow = "auto";
       }
@@ -251,7 +270,7 @@ export default {
     };
     onUnmounted(() => {
       document.querySelector("#topbar").style.overflow = "auto";
-    })
+    });
 
     return {
       stageSize,
@@ -269,7 +288,7 @@ export default {
       changeFontSize,
       savedTexts,
       fontDropdownOpen,
-      deleteTextPermanently
+      deleteTextPermanently,
     };
   },
 };

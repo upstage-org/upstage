@@ -8,9 +8,9 @@
     :style="
       activeMovable
         ? {
-          position: 'relative',
-          'z-index': 1,
-        }
+            position: 'relative',
+            'z-index': 1,
+          }
         : {}
     "
   >
@@ -31,23 +31,39 @@
             transform: `rotate(${object.rotate}deg)`,
           }"
         >
-          <OpacitySlider v-model:active="active" v-model:slider-mode="sliderMode" :object="object" />
+          <OpacitySlider
+            v-model:active="active"
+            v-model:slider-mode="sliderMode"
+            :object="object"
+          />
           <QuickAction :object="object" v-model:active="active" />
           <Topping :object="object" v-model:active="active" />
         </div>
-        <Moveable v-model:active="active" :controlable="controlable" :object="object">
+        <Moveable
+          v-model:active="active"
+          :controlable="controlable"
+          :object="object"
+        >
           <div
             class="object"
             :class="{ 'link-hover-effect': hasLink && object.link.effect }"
             :style="{
               width: '100%',
               height: '100%',
-              cursor: controlable ? 'grab' : (object.link && object.link.url ? 'pointer' : 'normal'),
+              cursor: controlable
+                ? 'grab'
+                : object.link && object.link.url
+                ? 'pointer'
+                : 'normal',
             }"
             @dragstart.prevent
           >
             <slot name="render">
-              <Image class="the-object" :src="src" :transition="object.autoplayFrames" />
+              <Image
+                class="the-object"
+                :src="src"
+                :transition="object.autoplayFrames"
+              />
             </slot>
           </div>
         </Moveable>
@@ -103,9 +119,7 @@ export default {
     const isHolding = computed(
       () => props.object.holder?.id === store.state.stage.session
     );
-    const holdable = computed(() =>
-      ["avatar"].includes(props.object.type)
-    );
+    const holdable = computed(() => ["avatar"].includes(props.object.type));
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const controlable = computed(() => {
       return holdable.value
@@ -170,13 +184,15 @@ export default {
     );
     provide("isWearing", isWearing);
 
-    const hasLink = computed(() => !canPlay.value && props.object.link && props.object.link.url)
+    const hasLink = computed(
+      () => !canPlay.value && props.object.link && props.object.link.url
+    );
     const openLink = () => {
       if (hasLink.value) {
-        const { url, blank } = props.object.link
-        window.open(url, blank ? '_blank' : '_self').focus()
+        const { url, blank } = props.object.link;
+        window.open(url, blank ? "_blank" : "_self").focus();
       }
-    }
+    };
 
     return {
       el,
@@ -194,7 +210,7 @@ export default {
       activeMovable,
       isWearing,
       hasLink,
-      openLink
+      openLink,
     };
   },
 };

@@ -120,16 +120,15 @@ export default {
     );
 
     const handleBlur = (e) => {
-      stateTouched.value = true
+      stateTouched.value = true;
       if (!props.noTrim) {
-        emit("update:modelValue", e.target.value.trim())
+        emit("update:modelValue", e.target.value.trim());
       }
-    }
+    };
 
     return { isRequired, stateTouched, isTouched, handleBlur };
   },
 };
 </script>
 
-<style>
-</style>
+<style></style>

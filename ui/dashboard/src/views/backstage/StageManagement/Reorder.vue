@@ -1,5 +1,9 @@
 <template>
-  <div v-for="mediaType in types" :key="mediaType" class="columns is-vcentered has-text-centered">
+  <div
+    v-for="mediaType in types"
+    :key="mediaType"
+    class="columns is-vcentered has-text-centered"
+  >
     <div class="column is-1">
       <h4 class="subtitle">
         <Icon :src="mediaType + '.svg'" />
@@ -25,7 +29,7 @@
             @dragleave.prevent="dragleave"
             @drop.prevent="drop"
           >
-            <div style="pointer-events: none;">
+            <div style="pointer-events: none">
               <div v-if="mediaType === 'audio'">
                 <Icon src="audio.svg" />
                 <br />
@@ -46,7 +50,7 @@
 </template>
 
 <script setup>
-import { defineProps, defineEmits, computed } from 'vue';
+import { defineProps, defineEmits, computed } from "vue";
 import Icon from "@/components/Icon.vue";
 import Asset from "@/components/Asset.vue";
 
@@ -55,48 +59,56 @@ const props = defineProps({
     type: Array,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(["update:modelValue"]);
 
-const types = computed(() => [...new Set(props.modelValue.map(media => media.mediaType))])
+const types = computed(() => [
+  ...new Set(props.modelValue.map((media) => media.mediaType)),
+]);
 const mediaGroups = computed(() => {
-  const res = {}
+  const res = {};
   props.modelValue.forEach((item) => {
-    res[item.mediaType] = (res[item.mediaType] ?? []).concat(item)
+    res[item.mediaType] = (res[item.mediaType] ?? []).concat(item);
   });
   return res;
-})
+});
 
 const dragstart = (e) => {
-  e.target.classList.add('dragging');
+  e.target.classList.add("dragging");
   e.dataTransfer.setDragImage(e.target, 0, 0);
-  e.dataTransfer.setData('text/plain', e.target.id);
-}
+  e.dataTransfer.setData("text/plain", e.target.id);
+};
 
 const dragend = (e) => {
-  e.target.classList.remove('dragging');
-}
+  e.target.classList.remove("dragging");
+};
 
 const dragover = (e) => {
-  e.target.classList.add('dropzone')
-}
+  e.target.classList.add("dropzone");
+};
 
 const dragleave = (e) => {
-  e.target.classList.remove('dropzone')
-}
+  e.target.classList.remove("dropzone");
+};
 
 const drop = (e) => {
-  e.target.classList.remove('dropzone')
-  const fromId = e.dataTransfer.getData('text/plain')
-  const toId = e.target.id
-  const fromIndex = props.modelValue.findIndex(t => t.id === fromId)
-  const toIndex = props.modelValue.findIndex(t => t.id === toId)
+  e.target.classList.remove("dropzone");
+  const fromId = e.dataTransfer.getData("text/plain");
+  const toId = e.target.id;
+  const fromIndex = props.modelValue.findIndex((t) => t.id === fromId);
+  const toIndex = props.modelValue.findIndex((t) => t.id === toId);
   if (fromIndex > -1 && toIndex > -1) {
-    const media = props.modelValue.splice(fromIndex, 1)[0]
-    emit('update:modelValue', props.modelValue.slice(0, toIndex).concat(media).concat(props.modelValue.slice(toIndex)))
+    const media = props.modelValue.splice(fromIndex, 1)[0];
+    emit(
+      "update:modelValue",
+      props.modelValue
+        .slice(0, toIndex)
+        .concat(media)
+        .concat(props.modelValue.slice(toIndex))
+    );
   }
-}
+};
 </script>
 
 <style scoped lang="scss">

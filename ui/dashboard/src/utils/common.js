@@ -1,4 +1,4 @@
-import config from '@/config';
+import config from "@/config";
 
 export const isJson = (d) => {
   try {
@@ -9,7 +9,8 @@ export const isJson = (d) => {
   return true;
 };
 
-export const randomRange = (min, max) => Math.floor(Math.random() * (max - min + 1) + min);
+export const randomRange = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
 
 export const randomColor = () => {
   var letters = "0123456789ABCDEF";
@@ -22,12 +23,12 @@ export const randomColor = () => {
 
 export const padZero = (str, len) => {
   len = len || 2;
-  var zeros = new Array(len).join('0');
+  var zeros = new Array(len).join("0");
   return (zeros + str).slice(-len);
-}
+};
 
 export const invertColor = (hex, bw) => {
-  if (hex.indexOf('#') === 0) {
+  if (hex.indexOf("#") === 0) {
     hex = hex.slice(1);
   }
   // convert 3-digit hex to 6-digits.
@@ -35,16 +36,14 @@ export const invertColor = (hex, bw) => {
     hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
   }
   if (hex.length !== 6) {
-    throw new Error('Invalid HEX color.');
+    throw new Error("Invalid HEX color.");
   }
   var r = parseInt(hex.slice(0, 2), 16),
     g = parseInt(hex.slice(2, 4), 16),
     b = parseInt(hex.slice(4, 6), 16);
   if (bw) {
     // http://stackoverflow.com/a/3943023/112731
-    return (r * 0.299 + g * 0.587 + b * 0.114) > 186
-      ? '#000000'
-      : '#FFFFFF';
+    return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? "#000000" : "#FFFFFF";
   }
   // invert color components
   r = (255 - r).toString(16);
@@ -52,27 +51,28 @@ export const invertColor = (hex, bw) => {
   b = (255 - b).toString(16);
   // pad each with zeros and return
   return "#" + padZero(r) + padZero(g) + padZero(b);
-}
+};
 
 export const randomMessageColor = () => {
   const bg = randomColor();
-  const text = invertColor(bg, true)
-  return { text, bg }
-}
+  const text = invertColor(bg, true);
+  return { text, bg };
+};
 
 export function titleCase(str) {
   if (!str) {
-    return ''
+    return "";
   }
-  var splitStr = str.toLowerCase().replace(/_/g, ' ').split(' ');
+  var splitStr = str.toLowerCase().replace(/_/g, " ").split(" ");
   for (var i = 0; i < splitStr.length; i++) {
-    splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
   }
-  return splitStr.join(' ');
+  return splitStr.join(" ");
 }
 
 export function absolutePath(path) {
-  return `${config.STATIC_ASSETS_ENDPOINT}${path}`
+  return `${config.STATIC_ASSETS_ENDPOINT}${path}`;
 }
 
 export function debounce(callback, delay) {
@@ -81,8 +81,8 @@ export function debounce(callback, delay) {
     if (timeout) {
       clearTimeout(timeout);
     }
-    timeout = setTimeout(callback, delay)
-  }
+    timeout = setTimeout(callback, delay);
+  };
 }
 
 export function throttle(callback, limit) {
@@ -95,7 +95,7 @@ export function throttle(callback, limit) {
         wait = false;
       }, limit);
     }
-  }
+  };
 }
 
 export function cloneDeep(object) {
@@ -103,34 +103,37 @@ export function cloneDeep(object) {
 }
 
 export function includesIgnoreCase(value, keyword) {
-  return value.toLowerCase().includes(keyword.toLowerCase())
+  return value.toLowerCase().includes(keyword.toLowerCase());
 }
 
 export function humanFileSize(bytes, si = false, dp = 1) {
   const thresh = si ? 1000 : 1024;
 
   if (Math.abs(bytes) < thresh) {
-    return bytes + ' B';
+    return bytes + " B";
   }
 
-  const units = ['kB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+  const units = ["kB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   let u = -1;
   const r = 10 ** dp;
 
   do {
     bytes /= thresh;
     ++u;
-  } while (Math.round(Math.abs(bytes) * r) / r >= thresh && u < units.length - 1);
+  } while (
+    Math.round(Math.abs(bytes) * r) / r >= thresh &&
+    u < units.length - 1
+  );
 
-
-  return bytes.toFixed(dp) + ' ' + units[u];
+  return bytes.toFixed(dp) + " " + units[u];
 }
 
 export function linkify(inputText) {
   var replacedText, replacePattern1, replacePattern2, replacePattern3;
 
   //URLs starting with http://, https://, or ftp://
-  replacePattern1 = /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gim;
+  replacePattern1 =
+    /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gim;
   replacedText = inputText.replace(
     replacePattern1,
     '<a href="$1" target="_blank">$1</a>'
@@ -162,26 +165,34 @@ export function isElementInViewport(el) {
   return (
     rect.top >= 0 &&
     rect.left >= 0 &&
-    rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) && /* or $(window).height() */
-    rect.right <= (window.innerWidth || document.documentElement.clientWidth) /* or $(window).width() */
+    rect.bottom <=
+      (window.innerHeight ||
+        document.documentElement.clientHeight) /* or $(window).height() */ &&
+    rect.right <=
+      (window.innerWidth ||
+        document.documentElement.clientWidth) /* or $(window).width() */
   );
 }
 
 export function outOfViewportPosition(el) {
   const rect = el.getBoundingClientRect();
   if (rect.top < 0) {
-    return 'top'
+    return "top";
   }
   if (rect.left < 0) {
-    return 'left'
+    return "left";
   }
-  if (rect.bottom > (window.innerHeight || document.documentElement.clientHeight)) {
-    return 'bottom'
+  if (
+    rect.bottom > (window.innerHeight || document.documentElement.clientHeight)
+  ) {
+    return "bottom";
   }
-  if (rect.right > (window.innerWidth || document.documentElement.clientWidth)) {
-    return 'right'
+  if (
+    rect.right > (window.innerWidth || document.documentElement.clientWidth)
+  ) {
+    return "right";
   }
-  return false
+  return false;
 }
 
 export const displayTimestamp = (t) => {

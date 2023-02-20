@@ -38,9 +38,14 @@
   </div>
   <div>
     <div class="icon is-large">
-      <ColorPicker v-model="backdropColor" @update:modelValue="sendBackdropColor" />
+      <ColorPicker
+        v-model="backdropColor"
+        @update:modelValue="sendBackdropColor"
+      />
     </div>
-    <span class="tag is-light is-block p-0 long-label">{{ $t("background_colour") }}</span>
+    <span class="tag is-light is-block p-0 long-label">{{
+      $t("background_colour")
+    }}</span>
   </div>
   <div @click="masqueradeAudience">
     <div class="icon is-large">
@@ -52,13 +57,17 @@
     <div class="icon is-large">
       <i class="fas fa-sun fa-2x has-text-warning"></i>
     </div>
-    <span class="tag is-light is-block long-label">{{ $t("light_mode_chat") }}</span>
+    <span class="tag is-light is-block long-label">{{
+      $t("light_mode_chat")
+    }}</span>
   </div>
   <div v-else @click="enableDarkModeChat(true)">
     <div class="icon is-large">
       <i class="fas fa-moon fa-2x"></i>
     </div>
-    <span class="tag is-light is-block long-label">{{ $t("dark_mode_chat") }}</span>
+    <span class="tag is-light is-block long-label">{{
+      $t("dark_mode_chat")
+    }}</span>
   </div>
 </template>
 
@@ -114,8 +123,8 @@ export default {
     };
 
     const masqueradeAudience = () => {
-      store.commit("stage/TOGGLE_MASQUERADING")
-    }
+      store.commit("stage/TOGGLE_MASQUERADING");
+    };
 
     return {
       showChat,
@@ -129,7 +138,7 @@ export default {
       backdropColor,
       chatPosition,
       toggleChatPosition,
-      masqueradeAudience
+      masqueradeAudience,
     };
   },
 };

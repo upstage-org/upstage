@@ -1,16 +1,30 @@
 <template>
   <section class="modal-card-body p-0">
-    <button class="delete close-modal" aria-label="close" @click="closeModal"></button>
+    <button
+      class="delete close-modal"
+      aria-label="close"
+      @click="closeModal"
+    ></button>
     <div class="container-fluid">
       <footer class="modal-card-foot">
         <div class="columns is-fullwidth">
           <div class="column is-narrow">
-            <SaveButton @click="save" :loading="loading" :disabled="!form.name" />
+            <SaveButton
+              @click="save"
+              :loading="loading"
+              :disabled="!form.name"
+            />
           </div>
           <div class="column is-narrow">
             <Field horizontal label="Media Type">
-              <button v-if="media.isRTMP" class="button" disabled>{{ $t("stream") }}</button>
-              <MediaType v-else v-model="form.mediaType" :data="availableTypes" />
+              <button v-if="media.isRTMP" class="button" disabled>
+                {{ $t("stream") }}
+              </button>
+              <MediaType
+                v-else
+                v-model="form.mediaType"
+                :data="availableTypes"
+              />
             </Field>
           </div>
           <div class="column">
@@ -76,7 +90,9 @@
                   <strong>{{ item.name }}</strong>
                   <span style="float: right">
                     Created by
-                    <span class="has-text-primary">{{ displayName(item.owner) }}</span>
+                    <span class="has-text-primary">{{
+                      displayName(item.owner)
+                    }}</span>
                   </span>
                 </div>
               </div>
@@ -125,7 +141,7 @@ import VoiceParameters from "@/components/stage/SettingPopup/settings/VoiceParam
 import { displayName } from "@/utils/auth";
 import { MEDIA_COPYRIGHT_LEVELS } from "@/utils/constants";
 import StreamPreview from "./StreamPreview.vue";
-import Multiframe from './Multiframe'
+import Multiframe from "./Multiframe";
 import Switch from "@/components/form/Switch.vue";
 
 export default {
@@ -143,7 +159,7 @@ export default {
     Dropdown,
     StreamPreview,
     Multiframe,
-    Switch
+    Switch,
   },
   props: {
     media: Object,
@@ -159,8 +175,8 @@ export default {
     }
     if (!form.link) {
       form.link = {
-        blank: true
-      }
+        blank: true,
+      };
     }
     if (form.assetType) {
       form.mediaType = form.assetType.name;
@@ -208,7 +224,18 @@ export default {
           message = "Media created successfully!";
         }
         const stageIds = form.assignedStages.map((s) => s.dbId);
-        const { id, multi, frames, voice, link, isRTMP, src, w, h, uploadedFrames } = form;
+        const {
+          id,
+          multi,
+          frames,
+          voice,
+          link,
+          isRTMP,
+          src,
+          w,
+          h,
+          uploadedFrames,
+        } = form;
         const payload = {
           id,
           name,
@@ -226,7 +253,7 @@ export default {
           fileLocation: src,
           copyrightLevel,
           playerAccess,
-          uploadedFrames
+          uploadedFrames,
         };
         await Promise.all([updateMedia(payload), assignStages(id, stageIds)]);
         notification.success(message);
@@ -261,7 +288,7 @@ export default {
       const res = [
         { key: "preview", label: "Preview", icon: "fas fa-image" },
         { key: "copyright", label: "Copyright", icon: "fas fa-copyright" },
-        { key: "stages", label: "Stage", icon: "fas fa-person-booth" }
+        { key: "stages", label: "Stage", icon: "fas fa-person-booth" },
       ];
       if (form.mediaType === "avatar") {
         res.push({ key: "voice", label: "Voice", icon: "fas fa-volume-up" });
@@ -278,7 +305,9 @@ export default {
       }
       return res;
     });
-    const { nodes: stageList, loading: loadingAllStages } = useQuery(stageGraph.stageList);
+    const { nodes: stageList, loading: loadingAllStages } = useQuery(
+      stageGraph.stageList
+    );
     const availableStages = computed(() => {
       if (!stageList.value) return [];
       const res = stageList.value.filter(
@@ -336,7 +365,7 @@ export default {
       copyrightLevels,
       users,
       playerAccess,
-      loadingAllStages
+      loadingAllStages,
     };
   },
 };

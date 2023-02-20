@@ -1,38 +1,43 @@
 <script setup lang="ts">
-import { useQuery } from '@vue/apollo-composable';
-import gql from 'graphql-tag';
-import { ref, computed, watchEffect, PropType } from 'vue';
-import { StudioGraph } from '../../../models/studio';
-import { TransferItem } from 'ant-design-vue/lib/transfer'
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import { ref, computed, watchEffect, PropType } from "vue";
+import { StudioGraph } from "../../../models/studio";
+import { TransferItem } from "ant-design-vue/lib/transfer";
 
 const props = defineProps({
   modelValue: {
     type: Array as PropType<string[]>,
-    required: true
-  }
+    required: true,
+  },
 });
 
-const emits = defineEmits(['update:modelValue']);
+const emits = defineEmits(["update:modelValue"]);
 
-const { result, loading } = useQuery<StudioGraph>(gql`
-{
-  stages {
-    edges {
-      node {
-        dbId
-        name
+const { result, loading } = useQuery<StudioGraph>(
+  gql`
+    {
+      stages {
+        edges {
+          node {
+            dbId
+            name
+          }
+        }
       }
     }
-  }
-}
-`, null, { fetchPolicy: "cache-only" })
+  `,
+  null,
+  { fetchPolicy: "cache-only" }
+);
 const stages = computed(() => {
   if (result.value?.stages) {
-    return result.value.stages.edges.map(({ node }) => node).map(({ dbId, name }) => ({ key: dbId, name }));
+    return result.value.stages.edges
+      .map(({ node }) => node)
+      .map(({ dbId, name }) => ({ key: dbId, name }));
   }
-  return []
-})
-
+  return [];
+});
 
 const targetKeys = ref(props.modelValue);
 const filterOption = (inputValue: string, option: TransferItem) => {
@@ -40,12 +45,12 @@ const filterOption = (inputValue: string, option: TransferItem) => {
 };
 
 watchEffect(() => {
-  emits('update:modelValue', targetKeys.value);
-})
+  emits("update:modelValue", targetKeys.value);
+});
 
 watchEffect(() => {
   targetKeys.value = props.modelValue;
-})
+});
 
 const renderItem = (item: TransferItem) => item.name;
 </script>
@@ -56,11 +61,11 @@ const renderItem = (item: TransferItem) => item.name;
       itemUnit: 'stage',
       itemsUnit: 'stages',
       notFoundContent: 'No stage available',
-      searchPlaceholder: 'Search stage name'
+      searchPlaceholder: 'Search stage name',
     }"
     :list-style="{
       flex: '1',
-      height: '300px'
+      height: '300px',
     }"
     :titles="[' available', ' assigned']"
     v-model:target-keys="targetKeys"

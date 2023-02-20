@@ -52,5 +52,4 @@ const copyLink = () => {
   </Modal>
 </template>
 
-<style>
-</style>
+<style></style>

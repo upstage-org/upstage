@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import { ref } from '@vue/reactivity';
-import configs from '../config';
-import { getSharedAuth } from '../utils/common';
+import { ref } from "@vue/reactivity";
+import configs from "../config";
+import { getSharedAuth } from "../utils/common";
 
-const auth = ref<{ refresh_token: string, token: string }>()
+const auth = ref<{ refresh_token: string; token: string }>();
 
-const sharedState = getSharedAuth()
-auth.value = sharedState
-
+const sharedState = getSharedAuth();
+auth.value = sharedState;
 </script>
 
 <template>

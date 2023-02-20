@@ -39,7 +39,11 @@ import { ref } from "@vue/reactivity";
 import { computed, watch } from "@vue/runtime-core";
 import { humanFileSize } from "@/utils/common";
 import { useStore } from "vuex";
-import { imageExtensions, audioExtensions, videoExtensions } from "@/utils/constants";
+import {
+  imageExtensions,
+  audioExtensions,
+  videoExtensions,
+} from "@/utils/constants";
 export default {
   props: {
     modelValue: String,
@@ -131,7 +135,8 @@ export default {
     const isImage = computed(() => file.value?.type?.startsWith("image"));
     const tooltip = computed(
       () =>
-        `Permitted file formats are ${accept.value
+        `Permitted file formats are ${
+          accept.value
         }. Maximum file size is ${humanFileSize(mediaLimit.value)}`
     );
 
@@ -149,5 +154,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

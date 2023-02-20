@@ -21,7 +21,11 @@
         </span>
         <span>{{ $t("remove_from_avatar") }}</span>
       </a>
-      <a v-else-if="currentAvatar && object.type !== 'stream'" class="panel-block" @click="wearCostume">
+      <a
+        v-else-if="currentAvatar && object.type !== 'stream'"
+        class="panel-block"
+        @click="wearCostume"
+      >
         <span class="panel-icon">
           <Icon src="prop.svg" />
         </span>
@@ -60,27 +64,42 @@
         <span>{{ $t("slider") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button class="button is-light" :class="{
-          'has-background-primary-light': sliderMode === 'opacity',
-        }" @click="changeSliderMode('opacity')" data-tooltip="Opacity slider">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': sliderMode === 'opacity',
+          }"
+          @click="changeSliderMode('opacity')"
+          data-tooltip="Opacity slider"
+        >
           <span class="mt-1">
             <Icon src="opacity-slider.svg" />
           </span>
         </button>
       </p>
       <p v-if="object.multi" class="control menu-group-item">
-        <button class="button is-light" :class="{
-          'has-background-warning-light': sliderMode === 'animation',
-        }" @click="changeSliderMode('animation')" data-tooltip="Animation speed">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-warning-light': sliderMode === 'animation',
+          }"
+          @click="changeSliderMode('animation')"
+          data-tooltip="Animation speed"
+        >
           <span class="mt-1">
             <Icon src="animation-slider.svg" />
           </span>
         </button>
       </p>
       <p class="control menu-group-item">
-        <button class="button is-light" :class="{
-          'has-background-danger-light': sliderMode === 'speed',
-        }" @click="changeSliderMode('speed')" data-tooltip="Move speed">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-danger-light': sliderMode === 'speed',
+          }"
+          @click="changeSliderMode('speed')"
+          data-tooltip="Move speed"
+        >
           <span class="mt-1">
             <Icon src="movement-slider.svg" />
           </span>
@@ -96,16 +115,26 @@
         <span>{{ $t("flip") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button class="button is-light" :class="{
-          'has-background-primary-light': object.scaleX === -1,
-        }" @click="flipHorizontal" data-tooltip="Flip Horizontal">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleX === -1,
+          }"
+          @click="flipHorizontal"
+          data-tooltip="Flip Horizontal"
+        >
           <span class="mt-1">{{ $t("horizontal") }}</span>
         </button>
       </p>
       <p class="control menu-group-item">
-        <button class="button is-light" :class="{
-          'has-background-primary-light': object.scaleY === -1,
-        }" @click="flipVertical" data-tooltip="Flip Vertical">
+        <button
+          class="button is-light"
+          :class="{
+            'has-background-primary-light': object.scaleY === -1,
+          }"
+          @click="flipVertical"
+          data-tooltip="Flip Vertical"
+        >
           <span class="mt-1">{{ $t("vertical") }}</span>
         </button>
       </p>
@@ -125,7 +154,11 @@
       </span>
       <span>{{ $t("remove") }}</span>
     </a>
-    <a v-if="object.drawingId || object.textId" class="panel-block has-text-danger" @click="deletePermanently">
+    <a
+      v-if="object.drawingId || object.textId"
+      class="panel-block has-text-danger"
+      @click="deletePermanently"
+    >
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
@@ -137,7 +170,12 @@
           <Icon :src="object.autoplayFrames > 0 ? 'pause.svg' : 'play.svg'" />
         </button>
       </p>
-      <p v-for="frame in object.frames" :key="frame" @click="switchFrame(frame)" class="control menu-group-item">
+      <p
+        v-for="frame in object.frames"
+        :key="frame"
+        @click="switchFrame(frame)"
+        class="control menu-group-item"
+      >
         <button class="button is-light">
           <img :src="frame" style="height: 100%" />
         </button>
@@ -185,15 +223,15 @@ export default {
     };
 
     const flipHorizontal = () => {
-      const scaleX = -1 * (props.object.scaleX ?? 1)
+      const scaleX = -1 * (props.object.scaleX ?? 1);
       store.dispatch("stage/shapeObject", {
         ...props.object,
-        scaleX
+        scaleX,
       });
     };
 
     const flipVertical = () => {
-      const scaleY = -1 * (props.object.scaleY ?? 1)
+      const scaleY = -1 * (props.object.scaleY ?? 1);
       store.dispatch("stage/shapeObject", {
         ...props.object,
         scaleY,
@@ -275,20 +313,24 @@ export default {
 
     const deletePermanently = () => {
       if (props.object.drawingId) {
-        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store
+          .dispatch("stage/deleteObject", props.object)
+          .then(props.closeMenu);
         store.commit("stage/POP_DRAWING", props.object.drawingId);
       }
       if (props.object.textId) {
-        store.dispatch("stage/deleteObject", props.object).then(props.closeMenu);
+        store
+          .dispatch("stage/deleteObject", props.object)
+          .then(props.closeMenu);
         store.commit("stage/POP_TEXT", props.object.textId);
       }
     };
 
-    const hasLink = computed(() => props.object.link && props.object.link.url)
+    const hasLink = computed(() => props.object.link && props.object.link.url);
     const openLink = () => {
-      const { url, blank } = props.object.link
-      window.open(url, blank ? '_blank' : '_self').focus()
-    }
+      const { url, blank } = props.object.link;
+      window.open(url, blank ? "_blank" : "_self").focus();
+    };
 
     return {
       switchFrame,
@@ -345,7 +387,7 @@ export default {
       width: 100px;
       white-space: nowrap;
 
-      >button {
+      > button {
         justify-content: start;
         padding-left: 12px;
       }

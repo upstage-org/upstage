@@ -1,100 +1,138 @@
 <script lang="ts" setup>
-import { useMutation, useQuery } from '@vue/apollo-composable';
-import { message } from 'ant-design-vue';
-import gql from 'graphql-tag';
-import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
-import { editingMediaVar, inquiryVar } from '../../apollo';
-import configs from '../../config';
-import { permissionFragment } from '../../models/fragment';
-import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
-import { absolutePath } from '../../utils/common';
-import MediaPreview from './MediaPreview.vue';
-import RequestPermission from './MediaForm/RequestPermission.vue';
-import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
-import { ColumnType, TablePaginationConfig } from 'ant-design-vue/lib/table';
-import { SorterResult } from 'ant-design-vue/lib/table/interface';
-import QuickStageAssignment from './QuickStageAssignment.vue';
-import { useI18n } from 'vue-i18n';
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { message } from "ant-design-vue";
+import gql from "graphql-tag";
+import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import { editingMediaVar, inquiryVar } from "../../apollo";
+import configs from "../../config";
+import { permissionFragment } from "../../models/fragment";
+import {
+  Media,
+  MediaAttributes,
+  StudioGraph,
+  UploadFile,
+} from "../../models/studio";
+import { absolutePath } from "../../utils/common";
+import MediaPreview from "./MediaPreview.vue";
+import RequestPermission from "./MediaForm/RequestPermission.vue";
+import RequestAcknowledge from "./MediaForm/RequestAcknowledge.vue";
+import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
+import { SorterResult } from "ant-design-vue/lib/table/interface";
+import QuickStageAssignment from "./QuickStageAssignment.vue";
+import { useI18n } from "vue-i18n";
 
 const { t } = useI18n();
-const files = inject<Ref<UploadFile[]>>("files")
+const files = inject<Ref<UploadFile[]>>("files");
 
 const tableParams = reactive({
   limit: 10,
   cursor: undefined,
-  sort: 'CREATED_ON_DESC',
-})
-const { result: inquiryResult } = useQuery(gql`{ inquiry @client }`)
+  sort: "CREATED_ON_DESC",
+});
+const { result: inquiryResult } = useQuery(
+  gql`
+    {
+      inquiry @client
+    }
+  `
+);
 const params = computed(() => ({
   ...tableParams,
-  ...inquiryResult.value.inquiry
-}))
+  ...inquiryResult.value.inquiry,
+}));
 watch(inquiryResult, () => {
-  tableParams.cursor = undefined
-})
+  tableParams.cursor = undefined;
+});
 
-const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
-query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
-  whoami {
-    username
-    displayName
-    role
-    roleName
-  }
-  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
-    totalCount
-    edges {
-      cursor
-      node {
-        id
-        name
-        src
-        sign
-        createdOn
-        size
-        description
-        assetType {
-          name
+const { result, loading, fetchMore } = useQuery<
+  StudioGraph,
+  { cursor?: string; limit: number; sort?: string[] }
+>(
+  gql`
+    query MediaTable(
+      $cursor: String
+      $limit: Int
+      $sort: [AssetSortEnum]
+      $name: String
+      $mediaTypes: [String]
+      $owners: [String]
+      $stages: [Int]
+      $tags: [String]
+      $createdBetween: [Date]
+    ) {
+      whoami {
+        username
+        displayName
+        role
+        roleName
+      }
+      media(
+        after: $cursor
+        first: $limit
+        sort: $sort
+        nameLike: $name
+        mediaTypes: $mediaTypes
+        owners: $owners
+        stages: $stages
+        tags: $tags
+        createdBetween: $createdBetween
+      ) {
+        totalCount
+        edges {
+          cursor
+          node {
+            id
+            name
+            src
+            sign
+            createdOn
+            size
+            description
+            assetType {
+              name
+            }
+            owner {
+              username
+              displayName
+            }
+            stages {
+              name
+              url
+              id
+            }
+            tags
+            copyrightLevel
+            permissions {
+              ...permissionFragment
+            }
+            privilege
+          }
         }
-        owner {
-          username
-          displayName
-        }
-        stages {
-          name
-          url
-          id
-        }
-        tags
-        copyrightLevel
-        permissions {
-          ...permissionFragment
-        }
-        privilege
       }
     }
-  }
-}
-${permissionFragment}
-`, params.value, { notifyOnNetworkStatusChange: true })
+    ${permissionFragment}
+  `,
+  params.value,
+  { notifyOnNetworkStatusChange: true }
+);
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
-  return fetchMoreResult ?? previousResult
-}
+  return fetchMoreResult ?? previousResult;
+};
 
 watch(params, () => {
   fetchMore({
     variables: params.value,
-    updateQuery
-  })
-})
+    updateQuery,
+  });
+});
 
 const columns: ColumnType<Media>[] = [
   {
     title: t("preview"),
     align: "center",
     width: 96,
-    key: 'preview'
+    key: "preview",
   },
   {
     title: t("name"),
@@ -106,16 +144,16 @@ const columns: ColumnType<Media>[] = [
   },
   {
     title: t("type"),
-    dataIndex: ['assetType', 'name'],
-    key: 'asset_type_id',
+    dataIndex: ["assetType", "name"],
+    key: "asset_type_id",
     sorter: {
       multiple: 1,
     },
   },
   {
     title: t("owner"),
-    dataIndex: 'owner',
-    key: 'owner_id',
+    dataIndex: "owner",
+    key: "owner_id",
     sorter: {
       multiple: 2,
     },
@@ -127,15 +165,15 @@ const columns: ColumnType<Media>[] = [
   },
   {
     title: t("stages"),
-    key: 'stages',
-    dataIndex: 'stages',
-    width: 250
+    key: "stages",
+    dataIndex: "stages",
+    width: 250,
   },
   {
     title: t("tags"),
-    key: 'tags',
-    dataIndex: 'tags',
-    width: 250
+    key: "tags",
+    dataIndex: "tags",
+    width: 250,
   },
   {
     title: t("size"),
@@ -152,106 +190,134 @@ const columns: ColumnType<Media>[] = [
     sorter: {
       multiple: 5,
     },
-    defaultSortOrder: 'descend'
+    defaultSortOrder: "descend",
   },
   {
     title: t("manage_media"),
     align: "center",
     fixed: "right",
-    key: 'actions'
+    key: "actions",
   },
 ];
 
 interface Pagination {
-  current: number
-  pageSize: number
-  showQuickJumper: boolean
-  showSizeChanger: boolean
-  total: number
+  current: number;
+  pageSize: number;
+  showQuickJumper: boolean;
+  showSizeChanger: boolean;
+  total: number;
 }
 
 interface Sorter {
-  column: any
-  columnKey: string
-  field: string
-  order: "ascend" | "descend"
+  column: any;
+  columnKey: string;
+  field: string;
+  order: "ascend" | "descend";
 }
 
-const handleTableChange = ({ current = 1, pageSize = 10 }: TablePaginationConfig, _: any, sorter: SorterResult<Media> | SorterResult<Media>[]) => {
+const handleTableChange = (
+  { current = 1, pageSize = 10 }: TablePaginationConfig,
+  _: any,
+  sorter: SorterResult<Media> | SorterResult<Media>[]
+) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
-    .sort((a, b) => (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple)
-    .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
+    .sort(
+      (a, b) =>
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+    )
+    .map(({ columnKey, order }) =>
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+    );
   Object.assign(tableParams, {
-    cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
+    cursor:
+      current > 1
+        ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`)
+        : undefined,
     limit: pageSize,
-    sort
-  })
-}
-const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
+    sort,
+  });
+};
+const dataSource = computed(() =>
+  result.value ? result.value.media.edges.map((edge) => edge.node) : []
+);
 
-const { loading: deleting, mutate: deleteMedia, onDone } = useMutation(gql`
-mutation deleteMedia($id: ID!) {
-  deleteMedia(id: $id) {
-    success
-    message
+const {
+  loading: deleting,
+  mutate: deleteMedia,
+  onDone,
+} = useMutation(gql`
+  mutation deleteMedia($id: ID!) {
+    deleteMedia(id: $id) {
+      success
+      message
+    }
   }
-}`)
+`);
 onDone((result) => {
-  console.log()
+  console.log();
   if (result.data.deleteMedia.success) {
-    message.success('Media deleted successfully')
+    message.success("Media deleted successfully");
   } else {
-    message.error(result.data.deleteMedia.message)
+    message.error(result.data.deleteMedia.message);
   }
   fetchMore({
     variables: params.value,
-    updateQuery
-  })
-})
+    updateQuery,
+  });
+});
 
-provide('refresh', () => {
+provide("refresh", () => {
   fetchMore({
     variables: params.value,
-    updateQuery
-  })
-})
+    updateQuery,
+  });
+});
 
 const editMedia = (media: Media) => {
-  editingMediaVar(media)
-}
+  editingMediaVar(media);
+};
 
-const composingMode = inject<Ref<boolean>>('composingMode')
+const composingMode = inject<Ref<boolean>>("composingMode");
 
 const addFrameToEditingMedia = (media: Media) => {
   if (files && composingMode) {
-    let frames = [media.src]
-    const attribute = JSON.parse(media.description || '{}') as MediaAttributes
+    let frames = [media.src];
+    const attribute = JSON.parse(media.description || "{}") as MediaAttributes;
     if (attribute.multi) {
-      frames = attribute.frames
+      frames = attribute.frames;
     }
-    files.value = files.value.concat(frames.map<UploadFile>((frame, i) => ({
-      id: files.value.length + i,
-      preview: absolutePath(frame),
-      url: frame,
-      status: 'uploaded',
-      file: {
-        name: frame,
-      } as File
-    })))
-    composingMode.value = false
+    files.value = files.value.concat(
+      frames.map<UploadFile>((frame, i) => ({
+        id: files.value.length + i,
+        preview: absolutePath(frame),
+        url: frame,
+        status: "uploaded",
+        file: {
+          name: frame,
+        } as File,
+      }))
+    );
+    composingMode.value = false;
   }
-}
+};
 
 const filterTag = (tag: string) => {
   inquiryVar({
     ...inquiryVar(),
-    tags: [tag]
-  })
-}
+    tags: [tag],
+  });
+};
 
-const isAdmin = computed(() => [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(result.value?.whoami?.role ?? 0))
-provide('whoami', computed(() => result.value?.whoami))
-provide('isAdmin', isAdmin)
+const isAdmin = computed(() =>
+  [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
+    result.value?.whoami?.role ?? 0
+  )
+);
+provide(
+  "whoami",
+  computed(() => result.value?.whoami)
+);
+provide("isAdmin", isAdmin);
 </script>
 
 <template>
@@ -286,7 +352,11 @@ provide('isAdmin', isAdmin)
         </span>
       </template>
       <template v-if="column.key === 'stages'">
-        <a v-for="(stage, i) in text" :key="i" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+        <a
+          v-for="(stage, i) in text"
+          :key="i"
+          :href="`${configs.UPSTAGE_URL}/${stage.url}`"
+        >
           <a-tag color="#007011">{{ stage.name }}</a-tag>
         </a>
       </template>
@@ -297,18 +367,24 @@ provide('isAdmin', isAdmin)
           :color="tag"
           @click="filterTag(tag)"
           class="cursor-pointer"
-        >{{ tag }}</a-tag>
+          >{{ tag }}</a-tag
+        >
       </template>
       <template v-if="column.key === 'size'">
-        <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
+        <a-tag
+          v-if="text"
+          :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'"
+        >
           <d-size :value="text" />
         </a-tag>
         <a-tag v-else>{{ $t("no_size") }}</a-tag>
       </template>
       <template v-if="column.key === 'copyrightLevel'">
-        <span
-          class="leading-4"
-        >{{ configs.MEDIA_COPYRIGHT_LEVELS.find(l => l.value === record.copyrightLevel)?.name }}</span>
+        <span class="leading-4">{{
+          configs.MEDIA_COPYRIGHT_LEVELS.find(
+            (l) => l.value === record.copyrightLevel
+          )?.name
+        }}</span>
       </template>
       <template v-if="column.key === 'created_on'">
         <d-date :value="text" />
@@ -322,12 +398,17 @@ provide('isAdmin', isAdmin)
         <template v-else>
           <a-space v-if="record.privilege === 'NONE'">
             <a-tooltip>
-              <template #title>You don't have permission to access this media</template>
+              <template #title
+                >You don't have permission to access this media</template
+              >
               🙅‍♀️🙅‍♂️
             </a-tooltip>
           </a-space>
           <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
-            <RequestPermission v-if="record.copyrightLevel === 2" :media="record" />
+            <RequestPermission
+              v-if="record.copyrightLevel === 2"
+              :media="record"
+            />
             <RequestAcknowledge v-else :media="record" />
           </a-space>
           <a-space
@@ -339,7 +420,11 @@ provide('isAdmin', isAdmin)
             <small>Please wait for the media owner's approval</small>
           </a-space>
           <a-space v-else>
-            <template v-if="isAdmin || record.owner.username === result?.whoami.username">
+            <template
+              v-if="
+                isAdmin || record.owner.username === result?.whoami.username
+              "
+            >
               <a-button type="primary" @click="editMedia(record)">
                 <EditOutlined />Edit
               </a-button>

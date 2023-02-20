@@ -1,39 +1,38 @@
 <script setup>
 import { defineEmits, ref } from "@vue/runtime-core";
-import { imageExtensions } from '@/utils/constants'
+import { imageExtensions } from "@/utils/constants";
 
-const emit = defineEmits(['change']);
+const emit = defineEmits(["change"]);
 
 const el = ref();
 
 const onChange = () => {
-  emit('change', el.value.files)
-  el.value.value = ''
+  emit("change", el.value.files);
+  el.value.value = "";
 };
 const dragover = (event) => {
   event.preventDefault();
   // Add some visual fluff to show the user can drop its files
-  if (!event.currentTarget.classList.contains('active')) {
-    event.currentTarget.classList.remove('inactive');
-    event.currentTarget.classList.add('active');
+  if (!event.currentTarget.classList.contains("active")) {
+    event.currentTarget.classList.remove("inactive");
+    event.currentTarget.classList.add("active");
   }
 };
 const dragleave = (event) => {
   // Clean up
-  event.currentTarget.classList.add('inactive');
-  event.currentTarget.classList.remove('active');
+  event.currentTarget.classList.add("inactive");
+  event.currentTarget.classList.remove("active");
 };
 const drop = (event) => {
   event.preventDefault();
   el.value.files = event.dataTransfer.files;
   // Clean up
-  event.currentTarget.classList.add('inactive');
-  event.currentTarget.classList.remove('active');
-}
-
+  event.currentTarget.classList.add("inactive");
+  event.currentTarget.classList.remove("active");
+};
 </script>
-      
-  <template>
+
+<template>
   <div @dragover="dragover" @dragleave="dragleave" @drop="drop">
     <input
       ref="el"
@@ -42,7 +41,7 @@ const drop = (event) => {
       id="dropzone"
       @change="onChange"
       :accept="imageExtensions"
-      style="display: none;"
+      style="display: none"
     />
     <label for="dropzone">
       <slot>
@@ -54,7 +53,7 @@ const drop = (event) => {
     </label>
   </div>
 </template>
-      
+
 <style lang="scss" scoped>
 .upload-frame {
   display: flex;
@@ -67,5 +66,3 @@ const drop = (event) => {
   transition-duration: 0.5s;
 }
 </style>
-    
-  

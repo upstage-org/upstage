@@ -33,7 +33,7 @@ export default {
         store.dispatch("stage/blankScene");
         audios.value?.forEach((audio) => {
           stopAudio(audio);
-        })
+        });
       }
     };
     return { createScene };
@@ -41,5 +41,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

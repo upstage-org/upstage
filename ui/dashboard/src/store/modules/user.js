@@ -1,8 +1,8 @@
-import router from '@/router';
-import { userGraph } from '@/services/graphql';
-import { displayName, logout } from '@/utils/auth';
-import { ROLES } from '@/utils/constants';
-import { notification } from '@/utils/notification';
+import router from "@/router";
+import { userGraph } from "@/services/graphql";
+import { displayName, logout } from "@/utils/auth";
+import { ROLES } from "@/utils/constants";
+import { notification } from "@/utils/notification";
 
 export default {
   namespaced: true,
@@ -34,12 +34,18 @@ export default {
         commit("SET_USER_DATA", currentUser);
         return currentUser;
       } catch (error) {
-        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
           logout();
 
           if (router.currentRoute.value.meta.requireAuth) {
             router.push("/login");
-            notification.warning('You have been logged out of this session!');
+            notification.warning("You have been logged out of this session!");
           }
         }
       } finally {
@@ -47,34 +53,44 @@ export default {
       }
     },
     async saveNickname({ commit, dispatch, getters }, { nickname }) {
-      const avatar = getters.avatar
+      const avatar = getters.avatar;
       if (avatar) {
-        dispatch("stage/shapeObject", {
-          ...avatar,
-          name: nickname,
-        }, { root: true });
+        dispatch(
+          "stage/shapeObject",
+          {
+            ...avatar,
+            name: nickname,
+          },
+          { root: true }
+        );
       } else {
-        commit('SET_NICK_NAME', nickname);
-        dispatch('stage/joinStage', null, { root: true });
+        commit("SET_NICK_NAME", nickname);
+        dispatch("stage/joinStage", null, { root: true });
       }
       return nickname;
     },
     setAvatarId({ commit, dispatch }, id) {
-      commit('SET_AVATAR_ID', id);
-      dispatch('stage/joinStage', null, { root: true });
+      commit("SET_AVATAR_ID", id);
+      dispatch("stage/joinStage", null, { root: true });
     },
     async checkIsAdmin({ commit }) {
       commit("SET_LOADING_USER", true);
       try {
         const { currentUser } = await userGraph.currentUser();
-      return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(currentUser?.role);
+        return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(currentUser?.role);
       } catch (error) {
-        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
           logout();
 
           if (router.currentRoute.value.meta.requireAuth) {
             router.push("/login");
-            notification.warning('You have been logged out of this session!');
+            notification.warning("You have been logged out of this session!");
           }
         }
       } finally {
@@ -86,25 +102,31 @@ export default {
       try {
         const { currentUser } = await userGraph.currentUser();
         if (!currentUser) {
-          return true
+          return true;
         }
         if (currentUser.role === ROLES.GUEST) {
-          return true
+          return true;
         }
-        return false
+        return false;
       } catch (error) {
-        if (['Missing X-Access-Token Header', 'Signature verification failed', 'Signature has expired'].some(message => error.message?.includes(message))) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
           logout();
 
           if (router.currentRoute.value.meta.requireAuth) {
             router.push("/login");
-            notification.warning('You have been logged out of this session!');
+            notification.warning("You have been logged out of this session!");
           }
         }
       } finally {
         commit("SET_LOADING_USER", false);
       }
-    }
+    },
   },
   getters: {
     nickname(state) {
@@ -112,9 +134,9 @@ export default {
     },
     chatname(state, getters) {
       let name = getters.nickname;
-      const avatar = getters.avatar
+      const avatar = getters.avatar;
       if (avatar && avatar.name) {
-        name = avatar.name
+        name = avatar.name;
       }
       return name;
     },
@@ -123,24 +145,26 @@ export default {
     },
     isGuest(state) {
       if (!state.user) {
-        return true
+        return true;
       }
       if (state.user.role === ROLES.GUEST) {
-        return true
+        return true;
       }
-      return false
+      return false;
     },
     avatarId(state) {
       return state.avatarId;
     },
     avatar(state, getters, rootState) {
       if (state.avatarId) {
-        const avatar = rootState.stage.board.objects.find(o => o.id === state.avatarId);
+        const avatar = rootState.stage.board.objects.find(
+          (o) => o.id === state.avatarId
+        );
         return avatar;
       }
     },
     currentUserId(state) {
-      return state.user.id
-    }
+      return state.user.id;
+    },
   },
 };

@@ -1,3 +1,3 @@
 export default {
-  login: 'Anmeldung'
-}
+  login: "Anmeldung",
+};

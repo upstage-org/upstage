@@ -3,9 +3,14 @@
     <ContextMenu style="width: 100%; height: 100%; padding: 0" prevent-clicking>
       <template #trigger>
         <Skeleton :data="scene" nodrop>
-          <div class="p-2 is-fullwidth is-flex is-flex-direction-column is-justify-content-space-between"
-            :title="scene.name">
-            <Image :src="scene.scenePreview" style="height: auto; border-radius: 4px;" />
+          <div
+            class="p-2 is-fullwidth is-flex is-flex-direction-column is-justify-content-space-between"
+            :title="scene.name"
+          >
+            <Image
+              :src="scene.scenePreview"
+              style="height: auto; border-radius: 4px"
+            />
             <span class="tag mt-1 is-block">{{ scene.name }}</span>
           </div>
         </Skeleton>
@@ -41,7 +46,7 @@ export default {
       store.dispatch("stage/switchScene", props.scene.id);
       const audios = JSON.parse(props.scene.payload).audios;
       const audioPlayers = JSON.parse(props.scene.payload).audioPlayers;
-      audios.forEach(( audio, index ) => {
+      audios.forEach((audio, index) => {
         audio.currentTime = audioPlayers[index].currentTime;
         audio.changed = true;
         audio.saken = true;

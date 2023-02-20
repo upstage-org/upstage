@@ -1,5 +1,9 @@
 <template>
-  <input type="color" :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" />
+  <input
+    type="color"
+    :value="modelValue"
+    @input="$emit('update:modelValue', $event.target.value)"
+  />
 </template>
 
 <script>

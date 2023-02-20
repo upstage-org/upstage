@@ -182,7 +182,11 @@ export default {
     };
 
     const clickOutside = (e) => {
-      if ((!e || e.target.id === "board") && props.controlable && canPlay.value) {
+      if (
+        (!e || e.target.id === "board") &&
+        props.controlable &&
+        canPlay.value
+      ) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
     };
@@ -253,8 +257,9 @@ export default {
         (a) => a.id === props.object.wornBy
       );
       if (wearer) {
-        return `${wearer.x + wearer.w / 2 - props.object.x}px ${wearer.y + wearer.h / 2 - props.object.y
-          }px`;
+        return `${wearer.x + wearer.w / 2 - props.object.x}px ${
+          wearer.y + wearer.h / 2 - props.object.y
+        }px`;
       } else {
         return "center";
       }
@@ -265,5 +270,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

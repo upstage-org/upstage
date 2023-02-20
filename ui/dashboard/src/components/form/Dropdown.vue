@@ -1,9 +1,17 @@
 <template>
-  <div class="dropdown" :class="{ 'is-active': isActive, 'is-right': isRight, 'is-up': isUp }"
-    v-click-outside="() => (isActive = false)">
+  <div
+    class="dropdown"
+    :class="{ 'is-active': isActive, 'is-right': isRight, 'is-up': isUp }"
+    v-click-outside="() => (isActive = false)"
+  >
     <div class="dropdown-trigger">
-      <button class="button" :class="{ 'is-rounded': isRounded }" aria-haspopup="true" aria-controls="dropdown-menu"
-        @click="isActive = !isActive">
+      <button
+        class="button"
+        :class="{ 'is-rounded': isRounded }"
+        aria-haspopup="true"
+        aria-controls="dropdown-menu"
+        @click="isActive = !isActive"
+      >
         <span v-if="selectedItem">
           <slot name="selected" :item="selectedItem">
             {{ renderLabel(selectedItem) }}
@@ -16,10 +24,19 @@
       </button>
     </div>
     <div class="dropdown-menu" id="dropdown-menu" role="menu">
-      <div class="dropdown-content" ref="el" :style="{ position: fixed ? 'fixed' : 'unset' }">
+      <div
+        class="dropdown-content"
+        ref="el"
+        :style="{ position: fixed ? 'fixed' : 'unset' }"
+      >
         <template v-if="data && data.length">
-          <a v-for="item in data" :key="item" @click="select(renderValue(item), item)" class="dropdown-item"
-            :class="{ 'is-active': modelValue === renderValue(item) }">
+          <a
+            v-for="item in data"
+            :key="item"
+            @click="select(renderValue(item), item)"
+            class="dropdown-item"
+            :class="{ 'is-active': modelValue === renderValue(item) }"
+          >
             <slot name="option" :label="renderLabel(item)" :item="item">
               <div :title="renderDescription(item)" v-if="renderDescription">
                 <b>{{ renderLabel(item) }}</b>

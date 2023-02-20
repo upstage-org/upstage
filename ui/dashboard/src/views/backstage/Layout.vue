@@ -49,7 +49,13 @@
     <div class="navbar-brand">
       <LanguageSelector />
       <Logo />
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" @click="toggleExpanded">
+      <a
+        role="button"
+        class="navbar-burger"
+        aria-label="menu"
+        aria-expanded="false"
+        @click="toggleExpanded"
+      >
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
         <span aria-hidden="true"></span>
@@ -80,7 +86,7 @@ export default {
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
-    const manual = computed(() => store.getters["config/manual"] ?? 'alo');
+    const manual = computed(() => store.getters["config/manual"] ?? "alo");
 
     return { isAdmin, isGuest, expanded, toggleExpanded, configs, manual };
   },

@@ -6,7 +6,9 @@
       <form @submit.prevent="submit">
         <div class="card">
           <header class="card-header">
-            <p class="card-header-title">{{ $t("create_a_account_with_upstage") }}</p>
+            <p class="card-header-title">
+              {{ $t("create_a_account_with_upstage") }}
+            </p>
           </header>
           <div class="card-content">
             <div class="content">

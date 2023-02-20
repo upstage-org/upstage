@@ -40,7 +40,7 @@ export default {
     const name = ref("");
     const defaultName = computed(() => `A clone of ${props.stage.name}`);
     const refresh = inject("refresh");
-    const ClearCache = inject('afterDuplicate');
+    const ClearCache = inject("afterDuplicate");
     const { loading, save } = useMutation(stageGraph.duplicateStage);
     const duplicateStage = async (complete) => {
       const payload = {
@@ -65,5 +65,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

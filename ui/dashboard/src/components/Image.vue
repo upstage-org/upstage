@@ -51,7 +51,7 @@ export default {
       () => props.src,
       () => (fallback.value = false)
     );
-    const transitionDuration = computed(() => `${props.transition / 1000}s`)
+    const transitionDuration = computed(() => `${props.transition / 1000}s`);
     return { fallback, transitionDuration };
   },
 };

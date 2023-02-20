@@ -1,7 +1,7 @@
 import axios from "axios";
 import store from "@/store/index";
 import { notification } from "@/utils/notification";
-import config from '@/config';
+import config from "@/config";
 
 const baseURL = new URL(config.API_ENDPOINT).toString();
 
@@ -10,7 +10,7 @@ axios.defaults.timeout = config.AXIOS_TIMEOUT;
 axios.defaults.headers.common = {
   Accept: "application/json",
   "Content-Type": "application/json",
-}
+};
 
 const requestInterceptor = axios.interceptors.request.use(
   (config) => {
@@ -42,11 +42,11 @@ const responseInterceptor = axios.interceptors.response.use(
 
     const message = error?.response?.data?.error;
     if (message && !originalRequest.hideNotification) {
-      let level = error?.response?.data?.level
+      let level = error?.response?.data?.level;
       if (!level) {
-        level = "error"
+        level = "error";
       }
-      notification[level](message)
+      notification[level](message);
     }
     const token = store.getters["auth/getToken"] || "";
 
@@ -68,7 +68,7 @@ const responseInterceptor = axios.interceptors.response.use(
             });
           })
           .catch(() => {
-            store.dispatch("auth/logout")
+            store.dispatch("auth/logout");
           });
       }
     }
@@ -80,8 +80,9 @@ const responseInterceptor = axios.interceptors.response.use(
 const extend = (config) => {
   const instance = axios.create(config);
   instance.interceptors.request.handlers = axios.interceptors.request.handlers;
-  instance.interceptors.response.handlers = axios.interceptors.response.handlers;
+  instance.interceptors.response.handlers =
+    axios.interceptors.response.handlers;
   return instance;
-}
+};
 
-export { baseURL, requestInterceptor, responseInterceptor, extend }
+export { baseURL, requestInterceptor, responseInterceptor, extend };

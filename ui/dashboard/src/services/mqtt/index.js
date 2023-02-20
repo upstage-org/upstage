@@ -1,8 +1,11 @@
-import config from '@/config'
+import config from "@/config";
 import { v4 as uuidv4 } from "uuid";
 import mqtt from "mqtt";
-import { namespaceTopic, unnamespaceTopic } from '@/store/modules/stage/reusable';
-import { isJson } from '@/utils/common';
+import {
+  namespaceTopic,
+  unnamespaceTopic,
+} from "@/store/modules/stage/reusable";
+import { isJson } from "@/utils/common";
 
 export default function buildClient() {
   return {
@@ -19,24 +22,23 @@ export default function buildClient() {
     },
     disconnect() {
       return new Promise((resolve) => {
-        this.client.end(false, {}, resolve)
+        this.client.end(false, {}, resolve);
       });
     },
     subscribe(topics, stageUrl) {
       const namespacedTopics = {};
-      Object.keys(topics).forEach(key => namespacedTopics[namespaceTopic(key, stageUrl)] = topics[key]);
+      Object.keys(topics).forEach(
+        (key) => (namespacedTopics[namespaceTopic(key, stageUrl)] = topics[key])
+      );
       return new Promise((resolve, reject) => {
-        this.client.subscribe(
-          namespacedTopics,
-          (error, res) => {
-            if (error) {
-              reject(error)
-            } else {
-              resolve(res)
-            }
+        this.client.subscribe(namespacedTopics, (error, res) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(res);
           }
-        );
-      })
+        });
+      });
     },
     sendMessage(topic, payload, namespaced, retain = false) {
       if (!namespaced) {
@@ -54,21 +56,21 @@ export default function buildClient() {
           { qos: 1, retain },
           (error, res) => {
             if (error) {
-              reject(error)
+              reject(error);
             } else {
-              resolve(res)
+              resolve(res);
             }
           }
         );
-      })
+      });
     },
     receiveMessage(handler) {
       this.client.on("message", (topic, rawMessage) => {
         topic = unnamespaceTopic(topic);
         const decoded = new TextDecoder().decode(new Uint8Array(rawMessage));
         const message = (isJson(decoded) && JSON.parse(decoded)) || decoded;
-        handler({ topic, message })
+        handler({ topic, message });
       });
-    }
-  }
+    },
+  };
 }

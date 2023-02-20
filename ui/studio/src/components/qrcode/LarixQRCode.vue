@@ -9,11 +9,7 @@ const props = defineProps({
   size: Number,
 });
 const code = computed(() =>
-  getLarixLink(
-    props.stream.src,
-    props.stream.sign,
-    props.stream.name
-  )
+  getLarixLink(props.stream.src, props.stream.sign, props.stream.name)
 );
 watchEffect(() => {
   console.log(code.value, props.stream);
@@ -21,7 +17,9 @@ watchEffect(() => {
 </script>
 
 <template>
-  <a-tooltip :title="props.stream.sign ? null : `You can't broadcast to this stream!`">
+  <a-tooltip
+    :title="props.stream.sign ? null : `You can't broadcast to this stream!`"
+  >
     <QRCode
       :value="code"
       :size="size"
@@ -30,5 +28,4 @@ watchEffect(() => {
   </a-tooltip>
 </template>
 
-<style>
-</style>
+<style></style>

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useMutation, useQuery } from '@vue/apollo-composable';
-import { message } from 'ant-design-vue';
-import gql from 'graphql-tag';
-import { computed, inject, PropType, ref } from 'vue';
-import { StudioGraph } from '../../models/studio';
-import { Media, Stage } from '../../models/studio'
+import { useMutation, useQuery } from "@vue/apollo-composable";
+import { message } from "ant-design-vue";
+import gql from "graphql-tag";
+import { computed, inject, PropType, ref } from "vue";
+import { StudioGraph } from "../../models/studio";
+import { Media, Stage } from "../../models/studio";
 const props = defineProps({
   media: {
     type: Object as PropType<Media>,
@@ -13,64 +13,76 @@ const props = defineProps({
 });
 
 const visible = ref(false);
-const keyword = ref('');
+const keyword = ref("");
 
-const { result, loading } = useQuery<StudioGraph>(gql`
-{
-  whoami {
-    username
-  }
-  stages {
-    edges {
-      node {
-        dbId
-        name
-        createdOn
-        owner {
-          username
-          displayName
+const { result, loading } = useQuery<StudioGraph>(
+  gql`
+    {
+      whoami {
+        username
+      }
+      stages {
+        edges {
+          node {
+            dbId
+            name
+            createdOn
+            owner {
+              username
+              displayName
+            }
+          }
         }
       }
     }
+  `,
+  null,
+  {
+    fetchPolicy: "cache-only",
   }
-}`, null, {
-  fetchPolicy: 'cache-only',
-});
+);
 
 const dataSource = computed(() => {
   if (result.value) {
     const s = keyword.value.trim();
-    return result.value.stages.edges.filter(({ node }) => {
-      if (node.owner.username !== result.value?.whoami.username) {
+    return result.value.stages.edges
+      .filter(({ node }) => {
+        if (node.owner.username !== result.value?.whoami.username) {
+          return false;
+        }
+        if (node.name.toLowerCase().includes(s)) {
+          return true;
+        }
         return false;
-      }
-      if (node.name.toLowerCase().includes(s)) {
-        return true;
-      }
-      return false;
-    }).map(({ node }) => node);
+      })
+      .map(({ node }) => node);
   }
-  return []
-})
+  return [];
+});
 
-const { mutate } = useMutation<{ quickAssignMutation: { asset: Media } }, { id: string, stageId: number }>(gql`
-    mutation QuickAssignMutation($id: ID, $stageId: Int) {
-      quickAssignMutation(id: $id, stageId: $stageId) {
-        success
-        message
-      }
+const { mutate } = useMutation<
+  { quickAssignMutation: { asset: Media } },
+  { id: string; stageId: number }
+>(gql`
+  mutation QuickAssignMutation($id: ID, $stageId: Int) {
+    quickAssignMutation(id: $id, stageId: $stageId) {
+      success
+      message
     }
-  `)
+  }
+`);
 
-const refresh = inject('refresh', () => { })
+const refresh = inject("refresh", () => {});
 const quickAssign = async (stage: Stage) => {
   await mutate({
     id: props.media.id,
     stageId: stage.dbId,
-  })
-  message.success(`${props.media.name} had been assigned to ${stage.name} successfully!`)
-  refresh()
-}
+  });
+  message.success(
+    `${props.media.name} had been assigned to ${stage.name} successfully!`
+  );
+  refresh();
+};
 </script>
 
 <template>
@@ -86,7 +98,11 @@ const quickAssign = async (stage: Stage) => {
     width="500"
   >
     <div class="flex">
-      <a-input-search class="mr-2" placeholder="Stage name" v-model:value="keyword"></a-input-search>
+      <a-input-search
+        class="mr-2"
+        placeholder="Stage name"
+        v-model:value="keyword"
+      ></a-input-search>
     </div>
     <a-list
       class="demo-loadmore-list"
@@ -98,7 +114,7 @@ const quickAssign = async (stage: Stage) => {
         <a-list-item class="p-0">
           <template #actions>
             <a-tooltip
-              v-if="media.stages.some(s => s.id === item.dbId)"
+              v-if="media.stages.some((s) => s.id === item.dbId)"
               title="Already assigned"
               placement="topRight"
             >
@@ -106,7 +122,11 @@ const quickAssign = async (stage: Stage) => {
                 <check-outlined />
               </a-button>
             </a-tooltip>
-            <a-tooltip v-else :title="`Assign ${media.name} to this stage`" placement="topRight">
+            <a-tooltip
+              v-else
+              :title="`Assign ${media.name} to this stage`"
+              placement="topRight"
+            >
               <smart-button :action="() => quickAssign(item)" type="primary">
                 <plus-outlined />
               </smart-button>
@@ -117,11 +137,12 @@ const quickAssign = async (stage: Stage) => {
               <a-button
                 type="text"
                 class="p-0"
-                style="position: relative; top: 8px;"
-              >{{ item.name }}</a-button>
+                style="position: relative; top: 8px"
+                >{{ item.name }}</a-button
+              >
             </template>
             <template #description>
-              <small style="position: relative; top: -4px;">
+              <small style="position: relative; top: -4px">
                 Created by {{ item.owner.displayName || item.owner.username }}
                 <d-date :value="item.createdOn"></d-date>
               </small>

@@ -5,7 +5,9 @@
       <LoginForm v-if="showLoginForm" @success="onLoginSuccess" />
       <div v-else class="card">
         <header class="card-header">
-          <p class="card-header-title">{{ $t("click_anywhere_to_enter_the_stage") }}</p>
+          <p class="card-header-title">
+            {{ $t("click_anywhere_to_enter_the_stage") }}
+          </p>
         </header>
         <div class="card-content">
           <div class="content">

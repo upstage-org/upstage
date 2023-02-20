@@ -41,8 +41,9 @@
         placeholder="Stage name"
       />
       <h2 class="subtitle">
-        Click <strong>{{ $t("new") }}</strong> button to create a new future stage. Click
-        <strong>{{ $t("search") }}</strong> button for search form to find Stage
+        Click <strong>{{ $t("new") }}</strong> button to create a new future
+        stage. Click <strong>{{ $t("search") }}</strong> button for search form
+        to find Stage
       </h2>
       <Loading v-if="loading" />
       <StageTable v-else :data="stageList" />
@@ -109,5 +110,4 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>

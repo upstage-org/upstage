@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { message } from 'ant-design-vue';
-import { ref, PropType } from 'vue';
+import { message } from "ant-design-vue";
+import { ref, PropType } from "vue";
 
 const props = defineProps({
   action: {
     type: Function as PropType<(e?: any) => Promise<any>>,
     required: true,
-  }
+  },
 });
 const loading = ref(false);
 const handleClick = async (e: any): Promise<void> => {

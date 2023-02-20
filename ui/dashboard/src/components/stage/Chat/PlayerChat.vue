@@ -30,7 +30,7 @@
             <Icon src="prop.svg" size="20" />
           </span>
         </button>
-        <ClearChat option="player-chat"/>
+        <ClearChat option="player-chat" />
       </div>
       <div class="card-content" ref="theContent">
         <Messages :messages="messages" :style="{ fontSize }" />
@@ -43,12 +43,16 @@
                 class="button is-small is-rounded mx-1"
                 data-tooltip="Increase font size"
                 @click="increateFontSize()"
-              >➕</button>
+              >
+                ➕
+              </button>
               <button
                 data-tooltip="Decrease font size"
                 class="button is-small is-rounded"
                 @click="decreaseFontSize()"
-              >➖</button>
+              >
+                ➖
+              </button>
             </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
@@ -77,7 +81,7 @@ import Moveable from "moveable";
 import ClearChat from "./ClearChat";
 
 export default {
-  components: { ChatInput, Icon, Messages, ClearChat},
+  components: { ChatInput, Icon, Messages, ClearChat },
   setup: () => {
     const theChatbox = ref();
     const theContent = ref();
@@ -187,7 +191,9 @@ export default {
         playerFontSize: `${incValue}px`,
       };
       store.commit("stage/SET_PLAYER_CHAT_PARAMETERS", parameters);
-      setTimeout(() => theContent.value.scrollTop = theContent.value.scrollHeight);
+      setTimeout(
+        () => (theContent.value.scrollTop = theContent.value.scrollHeight)
+      );
     };
 
     const decreaseFontSize = () => {
@@ -216,7 +222,7 @@ export default {
       minimiseToToolbox,
       chat,
       increateFontSize,
-      decreaseFontSize
+      decreaseFontSize,
     };
   },
 };
@@ -262,8 +268,8 @@ export default {
     padding-right: 50px !important;
   }
   .reaction-bar {
-  height: 30px;
-  position: relative;
+    height: 30px;
+    position: relative;
     .font-size-controls {
       position: absolute;
       top: 0;

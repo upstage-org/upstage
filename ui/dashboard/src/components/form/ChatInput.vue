@@ -1,5 +1,9 @@
 <template>
-  <div style="position: relative" class="has-tooltip-left" :data-tooltip="dynamicTooltip">
+  <div
+    style="position: relative"
+    class="has-tooltip-left"
+    :data-tooltip="dynamicTooltip"
+  >
     <ElasticInput
       v-if="!pickerOnly"
       v-bind="$attrs"
@@ -14,7 +18,10 @@
       }"
       :class="dynamicClass"
     />
-    <div v-click-outside="() => (isPicking = false)" class="emoji-picker-wrapper">
+    <div
+      v-click-outside="() => (isPicking = false)"
+      class="emoji-picker-wrapper"
+    >
       <button
         type="button"
         class="button is-right clickable is-rounded"
@@ -35,7 +42,10 @@
         </slot>
       </button>
       <transition :css="false" @enter="pickerEnter" @leave="pickerLeave">
-        <emoji-picker v-show="isPicking" :class="{ dark: chatDarkMode, light: !chatDarkMode }" />
+        <emoji-picker
+          v-show="isPicking"
+          :class="{ dark: chatDarkMode, light: !chatDarkMode }"
+        />
       </transition>
     </div>
   </div>
@@ -59,7 +69,9 @@ export default {
     const isPicking = ref(false);
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
-    const chatDarkMode = computed(() => store.state.stage.settings.chatDarkMode);
+    const chatDarkMode = computed(
+      () => store.state.stage.settings.chatDarkMode
+    );
 
     const isHoldingShift = useHoldingShift();
 
@@ -84,7 +96,8 @@ export default {
     };
     const pickerEnter = (el, complete) => {
       el.addEventListener("emoji-click", handleEmoji);
-      el.shadowRoot.querySelector('#search').placeholder = "Hold \"Shift\" key to select multiple"
+      el.shadowRoot.querySelector("#search").placeholder =
+        'Hold "Shift" key to select multiple';
       anime({
         targets: el,
         scaleX: [0, 1],
@@ -97,7 +110,7 @@ export default {
       if (input.value) {
         input.value.focus();
       }
-    }
+    };
     const behavior = computed(() => {
       if (props.modelValue) {
         if (props.modelValue.startsWith(":")) {
@@ -127,7 +140,15 @@ export default {
       }[behavior.value];
     });
 
-    return { input, isPicking, pickerEnter, pickerLeave, dynamicClass, dynamicTooltip, chatDarkMode };
+    return {
+      input,
+      isPicking,
+      pickerEnter,
+      pickerLeave,
+      dynamicClass,
+      dynamicTooltip,
+      chatDarkMode,
+    };
   },
 };
 </script>

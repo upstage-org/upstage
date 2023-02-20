@@ -1,26 +1,27 @@
 <script lang="ts" setup>
-import { useQuery } from '@vue/apollo-composable';
-import gql from 'graphql-tag';
-import { computed } from 'vue';
-import { permissionFragment } from '../../models/fragment';
-import { StudioGraph } from '../../models/studio';
-import { absolutePath } from '../../utils/common';
-import { useConfirmPermission } from './MediaForm/composable';
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import { computed } from "vue";
+import { permissionFragment } from "../../models/fragment";
+import { StudioGraph } from "../../models/studio";
+import { absolutePath } from "../../utils/common";
+import { useConfirmPermission } from "./MediaForm/composable";
 
 const { result, loading, refetch } = useQuery<StudioGraph>(gql`
-{
-  notifications {
-    type
-    mediaUsage {
-      ...permissionFragment
-      asset {
-        name
-        src
+  {
+    notifications {
+      type
+      mediaUsage {
+        ...permissionFragment
+        asset {
+          name
+          src
+        }
       }
     }
   }
-}
-${permissionFragment}`);
+  ${permissionFragment}
+`);
 
 const notifications = computed(() => result.value?.notifications || []);
 const { mutate: confirmPermission } = useConfirmPermission();
@@ -31,11 +32,18 @@ const refresh = () => refetch();
   <a-popover title="Notifications" trigger="click">
     <template #content>
       <a-list class="w-96 overflow-auto" style="max-height: 75vh">
-        <a-list-item v-for="notification, i in notifications" :key="i" class="px-4">
+        <a-list-item
+          v-for="(notification, i) in notifications"
+          :key="i"
+          class="px-4"
+        >
           <template v-if="notification.type === 'MEDIA_USAGE'">
             <a-list-item-meta>
               <template #avatar>
-                <a-avatar class="my-2" :src="absolutePath(notification.mediaUsage.asset.src)" />
+                <a-avatar
+                  class="my-2"
+                  :src="absolutePath(notification.mediaUsage.asset.src)"
+                />
               </template>
               <template #title>
                 <div class="text-sm whitespace-pre-wrap mb-2">
@@ -51,12 +59,26 @@ const refresh = () => refetch();
                 <a-space>
                   <smart-button
                     type="primary"
-                    :action="() => confirmPermission({ approved: true, id: notification.mediaUsage.id }).then(refresh)"
-                  >{{ $t("approve") }}</smart-button>
+                    :action="
+                      () =>
+                        confirmPermission({
+                          approved: true,
+                          id: notification.mediaUsage.id,
+                        }).then(refresh)
+                    "
+                    >{{ $t("approve") }}</smart-button
+                  >
                   <smart-button
                     type="danger"
-                    :action="() => confirmPermission({ approved: false, id: notification.mediaUsage.id }).then(refresh)"
-                  >{{ $t("reject") }}</smart-button>
+                    :action="
+                      () =>
+                        confirmPermission({
+                          approved: false,
+                          id: notification.mediaUsage.id,
+                        }).then(refresh)
+                    "
+                    >{{ $t("reject") }}</smart-button
+                  >
                 </a-space>
               </template>
               <template #description>

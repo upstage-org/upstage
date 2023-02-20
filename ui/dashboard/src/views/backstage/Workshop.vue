@@ -5,7 +5,15 @@
         <h1 class="title">{{ $t("workshop") }}</h1>
         <h2 class="subtitle">
           <ul>
-            <li>{{ $t("view_workshop_wireframes") }}<a class="has-text-primary" href="https://github.com/upstage-org/upstage/issues/64" target="_blank">{{ $t("here") }}</a></li>
+            <li>
+              {{ $t("view_workshop_wireframes")
+              }}<a
+                class="has-text-primary"
+                href="https://github.com/upstage-org/upstage/issues/64"
+                target="_blank"
+                >{{ $t("here") }}</a
+              >
+            </li>
           </ul>
         </h2>
       </div>
@@ -17,5 +25,4 @@
 export default {};
 </script>
 
-<style>
-</style>
+<style></style>

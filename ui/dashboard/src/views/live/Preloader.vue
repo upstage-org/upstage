@@ -13,18 +13,27 @@
       <div class="hero-body">
         <div class="container">
           <template v-if="model">
-            <h1 class="title" :class="{ 'mb-0': model.description }">{{ model.name }}</h1>
-            <h2 v-if="model.description" class="subtittle">{{ model.description }}</h2>
+            <h1 class="title" :class="{ 'mb-0': model.description }">
+              {{ model.name }}
+            </h1>
+            <h2 v-if="model.description" class="subtittle">
+              {{ model.description }}
+            </h2>
             <h2 v-if="ready" class="subtitle">
-              <span
-                class="sparkle"
-                style="line-height: 2"
-              >Stage loaded 100%, click anywhere to continue...</span>
+              <span class="sparkle" style="line-height: 2"
+                >Stage loaded 100%, click anywhere to continue...</span
+              >
             </h2>
             <h2 v-else class="subtitle">
               <template v-if="status !== 'live' && !canPlay">
-                <span v-if="status" class="tag is-dark">{{ status.toUpperCase() }}</span>&nbsp;
-                <span>This stage is not currently open to the public. Please come back later!</span>
+                <span v-if="status" class="tag is-dark">{{
+                  status.toUpperCase()
+                }}</span
+                >&nbsp;
+                <span
+                  >This stage is not currently open to the public. Please come
+                  back later!</span
+                >
               </template>
               <template v-else-if="preloadableAssets.length">
                 <button class="button is-primary is-loading" />
@@ -89,27 +98,31 @@ export default {
       }
     });
 
-    watch(preloading, (val) => {
-      const logo = document.querySelector('#live-logo')
-      if (val) {
-        logo.classList.add('preloader');
-      } else {
-        logo.classList.remove('preloader');
-      }
-    }, { immediate: true })
+    watch(
+      preloading,
+      (val) => {
+        const logo = document.querySelector("#live-logo");
+        if (val) {
+          logo.classList.add("preloader");
+        } else {
+          logo.classList.remove("preloader");
+        }
+      },
+      { immediate: true }
+    );
 
-    const status = useAttribute(model, 'status')
-    const timer = ref()
+    const status = useAttribute(model, "status");
+    const timer = ref();
     watch(model, (val) => {
-      if (val && status.value === 'live') {
+      if (val && status.value === "live") {
         timer.value = setTimeout(stopLoading, 60000);
       }
     });
     onUnmounted(() => {
       if (timer.value) {
-        clearInterval(timer.value)
+        clearInterval(timer.value);
       }
-    })
+    });
 
     const replaying = inject("replaying");
     const ready = computed(() => store.getters["stage/ready"]);
@@ -138,7 +151,7 @@ export default {
       leave,
       backdropColor,
       status,
-      canPlay
+      canPlay,
     };
   },
 };

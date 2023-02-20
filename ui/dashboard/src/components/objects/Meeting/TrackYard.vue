@@ -5,12 +5,12 @@
 </template>
 
 <script setup>
-import Track from '@/components/objects/Meeting/Track.vue';
-import { computed } from 'vue';
-import { useStore } from 'vuex';
+import Track from "@/components/objects/Meeting/Track.vue";
+import { computed } from "vue";
+import { useStore } from "vuex";
 
 const store = useStore();
-const tracks = computed(() => store.getters['stage/jitsiTracks']);
+const tracks = computed(() => store.getters["stage/jitsiTracks"]);
 </script>
 
 <style scoped>

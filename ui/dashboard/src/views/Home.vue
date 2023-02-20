@@ -1,52 +1,69 @@
 <template>
-    <section id="welcome" class="hero is-fullheight foyer-background">
-        <div class="hero-body">
-            <div class="container">
-                <div class="describe">
-                    <h1 class="title" v-html="foyer.title"/>
-                    <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description"/>
-                </div>
-                <Loading v-if="loading"/>
-                <div v-else class="stages my-4 pt-6">
-                    <masonry-wall :items="visibleStages" :ssr-columns="1" :column-width="300" :gap="32">
-                        <template #default="{ item }">
-                            <Entry :stage="item"
-                                   :fallback-cover="item.status === 'live' ? 'live-stage.png' : 'upcoming-performance.png'"/>
-                        </template>
-                    </masonry-wall>
-                </div>
-            </div>
+  <section id="welcome" class="hero is-fullheight foyer-background">
+    <div class="hero-body">
+      <div class="container">
+        <div class="describe">
+          <h1 class="title" v-html="foyer.title" />
+          <h2
+            v-if="foyer.description"
+            class="subtitle"
+            v-html="foyer.description"
+          />
         </div>
-    </section>
+        <Loading v-if="loading" />
+        <div v-else class="stages my-4 pt-6">
+          <masonry-wall
+            :items="visibleStages"
+            :ssr-columns="1"
+            :column-width="300"
+            :gap="32"
+          >
+            <template #default="{ item }">
+              <Entry
+                :stage="item"
+                :fallback-cover="
+                  item.status === 'live'
+                    ? 'live-stage.png'
+                    : 'upcoming-performance.png'
+                "
+              />
+            </template>
+          </masonry-wall>
+        </div>
+      </div>
+    </div>
+  </section>
 </template>
 
 <script>
-import {computed} from "@vue/runtime-core";
-import {useStore} from "vuex";
+import { computed } from "@vue/runtime-core";
+import { useStore } from "vuex";
 import Loading from "@/components/Loading";
-import {absolutePath} from "@/utils/common";
+import { absolutePath } from "@/utils/common";
 import Entry from "@/components/stage/Entry.vue";
-import MasonryWall from '@yeger/vue-masonry-wall'
-import {stageGraph} from "@/services/graphql";
-import {useQuery} from "@/services/graphql/composable";
+import MasonryWall from "@yeger/vue-masonry-wall";
+import { stageGraph } from "@/services/graphql";
+import { useQuery } from "@/services/graphql/composable";
 
 export default {
-    name: "Home",
-    components: {Loading, Entry, MasonryWall},
-    setup: () => {
-        const store = useStore();
+  name: "Home",
+  components: { Loading, Entry, MasonryWall },
+  setup: () => {
+    const store = useStore();
 
-        const {nodes: visibleStages, loading} = useQuery(stageGraph.foyerStageList);
-        const foyer = computed(() => store.getters["config/foyer"]);
-        console.log(visibleStages.value, loading)
+    const { nodes: visibleStages, loading } = useQuery(
+      stageGraph.foyerStageList
+    );
+    const foyer = computed(() => store.getters["config/foyer"]);
+    console.log(visibleStages.value, loading);
 
-        return {
-            visibleStages,
-            loading,
-            absolutePath,
-            foyer,
-        };
-    },
+    return {
+      visibleStages,
+      loading,
+      absolutePath,
+      foyer,
+    };
+  },
 };
 </script>
 
@@ -83,7 +100,7 @@ export default {
     position: relative;
 
     ::after {
-      content: '';
+      content: "";
       pointer-events: none;
       position: absolute;
       width: 100%;

@@ -19,12 +19,12 @@ export interface StudioGraph {
   media: Connection<Media>;
   whoami: User;
   notifications: Notification[];
-  voices: VoiceGraph[]
+  voices: VoiceGraph[];
 }
 
 export interface VoiceGraph {
   avatar: Media;
-  voice: AvatarVoice
+  voice: AvatarVoice;
 }
 
 export interface PageInfo {
@@ -64,14 +64,14 @@ export interface Tag {
 }
 
 export interface AssignedStage {
-  id: number
-  name: string
-  url: string
+  id: number;
+  name: string;
+  url: string;
 }
 
 export type CopyrightLevel = 0 | 1 | 2 | 3;
 
-export const uploadDefault = 1024 * 1024
+export const uploadDefault = 1024 * 1024;
 
 export interface Media {
   id: string;
@@ -117,7 +117,7 @@ export interface UploadFile {
   method?: string;
   id: number;
   preview: string;
-  status: 'local' | 'uploaded' | 'virtual';
+  status: "local" | "uploaded" | "virtual";
   url?: string;
 }
 
@@ -140,11 +140,16 @@ export interface Notification {
 }
 
 export interface AvatarVoice {
-  voice: string
-  variant: string
-  pitch: number
-  speed: number
-  amplitude: number
+  voice: string;
+  variant: string;
+  pitch: number;
+  speed: number;
+  amplitude: number;
 }
 
-export type Privilege = 'NONE' | 'OWNER' | 'APPROVED' | 'PENDING_APPROVAL' | 'REQUIRE_APPROVAL'
+export type Privilege =
+  | "NONE"
+  | "OWNER"
+  | "APPROVED"
+  | "PENDING_APPROVAL"
+  | "REQUIRE_APPROVAL";

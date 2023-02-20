@@ -29,7 +29,15 @@ import VolumeParameters from "./settings/VolumeParameters";
 import CreateRoom from "./settings/CreateRoom";
 
 export default {
-  components: { ChatParameters, VoiceParameters, Icon, ChatBox, SaveScene, VolumeParameters, CreateRoom },
+  components: {
+    ChatParameters,
+    VoiceParameters,
+    Icon,
+    ChatBox,
+    SaveScene,
+    VolumeParameters,
+    CreateRoom,
+  },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);

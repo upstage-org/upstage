@@ -49,7 +49,7 @@ export default {
     AudioPlayer,
     ConnectionStatus,
     MasqueradingStatus,
-    Shell
+    Shell,
   },
   setup: () => {
     const store = useStore();
@@ -73,9 +73,9 @@ export default {
     return {
       ready,
       canPlay,
-      loggedIn
+      loggedIn,
     };
-  }
+  },
 };
 </script>
 

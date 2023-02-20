@@ -15,7 +15,9 @@
       <div v-if="item.name">
         <b>{{ item.name }}</b>
       </div>
-      <small v-if="item.description" class="has-text-dark">{{ item.description }}</small>
+      <small v-if="item.description" class="has-text-dark">{{
+        item.description
+      }}</small>
       <small v-else class="has-text-dark">
         <span v-if="item.recording">{{ $t("recorded") }}</span>
         <span v-else>{{ $t("auto_recorded") }}</span>
@@ -32,15 +34,13 @@
         </template>
         <template #header>
           Audience chats from {{ date(item.begin) }}
-          <span
-            v-if="item.begin !== item.end"
-          >to {{ date(item.end) }}</span>
+          <span v-if="item.begin !== item.end">to {{ date(item.end) }}</span>
         </template>
         <template #content>
-          <Messages :messages="item.publicMessages" from="archive"/>
+          <Messages :messages="item.publicMessages" from="archive" />
         </template>
       </Modal>
-      <button class="button is-light" @click="downloadChatLog('public',item)">
+      <button class="button is-light" @click="downloadChatLog('public', item)">
         <Icon src="download.svg" />
       </button>
     </template>
@@ -53,12 +53,10 @@
         </template>
         <template #header>
           Player chats from {{ date(item.begin) }}
-          <span
-            v-if="item.begin !== item.end"
-          >to {{ date(item.end) }}</span>
+          <span v-if="item.begin !== item.end">to {{ date(item.end) }}</span>
         </template>
         <template #content>
-          <Messages :messages="item.privateMessages" from="archive"/>
+          <Messages :messages="item.privateMessages" from="archive" />
         </template>
       </Modal>
       <button class="button is-light" @click="downloadChatLog('private', item)">
@@ -81,7 +79,11 @@
       >
         <Field v-model="item.name" label="Performance Name" required />
         <Field label="Description">
-          <textarea class="textarea" v-model="item.description" rows="3"></textarea>
+          <textarea
+            class="textarea"
+            v-model="item.description"
+            rows="3"
+          ></textarea>
         </Field>
         <template #yes>
           <span>{{ $t("save") }}</span>
@@ -92,7 +94,10 @@
           </button>
         </template>
       </Confirm>
-      <Confirm @confirm="(complete) => deletePerformance(item, complete)" :loading="deleting">
+      <Confirm
+        @confirm="(complete) => deletePerformance(item, complete)"
+        :loading="deleting"
+      >
         <template #trigger>
           <button class="button is-light is-danger">
             <Icon src="delete.svg" />
@@ -100,10 +105,10 @@
         </template>
         <div class="has-text-centered">
           Deleting this performance will also delete
-          <span
-            class="has-text-danger"
-          >{{ $t("all_of_its_replay_and_chat") }}</span>. This
-          cannot be undo!
+          <span class="has-text-danger">{{
+            $t("all_of_its_replay_and_chat")
+          }}</span
+          >. This cannot be undo!
           <strong>Are you sure you want to continue?</strong>
         </div>
       </Confirm>
@@ -207,11 +212,14 @@ export default {
           session.duration = 0;
         }
       });
-      res.forEach((session)=>{
-        session.privateMessages = session.messages.filter((m) => m.isPrivate||m.clearPlayerChat);
-        session.publicMessages = session.messages.filter((m) => !m.isPrivate&&!m.clearPlayerChat);
-
-      })
+      res.forEach((session) => {
+        session.privateMessages = session.messages.filter(
+          (m) => m.isPrivate || m.clearPlayerChat
+        );
+        session.publicMessages = session.messages.filter(
+          (m) => !m.isPrivate && !m.clearPlayerChat
+        );
+      });
       return res;
     });
 
@@ -231,14 +239,17 @@ export default {
       // returns a URL you can use as a href
       return textFile;
     };
-    const downloadChatLog = (option,session) => {
+    const downloadChatLog = (option, session) => {
       const link = document.createElement("a");
       let content = [];
-      if(option=="public"){
-        if(session){
+      if (option == "public") {
+        if (session) {
           link.setAttribute(
             "download",
-            `${stage.value.name}-Audience-chat-${session.end ? timeStamp(session.end) : timeStamp(session.createdOn)
+            `${stage.value.name}-Audience-chat-${
+              session.end
+                ? timeStamp(session.end)
+                : timeStamp(session.createdOn)
             }.txt`
           );
           content = session.publicMessages.map((item) => {
@@ -250,25 +261,31 @@ export default {
             }
             return `${line}\r\n`;
           });
-        }else{
-          link.setAttribute("download", `${stage.value.name}-Audience-chat.txt`);
+        } else {
+          link.setAttribute(
+            "download",
+            `${stage.value.name}-Audience-chat.txt`
+          );
           sessions.value.forEach((session) => {
             content = content.concat(
-              session.publicMessages.map((item) =>{
-                if(item.clear){
-                    return `---------------- Clear Chat ----------------\r\n`
-                  }else{
-                    return `${item.user}: ${item.message}\r\n`
-                  } 
+              session.publicMessages.map((item) => {
+                if (item.clear) {
+                  return `---------------- Clear Chat ----------------\r\n`;
+                } else {
+                  return `${item.user}: ${item.message}\r\n`;
+                }
               })
             );
           });
         }
-      }else{
-        if(session){
+      } else {
+        if (session) {
           link.setAttribute(
             "download",
-            `${stage.value.name}-Player-chat-${session.end ? timeStamp(session.end) : timeStamp(session.createdOn)
+            `${stage.value.name}-Player-chat-${
+              session.end
+                ? timeStamp(session.end)
+                : timeStamp(session.createdOn)
             }.txt`
           );
           content = session.privateMessages.map((item) => {
@@ -280,21 +297,19 @@ export default {
             }
             return `${line}\r\n`;
           });
-        }else{
+        } else {
           link.setAttribute("download", `${stage.value.name}-Player-chat.txt`);
           sessions.value.forEach((session) => {
             content = content.concat(
-              session.privateMessages.map(
-                (item) => {
-                  if(item.clearPlayerChat){
-                    return `---------------- Clear Chat ----------------\r\n`
-                  }else{
-                    return `${item.user}: ${item.message}\r\n`
-                  }  
+              session.privateMessages.map((item) => {
+                if (item.clearPlayerChat) {
+                  return `---------------- Clear Chat ----------------\r\n`;
+                } else {
+                  return `${item.user}: ${item.message}\r\n`;
                 }
-                )
+              })
             );
-          });   
+          });
         }
       }
       link.href = makeTextFile(content);
@@ -308,30 +323,28 @@ export default {
       });
     };
 
-    const padTo2Digits=(num)=>{
-      return num.toString().padStart(2, '0');
-    }
+    const padTo2Digits = (num) => {
+      return num.toString().padStart(2, "0");
+    };
 
-    const formatDate=(date)=> {
+    const formatDate = (date) => {
       return (
-        [
-          padTo2Digits(date.getHours()),
-          padTo2Digits(date.getMinutes()),
-        ].join('')+
-        '-' +
+        [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
+          ""
+        ) +
+        "-" +
         [
           padTo2Digits(date.getDate()),
           padTo2Digits(date.getMonth() + 1),
           date.getFullYear(),
-        ].join('') 
-        
+        ].join("")
       );
-    }
+    };
 
     const timeStamp = (value) => {
       const date = new Date(value);
-      return formatDate(date)
-    }
+      return formatDate(date);
+    };
 
     const { loading: updating, save: updateMutation } = useMutation(
       stageGraph.updatePerformance
@@ -376,5 +389,4 @@ export default {
 .button.is-light > img {
   max-width: unset;
 }
-
 </style>

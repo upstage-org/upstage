@@ -1,37 +1,73 @@
 <template>
   <modal>
     <template #trigger>
-      <Asset class="clickable" v-if="modelValue" :asset="{
-        src: modelValue,
-      }" />
+      <Asset
+        class="clickable"
+        v-if="modelValue"
+        :asset="{
+          src: modelValue,
+        }"
+      />
       <button v-else class="button">{{ $t("choose_an_image") }}</button>
     </template>
-    <template #header>{{ $t("choose_an_existing_image_or_upload_new") }}</template>
+    <template #header>{{
+      $t("choose_an_existing_image_or_upload_new")
+    }}</template>
     <template #content="{ closeModal }">
-      <div class="columns is-multiline ">
+      <div class="columns is-multiline">
         <div class="colum px-3 pt-1">
           <MediaUpload />
         </div>
       </div>
       <Loading v-if="loading" />
       <div v-else class="columns is-multiline">
-        <div class="column is-12 ">
+        <div class="column is-12">
           <div class="columns">
             <div class="column panel-heading">
               <p class="control has-icons-left">
-                <input class="input" type="text" placeholder="Search Media" v-model="filter.name" />
+                <input
+                  class="input"
+                  type="text"
+                  placeholder="Search Media"
+                  v-model="filter.name"
+                />
                 <span class="icon is-left">
                   <i class="fas fa-search" aria-hidden="true"></i>
                 </span>
               </p>
             </div>
-            <Dropdown class="column" v-model="filter.mediaType" :data="types"
-              :render-label="(type) => type.name === 'media' ? 'All types' : type.name" :render-value="(type) => type"
-              style="width: 100%" fixed placeholder="All Types" />
-            <Dropdown class="column" v-model="filter.owner" :data="users" :render-label="(user) => displayName(user)"
-              :render-value="(user) => user" style="width: 100%" fixed placeholder="All Users" />
-            <Dropdown class="column" v-model="filter.stage" :data="stages" :render-label="(stage) => stage.name"
-              :render-value="(stage) => stage" style="width: 100%" fixed placeholder="All Stages" />
+            <Dropdown
+              class="column"
+              v-model="filter.mediaType"
+              :data="types"
+              :render-label="
+                (type) => (type.name === 'media' ? 'All types' : type.name)
+              "
+              :render-value="(type) => type"
+              style="width: 100%"
+              fixed
+              placeholder="All Types"
+            />
+            <Dropdown
+              class="column"
+              v-model="filter.owner"
+              :data="users"
+              :render-label="(user) => displayName(user)"
+              :render-value="(user) => user"
+              style="width: 100%"
+              fixed
+              placeholder="All Users"
+            />
+            <Dropdown
+              class="column"
+              v-model="filter.stage"
+              :data="stages"
+              :render-label="(stage) => stage.name"
+              :render-value="(stage) => stage"
+              style="width: 100%"
+              fixed
+              placeholder="All Stages"
+            />
           </div>
         </div>
         <div class="column is-12 gallery">
@@ -78,22 +114,22 @@ export default {
       name: null,
       mediaType: null,
       owner: null,
-      stage: null
+      stage: null,
     });
 
     const { nodes: typesData } = useQuery(stageGraph.assetTypeList);
     const types = computed(() => {
       const list = [];
-      list.push({ id: null, name: "All Types" })
-      typesData.value.filter((m) => type_dis.includes(m.name)).forEach(type => list.push(type))
-      return list
-    }
-
-    );
+      list.push({ id: null, name: "All Types" });
+      typesData.value
+        .filter((m) => type_dis.includes(m.name))
+        .forEach((type) => list.push(type));
+      return list;
+    });
 
     const users = computed(() => {
       let list = [];
-      list.push({ id: null, displayName: "All Users" })
+      list.push({ id: null, displayName: "All Users" });
       if (mediaList.value) {
         mediaList.value.forEach(({ owner }) => {
           if (!list.some((user) => user.username === owner.username)) {
@@ -107,33 +143,49 @@ export default {
     const { nodes: stagesData } = useQuery(stageGraph.stageList);
     const stages = computed(() => {
       let list = [];
-      list.push({ id: null, name: "All Stages" })
+      list.push({ id: null, name: "All Stages" });
       if (stagesData.value) {
-        stagesData.value.forEach(stage => list.push(stage));
-      }
-      return list;
-    }
-    );
-
-    const availableImages = computed(() => {
-      let list = mediaList.value;
-      list = list.filter((m) => type_dis.includes(m.assetType.name))
-      if (filter.name) {
-        list = list.filter((media) => media.name.toLowerCase().includes(filter.name.toLowerCase()));
-      }
-      if (filter.mediaType && filter.mediaType.id) {
-        list = list.filter((media) => media.assetType.name === filter.mediaType.name);
-      }
-      if (filter.owner && filter.owner.id) {
-        list = list.filter((media) => media.owner.username === filter.owner.username);
-      }
-      if (filter.stage && filter.stage.id) {
-        list = list.filter((media) => media.stages.find((s) => s.id === filter.stage.dbId));
+        stagesData.value.forEach((stage) => list.push(stage));
       }
       return list;
     });
 
-    return { loading, availableImages, select, filter, types, users, displayName, stages };
+    const availableImages = computed(() => {
+      let list = mediaList.value;
+      list = list.filter((m) => type_dis.includes(m.assetType.name));
+      if (filter.name) {
+        list = list.filter((media) =>
+          media.name.toLowerCase().includes(filter.name.toLowerCase())
+        );
+      }
+      if (filter.mediaType && filter.mediaType.id) {
+        list = list.filter(
+          (media) => media.assetType.name === filter.mediaType.name
+        );
+      }
+      if (filter.owner && filter.owner.id) {
+        list = list.filter(
+          (media) => media.owner.username === filter.owner.username
+        );
+      }
+      if (filter.stage && filter.stage.id) {
+        list = list.filter((media) =>
+          media.stages.find((s) => s.id === filter.stage.dbId)
+        );
+      }
+      return list;
+    });
+
+    return {
+      loading,
+      availableImages,
+      select,
+      filter,
+      types,
+      users,
+      displayName,
+      stages,
+    };
   },
 };
 </script>
@@ -153,7 +205,7 @@ export default {
   grid-gap: 1.5rem;
 }
 
-.gallery .card-image{
+.gallery .card-image {
   display: flex;
   justify-content: center;
 }

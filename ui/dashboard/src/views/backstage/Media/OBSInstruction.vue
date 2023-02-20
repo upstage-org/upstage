@@ -1,21 +1,25 @@
 <template>
   <Modal>
     <template #trigger>
-      <p title="Show instruction on OBS Studio" class="has-tooltip-bottom clickable">
+      <p
+        title="Show instruction on OBS Studio"
+        class="has-tooltip-bottom clickable"
+      >
         <Icon size="50" src="obs-logo.png" />
       </p>
     </template>
     <template #header>
-      <Icon size="24" src="obs-logo.png" />How to stream to UpStage using OBS Studio
+      <Icon size="24" src="obs-logo.png" />How to stream to UpStage using OBS
+      Studio
     </template>
     <template #content>
       <p>
         OBS Studio is a free and open source software for video recording and
         live streaming. You can download OBS Studio
-        <a
-          href="https://obsproject.com/download"
-          target="_blank"
-        >{{ $t("here") }}</a>.
+        <a href="https://obsproject.com/download" target="_blank">{{
+          $t("here")
+        }}</a
+        >.
       </p>
       <div class="columns">
         <div class="column is-4 mt-6">
@@ -46,8 +50,8 @@
       <div class="columns">
         <div class="column is-4 mt-6">
           <b>Step 3:</b>Start Streaming! You should see the button changes to
-          <code>{{ $t("stop_streaming") }}</code> and LIVE counter started to work. If you
-          have any issue, please contact UpStage Admin for help.
+          <code>{{ $t("stop_streaming") }}</code> and LIVE counter started to
+          work. If you have any issue, please contact UpStage Admin for help.
         </div>
         <div class="column">
           <img :src="`${publicPath}instructions/obs/3.png`" alt="Step 3" />
@@ -75,5 +79,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

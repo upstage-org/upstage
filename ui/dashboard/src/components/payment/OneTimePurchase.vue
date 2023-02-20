@@ -79,7 +79,7 @@ export default {
   },
 };
 </script>
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .payment {
   width: 90%;
   margin-left: 5%;

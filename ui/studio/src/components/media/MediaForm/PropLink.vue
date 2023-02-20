@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { PropType } from 'vue';
-import { Link } from '../../../models/studio';
+import { PropType } from "vue";
+import { Link } from "../../../models/studio";
 
 const props = defineProps({
   link: {
     type: Object as PropType<Link>,
-    required: true
-  }
-})
-
+    required: true,
+  },
+});
 </script>
 
 <template>

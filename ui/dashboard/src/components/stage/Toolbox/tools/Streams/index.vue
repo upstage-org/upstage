@@ -1,9 +1,17 @@
 <template>
-  <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
+  <div
+    v-for="stream in streams"
+    :key="stream"
+    :class="{ 'has-background-warning': !stream.ready && stream.alive }"
+  >
     <Skeleton :data="stream" :nodrop="stream.isRTMP && !stream.ready">
       <template v-if="stream.isRTMP">
         <div class="centered">
-          <RTMPStream v-if="stream.alive" :src="stream.url" @scan="scanVideo($event, stream)"></RTMPStream>
+          <RTMPStream
+            v-if="stream.alive"
+            :src="stream.url"
+            @scan="scanVideo($event, stream)"
+          ></RTMPStream>
           <QRCodePopup v-else :stream="stream" />
         </div>
       </template>
@@ -61,8 +69,8 @@ export default {
         if (index >= 0) {
           res[index].alive = true;
           if (stream.w > 0 && stream.h > 0) {
-            res[index].w = stream.w
-            res[index].h = stream.h
+            res[index].w = stream.w;
+            res[index].h = stream.h;
           }
         } else {
           if (autoDetect.value) {
@@ -70,20 +78,20 @@ export default {
           }
         }
       });
-      console.log(res)
+      console.log(res);
       return res;
     });
 
     const scanVideo = ({ width, height }, stream) => {
-      console.log(stream, width, height)
+      console.log(stream, width, height);
       if (!stream.ready) {
         Object.assign(stream, {
-          w: 100 * width / height,
+          w: (100 * width) / height,
           h: 100,
-          ready: true
-        })
+          ready: true,
+        });
       }
-    }
+    };
 
     return { streams, loading, fetchRunningStreams, autoDetect, scanVideo };
   },

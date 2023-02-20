@@ -13,7 +13,10 @@
       </div>
       <div class="buttons">
         <template v-if="audio.isPlaying">
-          <div class="icon" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
+          <div
+            class="icon"
+            @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
+          >
             <Icon size="24" src="pause.svg" />
           </div>
           <div class="icon" @click="stopAudio(audio)">
@@ -21,7 +24,10 @@
           </div>
         </template>
         <template v-else>
-          <div class="icon play-button" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
+          <div
+            class="icon play-button"
+            @click="togglePlaying(audio, audioPlayers[i]?.currentTime)"
+          >
             <Icon size="24" src="play.svg" />
           </div>
         </template>
@@ -57,7 +63,9 @@
           type="range"
         />
         <div class="addon">
-          <span v-if="audio.isPlaying">{{ displayTimestamp(audioPlayers[i]?.currentTime ?? 0) }}</span>
+          <span v-if="audio.isPlaying">{{
+            displayTimestamp(audioPlayers[i]?.currentTime ?? 0)
+          }}</span>
           <span v-else>{{ displayTimestamp(audioPlayers[i]?.duration) }}</span>
         </div>
       </div>
@@ -116,7 +124,7 @@ export default {
       }
     });
     const scrollToEnd = () => {
-      const topbar = document.querySelector('#topbar')
+      const topbar = document.querySelector("#topbar");
       if (topbar) {
         anime({
           targets: topbar,
@@ -135,7 +143,7 @@ export default {
       audioPlayers,
       seek,
       displayTimestamp,
-      scrollToEnd
+      scrollToEnd,
     };
   },
 };

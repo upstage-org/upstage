@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-import { computed } from '@vue/reactivity';
-import moment from 'moment'
+import { computed } from "@vue/reactivity";
+import moment from "moment";
 
 const { value } = defineProps({
-  value: Date
-})
+  value: Date,
+});
 
-const text = computed(() => moment.utc(value).fromNow())
+const text = computed(() => moment.utc(value).fromNow());
 </script>
 
 <template>{{ text }}</template>
