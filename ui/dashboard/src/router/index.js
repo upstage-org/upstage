@@ -202,21 +202,24 @@ router.beforeEach(async (to, from, next) => {
       .setAttribute("content", "width=device-width,initial-scale=1.0");
   }
 
-  await store.dispatch("user/checkIsAdmin").then((isAdmin) => {
-    if (to.fullPath.includes("admin") && loggedIn && !isAdmin) {
-      next("/");
-    }
-  });
+  if (to.fullPath.includes("admin") && loggedIn) {
+    await store.dispatch("user/checkIsAdmin").then((isAdmin) => {
+      if (!isAdmin) {
+        next("/");
+      }
+    });
+  }
 
-  await store.dispatch("user/checkIsGuest").then((isGuest) => {
-    if (
-      (to.fullPath.includes("backstage") || to.fullPath.includes("studio")) &&
-      loggedIn &&
-      isGuest
-    ) {
-      next("/");
-    }
-  });
+  if (
+    (to.fullPath.includes("backstage") || to.fullPath.includes("studio")) &&
+    loggedIn
+  ) {
+    await store.dispatch("user/checkIsGuest").then((isGuest) => {
+      if (isGuest) {
+        next("/");
+      }
+    });
+  }
 
   next();
   document.title = `UpStage ${to.name && "- " + to.name}`;
