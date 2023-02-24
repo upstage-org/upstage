@@ -82,7 +82,7 @@ const showStreamInstruction = ref(false);
         </div>
       </template>
       <img
-        src="../../assets/multi-frame.svg"
+        src="assets/multi-frame.svg"
         alt="Multiframe"
         class="absolute left-4 bottom-4"
       />

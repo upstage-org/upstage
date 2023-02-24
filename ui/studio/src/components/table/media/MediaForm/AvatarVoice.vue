@@ -50,7 +50,7 @@ const handleVoicePicked = (voice: AvatarVoice) => {
     <a-form-item label="Rate" :labelCol="{ span: 3 }" class="mb-2">
       <a-slider
         :value="props.voice.speed / 3.5"
-        @change="props.voice.speed = $event * 3.5"
+        @change="props.voice.speed = Number($event) * 3.5"
       />
     </a-form-item>
     <a-form-item label="Volume" :labelCol="{ span: 3 }" class="mb-2">
