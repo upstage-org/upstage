@@ -3,16 +3,16 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
-import { editingMediaVar, inquiryVar } from "../../apollo";
-import configs from "../../config";
-import { permissionFragment } from "../../models/fragment";
+import { editingMediaVar, inquiryVar } from "../../../apollo";
+import configs from "../../../config";
+import { permissionFragment } from "../../../models/fragment";
 import {
   Media,
   MediaAttributes,
   StudioGraph,
   UploadFile,
-} from "../../models/studio";
-import { absolutePath } from "../../utils/common";
+} from "../../../models/studio";
+import { absolutePath } from "../../../utils/common";
 import MediaPreview from "./MediaPreview.vue";
 import RequestPermission from "./MediaForm/RequestPermission.vue";
 import RequestAcknowledge from "./MediaForm/RequestAcknowledge.vue";
@@ -321,143 +321,145 @@ provide("isAdmin", isAdmin);
 </script>
 
 <template>
-  <a-table
-    class="shadow rounded-md bg-white w-full overflow-auto"
-    :columns="columns"
-    :data-source="dataSource"
-    rowKey="id"
-    :loading="loading"
-    @change="handleTableChange"
-    :pagination="{
+  <a-layout class="px-4 w-full">
+    <a-table
+      class="w-full shadow rounded-xl bg-white overflow-auto"
+      :columns="columns"
+      :data-source="dataSource"
+      rowKey="id"
+      :loading="loading"
+      @change="handleTableChange"
+      :pagination="{
       showQuickJumper: true,
       showSizeChanger: true,
       total: result ? result.media.totalCount : 0,
     } as Pagination"
-  >
-    <template #bodyCell="{ column, record, text }">
-      <template v-if="column.key === 'preview'">
-        <MediaPreview :media="record" />
-      </template>
-      <template v-if="column.key === 'asset_type_id'">
-        <span class="capitalize">{{ text }}</span>
-      </template>
-      <template v-if="column.key === 'owner_id'">
-        <span v-if="text.displayName">
-          <b>{{ text.displayName }}</b>
-          <br />
-          <span class="text-gray-500">{{ text.username }}</span>
-        </span>
-        <span v-else>
-          <span>{{ text.username }}</span>
-        </span>
-      </template>
-      <template v-if="column.key === 'stages'">
-        <a
-          v-for="(stage, i) in text"
-          :key="i"
-          :href="`${configs.UPSTAGE_URL}/${stage.url}`"
-        >
-          <a-tag color="#007011">{{ stage.name }}</a-tag>
-        </a>
-      </template>
-      <template v-if="column.key === 'tags'">
-        <a-tag
-          v-for="(tag, i) in text"
-          :key="i"
-          :color="tag"
-          @click="filterTag(tag)"
-          class="cursor-pointer"
-          >{{ tag }}</a-tag
-        >
-      </template>
-      <template v-if="column.key === 'size'">
-        <a-tag
-          v-if="text"
-          :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'"
-        >
-          <d-size :value="text" />
-        </a-tag>
-        <a-tag v-else>{{ $t("no_size") }}</a-tag>
-      </template>
-      <template v-if="column.key === 'copyrightLevel'">
-        <span class="leading-4">{{
-          configs.MEDIA_COPYRIGHT_LEVELS.find(
-            (l) => l.value === record.copyrightLevel
-          )?.name
-        }}</span>
-      </template>
-      <template v-if="column.key === 'created_on'">
-        <d-date :value="text" />
-      </template>
-      <template v-if="column.key === 'actions'">
-        <a-space v-if="composingMode">
-          <a-button type="primary" @click="addFrameToEditingMedia(record)">
-            <DoubleRightOutlined />Append frames
-          </a-button>
-        </a-space>
-        <template v-else>
-          <a-space v-if="record.privilege === 'NONE'">
-            <a-tooltip>
-              <template #title
-                >You don't have permission to access this media</template
-              >
-              🙅‍♀️🙅‍♂️
-            </a-tooltip>
-          </a-space>
-          <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
-            <RequestPermission
-              v-if="record.copyrightLevel === 2"
-              :media="record"
-            />
-            <RequestAcknowledge v-else :media="record" />
-          </a-space>
-          <a-space
-            v-else-if="record.privilege === 'PENDING_APPROVAL'"
-            direction="vertical"
-            class="leading-4"
+    >
+      <template #bodyCell="{ column, record, text }">
+        <template v-if="column.key === 'preview'">
+          <MediaPreview :media="record" />
+        </template>
+        <template v-if="column.key === 'asset_type_id'">
+          <span class="capitalize">{{ text }}</span>
+        </template>
+        <template v-if="column.key === 'owner_id'">
+          <span v-if="text.displayName">
+            <b>{{ text.displayName }}</b>
+            <br />
+            <span class="text-gray-500">{{ text.username }}</span>
+          </span>
+          <span v-else>
+            <span>{{ text.username }}</span>
+          </span>
+        </template>
+        <template v-if="column.key === 'stages'">
+          <a
+            v-for="(stage, i) in text"
+            :key="i"
+            :href="`${configs.UPSTAGE_URL}/${stage.url}`"
           >
-            <b>✅ Request sent!</b>
-            <small>Please wait for the media owner's approval</small>
+            <a-tag color="#007011">{{ stage.name }}</a-tag>
+          </a>
+        </template>
+        <template v-if="column.key === 'tags'">
+          <a-tag
+            v-for="(tag, i) in text"
+            :key="i"
+            :color="tag"
+            @click="filterTag(tag)"
+            class="cursor-pointer"
+            >{{ tag }}</a-tag
+          >
+        </template>
+        <template v-if="column.key === 'size'">
+          <a-tag
+            v-if="text"
+            :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'"
+          >
+            <d-size :value="text" />
+          </a-tag>
+          <a-tag v-else>{{ $t("no_size") }}</a-tag>
+        </template>
+        <template v-if="column.key === 'copyrightLevel'">
+          <span class="leading-4">{{
+            configs.MEDIA_COPYRIGHT_LEVELS.find(
+              (l) => l.value === record.copyrightLevel
+            )?.name
+          }}</span>
+        </template>
+        <template v-if="column.key === 'created_on'">
+          <d-date :value="text" />
+        </template>
+        <template v-if="column.key === 'actions'">
+          <a-space v-if="composingMode">
+            <a-button type="primary" @click="addFrameToEditingMedia(record)">
+              <DoubleRightOutlined />Append frames
+            </a-button>
           </a-space>
-          <a-space v-else>
-            <template
-              v-if="
-                isAdmin || record.owner.username === result?.whoami.username
-              "
+          <template v-else>
+            <a-space v-if="record.privilege === 'NONE'">
+              <a-tooltip>
+                <template #title
+                  >You don't have permission to access this media</template
+                >
+                🙅‍♀️🙅‍♂️
+              </a-tooltip>
+            </a-space>
+            <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
+              <RequestPermission
+                v-if="record.copyrightLevel === 2"
+                :media="record"
+              />
+              <RequestAcknowledge v-else :media="record" />
+            </a-space>
+            <a-space
+              v-else-if="record.privilege === 'PENDING_APPROVAL'"
+              direction="vertical"
+              class="leading-4"
             >
-              <a-button type="primary" @click="editMedia(record)">
-                <EditOutlined />Edit
-              </a-button>
-              <a :href="absolutePath(record.src)" :download="record.name">
-                <a-button>
-                  <template #icon>
-                    <DownloadOutlined />
-                  </template>
-                </a-button>
-              </a>
-              <a-popconfirm
-                title="Are you sure delete this media?"
-                ok-text="Yes"
-                cancel-text="No"
-                @confirm="deleteMedia(record)"
-                placement="left"
-                :ok-button-props="{ danger: true }"
-                loading="deleting"
+              <b>✅ Request sent!</b>
+              <small>Please wait for the media owner's approval</small>
+            </a-space>
+            <a-space v-else>
+              <template
+                v-if="
+                  isAdmin || record.owner.username === result?.whoami.username
+                "
               >
-                <a-button type="dashed" danger>
-                  <template #icon>
-                    <DeleteOutlined />
-                  </template>
+                <a-button type="primary" @click="editMedia(record)">
+                  <EditOutlined />Edit
                 </a-button>
-              </a-popconfirm>
-            </template>
-            <template v-else>
-              <QuickStageAssignment :media="record" />
-            </template>
-          </a-space>
+                <a :href="absolutePath(record.src)" :download="record.name">
+                  <a-button>
+                    <template #icon>
+                      <DownloadOutlined />
+                    </template>
+                  </a-button>
+                </a>
+                <a-popconfirm
+                  title="Are you sure delete this media?"
+                  ok-text="Yes"
+                  cancel-text="No"
+                  @confirm="deleteMedia(record)"
+                  placement="left"
+                  :ok-button-props="{ danger: true }"
+                  loading="deleting"
+                >
+                  <a-button type="dashed" danger>
+                    <template #icon>
+                      <DeleteOutlined />
+                    </template>
+                  </a-button>
+                </a-popconfirm>
+              </template>
+              <template v-else>
+                <QuickStageAssignment :media="record" />
+              </template>
+            </a-space>
+          </template>
         </template>
       </template>
-    </template>
-  </a-table>
-  <slot></slot>
+    </a-table>
+    <slot></slot>
+  </a-layout>
 </template>

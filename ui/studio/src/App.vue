@@ -1,33 +1,28 @@
 <script setup lang="ts">
-import MediaFilter from "./components/media/MediaFilter.vue";
-import MediaTable from "./components/media/MediaTable.vue";
 import Authorized from "./components/Authorized.vue";
 import { provide } from "@vue/runtime-core";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import { apolloClient } from "./apollo";
-import Dropzone from "./components/media/Dropzone.vue";
-import MediaUpload from "./components/media/MediaForm/index.vue";
+import Dropzone from "./components/Dropzone.vue";
 import Footer from "./components/Footer.vue";
+import Sidebar from "./components/Sidebar.vue";
+import EntryTable from "./components/table/EntryTable.vue";
+import EntryFilter from "./components/filter/EntryFilter.vue";
 
 provide(DefaultApolloClient, apolloClient);
 </script>
 
 <template>
   <Authorized>
-    <a-layout class="layout">
-      <Dropzone>
-        <MediaFilter />
-        <MediaTable>
-          <MediaUpload />
-        </MediaTable>
-      </Dropzone>
-      <Footer />
+    <a-layout>
+      <Sidebar />
+      <a-layout class="h-screen">
+        <Dropzone>
+          <EntryFilter />
+          <EntryTable />
+        </Dropzone>
+        <Footer />
+      </a-layout>
     </a-layout>
   </Authorized>
 </template>
-
-<style>
-.layout {
-  min-height: 100vh;
-}
-</style>

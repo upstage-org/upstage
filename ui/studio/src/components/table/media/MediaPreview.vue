@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { PropType, computed, ref } from "vue";
-import { Media, MediaAttributes } from "../../models/studio";
-import { absolutePath } from "../../utils/common";
-import LarixQRCode from "../qrcode/LarixQRCode.vue";
-import OBSInstruction from "../OBSInstruction.vue";
+import { Media, MediaAttributes } from "../../../models/studio";
+import { absolutePath } from "../../../utils/common";
+import LarixQRCode from "../../qrcode/LarixQRCode.vue";
+import OBSInstruction from "../../OBSInstruction.vue";
 
 const props = defineProps({
   media: {

@@ -49,6 +49,7 @@ export default {
           startAudioMuted: 1,
         },
         interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false },
+        disableInitialGUM: true,
       };
       const api = new window.JitsiMeetExternalAPI(domain, options);
       console.log(api);

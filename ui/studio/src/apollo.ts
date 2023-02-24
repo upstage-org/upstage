@@ -119,6 +119,7 @@ const authLink = setContext((request, { headers }) => {
 });
 
 // Cache implementation
+export const selectedMenuVar = makeVar("media");
 export const inquiryVar = makeVar({});
 export const editingMediaVar = makeVar<Media | undefined>(undefined);
 const cache = new InMemoryCache({
@@ -133,6 +134,11 @@ const cache = new InMemoryCache({
         editingMedia: {
           read() {
             return editingMediaVar();
+          },
+        },
+        selectedMenu: {
+          read() {
+            return selectedMenuVar();
           },
         },
       },

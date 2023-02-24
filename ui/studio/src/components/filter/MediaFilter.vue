@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
-import Notifications from "./Notifications.vue";
+import Notifications from "../Notifications.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
@@ -182,7 +182,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
 <template>
   <a-affix :offset-top="0">
     <a-space
-      class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
+      class="shadow rounded-xl m-4 px-4 py-2 bg-white flex justify-between"
     >
       <a-space class="flex-wrap">
         <a-button

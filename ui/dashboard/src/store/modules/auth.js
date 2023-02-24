@@ -31,7 +31,7 @@ export default {
     },
   },
   actions: {
-    login({ commit, dispatch }, user) {
+    login({ commit }, user) {
       return new Promise((resolve, reject) => {
         authService
           .login(user)
@@ -43,8 +43,7 @@ export default {
               commit("SET_USERNAME", user.username);
               commit("SET_TOKEN", access_token);
               commit("SET_REFRESH_TOKEN", refresh_token);
-              dispatch("user/fetchCurrent", null, { root: true });
-              await dispatch("cache/fetchStages", null, { root: true });
+              //              await dispatch("user/fetchCurrent", null, { root: true });
               resolve();
             }
           })
