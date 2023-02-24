@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
-import Notifications from "../Notifications.vue";
+import Notifications from "components/Notifications.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
-import { StudioGraph, UploadFile } from "../../models/studio";
-import { inquiryVar } from "../../apollo";
+import { StudioGraph, UploadFile } from "models/studio";
+import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
-import configs from "../../config";
-import { capitalize, getSharedAuth } from "../../utils/common";
-import LanguageSelector from "../LanguageSelector.vue";
+import configs from "config";
+import { capitalize, getSharedAuth } from "utils/common";
+import LanguageSelector from "components/LanguageSelector.vue";
 
 const { result, loading } = useQuery<StudioGraph>(gql`
   {

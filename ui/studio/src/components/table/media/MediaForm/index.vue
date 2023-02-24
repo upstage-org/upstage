@@ -23,18 +23,18 @@ import {
   StudioGraph,
   UploadFile,
   User,
-} from "../../../models/studio";
-import { absolutePath, capitalize } from "../../../utils/common";
+} from "models/studio";
+import { absolutePath, capitalize } from "utils/common";
 import StageAssignment from "./StageAssignment.vue";
 import { useSaveMedia } from "./composable";
-import { editingMediaVar, inquiryVar } from "../../../apollo";
+import { editingMediaVar, inquiryVar } from "apollo";
 import MediaPermissions from "./MediaPermissions.vue";
 import AvatarVoice from "./AvatarVoice.vue";
 import PropLink from "./PropLink.vue";
 import {
   getDefaultAvatarVoice,
   getDefaultVariant,
-} from "../../../services/speech/voice";
+} from "services/speech/voice";
 const files = inject<Ref<UploadFile[]>>("files");
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(

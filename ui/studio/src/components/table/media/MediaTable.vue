@@ -3,16 +3,16 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
-import { editingMediaVar, inquiryVar } from "../../../apollo";
-import configs from "../../../config";
-import { permissionFragment } from "../../../models/fragment";
+import { editingMediaVar, inquiryVar } from "apollo";
+import configs from "config";
+import { permissionFragment } from "models/fragment";
 import {
   Media,
   MediaAttributes,
   StudioGraph,
   UploadFile,
-} from "../../../models/studio";
-import { absolutePath } from "../../../utils/common";
+} from "models/studio";
+import { absolutePath } from "utils/common";
 import MediaPreview from "./MediaPreview.vue";
 import RequestPermission from "./MediaForm/RequestPermission.vue";
 import RequestAcknowledge from "./MediaForm/RequestAcknowledge.vue";

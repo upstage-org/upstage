@@ -1,4 +1,4 @@
-import configs from "../config";
+import configs from "config";
 
 export const getSubsribeLink = (key: string) => {
   return `${configs.SHARED.STREAMING.subscribe}live/${key}.flv`;

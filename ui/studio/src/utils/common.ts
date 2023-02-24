@@ -1,5 +1,5 @@
-import configs from "../config";
-import { SharedAuth, SharedConfigs } from "../models/config";
+import configs from "config";
+import { SharedAuth, SharedConfigs } from "models/config";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
 import { PropType } from "vue";
-import { User } from "../../models/studio";
+import { User } from "models/studio";
 
 const { user } = defineProps({
   user: {

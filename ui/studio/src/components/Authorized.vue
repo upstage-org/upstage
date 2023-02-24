@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "@vue/reactivity";
-import configs from "../config";
-import { getSharedAuth } from "../utils/common";
+import configs from "config";
+import { getSharedAuth } from "utils/common";
 
 const auth = ref<{ refresh_token: string; token: string }>();
 

@@ -2,14 +2,14 @@
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, ref } from "vue";
-import { AvatarVoice, StudioGraph, VoiceGraph } from "../../../models/studio";
-import { avatarSpeak } from "../../../services/speech";
+import { AvatarVoice, StudioGraph, VoiceGraph } from "models/studio";
+import { avatarSpeak } from "services/speech";
 import {
   defaultTestMessage,
   variants,
   voices,
-} from "../../../services/speech/voice";
-import { absolutePath } from "../../../utils/common";
+} from "services/speech/voice";
+import { absolutePath } from "utils/common";
 
 const emits = defineEmits(["change"]);
 

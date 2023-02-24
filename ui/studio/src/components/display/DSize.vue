@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed } from "@vue/reactivity";
-import { humanFileSize } from "../../utils/common";
+import { humanFileSize } from "utils/common";
 
 const { value } = defineProps({
   value: {

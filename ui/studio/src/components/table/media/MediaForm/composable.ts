@@ -2,7 +2,7 @@ import { useMutation } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { ref, computed } from "vue";
-import { permissionFragment } from "../../../../models/fragment";
+import { permissionFragment } from "models/fragment";
 import {
   AvatarVoice,
   CopyrightLevel,
@@ -10,7 +10,7 @@ import {
   Media,
   Permission,
   UploadFile,
-} from "../../../../models/studio";
+} from "models/studio";
 
 interface SaveMediaPayload {
   files: UploadFile[];

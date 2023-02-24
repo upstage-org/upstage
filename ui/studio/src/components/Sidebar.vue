@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watchEffect } from "vue";
-import { selectedMenuVar } from "../apollo";
+import { selectedMenuVar } from "apollo";
 
 const selectedKeys = ref([selectedMenuVar()]);
 watchEffect(() => {

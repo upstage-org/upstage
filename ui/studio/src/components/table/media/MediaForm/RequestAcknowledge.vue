@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { message } from "ant-design-vue";
 import { PropType, inject } from "vue";
-import { Media } from "../../../models/studio";
+import { Media } from "models/studio";
 import { useRequestPermission } from "./composable";
 
 const props = defineProps({

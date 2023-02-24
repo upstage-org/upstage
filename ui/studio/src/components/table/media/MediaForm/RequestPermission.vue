@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { message } from "ant-design-vue";
 import { PropType, ref, inject } from "vue";
-import { Media } from "../../../../models/studio";
-import { absolutePath } from "../../../../utils/common";
+import { Media } from "models/studio";
+import { absolutePath } from "utils/common";
 import { useRequestPermission } from "./composable";
 
 const props = defineProps({
