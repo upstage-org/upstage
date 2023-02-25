@@ -35,6 +35,7 @@ import {
   getDefaultAvatarVoice,
   getDefaultVariant,
 } from "services/speech/voice";
+
 const files = inject<Ref<UploadFile[]>>("files");
 
 const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(
@@ -342,10 +343,12 @@ const clearSign = () => {
         </a-input-group>
         <template v-if="!['stream', 'audio'].includes(type)">
           <a-button type="primary" @click="visibleDropzone = true">
-            <UploadOutlined />Upload frame
+            <UploadOutlined />
+            Upload frame
           </a-button>
           <a-button type="primary" @click="addExistingFrame">
-            <PlusCircleOutlined />Add existing frame
+            <PlusCircleOutlined />
+            Add existing frame
           </a-button>
           <a-button
             v-if="files!.length > 1"
@@ -353,7 +356,8 @@ const clearSign = () => {
             danger
             @click="clearMode = !clearMode"
           >
-            <ClearOutlined />Clear frames
+            <ClearOutlined />
+            Clear frames
           </a-button>
         </template>
         <a-input
@@ -519,7 +523,7 @@ const clearSign = () => {
 </template>
 
 <style>
-:deept(.ant-progress-outer) {
+:deep(.ant-progress-outer) {
   padding-right: 0;
 }
 </style>

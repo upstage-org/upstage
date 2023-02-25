@@ -1,5 +1,10 @@
 <template>
-  <nav class="navbar" role="navigation" aria-label="main navigation">
+  <nav
+    v-if="notInIframe"
+    class="navbar"
+    role="navigation"
+    aria-label="main navigation"
+  >
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         &nbsp;
@@ -87,8 +92,17 @@ export default {
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
     const manual = computed(() => store.getters["config/manual"] ?? "alo");
+    const notInIframe = computed(() => window.self === window.top);
 
-    return { isAdmin, isGuest, expanded, toggleExpanded, configs, manual };
+    return {
+      isAdmin,
+      isGuest,
+      expanded,
+      toggleExpanded,
+      configs,
+      manual,
+      notInIframe,
+    };
   },
 };
 </script>

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
-import Notifications from "components/Notifications.vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
@@ -9,7 +8,7 @@ import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
 import { capitalize, getSharedAuth } from "utils/common";
-import LanguageSelector from "components/LanguageSelector.vue";
+import Navbar from "../Navbar.vue";
 
 const { result, loading } = useQuery<StudioGraph>(gql`
   {
@@ -181,9 +180,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
 
 <template>
   <a-affix :offset-top="0">
-    <a-space
-      class="shadow rounded-xl m-4 px-4 py-2 bg-white flex justify-between"
-    >
+    <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
         <a-button
           v-if="composingMode"
@@ -201,7 +198,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           v-else
           @click="visibleDropzone = true"
         >
-          <PlusOutlined /> {{ $t("new") }}
+          <PlusOutlined /> {{ $t("new") }} {{ $t("media") }}
           <template #overlay>
             <a-menu>
               <a-menu-item key="rtmp" @click="createRTMPStream">
@@ -330,24 +327,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           </h2>
           <span class="text-gray-500">{{ result.whoami.roleName }}</span>
         </a>
-        <Notifications />
-        <LanguageSelector />
-        <a-dropdown class="ml-4">
-          <a class="ant-dropdown-link flex-nowrap block w-24" @click.prevent>
-            <img src="../../assets/upstage.png" class="h-6" />
-            <DownOutlined />
-          </a>
-          <template #overlay>
-            <a-menu>
-              <a :href="to('backstage')">
-                <a-menu-item>{{ $t("backstage") }}</a-menu-item>
-              </a>
-              <a :href="to('')">
-                <a-menu-item>{{ $t("foyer") }}</a-menu-item>
-              </a>
-            </a-menu>
-          </template>
-        </a-dropdown>
+        <Navbar />
       </a-space>
     </a-space>
   </a-affix>

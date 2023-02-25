@@ -55,6 +55,9 @@ export interface Stage {
   dbId: number;
   createdOn: Date;
   owner: User;
+  fileLocation: string;
+  visibility: boolean;
+  status: "live" | "rehearsal" | "upcoming";
 }
 
 export interface Tag {

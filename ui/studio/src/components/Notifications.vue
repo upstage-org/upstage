@@ -5,10 +5,10 @@ import { computed } from "vue";
 import { permissionFragment } from "models/fragment";
 import { StudioGraph } from "models/studio";
 import { absolutePath } from "utils/common";
-import { useConfirmPermission } from "./table/media/MediaForm/composable";
+import { useConfirmPermission } from "components/media/MediaForm/composable";
 
 const { result, loading, refetch } = useQuery<StudioGraph>(gql`
-  {
+  query Notifications {
     notifications {
       type
       mediaUsage {

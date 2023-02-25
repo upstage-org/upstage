@@ -9,10 +9,8 @@ import { uploadDefault } from "models/studio";
 import i18n from "../i18n";
 import { humanFileSize } from "utils/common";
 
-i18n.global.t;
-
 const { result } = useQuery<StudioGraph>(gql`
-  {
+  query WhoAmI {
     whoami {
       username
       displayName

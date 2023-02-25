@@ -29,18 +29,8 @@ from studio.media import (Asset, AssetConnectionField, AssetType, CalcSizes,
                           ConfirmPermission, QuickAssignMutation,
                           RequestPermission, SaveMedia, UploadFile, Voice,
                           resolve_voices)
+from studio.stage import StageConnectionField, Stage
 from studio.notification import Notification, resolve_notifications
-
-
-class Stage(SQLAlchemyObjectType):
-    db_id = graphene.Int(description="Database ID")
-    permission = graphene.String(description="Player access to this stage")
-
-    class Meta:
-        model = StageModel
-        model.db_id = model.id
-        interfaces = (graphene.relay.Node,)
-
 
 class Tag(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
@@ -67,11 +57,15 @@ class User(SQLAlchemyObjectType):
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
     mediaTypes = SQLAlchemyConnectionField(AssetType.connection)
-    stages = SQLAlchemyConnectionField(Stage.connection)
     tags = SQLAlchemyConnectionField(Tag.connection)
     users = SQLAlchemyConnectionField(User.connection)
-    media = AssetConnectionField(
-        Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int), tags=graphene.List(graphene.String))
+    media = AssetConnectionField(Asset.connection, id=graphene.ID(), name_like=graphene.String(),
+                                 created_between=graphene.List(graphene.Date), file_location=graphene.String(),
+                                 media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String),
+                                 stages=graphene.List(graphene.Int), tags=graphene.List(graphene.String))
+    stages = StageConnectionField(Stage.connection, id=graphene.ID(), name_like=graphene.String(),
+                                  created_between=graphene.List(graphene.Date), file_location=graphene.String(),
+                                  owners=graphene.List(graphene.String))
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)
     voices = graphene.List(Voice, resolver=resolve_voices)
@@ -91,6 +85,7 @@ class Mutation(graphene.ObjectType):
     confirmPermission = ConfirmPermission.Field()
     requestPermission = RequestPermission.Field()
     quickAssignMutation = QuickAssignMutation.Field()
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 studio_schema = graphene.Schema(query=Query, mutation=Mutation)

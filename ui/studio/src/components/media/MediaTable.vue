@@ -2,7 +2,16 @@
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import {
+  computed,
+  reactive,
+  watch,
+  provide,
+  ref,
+  inject,
+  Ref,
+  ComputedRef,
+} from "vue";
 import { editingMediaVar, inquiryVar } from "apollo";
 import configs from "config";
 import { permissionFragment } from "models/fragment";
@@ -11,6 +20,7 @@ import {
   MediaAttributes,
   StudioGraph,
   UploadFile,
+  User,
 } from "models/studio";
 import { absolutePath } from "utils/common";
 import MediaPreview from "./MediaPreview.vue";
@@ -20,6 +30,7 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import QuickStageAssignment from "./QuickStageAssignment.vue";
 import { useI18n } from "vue-i18n";
+import { IsAdmin, WhoAmI } from "../../symbols";
 
 const { t } = useI18n();
 const files = inject<Ref<UploadFile[]>>("files");
@@ -60,12 +71,6 @@ const { result, loading, fetchMore } = useQuery<
       $tags: [String]
       $createdBetween: [Date]
     ) {
-      whoami {
-        username
-        displayName
-        role
-        roleName
-      }
       media(
         after: $cursor
         first: $limit
@@ -193,7 +198,7 @@ const columns: ColumnType<Media>[] = [
     defaultSortOrder: "descend",
   },
   {
-    title: t("manage_media"),
+    title: `${t("manage")} ${t("media")}`,
     align: "center",
     fixed: "right",
     key: "actions",
@@ -308,20 +313,12 @@ const filterTag = (tag: string) => {
   });
 };
 
-const isAdmin = computed(() =>
-  [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0
-  )
-);
-provide(
-  "whoami",
-  computed(() => result.value?.whoami)
-);
-provide("isAdmin", isAdmin);
+const whoami = inject<ComputedRef<User>>(WhoAmI);
+const isAdmin = inject(IsAdmin, false);
 </script>
 
 <template>
-  <a-layout class="px-4 w-full">
+  <a-layout class="w-full">
     <a-table
       class="w-full shadow rounded-xl bg-white overflow-auto"
       :columns="columns"
@@ -368,8 +365,8 @@ provide("isAdmin", isAdmin);
             :color="tag"
             @click="filterTag(tag)"
             class="cursor-pointer"
-            >{{ tag }}</a-tag
-          >
+            >{{ tag }}
+          </a-tag>
         </template>
         <template v-if="column.key === 'size'">
           <a-tag
@@ -393,15 +390,16 @@ provide("isAdmin", isAdmin);
         <template v-if="column.key === 'actions'">
           <a-space v-if="composingMode">
             <a-button type="primary" @click="addFrameToEditingMedia(record)">
-              <DoubleRightOutlined />Append frames
+              <DoubleRightOutlined />
+              Append frames
             </a-button>
           </a-space>
           <template v-else>
             <a-space v-if="record.privilege === 'NONE'">
               <a-tooltip>
                 <template #title
-                  >You don't have permission to access this media</template
-                >
+                  >You don't have permission to access this media
+                </template>
                 🙅‍♀️🙅‍♂️
               </a-tooltip>
             </a-space>
@@ -422,12 +420,11 @@ provide("isAdmin", isAdmin);
             </a-space>
             <a-space v-else>
               <template
-                v-if="
-                  isAdmin || record.owner.username === result?.whoami.username
-                "
+                v-if="isAdmin || record.owner.username === whoami?.username"
               >
                 <a-button type="primary" @click="editMedia(record)">
-                  <EditOutlined />Edit
+                  <EditOutlined />
+                  Edit
                 </a-button>
                 <a :href="absolutePath(record.src)" :download="record.name">
                   <a-button>
