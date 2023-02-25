@@ -72,13 +72,13 @@
 
       <div class="navbar-end">
         <template v-if="loggedIn">
-          <router-link
+          <a
             v-if="!isGuest"
-            to="/backstage"
+            :href="configs.STUDIO_ENDPOINT"
             class="button is-primary m-2"
           >
-            <strong>{{ $t("backstage") }}</strong>
-          </router-link>
+            <strong>{{ $t("studio") }}</strong>
+          </a>
           <button @click="logout" class="button m-2 mr-6">
             <strong>{{ $t("logout") }}</strong>
           </button>
@@ -106,8 +106,14 @@ import { loggedIn, logout } from "@/utils/auth";
 import { useStore } from "vuex";
 import Logo from "./Logo";
 import LanguageSelector from "./LanguageSelector.vue";
+import configs from "@/config";
 
 export default {
+  computed: {
+    configs() {
+      return configs;
+    },
+  },
   components: { Logo, LanguageSelector },
   setup() {
     const store = useStore();

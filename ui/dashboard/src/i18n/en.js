@@ -187,4 +187,5 @@ export default {
   },
   last_access: "Last Access",
   access: "Access",
+  studio: "Studio",
 };
