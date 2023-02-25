@@ -9,8 +9,10 @@ import moment, { Moment } from "moment";
 import configs from "config";
 import { getSharedAuth } from "utils/common";
 import Navbar from "../Navbar.vue";
+import { IframeSrc } from "../../symbols";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
+const iframeSrc = inject(IframeSrc, ref(""));
 const { result, loading } = useQuery<StudioGraph>(gql`
   query StageFilter {
     whoami {
@@ -145,7 +147,6 @@ const handleFilterOwnerName = (keyword: string, option: any) => {
     option.label.toLowerCase().includes(s)
   );
 };
-const visibleDropzone = inject("visibleDropzone");
 
 const VNodes = (_: any, { attrs }: { attrs: any }) => {
   return attrs.vnodes;
@@ -156,7 +157,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="visibleDropzone = true">
+        <a-button type="primary" @click="iframeSrc = '/backstage/new-stage'">
           <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
         </a-button>
         <a-input-search
