@@ -186,4 +186,5 @@ export default {
     on: "Lặp lại",
     off: "Không lặp",
   },
+  studio: "Studio",
 };

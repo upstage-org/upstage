@@ -1,4 +1,4 @@
-import { AvatarVoice } from "../../models/studio";
+import { AvatarVoice } from "models/studio";
 import { getDefaultVoice, isValidVoice } from "./voice";
 
 const { loadVoice, speak, stop } = (window as any).meSpeak;

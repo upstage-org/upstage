@@ -1,5 +1,5 @@
-import configs from "../config";
-import { SharedAuth, SharedConfigs } from "../models/config";
+import configs from "config";
+import { SharedAuth, SharedConfigs } from "models/config";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
@@ -55,5 +55,5 @@ export function humanFileSize(bytes: number, si = false, dp = 1) {
 }
 
 export function capitalize(str: string) {
-  return str.charAt(0).toUpperCase() + str.slice(1);
+  return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
 }

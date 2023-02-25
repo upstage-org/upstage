@@ -1,5 +1,5 @@
 <template>
-  <footer class="footer">
+  <footer v-if="notInIframe" class="footer">
     <div class="content has-text-centered">
       UpStage v{{ version }} -
       <span v-if="release">{{ release }}</span>
@@ -13,7 +13,11 @@ import { version, versionAlias } from "../../package.json";
 
 export default {
   setup: () => {
-    return { release: versionAlias, version };
+    return {
+      release: versionAlias,
+      version,
+      notInIframe: window.self === window.top,
+    };
   },
 };
 </script>

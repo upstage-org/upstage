@@ -1,4 +1,4 @@
-import { getSharedConfig } from "./utils/common";
+import { getSharedConfig } from "utils/common";
 
 const configs = {
   MODE: import.meta.env.MODE as "development" | "production",

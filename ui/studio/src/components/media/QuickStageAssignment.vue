@@ -3,8 +3,8 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { computed, inject, PropType, ref } from "vue";
-import { StudioGraph } from "../../models/studio";
-import { Media, Stage } from "../../models/studio";
+import { StudioGraph } from "models/studio";
+import { Media, Stage } from "models/studio";
 const props = defineProps({
   media: {
     type: Object as PropType<Media>,

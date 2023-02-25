@@ -177,7 +177,7 @@ export default {
   tags: "Tags",
   size: "Size",
   date: "Date",
-  manage_media: "Manage Media",
+  manage: "Manage",
   registration_button: "Registration Button",
   enable_upstage_donate: "Enable Upstage Donate",
   shape: "Shape",
@@ -185,4 +185,7 @@ export default {
     on: "Loop",
     off: "No Loop",
   },
+  last_access: "Last Access",
+  access: "Access",
+  studio: "Studio",
 };

@@ -1,33 +1,29 @@
 <script setup lang="ts">
-import MediaFilter from "./components/media/MediaFilter.vue";
-import MediaTable from "./components/media/MediaTable.vue";
-import Authorized from "./components/Authorized.vue";
+import { apolloClient } from "apollo";
 import { provide } from "@vue/runtime-core";
+import Authorized from "components/Authorized.vue";
+import Footer from "components/Footer.vue";
+import Sidebar from "components/Sidebar.vue";
+import { ref } from "vue";
+import { SelectedMenu } from "symbols";
+import Layout from "components/Layout.vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
-import { apolloClient } from "./apollo";
-import Dropzone from "./components/media/Dropzone.vue";
-import MediaUpload from "./components/media/MediaForm/index.vue";
-import Footer from "./components/Footer.vue";
+
+const selectedMenu = ref(["stage"]);
 
 provide(DefaultApolloClient, apolloClient);
+provide(SelectedMenu, selectedMenu);
 </script>
 
 <template>
   <Authorized>
-    <a-layout class="layout">
-      <Dropzone>
-        <MediaFilter />
-        <MediaTable>
-          <MediaUpload />
-        </MediaTable>
-      </Dropzone>
-      <Footer />
+    <a-layout>
+      <Sidebar>
+        <a-layout class="h-screen space-y-4 p-4">
+          <Layout />
+          <Footer />
+        </a-layout>
+      </Sidebar>
     </a-layout>
   </Authorized>
 </template>
-
-<style>
-.layout {
-  min-height: 100vh;
-}
-</style>

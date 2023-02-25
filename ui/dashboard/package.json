@@ -9,7 +9,7 @@
     "build": "vue-cli-service build",
     "format": "npx prettier --write \"./*.{js,vue,json}\" \"./src/**/*.{js,vue,json}\"",
     "build:dev": "NODE_ENV=production yarn build --mode dev",
-    "serve:localhost": "vue-cli-service serve --mode localhost",
+    "serve:localhost": "vue-cli-service serve --mode localhost --port 3000",
     "i18n": "node src/i18n/scan.js"
   },
   "dependencies": {

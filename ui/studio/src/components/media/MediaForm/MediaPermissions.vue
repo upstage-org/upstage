@@ -5,9 +5,9 @@ import { SelectValue } from "ant-design-vue/lib/select";
 import { TransferItem } from "ant-design-vue/lib/transfer";
 import gql from "graphql-tag";
 import { ref, watchEffect, PropType, inject, ComputedRef, watch } from "vue";
-import { editingMediaVar } from "../../../apollo";
-import configs from "../../../config";
-import { Media, StudioGraph } from "../../../models/studio";
+import { editingMediaVar } from "apollo";
+import configs from "config";
+import { Media, StudioGraph } from "models/studio";
 import { useConfirmPermission } from "./composable";
 
 const props = defineProps({

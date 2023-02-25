@@ -72,6 +72,14 @@ class Stage(Base, db.Model):
     def cover(self):
         return self.attributes.filter(StageAttribute.name == 'cover').first().description
 
+    @hybrid_property
+    def visibility(self):
+        return self.attributes.filter(StageAttribute.name == 'visibility').first().description
+
+    @hybrid_property
+    def status(self):
+        return self.attributes.filter(StageAttribute.name == 'status').first().description
+
 
 class AssetAttribute(Base, db.Model):
     '''

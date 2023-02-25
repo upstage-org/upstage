@@ -10,11 +10,12 @@
 
 <script>
 import LoginForm from "@/components/LoginForm";
+import configs from "@/config";
 export default {
   components: { LoginForm },
   methods: {
     onLoginSuccess() {
-      this.$router.push({ path: "/backstage/stages" });
+      window.location.href = configs.STUDIO_ENDPOINT;
     },
   },
 };

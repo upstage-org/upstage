@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { PropType } from "vue";
-import { Link } from "../../../models/studio";
+import { Link } from "models/studio";
 
 const props = defineProps({
   link: {

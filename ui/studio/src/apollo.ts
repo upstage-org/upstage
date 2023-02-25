@@ -9,10 +9,10 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 import { message } from "ant-design-vue";
-import configs from "./config";
-import { getSharedAuth, setSharedAuth } from "./utils/common";
+import configs from "config";
+import { getSharedAuth, setSharedAuth } from "utils/common";
 import gql from "graphql-tag";
-import { Media } from "./models/studio";
+import { Media } from "models/studio";
 
 // HTTP connection to the API
 const httpLink = createHttpLink({

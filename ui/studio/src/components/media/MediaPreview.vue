@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { PropType, computed, ref } from "vue";
-import { Media, MediaAttributes } from "../../models/studio";
-import { absolutePath } from "../../utils/common";
-import LarixQRCode from "../qrcode/LarixQRCode.vue";
-import OBSInstruction from "../OBSInstruction.vue";
+import { Media, MediaAttributes } from "models/studio";
+import { absolutePath } from "utils/common";
+import LarixQRCode from "components/qrcode/LarixQRCode.vue";
+import OBSInstruction from "components/OBSInstruction.vue";
 
 const props = defineProps({
   media: {
@@ -82,7 +82,7 @@ const showStreamInstruction = ref(false);
         </div>
       </template>
       <img
-        src="../../assets/multi-frame.svg"
+        src="assets/multi-frame.svg"
         alt="Multiframe"
         class="absolute left-4 bottom-4"
       />

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getLarixLink } from "../../utils/streaming";
+import { getLarixLink } from "utils/streaming";
 import { computed, PropType, watchEffect } from "vue";
 import QRCode from "./QRCode.vue";
-import { Media } from "../../models/studio";
+import { Media } from "models/studio";
 
 const props = defineProps({
   stream: { type: Object as PropType<Media>, required: true },

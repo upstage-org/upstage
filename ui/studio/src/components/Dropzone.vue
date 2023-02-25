@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { ref, provide } from "vue";
-import configs from "../../config";
-import { StudioGraph, UploadFile } from "../../models/studio";
+import configs from "config";
+import { StudioGraph, UploadFile } from "models/studio";
 import { message } from "ant-design-vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { uploadDefault } from "../../models/studio";
-import i18n from "../../i18n";
-import { humanFileSize } from "../../utils/common";
-
-i18n.global.t;
+import { uploadDefault } from "models/studio";
+import i18n from "../i18n";
+import { humanFileSize } from "utils/common";
 
 const { result } = useQuery<StudioGraph>(gql`
-  {
+  query WhoAmI {
     whoami {
       username
       displayName

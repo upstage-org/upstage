@@ -3,15 +3,18 @@ import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
-import { StudioGraph, UploadFile } from "models/studio";
+import { StudioGraph } from "models/studio";
 import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
-import { capitalize, getSharedAuth } from "utils/common";
+import { getSharedAuth } from "utils/common";
 import Navbar from "../Navbar.vue";
+import { IframeSrc } from "../../symbols";
 
+const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
+const iframeSrc = inject(IframeSrc, ref(""));
 const { result, loading } = useQuery<StudioGraph>(gql`
-  {
+  query StageFilter {
     whoami {
       username
       displayName
@@ -144,34 +147,6 @@ const handleFilterOwnerName = (keyword: string, option: any) => {
     option.label.toLowerCase().includes(s)
   );
 };
-const handleFilterStageName = (keyword: string, option: any) => {
-  return option.label.toLowerCase().includes(keyword.toLowerCase());
-};
-
-const files = inject<Ref<UploadFile[]>>("files");
-const visibleDropzone = inject("visibleDropzone");
-const composingMode = inject("composingMode");
-const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
-const createRTMPStream = () => {
-  if (files) {
-    files.value = [
-      {
-        id: 0,
-        preview: "",
-        url: "",
-        status: "virtual",
-        file: {
-          name: result.value
-            ? `${
-                result.value.whoami.displayName || result.value.whoami.username
-              }'s stream`
-            : "Stream name",
-          type: "video",
-        } as File,
-      },
-    ];
-  }
-};
 
 const VNodes = (_: any, { attrs }: { attrs: any }) => {
   return attrs.vnodes;
@@ -182,38 +157,13 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button
-          v-if="composingMode"
-          type="primary"
-          danger
-          @click="composingMode = false"
-        >
-          <template #icon>
-            <RollbackOutlined />
-          </template>
-          Back to editing
+        <a-button type="primary" @click="iframeSrc = '/backstage/new-stage'">
+          <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
         </a-button>
-        <a-dropdown-button
-          type="primary"
-          v-else
-          @click="visibleDropzone = true"
-        >
-          <PlusOutlined /> {{ $t("new") }} {{ $t("media") }}
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="rtmp" @click="createRTMPStream">
-                <template #icon>
-                  <video-camera-add-outlined />
-                </template>
-                RTMP Stream
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown-button>
         <a-input-search
           allowClear
           class="w-48"
-          placeholder="Search media"
+          placeholder="Search stage"
           v-model:value="name"
         />
         <a-select
@@ -246,66 +196,6 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
             </div>
           </template>
         </a-select>
-        <a-select
-          allowClear
-          showArrow
-          filterOption
-          mode="tags"
-          style="min-width: 128px"
-          placeholder="Media types"
-          :loading="loading"
-          v-model:value="types"
-          :options="
-            result
-              ? result.mediaTypes.edges
-                  .filter(
-                    (e) =>
-                      !['shape', 'media'].includes(e.node.name.toLowerCase())
-                  )
-                  .map((e) => ({
-                    value: e.node.name,
-                    label: capitalize(e.node.name),
-                  }))
-              : []
-          "
-        >
-        </a-select>
-        <a-select
-          allowClear
-          showArrow
-          :filterOption="handleFilterStageName"
-          mode="tags"
-          style="min-width: 160px"
-          placeholder="Stages assigned"
-          :loading="loading"
-          v-model:value="stages"
-          :options="
-            result
-              ? result.stages.edges.map((e) => ({
-                  value: e.node.dbId,
-                  label: e.node.name,
-                }))
-              : []
-          "
-        >
-        </a-select>
-        <a-select
-          allowClear
-          showArrow
-          mode="tags"
-          style="min-width: 160px"
-          placeholder="Tags"
-          :loading="loading"
-          v-model:value="tags"
-          :options="
-            result
-              ? result.tags.edges.map((e) => ({
-                  value: e.node.name,
-                  label: e.node.name,
-                }))
-              : []
-          "
-        ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
           v-model:value="(dates as any)"

@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import configs from "../config";
+import configs from "config";
 import { computed } from "vue";
 
 const props = defineProps({
