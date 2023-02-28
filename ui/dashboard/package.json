@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.23.0",
-  "versionAlias": "Krombacher-23",
+  "version": "2.0.3",
+  "versionAlias": "AnchorSteam-2.0.3",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
