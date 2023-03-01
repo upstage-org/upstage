@@ -243,10 +243,12 @@ class UpdateStage(graphene.Mutation):
                 StageModel.id == data['id']
             ).first()
             mapper = inspect(StageModel)
+            attributes = mapper.attrs.keys()
+
             for key, value in data.items():
                 if key == 'file_location':
                     continue
-                if hasattr(stage, key) and not isinstance(mapper.attrs[key], hybrid_property):
+                if hasattr(stage, key) and key in attributes and not isinstance(mapper.attrs[key], hybrid_property):
                     setattr(stage, key, value)
                 elif value != None:
                     if not value:
