@@ -32,6 +32,8 @@ from flask_jwt_extended.utils import get_jwt_identity
 from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
+from sqlalchemy.inspection import inspect
+from sqlalchemy.ext.hybrid import hybrid_property
 from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
 
 
@@ -240,10 +242,13 @@ class UpdateStage(graphene.Mutation):
             stage = local_db_session.query(StageModel).filter(
                 StageModel.id == data['id']
             ).first()
+            mapper = inspect(StageModel)
+            attributes = mapper.attrs.keys()
+
             for key, value in data.items():
                 if key == 'file_location':
                     continue
-                if hasattr(stage, key):
+                if hasattr(stage, key) and key in attributes and not isinstance(mapper.attrs[key], hybrid_property):
                     setattr(stage, key, value)
                 elif value != None:
                     if not value:
