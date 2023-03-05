@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ AnchorSteam-2.0.3 ]
+    branches: [ Modelo-2.0.4 ]
   pull_request:
-    branches: [ AnchorSteam-2.0.3 ]
+    branches: [ Modelo-2.0.4 ]
 jobs:
   test:
     timeout-minutes: 60
