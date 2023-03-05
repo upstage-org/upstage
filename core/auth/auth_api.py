@@ -113,7 +113,7 @@ class TokenNoList(object):
         return False
 
     # Token looks like this:
-    # {'token': {'iat': 1514613742, 'nbf': 1514613742, 'jti': '7923a09c-6d2c-42cd-a045-9385253fab8b', 'exp': 1514614342, 'identity': 43, 'fresh': False, 'type': 'access', 'user_claims': {}},
+    # {'token': {'iat': **********, 'nbf': **********, 'jti': '********-****-****-****-************', 'exp': **********, 'identity': **, 'fresh': False, 'type': 'access', 'user_claims': {}},
 
     # Tokens can be removed after the token_after datetime
     def add(self, token):
@@ -1137,33 +1137,3 @@ def apple_get_client_secret():
 if __name__ == "__main__":
     # import pdb;pdb.set_trace()
     pass
-    """
-    # Test disabling user via tokens
-    access_token='33069e62834fa9f4fb5d3204bb0622e387f49cf1ff21e8721fb0cb67a02f16ee'
-    refresh_token='8e5b1db2e3b5f939ac634d1372ac6c5d0a35aa991678e18c2e77a7fc135dbd6f'
-    with app.app_context():
-        import pdb;pdb.set_trace()
-        with ScopedSession() as local_db_session:
-            atoken = jwt_utils.decode_token(access_token)
-            rtoken = jwt_utils.decode_token(refresh_token)
-            TNL.add(atoken)
-            TNL.add(rtoken)
-    
-    apple_get_client_secret()
-    """
-    """
-    #payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
-    #    'code':signin_token,
-    #    'refresh_token':refresh_token,'grant_type':'refresh_token'}
-    signin_token='c100c6b28d39441a6a4c5dfd3e21d3276.0.muwz.6449BACPFrVl26RIDU57vg'
-    payload = {'client_id':APPLE_APP_ID,'client_secret':apple_get_client_secret(),
-        'code':signin_token,'grant_type':'authorization_code'}
-
-    headers = {
-        'Content-Type': 'application/x-www-form-urlencoded; UTF-8',
-    }
-    #result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=json.dumps(payload))
-    result = requests.post(APPLE_ACCESS_TOKEN_CREATE,headers=headers,data=payload)
-    pprint.pprint(json.loads(result.text))
-
-    """
