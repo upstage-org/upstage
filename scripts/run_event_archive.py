@@ -1,6 +1,15 @@
+import os
+import sys
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, ".."))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 from core.event_archive.system import run
 from core.event_archive.mqtt import build_client
-import event_archive.actions
+import core.event_archive.actions
 from config import MQTT_USER, MQTT_PASSWORD, MQTT_BROKER, MQTT_PORT
 
 if __name__ == "__main__":

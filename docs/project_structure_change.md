@@ -44,16 +44,18 @@ cd ~/upstage
 mv config/settings/app1.py config/
 ```
 
-Update the upstage service in `systemd`:
+Update the upstage services in `systemd`:
 
 _Please replace `prod` with `dev` if you are migrating dev instances_
 
 ```bash
 sudo ln -sf /home/upstage/upstage/config/prod/upstage.service /etc/systemd/system/upstage.service
 sudo ln -sf /home/upstage/upstage/config/prod/upstage_event_archive.service /etc/systemd/system/upstage_event_archive.service
+sudo ln -sf /home/upstage/upstage/config/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
 sudo systemctl daemon-reload
 sudo systemctl restart upstage
 sudo systemctl restart upstage_event_archive
+sudo systemctl restart upstage_email_token
 ```
 
 Update uploaded assets:
