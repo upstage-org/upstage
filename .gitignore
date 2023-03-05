@@ -8,7 +8,6 @@ __pycache__/
 *.log
 .idea/
 uploads/
-ui/static/assets/*
 
 .DS_Store
 node_modules
