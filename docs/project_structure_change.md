@@ -25,7 +25,7 @@ git status
 `ui/` are just `node_modules` and `dist`, which are ignored by git and can be safely removed and installed later:
 
 ```bash
-mv ui/dashboard/.env dashboard/
+mv ui/dashboard/.env* dashboard/
 rm -rf ui
 cd dashboard
 yarn
