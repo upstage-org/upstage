@@ -29,7 +29,7 @@ if ENV_TYPE == 'Production':
     exit()
 """
 
-demo_media_folder = "ui/static/demo"
+demo_media_folder = "uploads/demo"
 owner_id = 0
 
 while not os.path.exists(demo_media_folder):

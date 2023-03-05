@@ -17,6 +17,7 @@ For more information, visit https://mobilise-demobilise.eu and https://upstage.o
 ## Infrastructure
 
 A complete instance of UpStage should consist of:
+
 - **Upstage Service**: backend code written in Python, Flask, Graphene, SQLAlchemy. This service provides the necessary API Endpoint, mainly in GraphQL to manage stages/media/players and configurations such as foyer, permissions and notifications.
 - **Dashboard**: frontend code written in Vue 3, Anime.js, Moveable, Bulma and many canvas operations. This is where most of the user interactions took place, such as the foyer, live stage, backstage and the admin section.
 - **MQTT Broker**: this is the magic behind UpStage's performance work. The broker has many topics to be subscribed, such as `meta/demo/chat` can be used to deliveries chat messages between players and audiences in Demo Stage at the `meta` instance. The same broker can also be used for multiple instance of UpStage.
@@ -32,17 +33,19 @@ A complete instance of UpStage should consist of:
 `PostgresSQL`, `MongoDB`, `Nginx` and `MQTT Broker` can be installed using the system package manager, we don't cover them in this section. For a mqtt broker, we recommend using [Mosquitto](https://github.com/eclipse/mosquitto).
 
 1. Clone the repository
+
 ```bash
 git clone https://github.com/upstage-org/upstage.git
 ```
 
 2. Setup `UpStage Service`:
+
 ```bash
 # Install dependencies
 pip install -r requirements.pip
 
 # Create the systemd service using our example configuration
-cp system/prod/upstage.service /etc/systemd/system/upstage.service
+cp config/prod/upstage.service /etc/systemd/system/upstage.service
 
 # Start the service
 systemctl start upstage.service
@@ -52,8 +55,9 @@ systemctl enable upstage.service
 ```
 
 3. Setup `Dashboard`:
+
 ```bash
-cd ui/dashboard
+cd dashboard
 
 # Install dependencies
 yarn
@@ -65,8 +69,9 @@ yarn build
 The compiled source code will be stored in the `dist` folder. Later we will set up `Nginx` to serve these content on our root path.
 
 4. Setup `Studio` (very similar to Dashboard):
+
 ```bash
-cd ui/studio
+cd studio
 
 # Install dependencies
 yarn
@@ -74,12 +79,14 @@ yarn
 # Build source
 yarn build
 ```
+
 Studio will be served at `/studio` path of our instance.
 
 5. Setup `Event Archive Service`:
+
 ```bash
 # Create the systemd service using our example configuration
-cp system/prod/event_archive.service /etc/systemd/system/event_archive.service
+cp config/prod/event_archive.service /etc/systemd/system/event_archive.service
 
 # Start the service
 systemctl start event_archive.service
@@ -89,12 +96,13 @@ systemctl enable event_archive.service
 ```
 
 6. Setup `Streaming Service`:
+
 ```bash
 # Clone the Node-Media-Server repository
 git clone https://github.com/illuspas/Node-Media-Server.git
 
 # Create the systemd service using our example configuration
-cp system/dev/streaming.service /etc/systemd/system/upstage-streaming.service
+cp config/dev/streaming.service /etc/systemd/system/upstage-streaming.service
 
 # Start the service
 systemctl start upstage-streaming.service
@@ -104,11 +112,12 @@ systemctl enable upstage-streaming.service
 ```
 
 7. Setup `Upstage Send Email Token To Cient Server`:
+
 ```bash
 
 # Only setup on Upstage Prod
 # Create the systemd service using our example configuration
-cp system/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
+cp config/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
 
 # Start the service
 systemctl start upstage_email_token.service
@@ -116,6 +125,7 @@ systemctl start upstage_email_token.service
 # Enable the service if you want it start automatically on boot
 systemctl enable upstage_email_token.service
 ```
+
 ## Configurations
 
 UpStage was designed to have multiple instances of it working independently. Each instance could have its own configurations set to get worked.
@@ -141,7 +151,7 @@ DB_PORT=5432
 ```
 
 ```python
-# MongoDB connection. Event Archive won't be able to put messages in queue without this configuration setup properly, which can lead to inconsistent stage behavior 
+# MongoDB connection. Event Archive won't be able to put messages in queue without this configuration setup properly, which can lead to inconsistent stage behavior
 MONGO_HOST = ""
 MONGO_PORT = 27018
 MONGO_DB = "upstage"
@@ -165,7 +175,7 @@ SECRET_KEY='' # Paste the result from running __init__.py
 ```
 
 ```python
-# When setup Send Email Service, only the Upstage server has permission to send the email. The Client-server has to call the external API of the Upstage server. 
+# When setup Send Email Service, only the Upstage server has permission to send the email. The Client-server has to call the external API of the Upstage server.
 # Upstage server will generate and send a token to each client server every 10 minutes. That token has expired in 10 minutes. Client-server stores that token in MongoDB and uses that token to call the sendEmailExternal API of the Upstage server
 EMAIL_USE_TLS = True
 EMAIL_HOST = 'mail.gandi.net'
@@ -235,7 +245,7 @@ Serve `Dashboard` on root path of our instance
 
 ```nginx
         location / {
-            alias /home/upstage/upstage/ui/dashboard/dist/;
+            alias /home/upstage/upstage/dashboard/dist/;
             try_files $uri $uri/ /index.html;
         }
 ```
@@ -244,7 +254,7 @@ Serve `Studio` on `/studio` path of our instance. If you change the path, rememb
 
 ```nginx
         location /studio {
-            alias /home/upstage/upstage/ui/studio/dist/;
+            alias /home/upstage/upstage/studio/dist/;
             try_files $uri $uri/ /V4.0/studio/index.html;
         }
 ```
@@ -253,7 +263,7 @@ Serve user uploaded media in `/static` path. Caching is important in this config
 
 ```nginx
        location /static {
-            alias /home/upstage/upstage/ui/static;
+            alias /home/upstage/upstage/uploads;
             expires off;
             add_header Cache-Control 'no-cache, must-revalidate';
         }
@@ -315,6 +325,7 @@ Type=simple
 ExecStart=
 ExecStart=/usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
 ```
+
 Finally restart the service
 
 ```bash
@@ -322,4 +333,5 @@ sudo systemctl restart mosquitto.service
 ```
 
 ## License
+
 [GPL-3.0 License](https://github.com/upstage-org/upstage/blob/main/LICENSE)

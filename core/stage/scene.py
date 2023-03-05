@@ -9,7 +9,7 @@ import graphene
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 absolutePath = os.path.dirname(appdir)
-storagePath = "ui/static/assets"
+storagePath = "uploads/assets"
 
 
 class Scene(SQLAlchemyObjectType):

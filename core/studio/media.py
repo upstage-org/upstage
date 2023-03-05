@@ -44,7 +44,7 @@ from core.utils.graphql_utils import CountableConnection, input_to_dictionary
 
 
 absolutePath = os.path.dirname(appdir)
-storagePath = "ui/static/assets"
+storagePath = "uploads/assets"
 
 
 class AssignedStage(graphene.ObjectType):

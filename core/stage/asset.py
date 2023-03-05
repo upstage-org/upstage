@@ -31,7 +31,7 @@ if projdir not in sys.path:
 
 
 absolutePath = os.path.dirname(appdir)
-storagePath = "ui/static/assets"
+storagePath = "uploads/assets"
 
 
 class AssetConnectionField(SQLAlchemyConnectionField):
