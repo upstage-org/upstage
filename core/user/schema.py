@@ -104,6 +104,8 @@ class CreateUser(graphene.Mutation):
 
     async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
+        # We have GUEST role because Helen wants to create batch users for demo purposes
+        # GUEST users don't neccessarily need an email address to keep batch creation simple
         if not data["email"] and data["role"] != GUEST:
             raise Exception("Email is required!")
         if not data["intro"]:
