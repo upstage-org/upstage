@@ -15,8 +15,9 @@ const { t } = useI18n();
 const iframeSrc = inject(IframeSrc, ref(""));
 const manageStage = (stage: Stage) =>
   (iframeSrc.value = `/backstage/stage-management/${stage.id}/`);
-const enterStage = (stage: Stage) =>
-  (iframeSrc.value = `/live/${stage.fileLocation}`);
+const enterStage = (stage: Stage) => {
+  window.open(`/${stage.fileLocation}`, "_blank");
+};
 const tableParams = reactive({
   limit: 10,
   cursor: undefined,
@@ -226,10 +227,10 @@ provide("refresh", () => {
       :loading="loading"
       @change="handleTableChange"
       :pagination="{
-      showQuickJumper: true,
-      showSizeChanger: true,
-      total: result ? result.stages.totalCount : 0,
-    } as Pagination"
+        showQuickJumper: true,
+        showSizeChanger: true,
+        total: result ? result.stages.totalCount : 0,
+      } as Pagination"
     >
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">
@@ -257,8 +258,7 @@ provide("refresh", () => {
         <template v-if="column.key === 'status'">
           <a-tag
             v-if="text"
-            :color="
-              { live: 'red', rehearsal: 'yellow', upcoming: 'green' }[(record as Stage).status]
+            :color="{ live: 'red', rehearsal: 'yellow', upcoming: 'green' }[(record as Stage).status]
             "
           >
             {{ capitalize(text) }}
