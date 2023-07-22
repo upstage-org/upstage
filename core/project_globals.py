@@ -16,7 +16,7 @@ from flask_cors import CORS
 from flask import Flask, redirect, g, got_request_exception, abort, render_template
 from flask import Response, jsonify, make_response, request
 from flask_caching import Cache as URLCache
-from flask.json import JSONEncoder
+from flask.json.provider import JSONProvider
 
 # from flask.exthook import ExtDeprecationWarning
 from flask_restx import Api
@@ -173,19 +173,21 @@ def do403(e):
     return render_template("global_templates/403.html"), 403
 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-class CustomJSONEncoder(JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime.datetime) or isinstance(o, datetime.date):
-            return o.isoformat()
-        if isinstance(o, ObjectId) or isinstance(o, Decimal):
-            return str(o)
-        return JSONEncoder.default(self, o)
+# # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+class CustomJSONProvider(JSONProvider):
+    def dumps(self, obj, **kwargs):
+        if isinstance(obj, datetime.datetime) or isinstance(obj, datetime.date):
+            return obj.isoformat()
+        if isinstance(obj, ObjectId) or isinstance(obj, Decimal):
+            return str(obj)
+        return json.dumps(obj, **kwargs)
+
+    def loads(self, s: str | bytes, **kwargs):
+        return json.loads(s, **kwargs)
 
 
 # This is only in effect when you call jsonify()
-app.json_encoder = CustomJSONEncoder
-
+app.json_provider_class = CustomJSONProvider
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 print("ENV_TYPE:{},DEBUG={}".format(ENV_TYPE, DEBUG))

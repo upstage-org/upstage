@@ -21,9 +21,11 @@ pillow
 psycopg2_binary
 pymongo
 pyotp
+pytest
 pytz
 qrcode
 requests
+snapshottest
 stripe
 werkzeug
 wrapt
