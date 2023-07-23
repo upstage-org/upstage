@@ -182,7 +182,7 @@ class CustomJSONProvider(JSONProvider):
             return str(obj)
         return json.dumps(obj, **kwargs)
 
-    def loads(self, s: str | bytes, **kwargs):
+    def loads(self, s, **kwargs):
         return json.loads(s, **kwargs)
 
 
