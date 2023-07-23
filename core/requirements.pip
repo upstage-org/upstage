@@ -26,6 +26,7 @@ pytz
 qrcode
 requests
 snapshottest
+sqlalchemy
 stripe
 werkzeug
 wrapt
