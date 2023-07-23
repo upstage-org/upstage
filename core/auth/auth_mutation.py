@@ -42,13 +42,29 @@ class AuthMutation(graphene.Mutation):
         user = User.query.filter_by(username=username).first()
         if not user:
             raise Exception("Authenication Failure : User is not registered")
-        if decrypt(password) != user.password:
+        if password != decrypt(user.password):
             raise Exception("Authenication Failure : Bad Password")
-        return AuthMutation(
-            access_token=create_access_token(username),
-            refresh_token=create_refresh_token(username),
+
+        access_token = create_access_token(identity=user.id)
+        refresh_token = create_refresh_token(identity=user.id)
+
+        user_session = UserSession(
+            user_id=user.id,
+            access_token=access_token,
+            refresh_token=refresh_token,
+            app_version=request.headers.get("X-Upstage-App-Version"),
+            app_os_type=request.headers.get("X-Upstage-Os-Type"),
+            app_os_version=request.headers.get("X-Upstage-Os-Version"),
+            app_device=request.headers.get("X-Upstage-Device-Model"),
         )
-        # TODO: Add session handling, etc.
+        with ScopedSession() as local_db_session:
+            local_db_session.add(user_session)
+            local_db_session.flush()
+
+        return AuthMutation(
+            access_token,
+            refresh_token,
+        )
 
 
 class RefreshMutation(graphene.Mutation):

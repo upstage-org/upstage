@@ -162,28 +162,39 @@ class UpdateUser(graphene.Mutation):
             raise Exception("Email is required!")
 
         with ScopedSession() as local_db_session:
-            user = (
-                local_db_session.query(UserModel)
-                .filter(UserModel.id == data["id"])
-                .first()
-            )
-            if data["password"]:
-                data["password"] = encrypt(data["password"])
-            else:
-                del data["password"]
-            for key, value in data.items():
-                if key == "active":
-                    if value and not user.active and not user.deactivated_on:
-                        await send(
-                            [user.email],
-                            f"Registration approved for user {user.username}",
-                            user_approved(user),
-                        )
-                    if not value and user.active:
-                        user.deactivated_on = datetime.now()
+            try:
+                user = (
+                    local_db_session.query(UserModel)
+                    .filter(UserModel.id == data["id"])
+                    .first()
+                )
+                if data["password"]:
+                    data["password"] = encrypt(data["password"])
+                else:
+                    del data["password"]
+                for key, value in data.items():
+                    if key == "active":
+                        if value and not user.active and not user.deactivated_on:
+                            await send(
+                                [user.email],
+                                f"Registration approved for user {user.username}",
+                                user_approved(user),
+                            )
+                        if not value and user.active:
+                            user.deactivated_on = datetime.now()
 
-                if hasattr(user, key):
-                    setattr(user, key, value)
+                    if hasattr(user, key):
+                        setattr(user, key, value)
+                local_db_session.flush()
+            except Exception as e:
+                if "email" in e.args[0]:
+                    raise Exception(
+                        f"This email address already belongs to another user!"
+                    )
+                app.logger.error(e)
+                raise Exception(
+                    f"There was an error updating this user information. Please check the logs and try again later.!"
+                )
 
         user = DBSession.query(UserModel).filter(UserModel.id == data["id"]).first()
         return UpdateUser(user=user)
