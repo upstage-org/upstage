@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { useMutation } from "@vue/apollo-composable";
-import { ref } from "@vue/reactivity";
 import configs from "config";
 import gql from "graphql-tag";
-import { getSharedAuth } from "utils/common";
+import { Auth } from "models/config";
+import { getSharedAuth, setSharedAuth } from "utils/common";
+import { ref } from "vue";
 
 const auth = ref<{ refresh_token: string; token: string }>();
 
@@ -12,9 +13,9 @@ auth.value = sharedState;
 
 const isDev = import.meta.env.DEV;
 
-const { mutate } = useMutation<
+const { mutate, loading } = useMutation<
   { authUser: { accessToken: string; refreshToken: string } },
-  { username: string; password: string }
+  Auth
 >(gql`
   mutation Login($username: String, $password: String) {
     authUser(username: $username, password: $password) {
@@ -32,7 +33,15 @@ const handleQuickLogin = async () => {
         username,
         password,
       });
-      alert(JSON.stringify(res));
+      if (res && res.data) {
+        const sharedAuth = {
+          token: res.data.authUser.accessToken,
+          refresh_token: res.data.authUser.refreshToken ?? "",
+          username,
+        };
+        setSharedAuth(sharedAuth);
+        auth.value = sharedAuth;
+      }
     }
   }
 };
@@ -51,7 +60,9 @@ const handleQuickLogin = async () => {
         <a-button type="primary">{{ $t("login") }}</a-button>
       </a>
       <a-tooltip title="Quick login for developers">
-        <a-button v-if="isDev" @click="handleQuickLogin">🔑</a-button>
+        <a-button v-if="isDev" @click="handleQuickLogin" :loading="loading"
+          >🔑</a-button
+        >
       </a-tooltip>
     </template>
   </a-result>

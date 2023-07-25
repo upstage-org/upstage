@@ -10,7 +10,9 @@ export function getSharedConfig(): SharedConfigs {
     const sharedConfig = JSON.parse(localStorage.getItem("configs") ?? "");
     return sharedConfig;
   } catch (error) {
-    localStorage.clear(); // Remove shared auth so that it will ask you to visit Dashboard for login
+    if (import.meta.env.PROD) {
+      localStorage.clear(); // Remove shared auth so that it will ask you to visit Dashboard for login
+    }
     return {
       GRAPHQL_ENDPOINT: import.meta.env.VITE_GRAPHQL_ENDPOINT,
     } as SharedConfigs;
