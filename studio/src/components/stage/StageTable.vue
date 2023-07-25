@@ -2,7 +2,7 @@
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
-import { Media, Stage, StudioGraph } from "models/studio";
+import type { Media, Stage, StudioGraph } from "models/studio";
 import { absolutePath } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";

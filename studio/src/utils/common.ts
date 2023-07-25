@@ -11,7 +11,9 @@ export function getSharedConfig(): SharedConfigs {
     return sharedConfig;
   } catch (error) {
     localStorage.clear(); // Remove shared auth so that it will ask you to visit Dashboard for login
-    return {} as SharedConfigs;
+    return {
+      GRAPHQL_ENDPOINT: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+    } as SharedConfigs;
   }
 }
 

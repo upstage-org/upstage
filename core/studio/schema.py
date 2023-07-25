@@ -11,7 +11,7 @@ if projdir not in sys.path:
 import graphene
 from core.asset.models import Stage as StageModel
 from core.asset.models import Tag as TagModel
-from core.auth.auth_mutation import RefreshMutation
+from core.auth.auth_mutation import AuthMutation, RefreshMutation
 from core.project_globals import DBSession, app
 from config import URL_PREFIX
 from flask_graphql import GraphQLView
@@ -103,6 +103,7 @@ class Mutation(graphene.ObjectType):
     deleteMedia = DeleteMedia.Field()
     uploadFile = UploadFile.Field()
     saveMedia = SaveMedia.Field()
+    authUser = AuthMutation.Field()
     refreshUser = RefreshMutation.Field()
     confirmPermission = ConfirmPermission.Field()
     requestPermission = RequestPermission.Field()
