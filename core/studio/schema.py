@@ -2,6 +2,8 @@
 import os
 import sys
 
+from core.stage.schema import UpdateStage
+
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, ".."))
 if projdir not in sys.path:
@@ -108,6 +110,7 @@ class Mutation(graphene.ObjectType):
     confirmPermission = ConfirmPermission.Field()
     requestPermission = RequestPermission.Field()
     quickAssignMutation = QuickAssignMutation.Field()
+    updateStage = UpdateStage.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
