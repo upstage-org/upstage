@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import { useQuery } from "@vue/apollo-composable";
+import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
-import { Media, Stage, StudioGraph } from "models/studio";
+import type { Media, Stage, StudioGraph } from "models/studio";
 import { absolutePath } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { capitalize } from "utils/common";
 import { IframeSrc } from "../../symbols";
+import { message } from "ant-design-vue";
+import { FetchResult } from "@apollo/client/core";
 
 const { t } = useI18n();
 
@@ -149,11 +151,13 @@ const columns: ColumnType<Stage>[] = [
     title: t("status"),
     dataIndex: "status",
     key: "status",
+    align: "center",
   },
   {
     title: t("visibility"),
     dataIndex: "visibility",
     key: "visibility",
+    align: "center",
   },
   {
     title: t("access"),
@@ -215,6 +219,58 @@ provide("refresh", () => {
     updateQuery,
   });
 });
+
+const {
+  mutate: updateStatus,
+  loading: loadingUpdateStatus,
+  onDone: onStatusUpdated,
+} = useMutation<{ updateStatus: { result: string } }, { stageId: string }>(gql`
+  mutation UpdateStatus($stageId: ID!) {
+    updateStatus(stageId: $stageId) {
+      result
+    }
+  }
+`);
+const handleChangeStatus = async (record: Stage) => {
+  await updateStatus({
+    stageId: record.id,
+  });
+};
+
+const {
+  mutate: updateVisibility,
+  loading: loadingUpdateVisibility,
+  onDone: onVisibilityUpdated,
+} = useMutation<
+  { updateVisibility: { result: string } },
+  { stageId: string }
+>(gql`
+  mutation UpdateVisibility($stageId: ID!) {
+    updateVisibility(stageId: $stageId) {
+      result
+    }
+  }
+`);
+const handleChangeVisibility = async (record: Stage) => {
+  await updateVisibility({
+    stageId: record.id,
+  });
+};
+
+const handleUpdate = (result: FetchResult) => {
+  if (result.data) {
+    message.success("Stage updated successfully!");
+  } else {
+    message.error("You don't have permission to perform this action!");
+  }
+  fetchMore({
+    variables: params.value,
+    updateQuery,
+  });
+};
+
+onStatusUpdated(handleUpdate);
+onVisibilityUpdated(handleUpdate);
 </script>
 
 <template>
@@ -256,16 +312,25 @@ provide("refresh", () => {
           {{ capitalize(text) }}
         </template>
         <template v-if="column.key === 'status'">
-          <a-tag
-            v-if="text"
-            :color="{ live: 'red', rehearsal: 'yellow', upcoming: 'green' }[(record as Stage).status]
-            "
-          >
+          <a-tag v-if="(record as Stage).status === 'upcoming'" color="yellow">
             {{ capitalize(text) }}
           </a-tag>
+          <a-tooltip v-else :title="capitalize(text)">
+            <a-switch
+              checked-children="L"
+              un-checked-children="R"
+              :checked="text === 'live'"
+              :loading="loadingUpdateStatus"
+              @change="handleChangeStatus(record)"
+            />
+          </a-tooltip>
         </template>
         <template v-if="column.key === 'visibility'">
-          <a-switch :checked="text" disabled />
+          <a-switch
+            :checked="!!text"
+            :loading="loadingUpdateVisibility"
+            @change="handleChangeVisibility(record)"
+          />
         </template>
         <template v-if="column.key === 'actions'">
           <a-space>
