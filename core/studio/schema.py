@@ -2,8 +2,6 @@
 import os
 import sys
 
-from core.stage.schema import UpdateStage
-
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, ".."))
 if projdir not in sys.path:
@@ -22,6 +20,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from core.stage.asset import DeleteMedia
+from core.stage.schema import UpdateAttributeStatus, UpdateAttributeVisibility
 from core.user.models import ROLES
 from core.user.models import User as UserModel
 from core.user.models import role_conv
@@ -110,7 +109,8 @@ class Mutation(graphene.ObjectType):
     confirmPermission = ConfirmPermission.Field()
     requestPermission = RequestPermission.Field()
     quickAssignMutation = QuickAssignMutation.Field()
-    updateStage = UpdateStage.Field()
+    updateStatus = UpdateAttributeStatus.Field()
+    updateVisibility = UpdateAttributeVisibility.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
