@@ -13,7 +13,8 @@ const page = (name: string) => selectedMenu.value.includes(name);
 </script>
 
 <template>
-  <template v-if="page('media')">
+  <iframe v-if="iframeSrc" class="bg-gray-200" :src="iframeSrc" />
+  <template v-else-if="page('media')">
     <Dropzone>
       <MediaFilter />
       <MediaTable>
@@ -25,7 +26,6 @@ const page = (name: string) => selectedMenu.value.includes(name);
     <StageFilter />
     <StageTable v-show="!iframeSrc" />
   </template>
-  <iframe v-if="iframeSrc" class="bg-gray-200" :src="iframeSrc" />
 </template>
 
 <style lang="less" scoped>
