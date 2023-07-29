@@ -15,6 +15,10 @@ export function getSharedConfig(): SharedConfigs {
     }
     return {
       GRAPHQL_ENDPOINT: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+      MQTT_CONNECTION: {},
+      STREAMING: {
+        auth: {},
+      },
     } as SharedConfigs;
   }
 }
