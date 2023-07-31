@@ -200,7 +200,10 @@ def create_demo_users():
     guest_email = "guest@upstage.live"
     test_user_password = "12345678"
 
-    if session.query(User).filter(User.username == admin_username).first() or session.query(User).filter(User.email == admin_email).first():
+    if (
+        session.query(User).filter(User.username == admin_username).first()
+        or session.query(User).filter(User.email == admin_email).first()
+    ):
         print('⏩ An admin user with email "{}" already exists.'.format(admin_email))
     else:
         admin = User()
@@ -216,7 +219,10 @@ def create_demo_users():
             )
         )
 
-    if session.query(User).filter(User.username == guest_username).first() or session.query(User).filter(User.email == guest_email).first():
+    if (
+        session.query(User).filter(User.username == guest_username).first()
+        or session.query(User).filter(User.email == guest_email).first()
+    ):
         print('⏩ A guest user with email "{}" already exists.'.format(guest_username))
     else:
         guest = User()
