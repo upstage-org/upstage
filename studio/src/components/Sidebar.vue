@@ -43,7 +43,7 @@ provide(IsAdmin, isAdmin);
         mode="inline"
         class="upstage-menu"
       >
-        <a-menu-item key="media">
+        <a-menu-item key="media" @click="iframeSrc = ''">
           <picture-outlined />&nbsp;
           <span>Media</span>
         </a-menu-item>
@@ -82,8 +82,8 @@ provide(IsAdmin, isAdmin);
 
 <style lang="less">
 .upstage-menu {
-  margin-top: 16px;
-  margin-left: 16px;
+  margin-top: 8px;
+  margin-left: 8px;
   margin-right: 0;
   border-radius: 12px;
 

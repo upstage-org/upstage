@@ -19,7 +19,7 @@ provide(SelectedMenu, selectedMenu);
   <Authorized>
     <a-layout>
       <Sidebar>
-        <a-layout class="h-screen space-y-4 p-4">
+        <a-layout class="h-screen space-y-2 p-2">
           <Layout />
           <Footer />
         </a-layout>

@@ -1,6 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
-import { PropType } from "vue";
+import { PropType, computed } from "vue";
 import { User } from "models/studio";
 
 const { user } = defineProps({
@@ -18,4 +17,6 @@ const text = computed(() => {
 });
 </script>
 
-<template>{{ text }}</template>
+<template>
+  {{ text }}
+</template>
