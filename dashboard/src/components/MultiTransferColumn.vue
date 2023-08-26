@@ -133,7 +133,7 @@ export default {
             for (let j = 0; j < (val[i] ?? []).length; j++) {
               positions[
                 props.data.findIndex(
-                  (item) => props.renderValue(item) === val[i][j]
+                  (item) => props.renderValue(item) === val[i][j],
                 )
               ] = i + 1;
             }
@@ -143,7 +143,7 @@ export default {
           reset();
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     const count = (i) =>

@@ -28,7 +28,8 @@ export default function buildClient() {
     subscribe(topics, stageUrl) {
       const namespacedTopics = {};
       Object.keys(topics).forEach(
-        (key) => (namespacedTopics[namespaceTopic(key, stageUrl)] = topics[key])
+        (key) =>
+          (namespacedTopics[namespaceTopic(key, stageUrl)] = topics[key]),
       );
       return new Promise((resolve, reject) => {
         this.client.subscribe(namespacedTopics, (error, res) => {
@@ -60,7 +61,7 @@ export default function buildClient() {
             } else {
               resolve(res);
             }
-          }
+          },
         );
       });
     },

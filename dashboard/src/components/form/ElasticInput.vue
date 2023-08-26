@@ -30,7 +30,7 @@ export default {
         if (props.modelValue && el.value.scrollHeight) {
           el.value.style.height = el.value.scrollHeight + "px";
         }
-      }
+      },
     );
     const submit = (e) => {
       if (!e.shiftKey) {

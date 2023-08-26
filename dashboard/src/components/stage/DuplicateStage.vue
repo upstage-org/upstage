@@ -49,13 +49,13 @@ export default {
       };
       const result = await save(
         `${payload.name} was duplicated successfully!`,
-        payload
+        payload,
       );
       complete();
       ClearCache();
       refresh();
       router.push(
-        `/backstage/stage-management/${result.duplicateStage.newStageId}/`
+        `/backstage/stage-management/${result.duplicateStage.newStageId}/`,
       );
       console.log(result);
     };

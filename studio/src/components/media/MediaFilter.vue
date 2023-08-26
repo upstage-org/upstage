@@ -60,7 +60,7 @@ const sharedAuth = getSharedAuth();
 
 const name = ref("");
 const owners = ref(
-  sharedAuth && sharedAuth.username ? [sharedAuth.username] : []
+  sharedAuth && sharedAuth.username ? [sharedAuth.username] : [],
 );
 const types = ref([]);
 const stages = ref([]);
@@ -108,7 +108,7 @@ watch(
   name,
   useDebounceFn(() => {
     updateInquiry({ name: name.value });
-  }, 500)
+  }, 500),
 );
 watch(dates, (dates) => {
   updateInquiry({
@@ -135,7 +135,7 @@ const hasFilter = computed(
     types.value.length ||
     stages.value.length ||
     tags.value.length ||
-    dates.value
+    dates.value,
 );
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase();
@@ -260,7 +260,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
               ? result.mediaTypes.edges
                   .filter(
                     (e) =>
-                      !['shape', 'media'].includes(e.node.name.toLowerCase())
+                      !['shape', 'media'].includes(e.node.name.toLowerCase()),
                   )
                   .map((e) => ({
                     value: e.node.name,
@@ -308,8 +308,8 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
         ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
-          v-model:value="(dates as any)"
-          :ranges="(ranges as any)"
+          v-model:value="dates as any"
+          :ranges="ranges as any"
         />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters

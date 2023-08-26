@@ -66,7 +66,7 @@ export default {
           },
           {
             "X-Access-Token": state.refresh_token,
-          }
+          },
         )
         .then((response) => {
           const token = response.refreshUser.newToken;

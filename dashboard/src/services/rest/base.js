@@ -32,7 +32,7 @@ const requestInterceptor = axios.interceptors.request.use(
 
   (error) => {
     return Promise.reject(error);
-  }
+  },
 );
 
 const responseInterceptor = axios.interceptors.response.use(
@@ -74,7 +74,7 @@ const responseInterceptor = axios.interceptors.response.use(
     }
 
     return Promise.reject(error);
-  }
+  },
 );
 
 const extend = (config) => {

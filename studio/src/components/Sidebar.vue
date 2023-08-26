@@ -24,19 +24,19 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0
-  )
+    result.value?.whoami?.role ?? 0,
+  ),
 );
 
 provide(
   WhoAmI,
-  computed(() => result.value?.whoami)
+  computed(() => result.value?.whoami),
 );
 provide(IsAdmin, isAdmin);
 </script>
 
 <template>
-  <a-layout-sider collapsed class="bg-transparent">
+  <a-layout-sider class="bg-transparent">
     <a-spin :spinning="loading">
       <a-menu
         v-model:selectedKeys="selectedKeys"
@@ -58,14 +58,17 @@ provide(IsAdmin, isAdmin);
           <user-outlined />
           <span>Profile</span>
         </a-menu-item>
-        <a-menu-item
-          key="admin"
-          v-if="result?.whoami.roleName === 'Admin'"
-          @click="iframeSrc = '/backstage/admin'"
-        >
-          <key-outlined />
-          <span>Admin</span>
-        </a-menu-item>
+        <a-sub-menu key="admin" @click="iframeSrc = ''">
+          <template #icon>
+            <key-outlined />
+          </template>
+          <template #title>Admin</template>
+          <a-menu-item key="admin">Player Management</a-menu-item>
+          <a-menu-item key="6">Batch User Creation</a-menu-item>
+          <a-menu-item key="7">Foyer Customisation</a-menu-item>
+          <a-menu-item key="8">Email Notification</a-menu-item>
+          <a-menu-item key="9">System Configuration</a-menu-item>
+        </a-sub-menu>
         <a-menu-item
           key="manual"
           href="https://docs.upstage.live/"

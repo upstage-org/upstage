@@ -116,7 +116,7 @@ export default {
         }) => {
           sendResize(target, { left, top, width, height });
           isDragging.value = false;
-        }
+        },
       );
 
     const sendRotation = (target, rotate) => {
@@ -154,7 +154,7 @@ export default {
               if (e && props.object.type !== "text") {
                 moveable.dragStart(e);
               }
-            }
+            },
           );
           emit("update:active", true);
         } else {
@@ -164,14 +164,14 @@ export default {
             },
             () => {
               emit("update:active", false);
-            }
+            },
           );
         }
       }
     };
 
     const activeMovable = computed(
-      () => store.getters["stage/activeMovable"] === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id,
     );
 
     const clickInside = (e) => {
@@ -195,7 +195,7 @@ export default {
       (val) => {
         showControls(val);
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     watch(
@@ -236,7 +236,7 @@ export default {
           },
         });
       },
-      { deep: true }
+      { deep: true },
     );
 
     onMounted(() => {
@@ -254,7 +254,7 @@ export default {
 
     const transformOrigin = computed(() => {
       const wearer = store.state.stage.board.objects.find(
-        (a) => a.id === props.object.wornBy
+        (a) => a.id === props.object.wornBy,
       );
       if (wearer) {
         return `${wearer.x + wearer.w / 2 - props.object.x}px ${

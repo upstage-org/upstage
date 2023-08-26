@@ -61,7 +61,7 @@ const { result, loading } = useQuery<StudioGraph>(
     }
   `,
   null,
-  { fetchPolicy: "cache-only" }
+  { fetchPolicy: "cache-only" },
 );
 
 const filterOption = (keyword: string, option: any) => {
@@ -105,7 +105,14 @@ watch(isAdmin, console.log);
     <div v-if="isAdmin">
       👑 Owner:
       <a-select
-        :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) as any : []"
+        :options="
+          result
+            ? (result.users.edges.map((e) => ({
+                value: e.node.username,
+                label: e.node.displayName || e.node.username,
+              })) as any)
+            : []
+        "
         style="min-width: 124px"
         :value="owner"
         @change="handleOwnerChange"
@@ -194,7 +201,14 @@ watch(isAdmin, console.log);
         }"
         :titles="[' available', ' granted']"
         v-model:target-keys="targetKeys"
-        :data-source="result ? result.users.edges.map(e => ({ key: e.node.dbId, ...e.node })) as any : []"
+        :data-source="
+          result
+            ? (result.users.edges.map((e) => ({
+                key: e.node.dbId,
+                ...e.node,
+              })) as any)
+            : []
+        "
         show-search
         :filter-option="filterOption"
         :render="renderItem"

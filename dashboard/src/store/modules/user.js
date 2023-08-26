@@ -61,7 +61,7 @@ export default {
             ...avatar,
             name: nickname,
           },
-          { root: true }
+          { root: true },
         );
       } else {
         commit("SET_NICK_NAME", nickname);
@@ -158,7 +158,7 @@ export default {
     avatar(state, getters, rootState) {
       if (state.avatarId) {
         const avatar = rootState.stage.board.objects.find(
-          (o) => o.id === state.avatarId
+          (o) => o.id === state.avatarId,
         );
         return avatar;
       }

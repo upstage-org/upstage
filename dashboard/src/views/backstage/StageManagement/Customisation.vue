@@ -208,7 +208,7 @@ export default {
           refresh(stage.value.id);
         },
         stage.value.id,
-        config
+        config,
       );
     };
 

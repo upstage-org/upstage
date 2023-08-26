@@ -7,7 +7,7 @@ if (process.env.NODE_ENV === "production") {
     ready() {
       console.log(
         "App is being served from cache by a service worker.\n" +
-          "For more details, visit https://goo.gl/AFskqB"
+          "For more details, visit https://goo.gl/AFskqB",
       );
     },
     registered() {
@@ -21,13 +21,13 @@ if (process.env.NODE_ENV === "production") {
     },
     updated() {
       alert(
-        "A newer version of UpStage have been released! Please refresh the page to update!"
+        "A newer version of UpStage have been released! Please refresh the page to update!",
       );
       window.location.reload();
     },
     offline() {
       console.log(
-        "No internet connection found. App is running in offline mode."
+        "No internet connection found. App is running in offline mode.",
       );
     },
     error(error) {

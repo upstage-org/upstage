@@ -48,7 +48,7 @@ const getBase64 = (file: File) =>
 
 export const useSaveMedia = (
   collectData: () => SaveMediaPayload,
-  handleSuccess: (id: string) => any
+  handleSuccess: (id: string) => any,
 ) => {
   const { mutate: uploadFile } = useMutation<
     { uploadFile: { url: string } },

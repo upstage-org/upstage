@@ -4,10 +4,10 @@
 
 declare module "vue" {
   export interface GlobalComponents {
-    AAffix: typeof import("ant-design-vue/es")["Affix"];
-    AButton: typeof import("ant-design-vue/es")["Button"];
-    MediaFilter: typeof import("./src/components/media/MediaFilter.vue")["default"];
-    MediaTable: typeof import("./src/components/media/MediaTable.vue")["default"];
+    AAffix: (typeof import("ant-design-vue/es"))["Affix"];
+    AButton: (typeof import("ant-design-vue/es"))["Button"];
+    MediaFilter: (typeof import("./src/components/media/MediaFilter.vue"))["default"];
+    MediaTable: (typeof import("./src/components/media/MediaTable.vue"))["default"];
   }
 }
 

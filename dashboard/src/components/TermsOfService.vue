@@ -37,7 +37,7 @@ export default {
           loading.value = false;
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     return { content, loading };

@@ -106,7 +106,7 @@ export default {
     const confirmPasswordError = computed(() =>
       form.password !== form.confirmPassword
         ? "Confirm password mismatch"
-        : false
+        : false,
     );
     const touched = ref(false);
     const agreed = ref(false);
@@ -124,7 +124,7 @@ export default {
         notification.success(
           "Username " +
             response.createUser.user.username +
-            " created successfully!"
+            " created successfully!",
         );
         router.push("/login");
       } catch (error) {

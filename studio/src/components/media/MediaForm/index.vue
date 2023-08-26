@@ -38,13 +38,11 @@ import {
 
 const files = inject<Ref<UploadFile[]>>("files");
 
-const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(
-  gql`
-    {
-      editingMedia @client
-    }
-  `
-);
+const { result: editingMediaResult } = useQuery<{ editingMedia: Media }>(gql`
+  {
+    editingMedia @client
+  }
+`);
 
 watch(editingMediaResult, () => {
   if (editingMediaResult.value) {
@@ -132,7 +130,7 @@ const handleFrameClick = ({ event, index }: { event: any; index: number }) => {
       content: createVNode(
         "div",
         { style: "color: orange;" },
-        "There is no undo!"
+        "There is no undo!",
       ),
       onOk() {
         files.value = filesCopy.filter((_, i) => i !== index);
@@ -159,7 +157,7 @@ const handleClose = () => {
         content: createVNode(
           "div",
           { style: "color: orange;" },
-          "All selected frames will be lost, there is no undo!"
+          "All selected frames will be lost, there is no undo!",
         ),
         onOk() {
           files.value = [];
@@ -194,7 +192,7 @@ const { result, loading } = useQuery<StudioGraph>(
     }
   `,
   null,
-  { fetchPolicy: "cache-only" }
+  { fetchPolicy: "cache-only" },
 );
 const mediaTypes = computed(() => {
   if (result.value?.mediaTypes) {
@@ -205,7 +203,7 @@ const mediaTypes = computed(() => {
             editingMediaResult.value
               ? ["media", "stream", "shape"]
               : ["media", "shape"]
-          ).includes(node.name.toLowerCase())
+          ).includes(node.name.toLowerCase()),
       )
       .map(({ node }) => ({ label: capitalize(node.name), value: node.name }));
   }
@@ -241,7 +239,7 @@ const { progress, saveMedia, saving } = useSaveMedia(
       files.value = [];
       refresh();
     }
-  }
+  },
 );
 
 watch(files as Ref, ([firstFile]) => {
@@ -451,7 +449,7 @@ const clearSign = () => {
         <div class="card-container pr-4">
           <a-tabs>
             <a-tab-pane key="stages" tab="Stages" class="pb-4">
-              <StageAssignment v-model="(stageIds as any)" />
+              <StageAssignment v-model="stageIds as any" />
             </a-tab-pane>
             <a-tab-pane key="permissions" tab="Permissions">
               <MediaPermissions

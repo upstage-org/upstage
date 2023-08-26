@@ -78,7 +78,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     );
     if (result) {
       variables.id = result.createStage.stage.id;
@@ -118,7 +118,7 @@ export default {
         }
         ${stageFragment}
       `,
-      variables
+      variables,
     ),
   updateStatus: (stageId) =>
     client.request(gql`
@@ -154,7 +154,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   stageList: (variables) =>
     client.request(
@@ -189,7 +189,7 @@ export default {
         }
         ${stageFragment}
       `,
-      variables
+      variables,
     ),
   foyerStageList: (variables) =>
     client.request(
@@ -208,7 +208,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   getStage: (id) =>
     client.request(
@@ -246,7 +246,7 @@ export default {
         }
         ${stageFragment}
       `,
-      { id }
+      { id },
     ),
   loadStage: (fileLocation, performanceId) =>
     client
@@ -273,7 +273,7 @@ export default {
           ${stageFragment}
           ${sceneFragment}
         `,
-        { fileLocation, performanceId }
+        { fileLocation, performanceId },
       )
       .then((response) => {
         return {
@@ -294,7 +294,7 @@ export default {
             }
           }
         `,
-        { fileLocation }
+        { fileLocation },
       )
       .then((response) => response.stageList.edges[0]?.node?.permission),
   loadScenes: (fileLocation) =>
@@ -314,7 +314,7 @@ export default {
           }
           ${sceneFragment}
         `,
-        { fileLocation }
+        { fileLocation },
       )
       .then((response) => response.stageList.edges[0]?.node?.scenes),
   loadEvents: (fileLocation, cursor) =>
@@ -336,7 +336,7 @@ export default {
             }
           }
         `,
-        { fileLocation, cursor }
+        { fileLocation, cursor },
       )
       .then((response) => response.stageList.edges[0]?.node?.events),
   uploadMedia: (variables) =>
@@ -361,7 +361,7 @@ export default {
         }
         ${assetFragment}
       `,
-      variables
+      variables,
     ),
   mediaList: (variables) =>
     client.request(
@@ -387,7 +387,7 @@ export default {
         }
         ${assetFragment}
       `,
-      variables
+      variables,
     ),
   assetTypeList: (variables) =>
     client.request(
@@ -404,7 +404,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   saveStageMedia: (id, mediaIds) =>
     client.request(
@@ -418,7 +418,7 @@ export default {
         }
         ${stageFragment}
       `,
-      { id, mediaIds }
+      { id, mediaIds },
     ),
   assignStages: (id, stageIds) =>
     client.request(
@@ -431,7 +431,7 @@ export default {
           }
         }
       `,
-      { id, stageIds }
+      { id, stageIds },
     ),
   saveStageConfig: (id, config) =>
     client.request(
@@ -445,7 +445,7 @@ export default {
         }
         ${stageFragment}
       `,
-      { id, config }
+      { id, config },
     ),
   assignableMedia: () =>
     client.request(gql`
@@ -526,7 +526,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   deleteMedia: (id) =>
     client.request(
@@ -538,7 +538,7 @@ export default {
           }
         }
       `,
-      { id }
+      { id },
     ),
   deleteStage: (id) =>
     client.request(
@@ -549,7 +549,7 @@ export default {
           }
         }
       `,
-      { id }
+      { id },
     ),
   saveScene: (variables) =>
     client.request(
@@ -570,7 +570,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   deleteScene: (id) =>
     client.request(
@@ -582,7 +582,7 @@ export default {
           }
         }
       `,
-      { id }
+      { id },
     ),
   duplicateStage: ({ id, name }) =>
     client.request(
@@ -594,7 +594,7 @@ export default {
           }
         }
       `,
-      { id, name }
+      { id, name },
     ),
   deletePerformance: (id) =>
     client.request(
@@ -605,7 +605,7 @@ export default {
           }
         }
       `,
-      { id }
+      { id },
     ),
   updatePerformance: (id, name, description) =>
     client.request(
@@ -620,7 +620,7 @@ export default {
           }
         }
       `,
-      { id, name, description }
+      { id, name, description },
     ),
   startRecording: (stageId, name, description) =>
     client.request(
@@ -641,7 +641,7 @@ export default {
           }
         }
       `,
-      { stageId, name, description }
+      { stageId, name, description },
     ),
   saveRecording: (id) =>
     client.request(
@@ -654,7 +654,7 @@ export default {
           }
         }
       `,
-      { id }
+      { id },
     ),
   getStreamSign: (key) =>
     client
@@ -670,7 +670,7 @@ export default {
             }
           }
         `,
-        { key }
+        { key },
       )
       .then((response) => response.assetList.edges[0]?.node?.sign),
 };

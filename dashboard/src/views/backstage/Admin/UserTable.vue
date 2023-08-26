@@ -164,8 +164,8 @@ export default {
         res = res.filter((item) =>
           includesIgnoreCase(
             `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`,
-            filter.keyword.trim()
-          )
+            filter.keyword.trim(),
+          ),
         );
       }
       if (filter.role) {

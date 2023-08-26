@@ -41,9 +41,9 @@ export default {
       user.role = user.selectedRole;
       await save(
         `Successfully switch ${displayName(user)}'s role to ${displayRole(
-          user
+          user,
         )}!`,
-        user
+        user,
       );
       close();
     };

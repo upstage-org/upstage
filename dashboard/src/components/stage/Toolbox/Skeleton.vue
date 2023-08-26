@@ -97,7 +97,7 @@ export default {
           object: props.data,
           isReal: props.real,
           nodrop: props.nodrop,
-        })
+        }),
       );
       document.getElementById("meeting-room")?.classList.add("disable-pointer");
       emit("dragstart", e);
@@ -130,7 +130,7 @@ export default {
           ...props.data,
           x: position.x,
           y: position.y,
-        }
+        },
       );
     };
 
