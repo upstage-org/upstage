@@ -93,7 +93,7 @@ class Query(graphene.ObjectType):
     adminPlayers = UserConnectionField(
         AdminPlayer.connection,
         id=graphene.ID(),
-        name_like=graphene.String(),
+        username_like=graphene.String(),
         created_between=graphene.List(graphene.Date),
     )
     whoami = graphene.Field(User, description="Logged in user info")
