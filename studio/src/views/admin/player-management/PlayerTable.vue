@@ -2,16 +2,33 @@
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
-import type { Media, Stage, StudioGraph } from "models/studio";
-import { absolutePath } from "utils/common";
+import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
+import { absolutePath, displayName } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { capitalize } from "utils/common";
 import { IframeSrc } from "symbols";
-import { Layout, Table, message } from "ant-design-vue";
+import {
+  Button,
+  Layout,
+  Popconfirm,
+  Space,
+  Spin,
+  Switch,
+  Table,
+  Tooltip,
+  message,
+} from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
+import DDate from "components/display/DDate.vue";
+import DSize from "components/display/DSize.vue";
+import {
+  DeleteOutlined,
+  EditOutlined,
+  KeyOutlined,
+} from "@ant-design/icons-vue";
 
 interface Pagination {
   current: number;
@@ -61,20 +78,18 @@ export default {
       { cursor?: string; limit: number; sort?: string[] }
     >(
       gql`
-        query StageTable(
+        query AdminPlayerTable(
           $cursor: String
           $limit: Int
-          $sort: [StageSortEnum]
+          $sort: [AdminPlayerSortEnum]
           $name: String
-          $owners: [String]
           $createdBetween: [Date]
         ) {
-          stages(
+          adminPlayers(
             after: $cursor
             first: $limit
             sort: $sort
-            nameLike: $name
-            owners: $owners
+            usernameLike: $name
             createdBetween: $createdBetween
           ) {
             totalCount
@@ -82,19 +97,19 @@ export default {
               cursor
               node {
                 id
-                name
-                cover
+                active
+                username
+                email
+                binName
+                role
+                roleName
+                firstName
+                lastName
+                displayName
                 createdOn
-                lastAccess
-                description
-                permission
-                visibility
-                status
-                fileLocation
-                owner {
-                  username
-                  displayName
-                }
+                uploadLimit
+                intro
+                dbId
               }
             }
           }
@@ -119,75 +134,145 @@ export default {
       });
     });
 
-    const columns: ColumnType<Stage>[] = [
+    const columns: ColumnType<AdminPlayer>[] = [
       {
-        title: t("preview"),
-        align: "center",
-        width: 96,
-        key: "cover",
-        dataIndex: "cover",
-      },
-      {
-        title: t("name"),
-        dataIndex: "name",
-        key: "name",
+        title: t("username"),
+        key: "username",
+        dataIndex: "username",
         sorter: {
           multiple: 3,
         },
       },
       {
-        title: t("owner"),
-        dataIndex: "owner",
-        key: "owner_id",
+        title: t("display_name"),
+        dataIndex: "username",
+        customRender(opt) {
+          return displayName(opt.record);
+        },
+        key: "display_name",
+      },
+      {
+        title: t("email"),
+        key: "email",
+        dataIndex: "email",
         sorter: {
-          multiple: 2,
+          multiple: 4,
         },
       },
       {
-        title: t("date"),
+        title: t("date_registered"),
         dataIndex: "createdOn",
         key: "created_on",
         sorter: {
           multiple: 5,
         },
         defaultSortOrder: "descend",
+        customRender(opt) {
+          return h(DDate, {
+            value: opt.text,
+          });
+        },
       },
       {
         title: t("last_access"),
         dataIndex: "lastAccess",
         key: "last_access",
-        sorter: {
-          multiple: 6,
-        },
         defaultSortOrder: "descend",
       },
-      //    {
-      //        title: t("recorded"),
-      //        align: "center",
-      //        key: "recording",
-      //    },
+      {
+        title: t("role"),
+        dataIndex: "roleName",
+        key: "role",
+        align: "center",
+        sorter: {
+          multiple: 1,
+        },
+      },
       {
         title: t("status"),
-        dataIndex: "status",
-        key: "status",
+        dataIndex: "active",
+        key: "active",
         align: "center",
+        customRender(opt) {
+          return h(Switch, {
+            checked: opt.text,
+            disabled: true,
+          });
+        },
       },
       {
-        title: t("visibility"),
-        dataIndex: "visibility",
-        key: "visibility",
-        align: "center",
+        title: t("upload_limit"),
+        dataIndex: "uploadLimit",
+        key: "upload_limit",
+        sorter: {
+          multiple: 2,
+        },
+        customRender(opt) {
+          return h(DSize, {
+            value: opt.text,
+          });
+        },
       },
       {
-        title: t("access"),
-        dataIndex: "permission",
-        key: "permission",
-      },
-      {
-        title: `${t("manage")} ${t("stage")}`,
+        title: `${t("manage")} ${t("player")}`,
         align: "center",
         fixed: "right",
         key: "actions",
+        customRender(opt) {
+          return h(Space, [
+            h(
+              Tooltip,
+              {
+                title: t("edit"),
+              },
+              [
+                h(
+                  Button,
+                  {
+                    type: "primary",
+                    onClick: () => alert("Under construction"),
+                  },
+                  {
+                    icon: () => h(EditOutlined),
+                  },
+                ),
+              ],
+            ),
+            h(
+              Tooltip,
+              {
+                title: t("edit"),
+              },
+              [
+                h(
+                  Button,
+                  {
+                    onClick: () => alert("Under construction"),
+                  },
+                  {
+                    icon: () => h(KeyOutlined),
+                  },
+                ),
+              ],
+            ),
+            h(
+              Popconfirm,
+              {
+                title: t("delete_player_confirm"),
+                okText: t("yes"),
+                cancelText: t("no"),
+                onConfirm: () => alert("Under construction"),
+              },
+              h(
+                Button,
+                { danger: true },
+                {
+                  icon: () => h(DeleteOutlined),
+                },
+              ),
+            ),
+          ]);
+        },
       },
     ];
 
@@ -215,7 +300,9 @@ export default {
       });
     };
     const dataSource = computed(() =>
-      result.value ? result.value.stages.edges.map((edge) => edge.node) : [],
+      result.value
+        ? result.value.adminPlayers.edges.map((edge) => edge.node)
+        : [],
     );
 
     provide("refresh", () => {
@@ -296,7 +383,7 @@ export default {
             pagination: {
               showQuickJumper: true,
               showSizeChanger: true,
-              total: result.value ? result.value.stages.totalCount : 0,
+              total: result.value ? result.value.adminPlayers.totalCount : 0,
             } as Pagination,
           }),
         ],
