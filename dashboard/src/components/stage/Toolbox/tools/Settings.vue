@@ -82,13 +82,13 @@ export default {
   setup: () => {
     const store = useStore();
     const chatVisibility = computed(
-      () => store.state.stage.settings.chatVisibility
+      () => store.state.stage.settings.chatVisibility,
     );
     const chatDarkMode = computed(
-      () => store.state.stage.settings.chatDarkMode
+      () => store.state.stage.settings.chatDarkMode,
     );
     const reactionVisibility = computed(
-      () => store.state.stage.settings.reactionVisibility
+      () => store.state.stage.settings.reactionVisibility,
     );
 
     const showChat = (value) => {
@@ -118,7 +118,7 @@ export default {
     const toggleChatPosition = () => {
       store.dispatch(
         "stage/setChatPosition",
-        chatPosition.value === "left" ? "right" : "left"
+        chatPosition.value === "left" ? "right" : "left",
       );
     };
 

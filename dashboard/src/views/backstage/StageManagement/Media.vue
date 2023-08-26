@@ -131,7 +131,7 @@ export default {
           backdrops.edges,
           audios.edges,
           streams.edges,
-          curtains.edges
+          curtains.edges,
         )
         .map((edge) => edge.node);
       return mediaList;
@@ -140,12 +140,12 @@ export default {
     watchEffect(() => {
       if (!stage.value || !mediaList.value) return;
       selectedMedia.value = stage.value.media.map((m) =>
-        mediaList.value.find((media) => media.dbId === m.id)
+        mediaList.value.find((media) => media.dbId === m.id),
       );
       if (selectedMedia.value[0]) {
         totalSize.value = selectedMedia?.value.reduce(
           (accumulator, currentValue) => accumulator + currentValue.size,
-          0
+          0,
         );
       }
     });
@@ -184,7 +184,7 @@ export default {
       }
       if (filter.keyword) {
         list = list.filter((media) =>
-          includesIgnoreCase(media.name, filter.keyword)
+          includesIgnoreCase(media.name, filter.keyword),
         );
       }
       return list;

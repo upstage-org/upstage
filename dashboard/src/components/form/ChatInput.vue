@@ -70,7 +70,7 @@ export default {
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
     const chatDarkMode = computed(
-      () => store.state.stage.settings.chatDarkMode
+      () => store.state.stage.settings.chatDarkMode,
     );
 
     const isHoldingShift = useHoldingShift();
@@ -86,8 +86,8 @@ export default {
           "update:modelValue",
           `${value.substring(0, start)}${unicode}${value.substring(
             end,
-            value.length
-          )}`
+            value.length,
+          )}`,
         );
       }
       if (!isHoldingShift.value) {
@@ -166,7 +166,8 @@ emoji-picker {
   z-index: 1000;
   overflow: hidden;
   border-radius: 8px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
+  box-shadow:
+    0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
     0 0px 0 1px rgba(10, 10, 10, 0.02);
   transform-origin: bottom right;
 }

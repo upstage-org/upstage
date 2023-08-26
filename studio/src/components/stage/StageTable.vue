@@ -25,13 +25,11 @@ const tableParams = reactive({
   cursor: undefined,
   sort: "CREATED_ON_DESC",
 });
-const { result: inquiryResult } = useQuery(
-  gql`
-    {
-      inquiry @client
-    }
-  `
-);
+const { result: inquiryResult } = useQuery(gql`
+  {
+    inquiry @client
+  }
+`);
 const params = computed(() => ({
   ...tableParams,
   ...inquiryResult.value.inquiry,
@@ -85,7 +83,7 @@ const { result, loading, fetchMore } = useQuery<
     }
   `,
   params.value,
-  { notifyOnNetworkStatusChange: true }
+  { notifyOnNetworkStatusChange: true },
 );
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
@@ -190,15 +188,15 @@ interface Sorter {
 const handleTableChange = (
   { current = 1, pageSize = 10 }: TablePaginationConfig,
   _: any,
-  sorter: SorterResult<Media> | SorterResult<Media>[]
+  sorter: SorterResult<Media> | SorterResult<Media>[],
 ) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort(
       (a, b) =>
-        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple,
     )
     .map(({ columnKey, order }) =>
-      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
     );
   Object.assign(tableParams, {
     cursor:
@@ -210,7 +208,7 @@ const handleTableChange = (
   });
 };
 const dataSource = computed(() =>
-  result.value ? result.value.stages.edges.map((edge) => edge.node) : []
+  result.value ? result.value.stages.edges.map((edge) => edge.node) : [],
 );
 
 provide("refresh", () => {
@@ -241,16 +239,15 @@ const {
   mutate: updateVisibility,
   loading: loadingUpdateVisibility,
   onDone: onVisibilityUpdated,
-} = useMutation<
-  { updateVisibility: { result: string } },
-  { stageId: string }
->(gql`
-  mutation UpdateVisibility($stageId: ID!) {
-    updateVisibility(stageId: $stageId) {
-      result
+} = useMutation<{ updateVisibility: { result: string } }, { stageId: string }>(
+  gql`
+    mutation UpdateVisibility($stageId: ID!) {
+      updateVisibility(stageId: $stageId) {
+        result
+      }
     }
-  }
-`);
+  `,
+);
 const handleChangeVisibility = async (record: Stage) => {
   await updateVisibility({
     stageId: record.id,
@@ -282,11 +279,13 @@ onVisibilityUpdated(handleUpdate);
       rowKey="id"
       :loading="loading"
       @change="handleTableChange"
-      :pagination="{
-        showQuickJumper: true,
-        showSizeChanger: true,
-        total: result ? result.stages.totalCount : 0,
-      } as Pagination"
+      :pagination="
+        {
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: result ? result.stages.totalCount : 0,
+        } as Pagination
+      "
     >
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">

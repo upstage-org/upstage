@@ -60,7 +60,7 @@ export default {
   setup: () => {
     const store = useStore();
     const reactionVisibility = computed(
-      () => store.state.stage.settings.reactionVisibility
+      () => store.state.stage.settings.reactionVisibility,
     );
     watch(reactionVisibility, console.log);
     const nickname = computed(() => {

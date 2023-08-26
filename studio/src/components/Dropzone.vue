@@ -54,7 +54,7 @@ const handleUpload = (file: any) => {
       i18n.global.t("over_limit_upload", {
         size: humanFileSize(file.file.size),
         limit: humanFileSize(result.value?.whoami.uploadLimit ?? 0),
-      })
+      }),
     );
     return;
   }

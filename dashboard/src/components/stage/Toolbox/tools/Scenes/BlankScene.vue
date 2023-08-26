@@ -27,7 +27,7 @@ export default {
     const createScene = async () => {
       if (
         confirm(
-          "Create a new blank scene will erase everything on the stage. Make sure your scene is saved before you do this. Are you sure you want to continue?"
+          "Create a new blank scene will erase everything on the stage. Make sure your scene is saved before you do this. Are you sure you want to continue?",
         )
       ) {
         store.dispatch("stage/blankScene");

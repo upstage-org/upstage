@@ -77,7 +77,7 @@ export const useClearStage = (stageUrl) => {
           .sendMessage(
             namespaceTopic(TOPICS.BACKGROUND, stageUrl),
             { type: BACKGROUND_ACTIONS.BLANK_SCENE },
-            true
+            true,
           )
           .then(resolve);
       });

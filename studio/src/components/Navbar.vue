@@ -3,12 +3,31 @@ import Notifications from "components/Notifications.vue";
 import LanguageSelector from "components/LanguageSelector.vue";
 import configs from "config";
 import logo from "assets/upstage.png";
+import { inject } from "vue";
+import type { ComputedRef } from "vue";
+import type { User } from "models/studio";
+import { WhoAmI } from "symbols";
+import StudioVersion from "./StudioVersion.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
+const whoami = inject<ComputedRef<User>>(WhoAmI);
 </script>
 
 <template>
   <a-space>
+    <a
+      :href="to('backstage/profile')"
+      v-if="whoami"
+      style="line-height: 0.8"
+      class="text-right mb-0"
+    >
+      <span class="text-gray-500">{{ whoami.roleName }}</span>
+      <a-typography-title :level="5">
+        <span class="whitespace-nowrap">
+          {{ whoami.displayName || whoami.username }}
+        </span>
+      </a-typography-title>
+    </a>
     <Notifications />
     <LanguageSelector />
     <a-dropdown class="ml-4">
@@ -24,6 +43,9 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
           <a :href="to('')">
             <a-menu-item>{{ $t("foyer") }}</a-menu-item>
           </a>
+          <a-menu-item disabled>
+            <StudioVersion />
+          </a-menu-item>
         </a-menu>
       </template>
     </a-dropdown>

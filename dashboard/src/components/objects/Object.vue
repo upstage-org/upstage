@@ -117,7 +117,7 @@ export default {
     const sliderMode = ref("opacity");
     const beforeDragPosition = ref();
     const isHolding = computed(
-      () => props.object.holder?.id === store.state.stage.session
+      () => props.object.holder?.id === store.state.stage.session,
     );
     const holdable = computed(() => ["avatar"].includes(props.object.type));
     const canPlay = computed(() => store.getters["stage/canPlay"]);
@@ -157,7 +157,7 @@ export default {
         },
         {
           immediate: true,
-        }
+        },
       );
     }
     const src = computed(() => {
@@ -174,18 +174,18 @@ export default {
       }
     };
     const activeMovable = computed(
-      () => store.getters["stage/activeMovable"] === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id,
     );
 
     const isWearing = computed(
       () =>
         props.object.wornBy &&
-        store.getters["stage/currentAvatar"]?.id === props.object.wornBy
+        store.getters["stage/currentAvatar"]?.id === props.object.wornBy,
     );
     provide("isWearing", isWearing);
 
     const hasLink = computed(
-      () => !canPlay.value && props.object.link && props.object.link.url
+      () => !canPlay.value && props.object.link && props.object.link.url,
     );
     const openLink = () => {
       if (hasLink.value) {

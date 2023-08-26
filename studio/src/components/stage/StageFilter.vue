@@ -63,7 +63,7 @@ const sharedAuth = getSharedAuth();
 
 const name = ref("");
 const owners = ref(
-  sharedAuth && sharedAuth.username ? [sharedAuth.username] : []
+  sharedAuth && sharedAuth.username ? [sharedAuth.username] : [],
 );
 const types = ref([]);
 const stages = ref([]);
@@ -111,7 +111,7 @@ watch(
   name,
   useDebounceFn(() => {
     updateInquiry({ name: name.value });
-  }, 500)
+  }, 500),
 );
 watch(dates, (dates) => {
   updateInquiry({
@@ -138,7 +138,7 @@ const hasFilter = computed(
     types.value.length ||
     stages.value.length ||
     tags.value.length ||
-    dates.value
+    dates.value,
 );
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase();
@@ -198,27 +198,14 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
         </a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
-          v-model:value="(dates as any)"
-          :ranges="(ranges as any)"
+          v-model:value="dates as any"
+          :ranges="ranges as any"
         />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters
         </a-button>
       </a-space>
-      <a-space>
-        <a
-          :href="to('backstage/profile')"
-          v-if="result"
-          style="line-height: 0.8"
-          class="text-right"
-        >
-          <h2 class="mb-0">
-            {{ result.whoami.displayName || result.whoami.username }}
-          </h2>
-          <span class="text-gray-500">{{ result.whoami.roleName }}</span>
-        </a>
-        <Navbar />
-      </a-space>
+      <Navbar />
     </a-space>
   </a-affix>
 </template>

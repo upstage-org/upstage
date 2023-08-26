@@ -56,7 +56,7 @@ export default {
     };
 
     const clearChatVisibility = computed(
-      () => store.state.stage.showClearChatSetting
+      () => store.state.stage.showClearChatSetting,
     );
 
     return { clearChat, clearing, clearChatVisibility };

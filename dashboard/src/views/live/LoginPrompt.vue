@@ -92,7 +92,7 @@ export default {
           .dispatch("user/saveNickname", { nickname: nickname.value })
           .then((nickname = "Guest") => {
             notification.success(
-              "Welcome to the stage! Your nickname is " + nickname + "!"
+              "Welcome to the stage! Your nickname is " + nickname + "!",
             );
             close();
           });

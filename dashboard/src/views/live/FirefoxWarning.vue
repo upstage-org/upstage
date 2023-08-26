@@ -80,7 +80,7 @@ export default {
     const visible = computed(
       () =>
         isFirefox &&
-        (status.value === "CONNECTING" || status.value === "OFFLINE")
+        (status.value === "CONNECTING" || status.value === "OFFLINE"),
     );
     const open = ref(true);
 

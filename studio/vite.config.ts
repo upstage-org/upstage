@@ -25,14 +25,6 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       less: {
-        modifyVars: {
-          dark: true,
-          "primary-color": "#007011",
-          "border-radius-base": "4px",
-          "font-size-base": "16px",
-          "font-family": "Josefin Sans, sans-serif",
-          "table-padding-vertical": "8px",
-        },
         javascriptEnabled: true,
       },
     },

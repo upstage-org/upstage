@@ -109,7 +109,7 @@ export default {
         if (!value) {
           file.value = null;
         }
-      }
+      },
     );
 
     watch(mediaLimit, () => {
@@ -137,7 +137,7 @@ export default {
       () =>
         `Permitted file formats are ${
           accept.value
-        }. Maximum file size is ${humanFileSize(mediaLimit.value)}`
+        }. Maximum file size is ${humanFileSize(mediaLimit.value)}`,
     );
 
     return {

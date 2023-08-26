@@ -104,10 +104,10 @@ export default {
     const theContent = ref();
     const store = useStore();
     const chatVisibility = computed(
-      () => store.state.stage.settings.chatVisibility
+      () => store.state.stage.settings.chatVisibility,
     );
     const chatDarkMode = computed(
-      () => store.state.stage.settings.chatDarkMode
+      () => store.state.stage.settings.chatDarkMode,
     );
 
     store.dispatch("stage/loadPermission");
@@ -174,7 +174,7 @@ export default {
       };
       store.commit("stage/SET_CHAT_PARAMETERS", parameters);
       setTimeout(
-        () => (theContent.value.scrollTop = theContent.value.scrollHeight)
+        () => (theContent.value.scrollTop = theContent.value.scrollHeight),
       );
     };
 
@@ -201,7 +201,7 @@ export default {
       }
     });
     const unreadMessages = computed(
-      () => messages.value.filter((message) => !message.read).length
+      () => messages.value.filter((message) => !message.read).length,
     );
     const bounceUnread = (el) => {
       {

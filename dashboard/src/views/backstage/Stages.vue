@@ -90,12 +90,12 @@ export default {
       let result = stages.value;
       if (filter.keyword) {
         result = result.filter((stage) =>
-          includesIgnoreCase(stage.name, filter.keyword)
+          includesIgnoreCase(stage.name, filter.keyword),
         );
       }
       if (filter.mine) {
         result = result.filter((stage) =>
-          ["player", "editor", "owner"].includes(stage.permission)
+          ["player", "editor", "owner"].includes(stage.permission),
         );
         return result;
       }

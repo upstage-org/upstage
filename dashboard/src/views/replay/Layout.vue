@@ -36,7 +36,7 @@ export default {
   setup: () => {
     const store = useStore();
     const ready = computed(
-      () => store.state.stage.model && !store.state.stage.preloading
+      () => store.state.stage.model && !store.state.stage.preloading,
     );
 
     const route = useRoute();

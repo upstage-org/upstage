@@ -52,7 +52,7 @@ export default {
     const store = useStore();
 
     const { nodes: visibleStages, loading } = useQuery(
-      stageGraph.foyerStageList
+      stageGraph.foyerStageList,
     );
     const foyer = computed(() => store.getters["config/foyer"]);
     console.log(visibleStages.value, loading);

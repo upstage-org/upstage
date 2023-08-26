@@ -43,7 +43,7 @@ export const getVoiceList = () => {
     Object.keys(voices).map((key) => ({
       value: key,
       label: voices[key],
-    }))
+    })),
   );
 };
 

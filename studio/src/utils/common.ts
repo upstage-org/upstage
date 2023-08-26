@@ -1,5 +1,6 @@
 import configs from "config";
 import { SharedAuth, SharedConfigs } from "models/config";
+import { AdminPlayer } from "models/studio";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
@@ -64,4 +65,11 @@ export function humanFileSize(bytes: number, si = false, dp = 1) {
 
 export function capitalize(str: string) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+}
+
+export function displayName(user: AdminPlayer) {
+  if (user.displayName?.trim()) return user.displayName;
+  if (user.firstName || user.lastName)
+    return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+  return user.username;
 }

@@ -188,4 +188,11 @@ export default {
   last_access: "Last Access",
   access: "Access",
   studio: "Studio",
+  display_name: "Display Name",
+  email: "Email",
+  date_registered: "Date Registered",
+  upload_limit: "Upload Limit",
+  role: "Role",
+  delete_player_confirm:
+    "Deleting this user will also delete all of this user's stages. All of this user's media will belong to you. This cannot be undone!\nAre you sure you want to continue?",
 };

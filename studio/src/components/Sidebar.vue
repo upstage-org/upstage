@@ -5,6 +5,8 @@ import { useQuery } from "@vue/apollo-composable";
 import { StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
+import StudioVersion from "./StudioVersion.vue";
+import logo from "assets/upstage.png";
 
 const selectedKeys = inject<string[]>(SelectedMenu);
 const iframeSrc = ref("");
@@ -24,24 +26,25 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0
-  )
+    result.value?.whoami?.role ?? 0,
+  ),
 );
 
 provide(
   WhoAmI,
-  computed(() => result.value?.whoami)
+  computed(() => result.value?.whoami),
 );
 provide(IsAdmin, isAdmin);
 </script>
 
 <template>
-  <a-layout-sider collapsed class="bg-transparent">
+  <a-layout-sider theme="light" collapsible class="select-none" width="240">
     <a-spin :spinning="loading">
       <a-menu
         v-model:selectedKeys="selectedKeys"
         mode="inline"
         class="upstage-menu"
+        :open-keys="['admin']"
       >
         <a-menu-item key="media" @click="iframeSrc = ''">
           <picture-outlined />&nbsp;
@@ -58,14 +61,35 @@ provide(IsAdmin, isAdmin);
           <user-outlined />
           <span>Profile</span>
         </a-menu-item>
-        <a-menu-item
-          key="admin"
-          v-if="result?.whoami.roleName === 'Admin'"
-          @click="iframeSrc = '/backstage/admin'"
-        >
-          <key-outlined />
-          <span>Admin</span>
-        </a-menu-item>
+        <a-sub-menu key="admin">
+          <template #icon>
+            <key-outlined />
+          </template>
+          <template #title>Admin</template>
+          <a-menu-item key="admin/player" @click="iframeSrc = ''"
+            >Player Management</a-menu-item
+          >
+          <a-menu-item
+            key="admin/batch"
+            @click="iframeSrc = '/backstage/admin/batch-user-creation'"
+            >Batch User Creation</a-menu-item
+          >
+          <a-menu-item
+            key="admin/foyer"
+            @click="iframeSrc = '/backstage/admin/foyer-customisation'"
+            >Foyer Customisation</a-menu-item
+          >
+          <a-menu-item
+            key="admin/email"
+            @click="iframeSrc = '/backstage/admin/email-notification'"
+            >Email Notification</a-menu-item
+          >
+          <a-menu-item
+            key="admin/system"
+            @click="iframeSrc = '/backstage/admin/system-configuration'"
+            >System Configuration</a-menu-item
+          >
+        </a-sub-menu>
         <a-menu-item
           key="manual"
           href="https://docs.upstage.live/"
@@ -79,32 +103,3 @@ provide(IsAdmin, isAdmin);
   </a-layout-sider>
   <slot></slot>
 </template>
-
-<style lang="less">
-.upstage-menu {
-  margin-top: 8px;
-  margin-left: 8px;
-  margin-right: 0;
-  border-radius: 12px;
-
-  .ant-menu-item {
-    margin: 0;
-    border-radius: 12px;
-
-    &:active {
-      background-color: transparent;
-    }
-
-    &.ant-menu-item-selected {
-      background-color: #147d20;
-      color: white;
-    }
-  }
-}
-
-.ant-tooltip-inner {
-  [role="img"].anticon {
-    margin-right: 8px;
-  }
-}
-</style>

@@ -100,7 +100,7 @@ export default {
     const edit = ref();
 
     const { loading: loadingTOS, save } = useMutation(
-      configGraph.updateTermsOfService
+      configGraph.updateTermsOfService,
     );
     const saveToS = () => {
       save(
@@ -110,7 +110,7 @@ export default {
         },
         {
           url: termsOfService.value,
-        }
+        },
       );
     };
     const manual = ref();
@@ -125,7 +125,7 @@ export default {
           store.dispatch("config/fetchConfig");
         },
         "MANUAL",
-        manual.value
+        manual.value,
       );
     };
 
@@ -141,7 +141,7 @@ export default {
           store.dispatch("config/fetchConfig");
         },
         "EMAIL_SUBJECT_PREFIX",
-        esp.value
+        esp.value,
       );
     };
 

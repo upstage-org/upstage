@@ -12,8 +12,8 @@ const code = computed(() =>
   getLarixLink(
     props.stream.src ?? props.stream.url,
     props.stream.sign,
-    props.stream.name
-  )
+    props.stream.name,
+  ),
 );
 </script>
 

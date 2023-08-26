@@ -49,7 +49,7 @@
             save(
               'Foyer description saved successfully!',
               'FOYER_DESCRIPTION',
-              description
+              description,
             );
             edit = null;
           "
@@ -123,7 +123,7 @@ About
               showRegistration ? 'Show' : 'Hide'
             } Registration button on the Foyer successfully!`,
             'SHOW_REGISTRATION',
-            showRegistration || ''
+            showRegistration || '',
           )
         "
         :loading="loading"
@@ -143,7 +143,7 @@ About
               enableDonate ? 'Enable' : 'Disable'
             } donations for Upstage successfully!`,
             'ENABLE_DONATE',
-            enableDonate || ''
+            enableDonate || '',
           )
         "
         :loading="loadingDonate"
@@ -185,7 +185,7 @@ export default {
     const { loading, save } = useMutation(configGraph.saveConfig);
 
     const { loading: loadingDonate, save: saveConfig } = useMutation(
-      configGraph.saveConfig
+      configGraph.saveConfig,
     );
     watchEffect(() => {
       enableDonate.value = store.getters["config/enableDonate"];

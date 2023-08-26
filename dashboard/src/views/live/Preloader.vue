@@ -80,7 +80,7 @@ export default {
     const store = useStore();
     const preloading = computed(() => store.state.stage.preloading);
     const preloadableAssets = computed(
-      () => store.getters["stage/preloadableAssets"]
+      () => store.getters["stage/preloadableAssets"],
     );
     const model = computed(() => store.state.stage.model);
     const progress = ref(0);
@@ -108,7 +108,7 @@ export default {
           logo.classList.remove("preloader");
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     const status = useAttribute(model, "status");

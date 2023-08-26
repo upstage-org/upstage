@@ -16,7 +16,7 @@ export default {
     const store = useStore();
     const events = computed(() => store.state.stage.model.events);
     const begin = computed(() =>
-      Number(store.state.stage.replay.timestamp.begin)
+      Number(store.state.stage.replay.timestamp.begin),
     );
     const end = computed(() => Number(store.state.stage.replay.timestamp.end));
     const duration = computed(() => end.value - begin.value);

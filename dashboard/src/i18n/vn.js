@@ -187,4 +187,5 @@ export default {
     off: "Không lặp",
   },
   studio: "Studio",
+  display_name: "Tên hiển thị",
 };

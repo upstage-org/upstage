@@ -242,7 +242,7 @@ const requestPasswordReset = async () => {
     },
     {
       usernameOrEmail: username.value.trim(),
-    }
+    },
   );
   loading.value = false;
 };
@@ -259,7 +259,7 @@ const verifyOTP = async () => {
     {
       otp: otp.value.trim(),
       username: username.value.trim(),
-    }
+    },
   );
   loading.value = false;
 };
@@ -278,7 +278,7 @@ const processPasswordReset = async () => {
       otp: otp.value.trim(),
       username: username.value.trim(),
       password: password.value,
-    }
+    },
   );
   loading.value = false;
 };

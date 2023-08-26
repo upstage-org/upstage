@@ -60,14 +60,14 @@ export default {
     const audioEl = ref();
     const tracks = computed(() =>
       store.getters["stage/jitsiTracks"].filter(
-        (t) => t.getParticipantId() === props.object.participantId
-      )
+        (t) => t.getParticipantId() === props.object.participantId,
+      ),
     );
     const videoTrack = computed(() =>
-      tracks.value.find((t) => t.type === "video")
+      tracks.value.find((t) => t.type === "video"),
     );
     const audioTrack = computed(() =>
-      tracks.value.find((t) => t.type === "audio")
+      tracks.value.find((t) => t.type === "audio"),
     );
 
     const loadTrack = () => {
@@ -101,7 +101,7 @@ export default {
           }
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     onMounted(loadTrack);

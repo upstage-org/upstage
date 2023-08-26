@@ -39,7 +39,7 @@ export default {
         .catch((err) => {
           console.error(
             "Failed to create local tracks. Please check your camera and microphone permissions.",
-            err
+            err,
           );
           blocked.value = true;
         });

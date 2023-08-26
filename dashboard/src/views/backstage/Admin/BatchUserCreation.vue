@@ -115,7 +115,7 @@ export default {
     };
 
     const { nodes: stageList, loading: loadingStages } = useQuery(
-      stageGraph.stageList
+      stageGraph.stageList,
     );
     const availableStages = computed(() => {
       if (!stageList.value) return [];
@@ -129,14 +129,14 @@ export default {
         () => {
           store.commit("cache/CLEAR_ALL_GRAPHQL_CACHES");
           notification.success(
-            `${form.users.length} users created successfully!`
+            `${form.users.length} users created successfully!`,
           );
           router.push("/backstage/admin/player-management");
         },
         {
           users: form.users,
           stageIds: form.assignedStages.map((s) => s.dbId),
-        }
+        },
       );
     };
     const disabled = computed(() => {
