@@ -205,20 +205,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           <ClearOutlined />Clear Filters
         </a-button>
       </a-space>
-      <a-space>
-        <a
-          :href="to('backstage/profile')"
-          v-if="result"
-          style="line-height: 0.8"
-          class="text-right"
-        >
-          <h2 class="mb-0">
-            {{ result.whoami.displayName || result.whoami.username }}
-          </h2>
-          <span class="text-gray-500">{{ result.whoami.roleName }}</span>
-        </a>
-        <Navbar />
-      </a-space>
+      <Navbar />
     </a-space>
   </a-affix>
 </template>

@@ -41,6 +41,7 @@ from core.studio.media import (
 )
 from core.studio.stage import StageConnectionField, Stage
 from core.studio.notification import Notification, resolve_notifications
+from core.studio.user import UserConnectionField, AdminPlayer
 
 
 class Tag(SQLAlchemyObjectType):
@@ -88,6 +89,12 @@ class Query(graphene.ObjectType):
         created_between=graphene.List(graphene.Date),
         file_location=graphene.String(),
         owners=graphene.List(graphene.String),
+    )
+    adminPlayers = UserConnectionField(
+        AdminPlayer.connection,
+        id=graphene.ID(),
+        name_like=graphene.String(),
+        created_between=graphene.List(graphene.Date),
     )
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)

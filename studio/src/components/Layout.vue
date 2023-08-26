@@ -6,7 +6,7 @@ import MediaTable from "components/media/MediaTable.vue";
 import MediaForm from "components/media/MediaForm/index.vue";
 import StageFilter from "components/stage/StageFilter.vue";
 import StageTable from "components/stage/StageTable.vue";
-import PlayerManagement from "views/admin/player-management.vue";
+import PlayerManagement from "views/admin/player-management/index.vue";
 
 const selectedMenu = inject(SelectedMenu, ref(["stage"]));
 const iframeSrc = inject<string>(IframeSrc);
@@ -27,7 +27,7 @@ const page = (name: string) => selectedMenu.value.includes(name);
     <StageFilter />
     <StageTable />
   </template>
-  <template v-else-if="page('admin')">
+  <template v-else-if="page('admin/player')">
     <PlayerManagement />
   </template>
 </template>

@@ -1,11 +1,9 @@
 <template>
-  <a-layout-footer
-    class="text-sm opacity-50 p-0 flex justify-center items-center"
-  >
-    UpStage v{{ version }} -
+  <span class="text-xs">
+    Studio v{{ version }} -
     <span v-if="release">{{ release }}</span>
     <span v-else>{{ $t("under_construction") }}</span>
-  </a-layout-footer>
+  </span>
 </template>
 
 <script>
