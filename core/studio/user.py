@@ -12,17 +12,20 @@ from core.asset.models import (
     Asset as AssetModel,
 )
 from core.user.models import User as UserModel, role_conv
+from core.auth.models import UserSession
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql_relay.node.node import from_global_id
 from core.utils.graphql_utils import CountableConnection
+from core.project_globals import DBSession
 
 
 class AdminPlayer(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     permission = graphene.String(description="Player access to this user")
     role_name = graphene.String(description="Name of the role")
+    last_login = graphene.DateTime(description="Last login time")
 
     class Meta:
         model = UserModel
@@ -31,6 +34,18 @@ class AdminPlayer(SQLAlchemyObjectType):
 
     def resolve_role_name(self, info):
         return role_conv(self.role)
+
+    def resolve_last_login(self, info):
+        user_session = (
+            DBSession.query(UserSession)
+            .filter_by(user_id=self.id)
+            .order_by(UserSession.recorded_time.desc())
+            .first()
+        )
+        if user_session:
+            return user_session.recorded_time
+        else:
+            return None
 
 
 class UserConnectionField(SQLAlchemyConnectionField):
