@@ -21,7 +21,6 @@ import {
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
-import { DeleteOutlined } from "@ant-design/icons-vue";
 import { adminPlayerFragment } from "models/fragment";
 import PlayerForm from "./PlayerForm.vue";
 import ChangePassword from "./ChangePassword.vue";
@@ -293,6 +292,7 @@ export default {
             }),
             h(ChangePassword, {
               player: opt.record,
+              saving: savingUser,
               onSave: async (player: AdminPlayer) => {
                 await updateUser({
                   ...player,

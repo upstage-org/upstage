@@ -5,8 +5,6 @@ import { useQuery } from "@vue/apollo-composable";
 import { StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
-import StudioVersion from "./StudioVersion.vue";
-import logo from "assets/upstage.png";
 
 const selectedKeys = inject<string[]>(SelectedMenu);
 const iframeSrc = ref("");
@@ -38,13 +36,18 @@ provide(IsAdmin, isAdmin);
 </script>
 
 <template>
-  <a-layout-sider theme="light" collapsible class="select-none" width="240">
+  <a-layout-sider
+    theme="light"
+    collapsible
+    collapsed
+    class="select-none"
+    width="240"
+  >
     <a-spin :spinning="loading">
       <a-menu
         v-model:selectedKeys="selectedKeys"
         mode="inline"
         class="upstage-menu"
-        :open-keys="['admin']"
       >
         <a-menu-item key="media" @click="iframeSrc = ''">
           <picture-outlined />&nbsp;

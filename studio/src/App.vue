@@ -8,7 +8,7 @@ import { SelectedMenu } from "symbols";
 import Layout from "components/Layout.vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 
-const selectedMenu = ref(["admin/player"]);
+const selectedMenu = ref(["stage"]);
 
 provide(DefaultApolloClient, apolloClient);
 provide(SelectedMenu, selectedMenu);

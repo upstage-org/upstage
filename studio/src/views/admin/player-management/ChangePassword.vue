@@ -19,6 +19,10 @@ export default {
     onSave: {
       type: Function as PropType<(player: AdminPlayer) => Promise<void>>,
     },
+    saving: {
+      type: Object as PropType<{ value: boolean }>,
+      default: false,
+    },
   },
   setup(props) {
     const { t } = useI18n();
@@ -36,7 +40,6 @@ export default {
         },
       ],
     });
-    const reseting = ref(false);
 
     return () =>
       h(
@@ -73,7 +76,7 @@ export default {
                 }
               },
               okButtonProps: {
-                loading: reseting.value,
+                loading: props.saving.value,
               },
             },
             [

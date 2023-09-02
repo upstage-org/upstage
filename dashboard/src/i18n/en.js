@@ -200,4 +200,5 @@ export default {
   delete_player_confirm:
     "Deleting this user will also delete all of this user's stages. All of this user's media will belong to you. This cannot be undone!\nAre you sure you want to continue?",
   profile_title: "{name}'s Profile",
+  introduction: "Introduction",
 };

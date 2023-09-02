@@ -6,6 +6,7 @@ import {
   Input,
   Modal,
   Switch,
+  Textarea,
   Tooltip,
   message,
 } from "ant-design-vue";
@@ -17,7 +18,6 @@ import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
-import { GraphQLError } from "graphql";
 
 export default {
   props: {
@@ -148,6 +148,19 @@ export default {
                         value: values.email,
                         "onUpdate:value": (value: string) =>
                           (values.email = value),
+                      }),
+                    ],
+                  ),
+                  h(
+                    Form.Item,
+                    {
+                      label: t("introduction"),
+                    },
+                    [
+                      h(Textarea, {
+                        disabled: true,
+                        autoSize: true,
+                        value: props.player.intro,
                       }),
                     ],
                   ),
