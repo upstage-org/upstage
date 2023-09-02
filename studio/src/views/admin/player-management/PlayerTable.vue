@@ -3,16 +3,20 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
 import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
-import { absolutePath, displayName } from "utils/common";
+import { absolutePath, displayName, humanFileSize } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { capitalize } from "utils/common";
 import { IframeSrc } from "symbols";
 import {
+  AutoComplete,
   Button,
+  Divider,
+  Input,
   Layout,
   Popconfirm,
+  Select,
   Space,
   Spin,
   Switch,
@@ -58,7 +62,7 @@ export default {
     const tableParams = reactive({
       limit: 10,
       cursor: undefined,
-      sort: "CREATED_ON_DESC",
+      sort: "ROLE_DESC",
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -72,6 +76,18 @@ export default {
     watch(inquiryResult, () => {
       tableParams.cursor = undefined;
     });
+
+    const { mutate, loading: saving } = useMutation<
+      { authUser: { accessToken: string; refreshToken: string } },
+      {}
+    >(gql`
+      mutation Login($username: String, $password: String) {
+        authUser(username: $username, password: $password) {
+          accessToken
+          refreshToken
+        }
+      }
+    `);
 
     const { result, loading, fetchMore } = useQuery<
       StudioGraph,
@@ -106,6 +122,7 @@ export default {
                 firstName
                 lastName
                 displayName
+                lastLogin
                 createdOn
                 uploadLimit
                 intro
@@ -116,12 +133,12 @@ export default {
         }
       `,
       params.value,
-      { notifyOnNetworkStatusChange: true },
+      { notifyOnNetworkStatusChange: true }
     );
 
     const updateQuery = (
       previousResult: StudioGraph,
-      { fetchMoreResult }: any,
+      { fetchMoreResult }: any
     ) => {
       return fetchMoreResult ?? previousResult;
     };
@@ -133,6 +150,8 @@ export default {
         updateQuery,
       });
     });
+
+    const customLimit = ref("");
 
     const columns: ColumnType<AdminPlayer>[] = [
       {
@@ -160,24 +179,29 @@ export default {
         },
       },
       {
+        title: t("last_login"),
+        dataIndex: "lastLogin",
+        key: "last_login",
+        customRender(opt) {
+          return opt.text
+            ? h(DDate, {
+                value: opt.text,
+              })
+            : "";
+        },
+      },
+      {
         title: t("date_registered"),
         dataIndex: "createdOn",
         key: "created_on",
         sorter: {
           multiple: 5,
         },
-        defaultSortOrder: "descend",
         customRender(opt) {
           return h(DDate, {
             value: opt.text,
           });
         },
-      },
-      {
-        title: t("last_access"),
-        dataIndex: "lastAccess",
-        key: "last_access",
-        defaultSortOrder: "descend",
       },
       {
         title: t("role"),
@@ -187,6 +211,7 @@ export default {
         sorter: {
           multiple: 1,
         },
+        defaultSortOrder: "descend",
       },
       {
         title: t("status"),
@@ -208,8 +233,32 @@ export default {
           multiple: 2,
         },
         customRender(opt) {
-          return h(DSize, {
-            value: opt.text,
+          return h(Select, {
+            class: "w-full",
+            dropdownMatchSelectWidth: false,
+            showSearch: true,
+            value: humanFileSize(Number(opt.text), false, 0),
+            onSearch: (value: string) => {
+              customLimit.value = value;
+            },
+            options: ["2", "3", "5", "10", "100", "300"]
+              .map((value) => ({
+                value: `${value} MB`,
+              }))
+              .concat(
+                customLimit.value
+                  ? [
+                      {
+                        value: `${customLimit.value} MB`,
+                      },
+                    ]
+                  : []
+              ),
+            onChange: (value: string) => {
+              const limit = Number(value.replace(" MB", ""));
+              const bytes = limit * 1024 * 1024;
+              alert(bytes);
+            },
           });
         },
       },
@@ -234,9 +283,9 @@ export default {
                   },
                   {
                     icon: () => h(EditOutlined),
-                  },
+                  }
                 ),
-              ],
+              ]
             ),
             h(
               Tooltip,
@@ -251,9 +300,9 @@ export default {
                   },
                   {
                     icon: () => h(KeyOutlined),
-                  },
+                  }
                 ),
-              ],
+              ]
             ),
             h(
               Popconfirm,
@@ -268,8 +317,8 @@ export default {
                 { danger: true },
                 {
                   icon: () => h(DeleteOutlined),
-                },
-              ),
+                }
+              )
             ),
           ]);
         },
@@ -279,16 +328,16 @@ export default {
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
       _: any,
-      sorter: SorterResult<Media> | SorterResult<Media>[],
+      sorter: SorterResult<Media> | SorterResult<Media>[]
     ) => {
       const sort = (Array.isArray(sorter) ? sorter : [sorter])
         .sort(
           (a, b) =>
             (a.column?.sorter as any).multiple -
-            (b.column?.sorter as any).multiple,
+            (b.column?.sorter as any).multiple
         )
         .map(({ columnKey, order }) =>
-          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
+          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
         );
       Object.assign(tableParams, {
         cursor:
@@ -302,7 +351,7 @@ export default {
     const dataSource = computed(() =>
       result.value
         ? result.value.adminPlayers.edges.map((edge) => edge.node)
-        : [],
+        : []
     );
 
     provide("refresh", () => {
@@ -323,7 +372,7 @@ export default {
             result
           }
         }
-      `,
+      `
     );
     const handleChangeStatus = async (record: Stage) => {
       await updateStatus({
@@ -386,7 +435,7 @@ export default {
               total: result.value ? result.value.adminPlayers.totalCount : 0,
             } as Pagination,
           }),
-        ],
+        ]
       );
   },
 };
