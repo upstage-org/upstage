@@ -72,7 +72,10 @@ export default {
   under_construction: "Under construction",
   enter_username_and_password_to_login: "Enter username and password to login",
   reset_your_password: "Reset your password",
+  change_password: "Change password",
   full_name: "Full Name",
+  first_name: "First Name",
+  last_name: "Last Name",
   this_is_page_is_under_construction: "This is page is under construction",
   no_content: "No Content",
   drag_files_here_or_click_to_upload: "Drag files here or click to upload",
@@ -186,6 +189,7 @@ export default {
     off: "No Loop",
   },
   last_access: "Last Access",
+  last_login: "Last Login",
   access: "Access",
   studio: "Studio",
   display_name: "Display Name",
@@ -195,4 +199,6 @@ export default {
   role: "Role",
   delete_player_confirm:
     "Deleting this user will also delete all of this user's stages. All of this user's media will belong to you. This cannot be undone!\nAre you sure you want to continue?",
+  profile_title: "{name}'s Profile",
+  introduction: "Introduction",
 };

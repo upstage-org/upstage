@@ -1,34 +1,14 @@
 from graphene.test import Client
 from flask import request
 from core import app
-from .schema import user_schema
+from core.studio.tests import get_access_token
+from core.studio.schema import studio_schema
 from time import time
-
-
-def get_access_token():
-    with app.test_request_context():
-        client = Client(user_schema)
-        auth = client.execute(
-            """
-            mutation AuthUser($username: String, $password: String) {
-                authUser(username: $username, password: $password) {
-                    accessToken
-                    refreshToken
-                }
-            }
-        """,
-            variable_values={
-                "username": "automation_test",
-                "password": "makeupstagegreatagain",
-            },
-        )
-        accessToken = auth["data"]["authUser"]["accessToken"]
-        return accessToken
 
 
 def execute_update_email(newEmail):
     with app.test_request_context():
-        client = Client(user_schema)
+        client = Client(studio_schema)
         request.headers = {"X-Access-Token": get_access_token()}
 
         executed = client.execute(
@@ -41,7 +21,7 @@ def execute_update_email(newEmail):
                   }
                 }
 
-                fragment userFragment on User {
+                fragment userFragment on AdminPlayer {
                   id
                   dbId
                   username

@@ -1,34 +1,30 @@
 <script lang="ts">
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import { computed, reactive, watch, provide, ref, inject } from "vue";
 import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
-import { absolutePath, displayName } from "utils/common";
+import { displayName, humanFileSize } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
-import { capitalize } from "utils/common";
 import { IframeSrc } from "symbols";
 import {
   Button,
   Layout,
   Popconfirm,
+  Select,
   Space,
-  Spin,
   Switch,
   Table,
-  Tooltip,
   message,
 } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
-import DSize from "components/display/DSize.vue";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  KeyOutlined,
-} from "@ant-design/icons-vue";
+import { adminPlayerFragment } from "models/fragment";
+import PlayerForm from "./PlayerForm.vue";
+import ChangePassword from "./ChangePassword.vue";
+import DeletePlayer from "./DeletePlayer.vue";
 
 interface Pagination {
   current: number;
@@ -58,7 +54,7 @@ export default {
     const tableParams = reactive({
       limit: 10,
       cursor: undefined,
-      sort: "CREATED_ON_DESC",
+      sort: "ROLE_DESC",
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -72,6 +68,18 @@ export default {
     watch(inquiryResult, () => {
       tableParams.cursor = undefined;
     });
+
+    const { mutate, loading: saving } = useMutation<
+      { authUser: { accessToken: string; refreshToken: string } },
+      {}
+    >(gql`
+      mutation Login($username: String, $password: String) {
+        authUser(username: $username, password: $password) {
+          accessToken
+          refreshToken
+        }
+      }
+    `);
 
     const { result, loading, fetchMore } = useQuery<
       StudioGraph,
@@ -106,6 +114,7 @@ export default {
                 firstName
                 lastName
                 displayName
+                lastLogin
                 createdOn
                 uploadLimit
                 intro
@@ -128,11 +137,10 @@ export default {
 
     watch(params, () => {
       iframeSrc.value = "";
-      fetchMore({
-        variables: params.value,
-        updateQuery,
-      });
+      refresh();
     });
+
+    const customLimit = ref("");
 
     const columns: ColumnType<AdminPlayer>[] = [
       {
@@ -160,24 +168,29 @@ export default {
         },
       },
       {
+        title: t("last_login"),
+        dataIndex: "lastLogin",
+        key: "last_login",
+        customRender(opt) {
+          return opt.text
+            ? h(DDate, {
+                value: opt.text,
+              })
+            : "";
+        },
+      },
+      {
         title: t("date_registered"),
         dataIndex: "createdOn",
         key: "created_on",
         sorter: {
           multiple: 5,
         },
-        defaultSortOrder: "descend",
         customRender(opt) {
           return h(DDate, {
             value: opt.text,
           });
         },
-      },
-      {
-        title: t("last_access"),
-        dataIndex: "lastAccess",
-        key: "last_access",
-        defaultSortOrder: "descend",
       },
       {
         title: t("role"),
@@ -187,6 +200,7 @@ export default {
         sorter: {
           multiple: 1,
         },
+        defaultSortOrder: "descend",
       },
       {
         title: t("status"),
@@ -196,7 +210,18 @@ export default {
         customRender(opt) {
           return h(Switch, {
             checked: opt.text,
-            disabled: true,
+            loading: savingUser.value,
+            onChange: async (value: boolean) => {
+              await updateUser({
+                ...opt.record,
+                active: value,
+              });
+              message.success(
+                `Account ${displayName(opt.record)} ${
+                  value ? "activated" : "deactivated"
+                } successfully!`,
+              );
+            },
           });
         },
       },
@@ -208,8 +233,41 @@ export default {
           multiple: 2,
         },
         customRender(opt) {
-          return h(DSize, {
-            value: opt.text,
+          return h(Select, {
+            class: "w-full",
+            dropdownMatchSelectWidth: false,
+            showSearch: true,
+            value: humanFileSize(Number(opt.text), false, 0),
+            onSearch: (value: string) => {
+              customLimit.value = Math.min(Number(value), 999).toString();
+            },
+            options: ["2", "3", "5", "10", "100", "300"]
+              .map((value) => ({
+                value: `${value} MB`,
+              }))
+              .concat(
+                customLimit.value
+                  ? [
+                      {
+                        value: `${customLimit.value} MB`,
+                      },
+                    ]
+                  : [],
+              ),
+            loading: savingUser.value,
+            onChange: async (value: string) => {
+              const limit = Number(value.replace(" MB", ""));
+              const bytes = limit * 1024 * 1024;
+              await updateUser({
+                ...opt.record,
+                uploadLimit: bytes,
+              });
+              message.success(
+                `Successfully change ${displayName(
+                  opt.record,
+                )}'s upload limit to ${value}!`,
+              );
+            },
           });
         },
       },
@@ -220,57 +278,39 @@ export default {
         key: "actions",
         customRender(opt) {
           return h(Space, [
-            h(
-              Tooltip,
-              {
-                title: t("edit"),
+            h(PlayerForm, {
+              player: opt.record,
+              saving: savingUser,
+              onSave: async (player: AdminPlayer) => {
+                await updateUser({
+                  ...player,
+                });
+                message.success(
+                  `Successfully update ${displayName(player)}'s profile!`,
+                );
               },
-              [
-                h(
-                  Button,
-                  {
-                    type: "primary",
-                    onClick: () => alert("Under construction"),
-                  },
-                  {
-                    icon: () => h(EditOutlined),
-                  },
-                ),
-              ],
-            ),
-            h(
-              Tooltip,
-              {
-                title: t("edit"),
+            }),
+            h(ChangePassword, {
+              player: opt.record,
+              saving: savingUser,
+              onSave: async (player: AdminPlayer) => {
+                await updateUser({
+                  ...player,
+                });
+                message.success(
+                  `Successfully reset ${displayName(player)}'s password!`,
+                );
               },
-              [
-                h(
-                  Button,
-                  {
-                    onClick: () => alert("Under construction"),
-                  },
-                  {
-                    icon: () => h(KeyOutlined),
-                  },
-                ),
-              ],
-            ),
-            h(
-              Popconfirm,
-              {
-                title: t("delete_player_confirm"),
-                okText: t("yes"),
-                cancelText: t("no"),
-                onConfirm: () => alert("Under construction"),
+            }),
+            h(DeletePlayer, {
+              player: opt.record,
+              onDone: async (player: AdminPlayer) => {
+                refresh();
+                message.success(
+                  `Successfully delete ${displayName(player)}'s account!`,
+                );
               },
-              h(
-                Button,
-                { danger: true },
-                {
-                  icon: () => h(DeleteOutlined),
-                },
-              ),
-            ),
+            }),
           ]);
         },
       },
@@ -305,66 +345,78 @@ export default {
         : [],
     );
 
-    provide("refresh", () => {
+    const refresh = () => {
       fetchMore({
         variables: params.value,
         updateQuery,
       });
-    });
+    };
+    provide("refresh", refresh);
 
     const {
-      mutate: updateStatus,
-      loading: loadingUpdateStatus,
-      onDone: onStatusUpdated,
-    } = useMutation<{ updateStatus: { result: string } }, { stageId: string }>(
-      gql`
-        mutation UpdateStatus($stageId: ID!) {
-          updateStatus(stageId: $stageId) {
-            result
+      mutate: updateUser,
+      loading: savingUser,
+      onDone: onUserUpdated,
+      onError: onUserUpdateError,
+    } = useMutation<
+      {
+        updateUser: {
+          user: AdminPlayer;
+        };
+      },
+      {
+        id: string;
+        displayName?: string;
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        password?: string;
+        active?: boolean;
+        role?: number;
+        uploadLimit?: number;
+      }
+    >(gql`
+      mutation UpdateUser(
+        $id: ID!
+        $displayName: String
+        $firstName: String
+        $lastName: String
+        $email: String
+        $password: String
+        $active: Boolean
+        $role: Int
+        $uploadLimit: Int
+      ) {
+        updateUser(
+          inbound: {
+            id: $id
+            displayName: $displayName
+            firstName: $firstName
+            lastName: $lastName
+            email: $email
+            password: $password
+            active: $active
+            role: $role
+            uploadLimit: $uploadLimit
+          }
+        ) {
+          user {
+            ...adminPlayerFragment
           }
         }
-      `,
-    );
-    const handleChangeStatus = async (record: Stage) => {
-      await updateStatus({
-        stageId: record.id,
-      });
-    };
-
-    const {
-      mutate: updateVisibility,
-      loading: loadingUpdateVisibility,
-      onDone: onVisibilityUpdated,
-    } = useMutation<
-      { updateVisibility: { result: string } },
-      { stageId: string }
-    >(gql`
-      mutation UpdateVisibility($stageId: ID!) {
-        updateVisibility(stageId: $stageId) {
-          result
-        }
       }
+      ${adminPlayerFragment}
     `);
-    const handleChangeVisibility = async (record: Stage) => {
-      await updateVisibility({
-        stageId: record.id,
-      });
-    };
 
     const handleUpdate = (result: FetchResult) => {
-      if (result.data) {
-        message.success("Stage updated successfully!");
-      } else {
+      if (result.errors) {
         message.error("You don't have permission to perform this action!");
+      } else {
+        refresh();
       }
-      fetchMore({
-        variables: params.value,
-        updateQuery,
-      });
     };
 
-    onStatusUpdated(handleUpdate);
-    onVisibilityUpdated(handleUpdate);
+    onUserUpdated(handleUpdate);
 
     return () =>
       h(

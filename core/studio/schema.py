@@ -41,7 +41,7 @@ from core.studio.media import (
 )
 from core.studio.stage import StageConnectionField, Stage
 from core.studio.notification import Notification, resolve_notifications
-from core.studio.user import UserConnectionField, AdminPlayer
+from core.studio.user import DeleteUser, UpdateUser, UserConnectionField, AdminPlayer
 
 
 class Tag(SQLAlchemyObjectType):
@@ -118,6 +118,8 @@ class Mutation(graphene.ObjectType):
     quickAssignMutation = QuickAssignMutation.Field()
     updateStatus = UpdateAttributeStatus.Field()
     updateVisibility = UpdateAttributeVisibility.Field()
+    updateUser = UpdateUser.Field()
+    deleteUser = DeleteUser.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
