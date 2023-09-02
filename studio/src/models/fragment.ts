@@ -15,3 +15,20 @@ export const permissionFragment = gql`
     }
   }
 `;
+
+export const adminPlayerFragment = gql`
+  fragment adminPlayerFragment on AdminPlayer {
+    id
+    dbId
+    username
+    firstName
+    lastName
+    displayName
+    email
+    active
+    createdOn
+    role
+    uploadLimit
+    intro
+  }
+`;

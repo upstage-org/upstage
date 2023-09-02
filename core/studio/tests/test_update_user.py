@@ -21,7 +21,7 @@ def execute_update_email(newEmail):
                   }
                 }
 
-                fragment userFragment on User {
+                fragment userFragment on AdminPlayer {
                   id
                   dbId
                   username

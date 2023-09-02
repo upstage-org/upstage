@@ -33,6 +33,7 @@ import {
   EditOutlined,
   KeyOutlined,
 } from "@ant-design/icons-vue";
+import { adminPlayerFragment } from "models/fragment";
 
 interface Pagination {
   current: number;
@@ -239,7 +240,7 @@ export default {
             showSearch: true,
             value: humanFileSize(Number(opt.text), false, 0),
             onSearch: (value: string) => {
-              customLimit.value = value;
+              customLimit.value = Math.min(Number(value), 999).toString();
             },
             options: ["2", "3", "5", "10", "100", "300"]
               .map((value) => ({
@@ -254,10 +255,19 @@ export default {
                     ]
                   : []
               ),
-            onChange: (value: string) => {
+            loading: savingUser.value,
+            onChange: async (value: string) => {
               const limit = Number(value.replace(" MB", ""));
               const bytes = limit * 1024 * 1024;
-              alert(bytes);
+              await updateUser({
+                ...opt.record,
+                uploadLimit: bytes,
+              });
+              message.success(
+                `Successfully change ${displayName(
+                  opt.record
+                )}'s upload limit to ${value}!`
+              );
             },
           });
         },
@@ -362,58 +372,74 @@ export default {
     });
 
     const {
-      mutate: updateStatus,
-      loading: loadingUpdateStatus,
-      onDone: onStatusUpdated,
-    } = useMutation<{ updateStatus: { result: string } }, { stageId: string }>(
+      mutate: updateUser,
+      loading: savingUser,
+      onDone: onUserUpdated,
+      onError: onUserUpdateError,
+    } = useMutation<
+      {
+        updateUser: {
+          user: AdminPlayer;
+        };
+      },
+      {
+        id: string;
+        displayName?: string;
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        password?: string;
+        active?: boolean;
+        role?: number;
+        uploadLimit?: number;
+      }
+    >(
       gql`
-        mutation UpdateStatus($stageId: ID!) {
-          updateStatus(stageId: $stageId) {
-            result
+        mutation UpdateUser(
+          $id: ID!
+          $displayName: String
+          $firstName: String
+          $lastName: String
+          $email: String
+          $password: String
+          $active: Boolean
+          $role: Int
+          $uploadLimit: Int
+        ) {
+          updateUser(
+            inbound: {
+              id: $id
+              displayName: $displayName
+              firstName: $firstName
+              lastName: $lastName
+              email: $email
+              password: $password
+              active: $active
+              role: $role
+              uploadLimit: $uploadLimit
+            }
+          ) {
+            user {
+              ...adminPlayerFragment
+            }
           }
         }
+        ${adminPlayerFragment}
       `
     );
-    const handleChangeStatus = async (record: Stage) => {
-      await updateStatus({
-        stageId: record.id,
-      });
-    };
-
-    const {
-      mutate: updateVisibility,
-      loading: loadingUpdateVisibility,
-      onDone: onVisibilityUpdated,
-    } = useMutation<
-      { updateVisibility: { result: string } },
-      { stageId: string }
-    >(gql`
-      mutation UpdateVisibility($stageId: ID!) {
-        updateVisibility(stageId: $stageId) {
-          result
-        }
-      }
-    `);
-    const handleChangeVisibility = async (record: Stage) => {
-      await updateVisibility({
-        stageId: record.id,
-      });
-    };
 
     const handleUpdate = (result: FetchResult) => {
-      if (result.data) {
-        message.success("Stage updated successfully!");
-      } else {
+      if (result.errors) {
         message.error("You don't have permission to perform this action!");
+      } else {
+        fetchMore({
+          variables: params.value,
+          updateQuery,
+        });
       }
-      fetchMore({
-        variables: params.value,
-        updateQuery,
-      });
     };
 
-    onStatusUpdated(handleUpdate);
-    onVisibilityUpdated(handleUpdate);
+    onUserUpdated(handleUpdate);
 
     return () =>
       h(
