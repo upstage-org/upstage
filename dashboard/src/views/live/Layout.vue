@@ -1,6 +1,7 @@
 <template>
   <div id="live-logo">
-    <Logo :to="loggedIn ? '/backstage' : '/'" />
+    <Logo v-if="loggedIn" :link="studioEndpoint" />
+    <Logo v-else to="/" />
   </div>
   <Shell id="main-content">
     <Preloader />
@@ -19,6 +20,7 @@
 </template>
 
 <script>
+import configs from "@/config";
 import Logo from "@/components/Logo";
 import SettingPopup from "@/components/stage/SettingPopup";
 import Chat from "@/components/stage/Chat/index";
@@ -74,6 +76,7 @@ export default {
       ready,
       canPlay,
       loggedIn,
+      studioEndpoint: configs.STUDIO_ENDPOINT,
     };
   },
 };
