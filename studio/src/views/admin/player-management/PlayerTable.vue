@@ -1,40 +1,31 @@
 <script lang="ts">
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import { computed, reactive, watch, provide, ref, inject } from "vue";
 import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
-import { absolutePath, displayName, humanFileSize } from "utils/common";
+import { displayName, humanFileSize } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
-import { capitalize } from "utils/common";
 import { IframeSrc } from "symbols";
 import {
-  AutoComplete,
   Button,
-  Divider,
-  Input,
   Layout,
   Popconfirm,
   Select,
   Space,
-  Spin,
   Switch,
   Table,
-  Tooltip,
   message,
 } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
-import DSize from "components/display/DSize.vue";
-import {
-  DeleteOutlined,
-  EditOutlined,
-  KeyOutlined,
-} from "@ant-design/icons-vue";
+import { DeleteOutlined } from "@ant-design/icons-vue";
 import { adminPlayerFragment } from "models/fragment";
 import PlayerForm from "./PlayerForm.vue";
+import ChangePassword from "./ChangePassword.vue";
+import DeletePlayer from "./DeletePlayer.vue";
 
 interface Pagination {
   current: number;
@@ -135,22 +126,19 @@ export default {
         }
       `,
       params.value,
-      { notifyOnNetworkStatusChange: true }
+      { notifyOnNetworkStatusChange: true },
     );
 
     const updateQuery = (
       previousResult: StudioGraph,
-      { fetchMoreResult }: any
+      { fetchMoreResult }: any,
     ) => {
       return fetchMoreResult ?? previousResult;
     };
 
     watch(params, () => {
       iframeSrc.value = "";
-      fetchMore({
-        variables: params.value,
-        updateQuery,
-      });
+      refresh();
     });
 
     const customLimit = ref("");
@@ -232,7 +220,7 @@ export default {
               message.success(
                 `Account ${displayName(opt.record)} ${
                   value ? "activated" : "deactivated"
-                } successfully!`
+                } successfully!`,
               );
             },
           });
@@ -265,7 +253,7 @@ export default {
                         value: `${customLimit.value} MB`,
                       },
                     ]
-                  : []
+                  : [],
               ),
             loading: savingUser.value,
             onChange: async (value: string) => {
@@ -277,8 +265,8 @@ export default {
               });
               message.success(
                 `Successfully change ${displayName(
-                  opt.record
-                )}'s upload limit to ${value}!`
+                  opt.record,
+                )}'s upload limit to ${value}!`,
               );
             },
           });
@@ -299,43 +287,30 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully update ${displayName(player)}'s profile!`
+                  `Successfully update ${displayName(player)}'s profile!`,
                 );
               },
             }),
-            h(
-              Tooltip,
-              {
-                title: t("edit"),
+            h(ChangePassword, {
+              player: opt.record,
+              onSave: async (player: AdminPlayer) => {
+                await updateUser({
+                  ...player,
+                });
+                message.success(
+                  `Successfully reset ${displayName(player)}'s password!`,
+                );
               },
-              [
-                h(
-                  Button,
-                  {
-                    onClick: () => alert("Under construction"),
-                  },
-                  {
-                    icon: () => h(KeyOutlined),
-                  }
-                ),
-              ]
-            ),
-            h(
-              Popconfirm,
-              {
-                title: t("delete_player_confirm"),
-                okText: t("yes"),
-                cancelText: t("no"),
-                onConfirm: () => alert("Under construction"),
+            }),
+            h(DeletePlayer, {
+              player: opt.record,
+              onDone: async (player: AdminPlayer) => {
+                refresh();
+                message.success(
+                  `Successfully delete ${displayName(player)}'s account!`,
+                );
               },
-              h(
-                Button,
-                { danger: true },
-                {
-                  icon: () => h(DeleteOutlined),
-                }
-              )
-            ),
+            }),
           ]);
         },
       },
@@ -344,16 +319,16 @@ export default {
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
       _: any,
-      sorter: SorterResult<Media> | SorterResult<Media>[]
+      sorter: SorterResult<Media> | SorterResult<Media>[],
     ) => {
       const sort = (Array.isArray(sorter) ? sorter : [sorter])
         .sort(
           (a, b) =>
             (a.column?.sorter as any).multiple -
-            (b.column?.sorter as any).multiple
+            (b.column?.sorter as any).multiple,
         )
         .map(({ columnKey, order }) =>
-          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
         );
       Object.assign(tableParams, {
         cursor:
@@ -367,15 +342,16 @@ export default {
     const dataSource = computed(() =>
       result.value
         ? result.value.adminPlayers.edges.map((edge) => edge.node)
-        : []
+        : [],
     );
 
-    provide("refresh", () => {
+    const refresh = () => {
       fetchMore({
         variables: params.value,
         updateQuery,
       });
-    });
+    };
+    provide("refresh", refresh);
 
     const {
       mutate: updateUser,
@@ -436,10 +412,7 @@ export default {
       if (result.errors) {
         message.error("You don't have permission to perform this action!");
       } else {
-        fetchMore({
-          variables: params.value,
-          updateQuery,
-        });
+        refresh();
       }
     };
 
@@ -465,7 +438,7 @@ export default {
               total: result.value ? result.value.adminPlayers.totalCount : 0,
             } as Pagination,
           }),
-        ]
+        ],
       );
   },
 };

@@ -72,6 +72,7 @@ export default {
   under_construction: "Under construction",
   enter_username_and_password_to_login: "Enter username and password to login",
   reset_your_password: "Reset your password",
+  change_password: "Change password",
   full_name: "Full Name",
   first_name: "First Name",
   last_name: "Last Name",

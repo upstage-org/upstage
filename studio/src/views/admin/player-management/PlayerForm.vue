@@ -17,6 +17,7 @@ import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
+import { GraphQLError } from "graphql";
 
 export default {
   props: {
@@ -62,7 +63,7 @@ export default {
             },
             {
               icon: () => h(EditOutlined),
-            }
+            },
           ),
           h(
             Modal,
@@ -79,7 +80,9 @@ export default {
                   });
                   visible.value = false;
                 } catch (error) {
-                  message.error(error as string);
+                  message.error(
+                    error instanceof Error ? error.message : (error as string),
+                  );
                 }
               },
               okButtonProps: {
@@ -106,7 +109,7 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.firstName = value),
                       }),
-                    ]
+                    ],
                   ),
                   h(
                     Form.Item,
@@ -119,7 +122,7 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.lastName = value),
                       }),
-                    ]
+                    ],
                   ),
                   h(
                     Form.Item,
@@ -133,7 +136,7 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.displayName = value),
                       }),
-                    ]
+                    ],
                   ),
                   h(
                     Form.Item,
@@ -146,7 +149,7 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.email = value),
                       }),
-                    ]
+                    ],
                   ),
                   h(
                     Form.Item,
@@ -159,13 +162,13 @@ export default {
                         "onUpdate:checked": (value: boolean) =>
                           (values.active = value),
                       }),
-                    ]
+                    ],
                   ),
-                ]
+                ],
               ),
-            ]
+            ],
           ),
-        ]
+        ],
       );
   },
 };
