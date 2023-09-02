@@ -34,6 +34,7 @@ import {
   KeyOutlined,
 } from "@ant-design/icons-vue";
 import { adminPlayerFragment } from "models/fragment";
+import PlayerForm from "./PlayerForm.vue";
 
 interface Pagination {
   current: number;
@@ -222,7 +223,18 @@ export default {
         customRender(opt) {
           return h(Switch, {
             checked: opt.text,
-            disabled: true,
+            loading: savingUser.value,
+            onChange: async (value: boolean) => {
+              await updateUser({
+                ...opt.record,
+                active: value,
+              });
+              message.success(
+                `Account ${displayName(opt.record)} ${
+                  value ? "activated" : "deactivated"
+                } successfully!`
+              );
+            },
           });
         },
       },
@@ -279,24 +291,18 @@ export default {
         key: "actions",
         customRender(opt) {
           return h(Space, [
-            h(
-              Tooltip,
-              {
-                title: t("edit"),
+            h(PlayerForm, {
+              player: opt.record,
+              saving: savingUser,
+              onSave: async (player: AdminPlayer) => {
+                await updateUser({
+                  ...player,
+                });
+                message.success(
+                  `Successfully update ${displayName(player)}'s profile!`
+                );
               },
-              [
-                h(
-                  Button,
-                  {
-                    type: "primary",
-                    onClick: () => alert("Under construction"),
-                  },
-                  {
-                    icon: () => h(EditOutlined),
-                  }
-                ),
-              ]
-            ),
+            }),
             h(
               Tooltip,
               {
@@ -393,40 +399,38 @@ export default {
         role?: number;
         uploadLimit?: number;
       }
-    >(
-      gql`
-        mutation UpdateUser(
-          $id: ID!
-          $displayName: String
-          $firstName: String
-          $lastName: String
-          $email: String
-          $password: String
-          $active: Boolean
-          $role: Int
-          $uploadLimit: Int
+    >(gql`
+      mutation UpdateUser(
+        $id: ID!
+        $displayName: String
+        $firstName: String
+        $lastName: String
+        $email: String
+        $password: String
+        $active: Boolean
+        $role: Int
+        $uploadLimit: Int
+      ) {
+        updateUser(
+          inbound: {
+            id: $id
+            displayName: $displayName
+            firstName: $firstName
+            lastName: $lastName
+            email: $email
+            password: $password
+            active: $active
+            role: $role
+            uploadLimit: $uploadLimit
+          }
         ) {
-          updateUser(
-            inbound: {
-              id: $id
-              displayName: $displayName
-              firstName: $firstName
-              lastName: $lastName
-              email: $email
-              password: $password
-              active: $active
-              role: $role
-              uploadLimit: $uploadLimit
-            }
-          ) {
-            user {
-              ...adminPlayerFragment
-            }
+          user {
+            ...adminPlayerFragment
           }
         }
-        ${adminPlayerFragment}
-      `
-    );
+      }
+      ${adminPlayerFragment}
+    `);
 
     const handleUpdate = (result: FetchResult) => {
       if (result.errors) {

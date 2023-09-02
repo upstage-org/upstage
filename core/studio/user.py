@@ -10,10 +10,6 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from core.asset.models import (
-    Asset as AssetModel,
-)
-from core.user.models import User as UserModel, role_conv
 from core.auth.models import UserSession
 from core.utils.graphql_utils import CountableConnection
 from core.project_globals import DBSession
@@ -31,11 +27,19 @@ from core.user.models import (
     GUEST,
     SUPER_ADMIN,
     User as UserModel,
+    OneTimeTOTP,
+    role_conv,
 )
-from core.auth.fernet_crypto import encrypt
+from core.auth.fernet_crypto import decrypt, encrypt
 from core.utils import graphql_utils
 from core.user.user_utils import current_user
 from flask_jwt_extended import jwt_required
+from core.asset.models import (
+    Stage as StageModel,
+    StageAttribute as StageAttributeModel,
+    Asset as AssetModel,
+)
+from core.performance_config.models import ParentStage as ParentStageModel, Performance
 
 
 class AdminPlayer(SQLAlchemyObjectType):
@@ -168,3 +172,89 @@ class UpdateUser(graphene.Mutation):
 
         user = DBSession.query(UserModel).filter(UserModel.id == data["id"]).first()
         return UpdateUser(user=user)
+
+
+class ChangePasswordInput(
+    graphene.InputObjectType,
+    UserAttribute,
+):
+    """Arguments to update a user."""
+
+    id = graphene.ID(required=True, description="Global Id of the user.")
+    oldPassword = graphene.String(required=True)
+    newPassword = graphene.String(required=True)
+
+
+class ChangePassword(graphene.Mutation):
+    success = graphene.Boolean(description="Password changed successful or not")
+
+    class Arguments:
+        inbound = ChangePasswordInput(required=True)
+
+    @jwt_required()
+    def mutate(self, info, inbound):
+        data = graphql_utils.input_to_dictionary(inbound)
+        with ScopedSession() as local_db_session:
+            user = (
+                local_db_session.query(UserModel)
+                .filter(UserModel.id == data["id"])
+                .first()
+            )
+            if decrypt(user.password) != data["oldPassword"]:
+                raise Exception("Old password incorrect")
+            else:
+                user.password = encrypt(data["newPassword"])
+            local_db_session.commit()
+        return ChangePassword(success=True)
+
+
+class DeleteUserInput(graphene.InputObjectType, UserAttribute):
+    """Arguments to update a user."""
+
+    id = graphene.ID(required=True, description="Global Id of the user.")
+
+
+class DeleteUser(graphene.Mutation):
+    success = graphene.Boolean(description="Password changed successful or not")
+
+    class Arguments:
+        inbound = DeleteUserInput(required=True)
+
+    @jwt_required()
+    def mutate(self, info, inbound):
+        data = graphql_utils.input_to_dictionary(inbound)
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
+            raise Exception("Permission denied!")
+        with ScopedSession() as local_db_session:
+            # Delete all existed user's sessions
+            local_db_session.query(UserSession).filter(
+                UserSession.user_id == data["id"]
+            ).delete()
+            local_db_session.query(OneTimeTOTP).filter(
+                OneTimeTOTP.user_id == data["id"]
+            ).delete()
+            # Delete all stages created by this user
+            local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage.has(StageModel.owner_id == data["id"])
+            ).delete(synchronize_session="fetch")
+            local_db_session.query(ParentStageModel).filter(
+                ParentStageModel.stage.has(StageModel.owner_id == data["id"])
+            ).delete(synchronize_session="fetch")
+            local_db_session.query(Performance).filter(
+                Performance.stage.has(StageModel.owner_id == data["id"])
+            ).delete(synchronize_session="fetch")
+            local_db_session.query(StageModel).filter(
+                StageModel.owner_id == data["id"]
+            ).delete()
+            # Change the owner of media uploaded by this user to the one who process the delete
+            # Because delete the media would cause impact to other stage, this would be a workaround for now
+            local_db_session.query(AssetModel).filter(
+                AssetModel.owner_id == data["id"]
+            ).update({AssetModel.owner_id: user.id})
+            # Delete the actual user
+            local_db_session.query(UserModel).filter(
+                UserModel.id == data["id"]
+            ).delete()
+            local_db_session.commit()
+        return DeleteUser(success=True)
