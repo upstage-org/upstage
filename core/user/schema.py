@@ -1,22 +1,5 @@
 # -*- coding: iso8859-15 -*-
-import sys, os
-appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, "../.."))
-if projdir not in sys.path:
-    sys.path.append(appdir)
-    sys.path.append(projdir)
-
 from datetime import datetime
-from flask_graphql import GraphQLView
-from flask_jwt_extended import get_jwt_identity
-from flask import request
-import graphene
-from graphene import relay
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-import json
-import uuid
-
 from core.auth.models import UserSession
 from core.mail.mail_utils import send
 from core.mail.templates import (
@@ -30,7 +13,20 @@ from core.asset.models import (
     Asset as AssetModel,
 )
 from core.performance_config.models import ParentStage as ParentStageModel, Performance
+import sys, os
+import json
+import uuid
 
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, ".."))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
+import graphene
+from graphene import relay
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from core.project_globals import (
     DBSession,
     Base,
@@ -51,6 +47,7 @@ from core.user.models import (
     OneTimeTOTP,
     User as UserModel,
 )
+from flask_graphql import GraphQLView
 from core.auth.fernet_crypto import encrypt, decrypt
 from core.utils import graphql_utils
 from core.auth.auth_mutation import (
@@ -61,6 +58,8 @@ from core.auth.auth_mutation import (
     VerifyPasswordResetMutation,
 )
 from core.user.user_utils import current_user
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
 
 
 class UserAttribute:
@@ -154,7 +153,7 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         inbound = UpdateUserInput(required=True)
 
-    @jwt_required
+    @jwt_required()
     async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         code, error, user, timezone = current_user()
@@ -162,8 +161,10 @@ class UpdateUser(graphene.Mutation):
             if not user.id == int(data["id"]):
                 raise Exception("Permission denied!")
 
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("",None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
 
         with ScopedSession() as local_db_session:
             try:
@@ -227,7 +228,7 @@ class OneUser(graphene.ObjectType):
 
         inbound = OneUserInput(required=False)
 
-    @jwt_required
+    @jwt_required()
     def resolve_search(self, info, inbound):
         """Get user from JWT token."""
         code, error, this_user, timezone = current_user()
@@ -294,7 +295,7 @@ class ChangePassword(graphene.Mutation):
     class Arguments:
         inbound = ChangePasswordInput(required=True)
 
-    @jwt_required
+    @jwt_required()
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         with ScopedSession() as local_db_session:
@@ -323,7 +324,7 @@ class DeleteUser(graphene.Mutation):
     class Arguments:
         inbound = DeleteUserInput(required=True)
 
-    @jwt_required
+    @jwt_required()
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         code, error, user, timezone = current_user()
@@ -377,7 +378,7 @@ class BatchUserCreation(graphene.Mutation):
         users = graphene.List(BatchUserInput, required=True)
         stageIds = graphene.List(graphene.Int, required=False)
 
-    @jwt_required
+    @jwt_required()
     def mutate(self, info, users, stageIds=[]):
         code, error, user, timezone = current_user()
         if not user.role in (ADMIN, SUPER_ADMIN):
@@ -453,7 +454,7 @@ class Query(graphene.ObjectType):
     # oneUser = OneUser.search
     currentUser = graphene.Field(User)
 
-    @jwt_required
+    @jwt_required()
     def resolve_currentUser(self, info):
         code, error, user, timezone = current_user()
         if error:
