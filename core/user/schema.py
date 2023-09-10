@@ -1,5 +1,22 @@
 # -*- coding: iso8859-15 -*-
+import sys, os
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 from datetime import datetime
+from flask_graphql import GraphQLView
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask import request
+import graphene
+from graphene import relay
+from graphql.execution.executors.asyncio import AsyncioExecutor
+from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
+import json
+import uuid
+
 from core.auth.models import UserSession
 from core.mail.mail_utils import send
 from core.mail.templates import (
@@ -13,19 +30,7 @@ from core.asset.models import (
     Asset as AssetModel,
 )
 from core.performance_config.models import ParentStage as ParentStageModel, Performance
-import sys, os
-import json
 
-appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, ".."))
-if projdir not in sys.path:
-    sys.path.append(appdir)
-    sys.path.append(projdir)
-
-import graphene
-from graphene import relay
-from graphql.execution.executors.asyncio import AsyncioExecutor
-from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from core.project_globals import (
     DBSession,
     Base,
@@ -46,7 +51,6 @@ from core.user.models import (
     OneTimeTOTP,
     User as UserModel,
 )
-from flask_graphql import GraphQLView
 from core.auth.fernet_crypto import encrypt, decrypt
 from core.utils import graphql_utils
 from core.auth.auth_mutation import (
@@ -57,8 +61,6 @@ from core.auth.auth_mutation import (
     VerifyPasswordResetMutation,
 )
 from core.user.user_utils import current_user
-from flask_jwt_extended import jwt_required, get_jwt_identity
-from flask import request
 
 
 class UserAttribute:
@@ -106,8 +108,10 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         # We have GUEST role because Helen wants to create batch users for demo purposes
         # GUEST users don't neccessarily need an email address to keep batch creation simple
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("",None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
         if not data["intro"]:
             raise Exception("Introduction is required!")
 
