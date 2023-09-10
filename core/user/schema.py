@@ -8,7 +8,7 @@ if projdir not in sys.path:
 
 from datetime import datetime
 from flask_graphql import GraphQLView
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import get_jwt_identity
 from flask import request
 import graphene
 from graphene import relay
@@ -154,7 +154,7 @@ class UpdateUser(graphene.Mutation):
     class Arguments:
         inbound = UpdateUserInput(required=True)
 
-    @jwt_required()
+    @jwt_required
     async def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         code, error, user, timezone = current_user()
@@ -227,7 +227,7 @@ class OneUser(graphene.ObjectType):
 
         inbound = OneUserInput(required=False)
 
-    @jwt_required()
+    @jwt_required
     def resolve_search(self, info, inbound):
         """Get user from JWT token."""
         code, error, this_user, timezone = current_user()
@@ -294,7 +294,7 @@ class ChangePassword(graphene.Mutation):
     class Arguments:
         inbound = ChangePasswordInput(required=True)
 
-    @jwt_required()
+    @jwt_required
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         with ScopedSession() as local_db_session:
@@ -323,7 +323,7 @@ class DeleteUser(graphene.Mutation):
     class Arguments:
         inbound = DeleteUserInput(required=True)
 
-    @jwt_required()
+    @jwt_required
     def mutate(self, info, inbound):
         data = graphql_utils.input_to_dictionary(inbound)
         code, error, user, timezone = current_user()
@@ -377,7 +377,7 @@ class BatchUserCreation(graphene.Mutation):
         users = graphene.List(BatchUserInput, required=True)
         stageIds = graphene.List(graphene.Int, required=False)
 
-    @jwt_required()
+    @jwt_required
     def mutate(self, info, users, stageIds=[]):
         code, error, user, timezone = current_user()
         if not user.role in (ADMIN, SUPER_ADMIN):
@@ -453,7 +453,7 @@ class Query(graphene.ObjectType):
     # oneUser = OneUser.search
     currentUser = graphene.Field(User)
 
-    @jwt_required()
+    @jwt_required
     def resolve_currentUser(self, info):
         code, error, user, timezone = current_user()
         if error:
