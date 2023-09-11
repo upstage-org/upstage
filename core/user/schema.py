@@ -15,6 +15,7 @@ from core.asset.models import (
 from core.performance_config.models import ParentStage as ParentStageModel, Performance
 import sys, os
 import json
+import uuid
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, ".."))
@@ -106,8 +107,10 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         # We have GUEST role because Helen wants to create batch users for demo purposes
         # GUEST users don't neccessarily need an email address to keep batch creation simple
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("",None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
         if not data["intro"]:
             raise Exception("Introduction is required!")
 
@@ -158,8 +161,10 @@ class UpdateUser(graphene.Mutation):
             if not user.id == int(data["id"]):
                 raise Exception("Permission denied!")
 
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("",None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
 
         with ScopedSession() as local_db_session:
             try:
