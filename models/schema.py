@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: iso8859-15
 from sqlalchemy import BigInteger, Boolean, Column, DateTime, Float, ForeignKey, Integer, JSON, String, Text, text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
