@@ -1,0 +1,24 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+Type=notify
+# the specific user that our service will run as
+User=upstage
+Group=upstage
+# another option for an even more restricted service is
+# DynamicUser=yes
+# see http://0pointer.net/blog/dynamic-users-with-systemd.html
+RuntimeDirectory=/home/upstage/new_backend/run
+WorkingDirectory=/home/upstage/new_backend/run
+Environment="JSON_CONFIG_FILE=/home/upstage/new_backend/scheduler_config.json"
+ExecStart=/usr/local/Python-3.11.0/bin/gunicorn -c gunicorn_config.py --logger-class loguricorn.Logger fastapi_jwt:app
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

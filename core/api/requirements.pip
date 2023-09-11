@@ -1,0 +1,15 @@
+arrow
+ariadne
+argon2-cffi
+cryptography
+fastapi
+gunicorn
+loguricorn
+psycopg2
+pyJWT
+pymongo
+pyotp
+requests
+sendgrid
+sqlalchemy
+uvicorn[standard]

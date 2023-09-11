@@ -1,0 +1,16 @@
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/home/upstage/socket/gunicorn.sock
+# Our service won't need permissions for the socket, since it
+# inherits the file descriptor by socket activation
+# only the nginx daemon will need access to the socket
+SocketUser=upstage
+SocketGroup=www-data
+# Optionally restrict the socket permissions even more.
+SocketMode=660
+
+[Install]
+WantedBy=sockets.target
+
