@@ -56,18 +56,6 @@ class AdminPlayer(SQLAlchemyObjectType):
     def resolve_role_name(self, info):
         return role_conv(self.role)
 
-    def resolve_last_login(self, info):
-        user_session = (
-            DBSession.query(UserSession)
-            .filter_by(user_id=self.id)
-            .order_by(UserSession.recorded_time.desc())
-            .first()
-        )
-        if user_session:
-            return user_session.recorded_time
-        else:
-            return None
-
 
 class UserConnectionField(SQLAlchemyConnectionField):
     RELAY_ARGS = ["first", "last", "before", "after"]
