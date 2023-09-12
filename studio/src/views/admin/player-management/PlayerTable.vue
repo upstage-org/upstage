@@ -54,7 +54,7 @@ export default {
     const tableParams = reactive({
       limit: 10,
       cursor: undefined,
-      sort: "ROLE_DESC",
+      sort: ["ROLE_DESC", "LAST_LOGIN_ASC"],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -144,11 +144,21 @@ export default {
 
     const columns: ColumnType<AdminPlayer>[] = [
       {
+        title: t("role"),
+        dataIndex: "roleName",
+        key: "role",
+        align: "center",
+        sorter: {
+          multiple: 1,
+        },
+        defaultSortOrder: "descend",
+      },
+      {
         title: t("username"),
         key: "username",
         dataIndex: "username",
         sorter: {
-          multiple: 3,
+          multiple: 2,
         },
       },
       {
@@ -164,7 +174,23 @@ export default {
         key: "email",
         dataIndex: "email",
         sorter: {
+          multiple: 3,
+        },
+      },
+      {
+        title: t("last_login"),
+        dataIndex: "lastLogin",
+        key: "last_login",
+        sorter: {
           multiple: 4,
+        },
+        defaultSortOrder: "ascend",
+        customRender(opt) {
+          return opt.text
+            ? h(DDate, {
+                value: opt.text,
+              })
+            : "";
         },
       },
       {
@@ -193,16 +219,6 @@ export default {
         },
       },
       {
-        title: t("role"),
-        dataIndex: "roleName",
-        key: "role",
-        align: "center",
-        sorter: {
-          multiple: 1,
-        },
-        defaultSortOrder: "descend",
-      },
-      {
         title: t("status"),
         dataIndex: "active",
         key: "active",
@@ -220,52 +236,6 @@ export default {
                 `Account ${displayName(opt.record)} ${
                   value ? "activated" : "deactivated"
                 } successfully!`,
-              );
-            },
-          });
-        },
-      },
-      {
-        title: t("upload_limit"),
-        dataIndex: "uploadLimit",
-        key: "upload_limit",
-        sorter: {
-          multiple: 2,
-        },
-        customRender(opt) {
-          return h(Select, {
-            class: "w-full",
-            dropdownMatchSelectWidth: false,
-            showSearch: true,
-            value: humanFileSize(Number(opt.text), false, 0),
-            onSearch: (value: string) => {
-              customLimit.value = Math.min(Number(value), 999).toString();
-            },
-            options: ["2", "3", "5", "10", "100", "300"]
-              .map((value) => ({
-                value: `${value} MB`,
-              }))
-              .concat(
-                customLimit.value
-                  ? [
-                      {
-                        value: `${customLimit.value} MB`,
-                      },
-                    ]
-                  : [],
-              ),
-            loading: savingUser.value,
-            onChange: async (value: string) => {
-              const limit = Number(value.replace(" MB", ""));
-              const bytes = limit * 1024 * 1024;
-              await updateUser({
-                ...opt.record,
-                uploadLimit: bytes,
-              });
-              message.success(
-                `Successfully change ${displayName(
-                  opt.record,
-                )}'s upload limit to ${value}!`,
               );
             },
           });

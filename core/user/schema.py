@@ -107,7 +107,7 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         # We have GUEST role because Helen wants to create batch users for demo purposes
         # GUEST users don't neccessarily need an email address to keep batch creation simple
-        if data["email"] in ("",None):
+        if data["email"] in ("", None):
             if data["role"] != GUEST:
                 raise Exception("Email is required!")
             data["email"] = str(uuid.uuid4()) + "@stub.stub"
@@ -161,7 +161,7 @@ class UpdateUser(graphene.Mutation):
             if not user.id == int(data["id"]):
                 raise Exception("Permission denied!")
 
-        if data["email"] in ("",None):
+        if data["email"] in ("", None):
             if data["role"] != GUEST:
                 raise Exception("Email is required!")
             data["email"] = str(uuid.uuid4()) + "@stub.stub"

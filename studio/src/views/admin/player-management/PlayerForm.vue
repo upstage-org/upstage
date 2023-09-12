@@ -5,6 +5,7 @@ import {
   Form,
   Input,
   Modal,
+  Select,
   Switch,
   Textarea,
   Tooltip,
@@ -18,6 +19,7 @@ import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
+import { humanFileSize } from "utils/common";
 
 export default {
   props: {
@@ -45,8 +47,11 @@ export default {
       displayName: props.player.displayName,
       email: props.player.email,
       active: props.player.active,
+      uploadLimit: props.player.uploadLimit,
     });
     const { validate } = useForm(values, {});
+
+    const customLimit = ref("");
 
     return () =>
       h(
@@ -161,6 +166,48 @@ export default {
                         disabled: true,
                         autoSize: true,
                         value: props.player.intro,
+                      }),
+                    ],
+                  ),
+                  h(
+                    Form.Item,
+                    {
+                      label: t("upload_limit"),
+                    },
+                    [
+                      h(Select, {
+                        class: "w-full",
+                        dropdownMatchSelectWidth: false,
+                        showSearch: true,
+                        value: humanFileSize(
+                          Number(values.uploadLimit),
+                          false,
+                          0,
+                        ),
+                        onSearch: (value: string) => {
+                          customLimit.value = Math.min(
+                            Number(value),
+                            999,
+                          ).toString();
+                        },
+                        options: ["2", "3", "5", "10", "100", "300"]
+                          .map((value) => ({
+                            value: `${value} MB`,
+                          }))
+                          .concat(
+                            customLimit.value
+                              ? [
+                                  {
+                                    value: `${customLimit.value} MB`,
+                                  },
+                                ]
+                              : [],
+                          ),
+                        onChange: async (value: string) => {
+                          const limit = Number(value.replace(" MB", ""));
+                          const bytes = limit * 1024 * 1024;
+                          values.uploadLimit = bytes;
+                        },
                       }),
                     ],
                   ),

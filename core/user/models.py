@@ -83,6 +83,7 @@ class User(Base, db.Model):
     upload_limit = Column(Integer, default=1024 * 1024)
     intro = Column(Text, default="")
     can_send_email = Column(Boolean, default=False)
+    last_login = Column(DateTime)
 
 
 class UserPushnot(Base, db.Model):

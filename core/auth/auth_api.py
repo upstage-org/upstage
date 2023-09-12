@@ -817,6 +817,9 @@ def call_login_logout(app_entry=True, num_value=None):
         app_os_version=request.headers.get("X-Upstage-Os-Version"),
         app_device=request.headers.get("X-Upstage-Device-Model"),
     )
+
+    user.last_login = datetime.utcnow()
+
     with ScopedSession() as local_db_session:
         local_db_session.add(user_session)
         local_db_session.flush()
@@ -888,6 +891,8 @@ def refresh():
         app_os_version=request.headers.get("X-Upstage-Os-Version"),
         app_device=request.headers.get("X-Upstage-Device-Model"),
     )
+
+    user.last_login = datetime.utcnow()
 
     with ScopedSession() as local_db_session:
         local_db_session.add(user_session)
