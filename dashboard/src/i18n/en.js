@@ -172,7 +172,7 @@ export default {
   upload_accepted_format:
     "Accepted file formats: {image} for images, {audio} for audios and {video} for videos",
   over_limit_upload:
-    "The file size is {size}, upper than your limit upload size of {limit}",
+    "Your upload limit is {limit}. The file you are trying to upload ({name}) is too big ({size}). Please choose a smaller file.",
   preview: "Preview",
   name: "Name",
   type: "Type",

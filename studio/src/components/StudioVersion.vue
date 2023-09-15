@@ -1,5 +1,5 @@
 <template>
-  <span class="text-xs">
+  <span class="text-xs whitespace-nowrap">
     Studio v{{ version }} -
     <span v-if="release">{{ release }}</span>
     <span v-else>{{ $t("under_construction") }}</span>

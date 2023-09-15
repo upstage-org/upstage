@@ -1,6 +1,10 @@
 <template>
   <div class="locale-changer">
-    <a-select v-model:value="$i18n.locale" @update:value="persistLocale">
+    <a-select
+      v-model:value="$i18n.locale"
+      @update:value="persistLocale"
+      class="w-full"
+    >
       <a-select-option
         v-for="locale in $i18n.availableLocales"
         :key="locale"

@@ -19,17 +19,20 @@ const whoami = inject<ComputedRef<User>>(WhoAmI);
       :href="to('backstage/profile')"
       v-if="whoami"
       style="line-height: 0.8"
-      class="text-right mb-0"
+      class="text-right"
     >
       <span class="text-gray-500">{{ whoami.roleName }}</span>
-      <a-typography-title :level="5">
+      <a-typography-title :level="5" style="margin-bottom: 0">
         <span class="whitespace-nowrap">
           {{ whoami.displayName || whoami.username }}
         </span>
       </a-typography-title>
     </a>
     <Notifications />
-    <LanguageSelector />
+    <a-space direction="vertical">
+      <LanguageSelector />
+      <StudioVersion />
+    </a-space>
     <a-dropdown class="ml-4">
       <a class="ant-dropdown-link flex-nowrap block w-24" @click.prevent>
         <img :src="logo" class="h-6" />
@@ -43,9 +46,7 @@ const whoami = inject<ComputedRef<User>>(WhoAmI);
           <a :href="to('')">
             <a-menu-item>{{ $t("foyer") }}</a-menu-item>
           </a>
-          <a-menu-item disabled>
-            <StudioVersion />
-          </a-menu-item>
+          <a-menu-item disabled> </a-menu-item>
         </a-menu>
       </template>
     </a-dropdown>
