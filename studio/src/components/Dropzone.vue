@@ -3,22 +3,25 @@ import { ref, provide } from "vue";
 import configs from "config";
 import { StudioGraph, UploadFile } from "models/studio";
 import { message } from "ant-design-vue";
-import { useQuery } from "@vue/apollo-composable";
+import { useLazyQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { uploadDefault } from "models/studio";
 import i18n from "../i18n";
 import { humanFileSize } from "utils/common";
 
-const { result } = useQuery<StudioGraph>(gql`
-  query WhoAmI {
-    whoami {
-      username
-      displayName
-      roleName
-      uploadLimit
+const { load, refetch } = useLazyQuery<StudioGraph>(
+  gql`
+    query WhoAmI {
+      whoami {
+        uploadLimit
+      }
     }
-  }
-`);
+  `,
+  {},
+  {
+    fetchPolicy: "network-only",
+  },
+);
 
 const visible = ref(false);
 const files = ref<UploadFile[]>([]);
@@ -36,27 +39,24 @@ const toSrc = ({ file }: { file: File }) => {
   return URL.createObjectURL(file);
 };
 
-const IsCanNotUpload = (size: number) => {
-  let uploadLimit = result.value?.whoami.uploadLimit;
-
-  if (uploadLimit) {
-    return size <= uploadLimit ? false : true;
-  }
-
-  return size <= uploadDefault ? false : true;
-};
-
-const handleUpload = (file: any) => {
+const handleUpload = async (file: UploadFile) => {
   let fileType = file.file.type;
+  const profile = (await (load as any)()) || (await refetch());
+  const uploadLimit = profile?.data.whoami.uploadLimit ?? uploadDefault;
 
-  if (!fileType.includes("video") && IsCanNotUpload(file.file.size)) {
-    message.error(
-      i18n.global.t("over_limit_upload", {
-        size: humanFileSize(file.file.size),
-        limit: humanFileSize(result.value?.whoami.uploadLimit ?? 0),
-      }),
-    );
-    return;
+  if (!fileType.includes("video")) {
+    const canUpload = file.file.size <= uploadLimit;
+    if (!canUpload) {
+      message.error(
+        i18n.global.t("over_limit_upload", {
+          size: humanFileSize(file.file.size),
+          limit: humanFileSize(profile?.data.whoami.uploadLimit ?? 0),
+          name: file.file.name,
+        }),
+        0,
+      );
+      return;
+    }
   }
 
   files.value = files.value.concat({
@@ -67,8 +67,8 @@ const handleUpload = (file: any) => {
   });
 };
 
-const uploadFile = (file: any) => {
-  handleUpload(file);
+const uploadFile = async (file: UploadFile) => {
+  await handleUpload(file);
   visible.value = false;
 };
 </script>

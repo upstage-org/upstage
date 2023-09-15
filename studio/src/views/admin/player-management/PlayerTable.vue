@@ -194,18 +194,6 @@ export default {
         },
       },
       {
-        title: t("last_login"),
-        dataIndex: "lastLogin",
-        key: "last_login",
-        customRender(opt) {
-          return opt.text
-            ? h(DDate, {
-                value: opt.text,
-              })
-            : "";
-        },
-      },
-      {
         title: t("date_registered"),
         dataIndex: "createdOn",
         key: "created_on",
