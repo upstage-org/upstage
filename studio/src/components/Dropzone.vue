@@ -47,14 +47,16 @@ const handleUpload = async (file: UploadFile) => {
   if (!fileType.includes("video")) {
     const canUpload = file.file.size <= uploadLimit;
     if (!canUpload) {
-      message.error(
-        i18n.global.t("over_limit_upload", {
+      const hide = message.error({
+        content: i18n.global.t("over_limit_upload", {
           size: humanFileSize(file.file.size),
           limit: humanFileSize(profile?.data.whoami.uploadLimit ?? 0),
           name: file.file.name,
         }),
-        0,
-      );
+        duration: 0,
+        onClick: () => hide(),
+        class: "cursor-pointer",
+      });
       return;
     }
   }

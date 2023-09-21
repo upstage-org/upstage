@@ -6,17 +6,19 @@ import logo from "assets/upstage.png";
 import { inject } from "vue";
 import type { ComputedRef } from "vue";
 import type { User } from "models/studio";
-import { WhoAmI } from "symbols";
+import { IframeSrc, WhoAmI } from "symbols";
 import StudioVersion from "./StudioVersion.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
 const whoami = inject<ComputedRef<User>>(WhoAmI);
+
+const iframeSrc = inject(IframeSrc);
 </script>
 
 <template>
   <a-space>
     <a
-      :href="to('backstage/profile')"
+      @click="iframeSrc = '/backstage/profile/information'"
       v-if="whoami"
       style="line-height: 0.8"
       class="text-right"
