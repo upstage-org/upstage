@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
+import { ref, watch, watchEffect, inject, computed } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
@@ -7,7 +7,6 @@ import { StudioGraph } from "models/studio";
 import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
-import { getSharedAuth } from "utils/common";
 import Navbar from "../Navbar.vue";
 import { IframeSrc } from "../../symbols";
 
@@ -59,12 +58,8 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   }
 `);
 
-const sharedAuth = getSharedAuth();
-
 const name = ref("");
-const owners = ref(
-  sharedAuth && sharedAuth.username ? [sharedAuth.username] : [],
-);
+const owners = ref([]);
 const types = ref([]);
 const stages = ref([]);
 const tags = ref([]);
