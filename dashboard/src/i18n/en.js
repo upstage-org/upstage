@@ -202,5 +202,5 @@ export default {
     "Deleting this user will also delete all of this user's stages. All of this user's media will belong to you. This cannot be undone!\nAre you sure you want to continue?",
   profile_title: "{name}'s Profile",
   introduction: "Introduction",
-  new: "New {0}",
+  new_object: "New {0}",
 };
