@@ -3,6 +3,7 @@ import os
 import sys
 from flask_jwt_extended import jwt_required
 import graphene
+import json
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, "../.."))
@@ -246,3 +247,82 @@ class DeleteUser(graphene.Mutation):
             ).delete()
             local_db_session.commit()
         return DeleteUser(success=True)
+
+
+class BatchUserInput(graphene.InputObjectType):
+    username = graphene.String(required=True)
+    email = graphene.String(required=True)
+    password = graphene.String(required=True)
+
+
+class BatchUserCreation(graphene.Mutation):
+    """Mutation to create a user."""
+
+    users = graphene.List(AdminPlayer, description="Users created by this mutation.")
+
+    class Arguments:
+        users = graphene.List(BatchUserInput, required=True)
+        stageIds = graphene.List(graphene.Int, required=False)
+
+    @jwt_required()
+    def mutate(self, info, users, stageIds=[]):
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
+            raise Exception("Permission denied!")
+        ids = []
+        with ScopedSession() as local_db_session:
+            duplicated = []
+            for i in range(len(users) - 1):
+                for j in range(i + 1, len(users)):
+                    if users[i].username == users[j].username:
+                        duplicated.append(users[i].username)
+            if duplicated:
+                raise Exception("Duplicated username: " + ", ".join(duplicated))
+
+            existed = [
+                user.username
+                for user in DBSession.query(UserModel)
+                .filter(UserModel.username.in_([x.username for x in users]))
+                .all()
+            ]
+            if existed:
+                raise Exception("Username already existed: " + ", ".join(existed))
+
+            existed = [
+                user.email
+                for user in DBSession.query(UserModel)
+                .filter(UserModel.email.in_([x.email for x in users]))
+                .all()
+            ]
+            if existed:
+                raise Exception("Email already existed: " + ", ".join(existed))
+
+            for item in users:
+                user = UserModel(
+                    username=item.username, email=item.email, active=True, role=GUEST
+                )
+                # Add validation for non-empty passwords, etc.
+                user.password = encrypt(item.password)
+                local_db_session.add(user)
+                local_db_session.flush()
+                ids.append(user.id)
+
+            # Now assigns users into stages
+            stages = (
+                DBSession.query(StageModel).filter(StageModel.id.in_(stageIds)).all()
+            )
+            for stage in stages:
+                player_access = stage.attributes.filter(
+                    StageAttributeModel.name == "playerAccess"
+                ).first()
+                if player_access:
+                    accesses = json.loads(player_access.description)
+                    for user_id in ids:
+                        if user_id not in accesses[0]:
+                            accesses[0].append(user_id)  # append user id to player ids
+                    player_access.description = json.dumps(accesses)
+                    local_db_session.flush()
+
+            local_db_session.commit()
+        users = DBSession.query(UserModel).filter(UserModel.id.in_(ids)).all()
+        return BatchUserCreation(users=users)

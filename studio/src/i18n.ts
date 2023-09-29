@@ -9,6 +9,7 @@ const i18n = createI18n({
   locale: persistedLocale ?? "en",
   fallbackLocale: "en",
   messages: { en, de, vn },
+  legacy: false,
 });
 
 export default i18n;

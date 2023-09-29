@@ -73,11 +73,6 @@ provide(IsAdmin, isAdmin);
             >Player Management</a-menu-item
           >
           <a-menu-item
-            key="admin/batch"
-            @click="iframeSrc = '/backstage/admin/batch-user-creation'"
-            >Batch User Creation</a-menu-item
-          >
-          <a-menu-item
             key="admin/foyer"
             @click="iframeSrc = '/backstage/admin/foyer-customisation'"
             >Foyer Customisation</a-menu-item
