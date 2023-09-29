@@ -244,7 +244,7 @@ export default {
         key: "active",
         align: "center",
         customRender(opt) {
-          return h(Switch, {
+          return h(Switch as any, {
             checked: opt.text,
             loading: savingUser.value,
             onChange: async (value) => {

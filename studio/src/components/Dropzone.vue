@@ -69,7 +69,7 @@ const handleUpload = async (file: UploadFile) => {
   });
 };
 
-const uploadFile = async (file: UploadFile) => {
+const uploadFile = async (file: any) => {
   await handleUpload(file);
   visible.value = false;
 };

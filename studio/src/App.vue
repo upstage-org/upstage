@@ -24,11 +24,7 @@ provide(SelectedMenu, selectedMenu);
         fontFamily: 'Josefin Sans, sans-serif',
         colorPrimaryBg: '#ffffff',
       },
-      components: {
-        Footer: {
-          margin: 4,
-        },
-      },
+      components: {},
     }"
   >
     <Authorized>
