@@ -251,6 +251,7 @@ class DeleteUser(graphene.Mutation):
 
 class BatchUserInput(graphene.InputObjectType):
     username = graphene.String(required=True)
+    email = graphene.String(required=True)
     password = graphene.String(required=True)
 
 
@@ -286,8 +287,20 @@ class BatchUserCreation(graphene.Mutation):
             ]
             if existed:
                 raise Exception("Username already existed: " + ", ".join(existed))
+
+            existed = [
+                user.email
+                for user in DBSession.query(UserModel)
+                .filter(UserModel.email.in_([x.email for x in users]))
+                .all()
+            ]
+            if existed:
+                raise Exception("Email already existed: " + ", ".join(existed))
+
             for item in users:
-                user = UserModel(username=item.username, active=True, role=GUEST)
+                user = UserModel(
+                    username=item.username, email=item.email, active=True, role=GUEST
+                )
                 # Add validation for non-empty passwords, etc.
                 user.password = encrypt(item.password)
                 local_db_session.add(user)

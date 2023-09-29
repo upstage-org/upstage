@@ -9,7 +9,18 @@ import moment, { Moment } from "moment";
 import { getSharedAuth } from "utils/common";
 import Navbar from "components/Navbar.vue";
 import { h } from "vue";
-import { Affix, Button, InputSearch, RangePicker, Space } from "ant-design-vue";
+import {
+  Affix,
+  Button,
+  Drawer,
+  InputSearch,
+  RangePicker,
+  Space,
+} from "ant-design-vue";
+import Header from "components/Header.vue";
+import { PlusOutlined } from "@ant-design/icons-vue";
+import { useI18n } from "vue-i18n";
+import BatchPlayerCreation from "views/admin/batch-player-creation/index.vue";
 
 export default {
   setup() {
@@ -29,12 +40,6 @@ export default {
     const sharedAuth = getSharedAuth();
 
     const name = ref("");
-    const owners = ref(
-      sharedAuth && sharedAuth.username ? [sharedAuth.username] : [],
-    );
-    const types = ref([]);
-    const stages = ref([]);
-    const tags = ref([]);
     const dates = ref<[Moment, Moment] | undefined>();
 
     const ranges = {
@@ -59,21 +64,11 @@ export default {
       });
 
     const watchInquiryVar = (vars: any) => {
-      types.value = vars.mediaTypes ?? [];
-      tags.value = vars.tags ?? [];
       console.log(vars);
       inquiryVar.onNextChange(watchInquiryVar);
     };
     inquiryVar.onNextChange(watchInquiryVar);
 
-    watchEffect(() => {
-      updateInquiry({
-        owners: owners.value,
-        stages: stages.value,
-        tags: tags.value,
-        mediaTypes: types.value,
-      });
-    });
     watch(
       name,
       useDebounceFn(() => {
@@ -92,63 +87,73 @@ export default {
     });
     const clearFilters = () => {
       name.value = "";
-      owners.value = [];
-      types.value = [];
-      stages.value = [];
-      tags.value = [];
       dates.value = undefined;
     };
 
-    return () =>
-      h(Affix, { offsetTop: 0 }, [
+    const hasFilter = computed(() => name.value || dates.value);
+    const { t } = useI18n();
+    const drawerVisible = ref(false);
+
+    return () => [
+      h(BatchPlayerCreation, {
+        visible: drawerVisible.value,
+        onClose: () => {
+          drawerVisible.value = false;
+        },
+      }),
+      h(Header, {}, [
         h(
           Space,
           {
-            class: "shadow rounded-xl px-4 py-2 bg-white flex justify-between",
+            class: "flex-wrap",
           },
           [
             h(
-              Space,
+              Button,
               {
-                class: "flex-wrap",
+                icon: h(PlusOutlined),
+                type: "primary",
+                onClick: () => {
+                  drawerVisible.value = true;
+                },
               },
-              [
-                h(InputSearch, {
-                  allowClear: true,
-                  class: "w-48",
-                  placeholder: "Player name",
-                  value: name.value,
-                  "onUpdate:value": (value: string) => {
-                    name.value = value;
-                  },
-                }),
-                h(RangePicker, {
-                  placeholder: ["Created from", "to date"],
-                  value: dates.value,
-                  "onUpdate:value": (value: [Moment, Moment]) => {
-                    dates.value = value;
-                  },
-                  ranges,
-                }),
-                h(
-                  Button,
-                  {
-                    type: "dashed",
-                    onClick: clearFilters,
-                  },
-                  [
-                    h("a-icon", {
-                      type: "close-circle",
-                    }),
-                    "Clear Filters",
-                  ],
-                ),
-              ],
+              [t("new", [t("player", 2)])],
             ),
-            h(Navbar),
+            h(InputSearch, {
+              allowClear: true,
+              class: "w-48",
+              placeholder: "Player name",
+              value: name.value,
+              "onUpdate:value": (value: string) => {
+                name.value = value;
+              },
+            }),
+            h(RangePicker, {
+              placeholder: ["Created from", "to date"],
+              value: dates.value,
+              "onUpdate:value": (value: [Moment, Moment]) => {
+                dates.value = value;
+              },
+              ranges,
+            }),
+            hasFilter.value &&
+              h(
+                Button,
+                {
+                  type: "dashed",
+                  onClick: clearFilters,
+                },
+                [
+                  h("a-icon", {
+                    type: "close-circle",
+                  }),
+                  "Clear Filters",
+                ],
+              ),
           ],
         ),
-      ]);
+      ]),
+    ];
   },
 };
 </script>

@@ -7,7 +7,7 @@
   </section>
   <section class="section">
     <div class="columns" :class="{ 'is-loading': !user }">
-      <div class="column is-narrow">
+      <div class="column is-narrow" v-if="notInIframe">
         <aside class="menu box has-background-light">
           <p class="menu-label">{{ $t("users") }}</p>
           <ul class="menu-list">
@@ -69,7 +69,8 @@ export default {
   setup: () => {
     const store = useStore();
     const user = computed(() => store.state.user.user);
-    return { displayName, user };
+    const notInIframe = computed(() => window.self === window.top);
+    return { displayName, user, notInIframe };
   },
 };
 </script>

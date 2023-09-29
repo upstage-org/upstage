@@ -120,8 +120,9 @@ export default {
   new_text: "New Text",
   create_a_account_with_upstage: "Create a account with UpStage",
   email_subject_prefix: "Email Subject Prefix",
+  player: "Player | Players",
   player_management: "Player Management",
-  batch_user_creation: "Batch User Creation",
+  batch_user_creation: "Add New Players",
   foyer_customisation: "Foyer Customisation",
   email_notification: "Email Notification",
   system_configuration: "System Configuration",
@@ -201,4 +202,5 @@ export default {
     "Deleting this user will also delete all of this user's stages. All of this user's media will belong to you. This cannot be undone!\nAre you sure you want to continue?",
   profile_title: "{name}'s Profile",
   introduction: "Introduction",
+  new: "New {0}",
 };
