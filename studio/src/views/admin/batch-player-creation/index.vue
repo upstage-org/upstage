@@ -87,6 +87,22 @@ export default {
                 disabled: !valid.value,
                 loading: loading.value,
                 onClick: () => {
+                  for (const player of players) {
+                    const duplicatedPlayer = players.find(
+                      (p) => p !== player && p.username === player.username,
+                    );
+                    if (duplicatedPlayer) {
+                      message.error(`Duplicated username: ${player.username}!`);
+                      return;
+                    }
+                    const duplicatedEmail = players.find(
+                      (p) => p !== player && p.email === player.email,
+                    );
+                    if (duplicatedEmail) {
+                      message.error(`Duplicated email: ${player.email}!`);
+                      return;
+                    }
+                  }
                   mutate({
                     users: players.map((player) => ({
                       ...player,
