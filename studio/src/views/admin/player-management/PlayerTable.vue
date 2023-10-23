@@ -3,21 +3,12 @@ import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject } from "vue";
 import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
-import { displayName, humanFileSize } from "utils/common";
+import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { IframeSrc } from "symbols";
-import {
-  Button,
-  Layout,
-  Popconfirm,
-  Select,
-  Space,
-  Switch,
-  Table,
-  message,
-} from "ant-design-vue";
+import { Layout, Select, Space, Switch, Table, message } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
@@ -25,6 +16,8 @@ import { adminPlayerFragment } from "models/fragment";
 import PlayerForm from "./PlayerForm.vue";
 import ChangePassword from "./ChangePassword.vue";
 import DeletePlayer from "./DeletePlayer.vue";
+import type { DefaultOptionType } from "ant-design-vue/lib/select";
+import Confirm from "components/Confirm.vue";
 
 interface Pagination {
   current: number;
@@ -54,7 +47,7 @@ export default {
     const tableParams = reactive({
       limit: 10,
       cursor: undefined,
-      sort: ["ROLE_DESC", "LAST_LOGIN_ASC"],
+      sort: ["CREATED_ON_ASC"],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -142,16 +135,55 @@ export default {
 
     const customLimit = ref("");
 
+    const SWITCHABLE_ROLES = {
+      GUEST: 4,
+      PLAYER: 1,
+      ADMIN: 8,
+      SUPER_ADMIN: 32,
+    };
+
     const columns: ColumnType<AdminPlayer>[] = [
       {
         title: t("role"),
-        dataIndex: "roleName",
+        dataIndex: "role",
         key: "role",
         align: "center",
         sorter: {
           multiple: 1,
         },
-        defaultSortOrder: "descend",
+        customRender(opt) {
+          return h(
+            Confirm,
+            {
+              title: `Are you sure you want to change ${displayName(
+                opt.record,
+              )}'s role?`,
+              description: "This action is irreversible!",
+              onConfirm: async ({ value, selectedOption }) => {
+                await updateUser({
+                  ...opt.record,
+                  role: value,
+                });
+                message.success(
+                  `Successfully switch ${displayName(opt.record)}'s role to ${
+                    (selectedOption as DefaultOptionType).label
+                  }!`,
+                );
+              },
+            },
+            ({ confirm }) =>
+              h(Select, {
+                options: Object.entries(SWITCHABLE_ROLES).map(([key, id]) => ({
+                  value: id,
+                  label: titleCase(key),
+                })),
+                value: opt.text,
+                onChange: (value, selectedOption) => {
+                  confirm({ value, selectedOption });
+                },
+              }),
+          );
+        },
       },
       {
         title: t("username"),
@@ -184,7 +216,6 @@ export default {
         sorter: {
           multiple: 4,
         },
-        defaultSortOrder: "ascend",
         customRender(opt) {
           return opt.text
             ? h(DDate, {
@@ -205,6 +236,7 @@ export default {
             value: opt.text,
           });
         },
+        defaultSortOrder: "ascend",
       },
       {
         title: t("status"),
@@ -215,10 +247,10 @@ export default {
           return h(Switch, {
             checked: opt.text,
             loading: savingUser.value,
-            onChange: async (value: boolean) => {
+            onChange: async (value) => {
               await updateUser({
                 ...opt.record,
-                active: value,
+                active: !!value,
               });
               message.success(
                 `Account ${displayName(opt.record)} ${
