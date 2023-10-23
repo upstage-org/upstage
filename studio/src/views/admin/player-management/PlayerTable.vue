@@ -159,7 +159,10 @@ export default {
                 opt.record,
               )}'s role?`,
               description: "This action is irreversible!",
-              onConfirm: async ({ value, selectedOption }) => {
+              onConfirm: async ([value, selectedOption]: [
+                number,
+                DefaultOptionType,
+              ]) => {
                 await updateUser({
                   ...opt.record,
                   role: value,
@@ -171,17 +174,23 @@ export default {
                 );
               },
             },
-            ({ confirm }) =>
-              h(Select, {
-                options: Object.entries(SWITCHABLE_ROLES).map(([key, id]) => ({
-                  value: id,
-                  label: titleCase(key),
-                })),
-                value: opt.text,
-                onChange: (value, selectedOption) => {
-                  confirm({ value, selectedOption });
-                },
-              }),
+            {
+              default: (slotProps: {
+                confirm: (payload: [number, DefaultOptionType]) => void;
+              }) =>
+                h(Select, {
+                  options: Object.entries(SWITCHABLE_ROLES).map(
+                    ([key, id]) => ({
+                      value: id,
+                      label: titleCase(key),
+                    }),
+                  ),
+                  value: opt.text,
+                  onChange: (value, selectedOption) => {
+                    slotProps.confirm([value as number, selectedOption]);
+                  },
+                }),
+            },
           );
         },
       },
@@ -244,7 +253,7 @@ export default {
         key: "active",
         align: "center",
         customRender(opt) {
-          return h(Switch as any, {
+          return h(Switch, {
             checked: opt.text,
             loading: savingUser.value,
             onChange: async (value) => {
