@@ -79,7 +79,7 @@ const { result, loading, fetchMore } = useQuery<
     }
   `,
   params.value,
-  { notifyOnNetworkStatusChange: true }
+  { notifyOnNetworkStatusChange: true },
 );
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
@@ -183,15 +183,15 @@ interface Sorter {
 const handleTableChange = (
   { current = 1, pageSize = 10 }: TablePaginationConfig,
   _: any,
-  sorter: SorterResult<Media> | SorterResult<Media>[]
+  sorter: SorterResult<Media> | SorterResult<Media>[],
 ) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort(
       (a, b) =>
-        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple,
     )
     .map(({ columnKey, order }) =>
-      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
     );
   Object.assign(tableParams, {
     cursor:
@@ -203,7 +203,7 @@ const handleTableChange = (
   });
 };
 const dataSource = computed(() =>
-  result.value ? result.value.stages.edges.map((edge) => edge.node) : []
+  result.value ? result.value.stages.edges.map((edge) => edge.node) : [],
 );
 
 provide("refresh", () => {
@@ -241,7 +241,7 @@ const {
         result
       }
     }
-  `
+  `,
 );
 const handleChangeVisibility = async (record: Stage) => {
   await updateVisibility({

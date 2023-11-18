@@ -104,7 +104,7 @@ watch(
   name,
   useDebounceFn(() => {
     updateInquiry({ name: name.value });
-  }, 500)
+  }, 500),
 );
 watch(dates, (dates) => {
   updateInquiry({
@@ -131,7 +131,7 @@ const hasFilter = computed(
     types.value.length ||
     stages.value.length ||
     tags.value.length ||
-    dates.value
+    dates.value,
 );
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase();

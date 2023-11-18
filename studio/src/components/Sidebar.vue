@@ -28,13 +28,13 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0
-  )
+    result.value?.whoami?.role ?? 0,
+  ),
 );
 
 provide(
   WhoAmI,
-  computed(() => result.value?.whoami)
+  computed(() => result.value?.whoami),
 );
 provide(IsAdmin, isAdmin);
 </script>

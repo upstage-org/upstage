@@ -6,7 +6,7 @@ const route = useRoute();
 const iframeSrc = computed(() =>
   !route.params.path.includes(":") && !route.params.path.startsWith("/")
     ? `/${route.params.path}`
-    : route.params.path
+    : route.params.path,
 );
 </script>
 
