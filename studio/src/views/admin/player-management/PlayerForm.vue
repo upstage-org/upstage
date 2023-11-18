@@ -165,7 +165,7 @@ export default {
                       h(Textarea, {
                         disabled: true,
                         autoSize: true,
-                        value: props.player.intro,
+                        value: props.player.intro!,
                       }),
                     ],
                   ),
@@ -184,7 +184,7 @@ export default {
                           false,
                           0,
                         ),
-                        onSearch: (value: string) => {
+                        onSearch: (value) => {
                           customLimit.value = Math.min(
                             Number(value),
                             999,
@@ -203,8 +203,10 @@ export default {
                                 ]
                               : [],
                           ),
-                        onChange: async (value: string) => {
-                          const limit = Number(value.replace(" MB", ""));
+                        onChange: async (value) => {
+                          const limit = Number(
+                            (value as string).replace(" MB", ""),
+                          );
                           const bytes = limit * 1024 * 1024;
                           values.uploadLimit = bytes;
                         },
@@ -219,8 +221,8 @@ export default {
                     [
                       h(Switch, {
                         checked: values.active,
-                        "onUpdate:checked": (value: boolean) =>
-                          (values.active = value),
+                        "onUpdate:checked": (value) =>
+                          (values.active = value as boolean),
                       }),
                     ],
                   ),

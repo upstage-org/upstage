@@ -334,7 +334,7 @@ const isAdmin = inject(IsAdmin, false);
     >
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'preview'">
-          <MediaPreview :media="record" />
+          <MediaPreview :media="record as Media" />
         </template>
         <template v-if="column.key === 'asset_type_id'">
           <span class="capitalize">{{ text }}</span>
@@ -390,7 +390,10 @@ const isAdmin = inject(IsAdmin, false);
         </template>
         <template v-if="column.key === 'actions'">
           <a-space v-if="composingMode">
-            <a-button type="primary" @click="addFrameToEditingMedia(record)">
+            <a-button
+              type="primary"
+              @click="addFrameToEditingMedia(record as Media)"
+            >
               <DoubleRightOutlined />
               Append frames
             </a-button>
@@ -407,9 +410,9 @@ const isAdmin = inject(IsAdmin, false);
             <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
               <RequestPermission
                 v-if="record.copyrightLevel === 2"
-                :media="record"
+                :media="record as Media"
               />
-              <RequestAcknowledge v-else :media="record" />
+              <RequestAcknowledge v-else :media="record as Media" />
             </a-space>
             <a-space
               v-else-if="record.privilege === 'PENDING_APPROVAL'"
@@ -423,7 +426,7 @@ const isAdmin = inject(IsAdmin, false);
               <template
                 v-if="isAdmin || record.owner.username === whoami?.username"
               >
-                <a-button type="primary" @click="editMedia(record)">
+                <a-button type="primary" @click="editMedia(record as Media)">
                   <EditOutlined />
                   Edit
                 </a-button>
@@ -451,7 +454,7 @@ const isAdmin = inject(IsAdmin, false);
                 </a-popconfirm>
               </template>
               <template v-else>
-                <QuickStageAssignment :media="record" />
+                <QuickStageAssignment :media="record as Media" />
               </template>
             </a-space>
           </template>

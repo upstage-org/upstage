@@ -1,5 +1,5 @@
 <script lang="ts">
-import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
+import { ref, watch, computed } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
@@ -7,16 +7,8 @@ import { StudioGraph } from "models/studio";
 import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import { getSharedAuth } from "utils/common";
-import Navbar from "components/Navbar.vue";
 import { h } from "vue";
-import {
-  Affix,
-  Button,
-  Drawer,
-  InputSearch,
-  RangePicker,
-  Space,
-} from "ant-design-vue";
+import { Button, InputSearch, RangePicker, Space } from "ant-design-vue";
 import Header from "components/Header.vue";
 import { PlusOutlined } from "@ant-design/icons-vue";
 import { useI18n } from "vue-i18n";
@@ -73,7 +65,7 @@ export default {
       name,
       useDebounceFn(() => {
         updateInquiry({ name: name.value });
-      }, 500)
+      }, 500),
     );
     watch(dates, (dates) => {
       updateInquiry({
@@ -117,7 +109,7 @@ export default {
                   drawerVisible.value = true;
                 },
               },
-              [t("new_object", [t("player", 2)])]
+              [t("new_object", [t("player", 2)])],
             ),
             h(InputSearch, {
               allowClear: true,
@@ -128,7 +120,7 @@ export default {
                 name.value = value;
               },
             }),
-            h(RangePicker, {
+            h(RangePicker as any, {
               placeholder: ["Created from", "to date"],
               value: dates.value,
               "onUpdate:value": (value: [Moment, Moment]) => {
@@ -148,9 +140,9 @@ export default {
                     type: "close-circle",
                   }),
                   "Clear Filters",
-                ]
+                ],
               ),
-          ]
+          ],
         ),
       ]),
     ];

@@ -304,7 +304,9 @@ onVisibilityUpdated(handleUpdate);
             <span>{{ text.username }}</span>
           </span>
         </template>
-        <template v-if="['created_on', 'last_access'].includes(column.key)">
+        <template
+          v-if="['created_on', 'last_access'].includes(column.key as string)"
+        >
           <d-date v-if="text" :value="text" />
         </template>
         <template v-if="column.key === 'permission'">
@@ -320,7 +322,7 @@ onVisibilityUpdated(handleUpdate);
               un-checked-children="R"
               :checked="text === 'live'"
               :loading="loadingUpdateStatus"
-              @change="handleChangeStatus(record)"
+              @change="handleChangeStatus(record as Stage)"
             />
           </a-tooltip>
         </template>
@@ -328,16 +330,16 @@ onVisibilityUpdated(handleUpdate);
           <a-switch
             :checked="!!text"
             :loading="loadingUpdateVisibility"
-            @change="handleChangeVisibility(record)"
+            @change="handleChangeVisibility(record as Stage)"
           />
         </template>
         <template v-if="column.key === 'actions'">
           <a-space>
-            <a-button @click="manageStage(record)">
+            <a-button @click="manageStage(record as Stage)">
               <setting-outlined />
               Manage
             </a-button>
-            <a-button type="primary" @click="enterStage(record)">
+            <a-button type="primary" @click="enterStage(record as Stage)">
               <login-outlined />
               Enter
             </a-button>
