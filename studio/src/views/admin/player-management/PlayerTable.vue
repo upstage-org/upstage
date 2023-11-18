@@ -7,7 +7,6 @@ import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
-import { IframeSrc } from "symbols";
 import { Layout, Select, Space, Switch, Table, message } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
@@ -37,10 +36,6 @@ interface Sorter {
 export default {
   setup(props, ctx) {
     const { t } = useI18n();
-
-    const iframeSrc = inject(IframeSrc, ref(""));
-    const manageStage = (stage: Stage) =>
-      (iframeSrc.value = `/backstage/stage-management/${stage.id}/`);
     const enterStage = (stage: Stage) => {
       window.open(`/${stage.fileLocation}`, "_blank");
     };
@@ -118,18 +113,17 @@ export default {
         }
       `,
       params.value,
-      { notifyOnNetworkStatusChange: true },
+      { notifyOnNetworkStatusChange: true }
     );
 
     const updateQuery = (
       previousResult: StudioGraph,
-      { fetchMoreResult }: any,
+      { fetchMoreResult }: any
     ) => {
       return fetchMoreResult ?? previousResult;
     };
 
     watch(params, () => {
-      iframeSrc.value = "";
       refresh();
     });
 
@@ -156,12 +150,12 @@ export default {
             Confirm,
             {
               title: `Are you sure you want to change ${displayName(
-                opt.record,
+                opt.record
               )}'s role?`,
               description: "This action is irreversible!",
               onConfirm: async ([value, selectedOption]: [
                 number,
-                DefaultOptionType,
+                DefaultOptionType
               ]) => {
                 await updateUser({
                   ...opt.record,
@@ -170,7 +164,7 @@ export default {
                 message.success(
                   `Successfully switch ${displayName(opt.record)}'s role to ${
                     (selectedOption as DefaultOptionType).label
-                  }!`,
+                  }!`
                 );
               },
             },
@@ -183,14 +177,14 @@ export default {
                     ([key, id]) => ({
                       value: id,
                       label: titleCase(key),
-                    }),
+                    })
                   ),
                   value: opt.text,
                   onChange: (value, selectedOption) => {
                     slotProps.confirm([value as number, selectedOption]);
                   },
                 }),
-            },
+            }
           );
         },
       },
@@ -264,7 +258,7 @@ export default {
               message.success(
                 `Account ${displayName(opt.record)} ${
                   value ? "activated" : "deactivated"
-                } successfully!`,
+                } successfully!`
               );
             },
           });
@@ -285,7 +279,7 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully update ${displayName(player)}'s profile!`,
+                  `Successfully update ${displayName(player)}'s profile!`
                 );
               },
             }),
@@ -297,7 +291,7 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully reset ${displayName(player)}'s password!`,
+                  `Successfully reset ${displayName(player)}'s password!`
                 );
               },
             }),
@@ -306,7 +300,7 @@ export default {
               onDone: async (player: AdminPlayer) => {
                 refresh();
                 message.success(
-                  `Successfully delete ${displayName(player)}'s account!`,
+                  `Successfully delete ${displayName(player)}'s account!`
                 );
               },
             }),
@@ -318,16 +312,16 @@ export default {
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
       _: any,
-      sorter: SorterResult<Media> | SorterResult<Media>[],
+      sorter: SorterResult<Media> | SorterResult<Media>[]
     ) => {
       const sort = (Array.isArray(sorter) ? sorter : [sorter])
         .sort(
           (a, b) =>
             (a.column?.sorter as any).multiple -
-            (b.column?.sorter as any).multiple,
+            (b.column?.sorter as any).multiple
         )
         .map(({ columnKey, order }) =>
-          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
+          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
         );
       Object.assign(tableParams, {
         cursor:
@@ -341,7 +335,7 @@ export default {
     const dataSource = computed(() =>
       result.value
         ? result.value.adminPlayers.edges.map((edge) => edge.node)
-        : [],
+        : []
     );
 
     const refresh = () => {
@@ -437,7 +431,7 @@ export default {
               total: result.value ? result.value.adminPlayers.totalCount : 0,
             } as Pagination,
           }),
-        ],
+        ]
       );
   },
 };

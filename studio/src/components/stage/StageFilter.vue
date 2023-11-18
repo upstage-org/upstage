@@ -8,10 +8,8 @@ import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
 import Navbar from "../Navbar.vue";
-import { IframeSrc } from "../../symbols";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
-const iframeSrc = inject(IframeSrc, ref(""));
 const { result, loading } = useQuery<StudioGraph>(gql`
   query StageFilter {
     whoami {
@@ -106,7 +104,7 @@ watch(
   name,
   useDebounceFn(() => {
     updateInquiry({ name: name.value });
-  }, 500),
+  }, 500)
 );
 watch(dates, (dates) => {
   updateInquiry({
@@ -133,7 +131,7 @@ const hasFilter = computed(
     types.value.length ||
     stages.value.length ||
     tags.value.length ||
-    dates.value,
+    dates.value
 );
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase();
@@ -152,9 +150,11 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="iframeSrc = '/backstage/new-stage'">
-          <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
-        </a-button>
+        <RouterLink to="/legacy/backstage/new-stage">
+          <a-button type="primary">
+            <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
+          </a-button>
+        </RouterLink>
         <a-input-search
           allowClear
           class="w-48"

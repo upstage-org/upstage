@@ -1,14 +1,18 @@
 <script setup lang="ts">
-import { computed, inject, provide, ref } from "vue";
-import { IframeSrc, IsAdmin, SelectedMenu, WhoAmI } from "../symbols";
+import { computed, provide, ref } from "vue";
+import { IsAdmin, WhoAmI } from "../symbols";
 import { useQuery } from "@vue/apollo-composable";
 import { StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
+import { useRouter } from "vue-router";
+import { watch } from "vue";
 
-const selectedKeys = inject<string[]>(SelectedMenu);
-const iframeSrc = ref("");
-provide(IframeSrc, iframeSrc);
+const selectedMenu = ref(["stages"]);
+
+const router = useRouter();
+
+watch(selectedMenu, (value) => router.push(`/${value.join("/")}`));
 
 const { result, loading } = useQuery<StudioGraph>(gql`
   query WhoAmI {
@@ -24,13 +28,13 @@ const { result, loading } = useQuery<StudioGraph>(gql`
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0,
-  ),
+    result.value?.whoami?.role ?? 0
+  )
 );
 
 provide(
   WhoAmI,
-  computed(() => result.value?.whoami),
+  computed(() => result.value?.whoami)
 );
 provide(IsAdmin, isAdmin);
 </script>
@@ -45,22 +49,19 @@ provide(IsAdmin, isAdmin);
   >
     <a-spin :spinning="loading">
       <a-menu
-        v-model:selectedKeys="selectedKeys"
+        v-model:selectedKeys="selectedMenu"
         mode="inline"
         class="upstage-menu"
       >
-        <a-menu-item key="media" @click="iframeSrc = ''">
+        <a-menu-item key="media">
           <picture-outlined />&nbsp;
           <span>Media</span>
         </a-menu-item>
-        <a-menu-item key="stage" @click="iframeSrc = ''">
+        <a-menu-item key="stages">
           <layout-outlined />
           <span>Stages</span>
         </a-menu-item>
-        <a-menu-item
-          key="profile"
-          @click="iframeSrc = '/backstage/profile/information'"
-        >
+        <a-menu-item key="legacy/backstage/profile/information">
           <user-outlined />
           <span>Profile</span>
         </a-menu-item>
@@ -69,30 +70,18 @@ provide(IsAdmin, isAdmin);
             <key-outlined />
           </template>
           <template #title>Admin</template>
-          <a-menu-item key="admin/player" @click="iframeSrc = ''"
-            >Player Management</a-menu-item
-          >
-          <a-menu-item
-            key="admin/foyer"
-            @click="iframeSrc = '/backstage/admin/foyer-customisation'"
+          <a-menu-item key="admin/player">Player Management</a-menu-item>
+          <a-menu-item key="legacy/backstage/admin/foyer-customisation"
             >Foyer Customisation</a-menu-item
           >
-          <a-menu-item
-            key="admin/email"
-            @click="iframeSrc = '/backstage/admin/email-notification'"
+          <a-menu-item key="legacy/backstage/admin/email-notification"
             >Email Notification</a-menu-item
           >
-          <a-menu-item
-            key="admin/system"
-            @click="iframeSrc = '/backstage/admin/system-configuration'"
+          <a-menu-item key="legacy/backstage/admin/system-configuration"
             >System Configuration</a-menu-item
           >
         </a-sub-menu>
-        <a-menu-item
-          key="manual"
-          href="https://docs.upstage.live/"
-          @click="iframeSrc = 'https://docs.upstage.live/'"
-        >
+        <a-menu-item key="legacy/https://docs.upstage.live/">
           <book-outlined />
           <span>Manual</span>
         </a-menu-item>
