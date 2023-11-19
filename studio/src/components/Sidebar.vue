@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import { computed, provide, ref } from "vue";
+import { computed, h, provide, ref } from "vue";
 import { IsAdmin, WhoAmI } from "../symbols";
 import { useQuery } from "@vue/apollo-composable";
-import { StudioGraph } from "../models/studio";
+import { AdminPlayer, StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
 import { useRouter } from "vue-router";
 import { watch } from "vue";
+import PlayerForm from "views/admin/player-management/PlayerForm.vue";
+import { useUpdateUser } from "hooks/mutations";
+import { message } from "ant-design-vue";
+import { displayName } from "utils/common";
 
 const selectedMenu = ref(["stages"]);
 
@@ -17,11 +21,17 @@ watch(selectedMenu, (value) => router.push(`/${value.join("/")}`));
 const { result, loading } = useQuery<StudioGraph>(gql`
   query WhoAmI {
     whoami {
+      id
       username
+      firstName
+      lastName
       displayName
+      email
       role
       roleName
       uploadLimit
+      active
+      intro
     }
   }
 `);
@@ -32,11 +42,24 @@ const isAdmin = computed(() =>
   ),
 );
 
-provide(
-  WhoAmI,
-  computed(() => result.value?.whoami),
-);
+const whoami = computed(() => result.value?.whoami);
+
+provide(WhoAmI, whoami);
 provide(IsAdmin, isAdmin);
+
+const {
+  mutate: updateUser,
+  loading: savingUser,
+  onDone: onUserUpdated,
+  onError: onUserUpdateError,
+} = useUpdateUser();
+
+const handleSaveProfile = async (player: AdminPlayer) => {
+  await updateUser({
+    ...player,
+  });
+  message.success(`Successfully update your profile!`);
+};
 </script>
 
 <template>
@@ -61,10 +84,20 @@ provide(IsAdmin, isAdmin);
           <layout-outlined />
           <span>Stages</span>
         </a-menu-item>
-        <a-menu-item key="legacy/backstage/profile/information">
-          <user-outlined />
-          <span>Profile</span>
-        </a-menu-item>
+        <PlayerForm
+          v-if="whoami"
+          :player="whoami as AdminPlayer"
+          :onSave="handleSaveProfile"
+          :saving="savingUser"
+          noUploadLimit
+          noStatusToggle
+          v-slot="{ onClick }"
+        >
+          <a-menu-item :onClick="onClick">
+            <user-outlined />
+            <span>Profile</span>
+          </a-menu-item>
+        </PlayerForm>
         <a-sub-menu key="admin">
           <template #icon>
             <key-outlined />

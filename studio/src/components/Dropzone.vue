@@ -111,13 +111,24 @@ const uploadFile = async (file: any) => {
 .fullscreen-dragzone {
   z-index: 999999;
 
-  .ant-modal-content {
-    height: 100%;
-  }
+  .ant-modal {
+    max-width: unset;
 
-  .ant-modal-body {
-    padding: 0;
-    height: 100%;
+    .ant-modal-content {
+      height: 100%;
+      padding-right: 48px;
+    }
+
+    .ant-modal-body {
+      padding: 0;
+      height: 100%;
+    }
+
+    .ant-upload-btn {
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+    }
   }
 }
 </style>

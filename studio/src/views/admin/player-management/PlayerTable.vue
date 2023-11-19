@@ -11,12 +11,12 @@ import { Layout, Select, Space, Switch, Table, message } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
-import { adminPlayerFragment } from "models/fragment";
 import PlayerForm from "./PlayerForm.vue";
 import ChangePassword from "./ChangePassword.vue";
 import DeletePlayer from "./DeletePlayer.vue";
 import type { DefaultOptionType } from "ant-design-vue/lib/select";
 import Confirm from "components/Confirm.vue";
+import { useUpdateUser } from "hooks/mutations";
 
 interface Pagination {
   current: number;
@@ -152,7 +152,6 @@ export default {
               title: `Are you sure you want to change ${displayName(
                 opt.record,
               )}'s role?`,
-              description: "This action is irreversible!",
               onConfirm: async ([value, selectedOption]: [
                 number,
                 DefaultOptionType,
@@ -273,7 +272,7 @@ export default {
           return h(Space, [
             h(PlayerForm, {
               player: opt.record,
-              saving: savingUser,
+              saving: savingUser.value,
               onSave: async (player: AdminPlayer) => {
                 await updateUser({
                   ...player,
@@ -282,6 +281,7 @@ export default {
                   `Successfully update ${displayName(player)}'s profile!`,
                 );
               },
+              disabledIntroduction: true,
             }),
             h(ChangePassword, {
               player: opt.record,
@@ -351,55 +351,7 @@ export default {
       loading: savingUser,
       onDone: onUserUpdated,
       onError: onUserUpdateError,
-    } = useMutation<
-      {
-        updateUser: {
-          user: AdminPlayer;
-        };
-      },
-      {
-        id: string;
-        displayName?: string;
-        firstName?: string;
-        lastName?: string;
-        email?: string;
-        password?: string;
-        active?: boolean;
-        role?: number;
-        uploadLimit?: number;
-      }
-    >(gql`
-      mutation UpdateUser(
-        $id: ID!
-        $displayName: String
-        $firstName: String
-        $lastName: String
-        $email: String
-        $password: String
-        $active: Boolean
-        $role: Int
-        $uploadLimit: Int
-      ) {
-        updateUser(
-          inbound: {
-            id: $id
-            displayName: $displayName
-            firstName: $firstName
-            lastName: $lastName
-            email: $email
-            password: $password
-            active: $active
-            role: $role
-            uploadLimit: $uploadLimit
-          }
-        ) {
-          user {
-            ...adminPlayerFragment
-          }
-        }
-      }
-      ${adminPlayerFragment}
-    `);
+    } = useUpdateUser();
 
     const handleUpdate = (result: FetchResult) => {
       if (result.errors) {
@@ -415,11 +367,11 @@ export default {
       h(
         Layout,
         {
-          class: "w-full",
+          class: "w-full shadow rounded-xl bg-white overflow-hidden",
         },
         [
           h(Table, {
-            class: "w-full shadow rounded-xl bg-white overflow-auto",
+            class: "w-full overflow-auto",
             rowKey: "id",
             columns,
             dataSource: dataSource.value,

@@ -18,11 +18,26 @@ export const router = createRouter({
         path: "/stages",
       },
     },
-    { path: "/stages", component: StagesManagement },
-    { path: "/media", component: MediaManagement },
+    {
+      path: "/stages",
+      component: StagesManagement,
+      meta: {
+        background: "#C7DCA7",
+      },
+    },
+    {
+      path: "/media",
+      component: MediaManagement,
+      meta: {
+        background: "#FFEBD8",
+      },
+    },
     {
       path: "/admin",
       component: AdminSection,
+      meta: {
+        background: "#FFC5C5",
+      },
       children: [{ path: "player", component: PlayerManagement }],
     },
     {

@@ -87,7 +87,6 @@ const updateInquiry = (vars: any) =>
 const watchInquiryVar = (vars: any) => {
   types.value = vars.mediaTypes ?? [];
   tags.value = vars.tags ?? [];
-  console.log(vars);
   inquiryVar.onNextChange(watchInquiryVar);
 };
 inquiryVar.onNextChange(watchInquiryVar);

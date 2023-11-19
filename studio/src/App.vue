@@ -4,6 +4,9 @@ import { provide } from "@vue/runtime-core";
 import Authorized from "components/Authorized.vue";
 import Sidebar from "components/Sidebar.vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 provide(DefaultApolloClient, apolloClient);
 </script>
@@ -24,7 +27,10 @@ provide(DefaultApolloClient, apolloClient);
     <Authorized>
       <a-layout>
         <Sidebar>
-          <a-layout class="h-screen space-y-2 p-2">
+          <a-layout
+            class="h-screen space-y-2 p-2"
+            :style="{ background: route.meta.background }"
+          >
             <router-view />
           </a-layout>
         </Sidebar>
