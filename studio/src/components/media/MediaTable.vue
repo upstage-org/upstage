@@ -316,9 +316,9 @@ const isAdmin = inject(IsAdmin, false);
 </script>
 
 <template>
-  <a-layout class="w-full">
+  <a-layout class="w-full shadow rounded-xl bg-white overflow-hidden">
     <a-table
-      class="w-full shadow rounded-xl bg-white overflow-auto"
+      class="w-full overflow-auto"
       :columns="columns"
       :data-source="dataSource"
       rowKey="id"

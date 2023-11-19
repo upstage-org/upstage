@@ -8,15 +8,11 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { capitalize } from "utils/common";
-import { IframeSrc } from "../../symbols";
 import { message } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 
 const { t } = useI18n();
 
-const iframeSrc = inject(IframeSrc, ref(""));
-const manageStage = (stage: Stage) =>
-  (iframeSrc.value = `/backstage/stage-management/${stage.id}/`);
 const enterStage = (stage: Stage) => {
   window.open(`/${stage.fileLocation}`, "_blank");
 };
@@ -91,7 +87,6 @@ const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
 };
 
 watch(params, () => {
-  iframeSrc.value = "";
   fetchMore({
     variables: params.value,
     updateQuery,
@@ -271,9 +266,9 @@ onVisibilityUpdated(handleUpdate);
 </script>
 
 <template>
-  <a-layout class="w-full">
+  <a-layout class="w-full rounded-xl bg-white overflow-hidden">
     <a-table
-      class="w-full shadow rounded-xl bg-white overflow-auto"
+      class="w-full shadow overflow-auto"
       :columns="columns"
       :data-source="dataSource"
       rowKey="id"
@@ -335,10 +330,14 @@ onVisibilityUpdated(handleUpdate);
         </template>
         <template v-if="column.key === 'actions'">
           <a-space>
-            <a-button @click="manageStage(record as Stage)">
-              <setting-outlined />
-              Manage
-            </a-button>
+            <router-link
+              :to="`/legacy/backstage/stage-management/${record.id}/`"
+            >
+              <a-button>
+                <setting-outlined />
+                Manage
+              </a-button>
+            </router-link>
             <a-button type="primary" @click="enterStage(record as Stage)">
               <login-outlined />
               Enter

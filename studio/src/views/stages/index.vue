@@ -1,0 +1,4 @@
+<template>
+  <StageFilter />
+  <StageTable />
+</template>

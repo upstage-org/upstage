@@ -1,23 +1,31 @@
 <script setup lang="ts">
-import { computed, inject, provide, ref } from "vue";
-import { IframeSrc, IsAdmin, SelectedMenu, WhoAmI } from "../symbols";
+import { computed, provide } from "vue";
+import { IsAdmin, WhoAmI } from "../symbols";
 import { useQuery } from "@vue/apollo-composable";
-import { StudioGraph } from "../models/studio";
+import { AdminPlayer, StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
+import { useRouter } from "vue-router";
+import PlayerForm from "views/admin/player-management/PlayerForm.vue";
+import { useUpdateUser } from "hooks/mutations";
+import { message } from "ant-design-vue";
 
-const selectedKeys = inject<string[]>(SelectedMenu);
-const iframeSrc = ref("");
-provide(IframeSrc, iframeSrc);
+const router = useRouter();
 
 const { result, loading } = useQuery<StudioGraph>(gql`
   query WhoAmI {
     whoami {
+      id
       username
+      firstName
+      lastName
       displayName
+      email
       role
       roleName
       uploadLimit
+      active
+      intro
     }
   }
 `);
@@ -28,11 +36,24 @@ const isAdmin = computed(() =>
   ),
 );
 
-provide(
-  WhoAmI,
-  computed(() => result.value?.whoami),
-);
+const whoami = computed(() => result.value?.whoami);
+
+provide(WhoAmI, whoami);
 provide(IsAdmin, isAdmin);
+
+const {
+  mutate: updateUser,
+  loading: savingUser,
+  onDone: onUserUpdated,
+  onError: onUserUpdateError,
+} = useUpdateUser();
+
+const handleSaveProfile = async (player: AdminPlayer) => {
+  await updateUser({
+    ...player,
+  });
+  message.success(`Successfully update your profile!`);
+};
 </script>
 
 <template>
@@ -45,54 +66,50 @@ provide(IsAdmin, isAdmin);
   >
     <a-spin :spinning="loading">
       <a-menu
-        v-model:selectedKeys="selectedKeys"
+        :selected-keys="[router.currentRoute.value.path]"
+        @select="router.push($event.key.toString())"
         mode="inline"
         class="upstage-menu"
       >
-        <a-menu-item key="media" @click="iframeSrc = ''">
+        <a-menu-item key="/media">
           <picture-outlined />&nbsp;
           <span>Media</span>
         </a-menu-item>
-        <a-menu-item key="stage" @click="iframeSrc = ''">
+        <a-menu-item key="/stages">
           <layout-outlined />
           <span>Stages</span>
         </a-menu-item>
-        <a-menu-item
-          key="profile"
-          @click="iframeSrc = '/backstage/profile/information'"
+        <PlayerForm
+          v-if="whoami"
+          :player="whoami as AdminPlayer"
+          :onSave="handleSaveProfile"
+          :saving="savingUser"
+          noUploadLimit
+          noStatusToggle
+          v-slot="{ onClick }"
         >
-          <user-outlined />
-          <span>Profile</span>
-        </a-menu-item>
+          <a-menu-item :onClick="onClick">
+            <user-outlined />
+            <span>Profile</span>
+          </a-menu-item>
+        </PlayerForm>
         <a-sub-menu key="admin">
           <template #icon>
             <key-outlined />
           </template>
           <template #title>Admin</template>
-          <a-menu-item key="admin/player" @click="iframeSrc = ''"
-            >Player Management</a-menu-item
-          >
-          <a-menu-item
-            key="admin/foyer"
-            @click="iframeSrc = '/backstage/admin/foyer-customisation'"
+          <a-menu-item key="/admin/player">Player Management</a-menu-item>
+          <a-menu-item key="/legacy/backstage/admin/foyer-customisation"
             >Foyer Customisation</a-menu-item
           >
-          <a-menu-item
-            key="admin/email"
-            @click="iframeSrc = '/backstage/admin/email-notification'"
+          <a-menu-item key="/legacy/backstage/admin/email-notification"
             >Email Notification</a-menu-item
           >
-          <a-menu-item
-            key="admin/system"
-            @click="iframeSrc = '/backstage/admin/system-configuration'"
+          <a-menu-item key="/legacy/backstage/admin/system-configuration"
             >System Configuration</a-menu-item
           >
         </a-sub-menu>
-        <a-menu-item
-          key="manual"
-          href="https://docs.upstage.live/"
-          @click="iframeSrc = 'https://docs.upstage.live/'"
-        >
+        <a-menu-item key="/legacy/https://docs.upstage.live/">
           <book-outlined />
           <span>Manual</span>
         </a-menu-item>

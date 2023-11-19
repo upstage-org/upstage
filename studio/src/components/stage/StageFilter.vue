@@ -8,10 +8,8 @@ import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
 import Navbar from "../Navbar.vue";
-import { IframeSrc } from "../../symbols";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
-const iframeSrc = inject(IframeSrc, ref(""));
 const { result, loading } = useQuery<StudioGraph>(gql`
   query StageFilter {
     whoami {
@@ -89,7 +87,6 @@ const updateInquiry = (vars: any) =>
 const watchInquiryVar = (vars: any) => {
   types.value = vars.mediaTypes ?? [];
   tags.value = vars.tags ?? [];
-  console.log(vars);
   inquiryVar.onNextChange(watchInquiryVar);
 };
 inquiryVar.onNextChange(watchInquiryVar);
@@ -152,9 +149,11 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="iframeSrc = '/backstage/new-stage'">
-          <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
-        </a-button>
+        <RouterLink to="/legacy/backstage/new-stage">
+          <a-button type="primary">
+            <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
+          </a-button>
+        </RouterLink>
         <a-input-search
           allowClear
           class="w-48"

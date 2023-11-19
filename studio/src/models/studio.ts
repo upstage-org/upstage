@@ -171,7 +171,7 @@ export interface AdminPlayer {
   displayName: string;
   createdOn: string;
   uploadLimit: number;
-  intro: null;
+  intro: string | null;
   dbId: number;
   permission: null;
 }

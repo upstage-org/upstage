@@ -3,15 +3,12 @@ import { apolloClient } from "apollo";
 import { provide } from "@vue/runtime-core";
 import Authorized from "components/Authorized.vue";
 import Sidebar from "components/Sidebar.vue";
-import { ref } from "vue";
-import { SelectedMenu } from "symbols";
-import Layout from "components/Layout.vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
+import { useRoute } from "vue-router";
 
-const selectedMenu = ref(["stage"]);
+const route = useRoute();
 
 provide(DefaultApolloClient, apolloClient);
-provide(SelectedMenu, selectedMenu);
 </script>
 
 <template>
@@ -30,8 +27,11 @@ provide(SelectedMenu, selectedMenu);
     <Authorized>
       <a-layout>
         <Sidebar>
-          <a-layout class="h-screen space-y-2 p-2">
-            <Layout />
+          <a-layout
+            class="h-screen space-y-2 p-2"
+            :style="{ background: route.meta.background }"
+          >
+            <router-view />
           </a-layout>
         </Sidebar>
       </a-layout>
