@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import { computed, h, provide, ref } from "vue";
+import { computed, provide } from "vue";
 import { IsAdmin, WhoAmI } from "../symbols";
 import { useQuery } from "@vue/apollo-composable";
 import { AdminPlayer, StudioGraph } from "../models/studio";
 import gql from "graphql-tag";
 import configs from "../config";
 import { useRouter } from "vue-router";
-import { watch } from "vue";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 import { useUpdateUser } from "hooks/mutations";
 import { message } from "ant-design-vue";
-import { displayName } from "utils/common";
-
-const selectedMenu = ref(["stages"]);
 
 const router = useRouter();
-
-watch(selectedMenu, (value) => router.push(`/${value.join("/")}`));
 
 const { result, loading } = useQuery<StudioGraph>(gql`
   query WhoAmI {
@@ -72,15 +66,16 @@ const handleSaveProfile = async (player: AdminPlayer) => {
   >
     <a-spin :spinning="loading">
       <a-menu
-        v-model:selectedKeys="selectedMenu"
+        :selected-keys="[router.currentRoute.value.path]"
+        @select="router.push($event.key.toString())"
         mode="inline"
         class="upstage-menu"
       >
-        <a-menu-item key="media">
+        <a-menu-item key="/media">
           <picture-outlined />&nbsp;
           <span>Media</span>
         </a-menu-item>
-        <a-menu-item key="stages">
+        <a-menu-item key="/stages">
           <layout-outlined />
           <span>Stages</span>
         </a-menu-item>
@@ -103,18 +98,18 @@ const handleSaveProfile = async (player: AdminPlayer) => {
             <key-outlined />
           </template>
           <template #title>Admin</template>
-          <a-menu-item key="admin/player">Player Management</a-menu-item>
-          <a-menu-item key="legacy/backstage/admin/foyer-customisation"
+          <a-menu-item key="/admin/player">Player Management</a-menu-item>
+          <a-menu-item key="/legacy/backstage/admin/foyer-customisation"
             >Foyer Customisation</a-menu-item
           >
-          <a-menu-item key="legacy/backstage/admin/email-notification"
+          <a-menu-item key="/legacy/backstage/admin/email-notification"
             >Email Notification</a-menu-item
           >
-          <a-menu-item key="legacy/backstage/admin/system-configuration"
+          <a-menu-item key="/legacy/backstage/admin/system-configuration"
             >System Configuration</a-menu-item
           >
         </a-sub-menu>
-        <a-menu-item key="legacy/https://docs.upstage.live/">
+        <a-menu-item key="/legacy/https://docs.upstage.live/">
           <book-outlined />
           <span>Manual</span>
         </a-menu-item>
