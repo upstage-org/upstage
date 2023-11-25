@@ -17,7 +17,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       displayName
       roleName
     }
-    users {
+    users(active: true) {
       edges {
         node {
           dbId

@@ -49,7 +49,7 @@ watchEffect(() => {
 const { result, loading } = useQuery<StudioGraph>(
   gql`
     {
-      users {
+      users(active: true) {
         edges {
           node {
             dbId

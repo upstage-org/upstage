@@ -75,7 +75,7 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     mediaTypes = SQLAlchemyConnectionField(AssetType.connection)
     tags = SQLAlchemyConnectionField(Tag.connection)
-    users = SQLAlchemyConnectionField(User.connection)
+    users = UserConnectionField(User.connection, active=graphene.Boolean())
     media = AssetConnectionField(
         Asset.connection,
         id=graphene.ID(),
