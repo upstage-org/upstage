@@ -58,8 +58,9 @@ from core.auth.auth_mutation import (
     VerifyPasswordResetMutation,
 )
 from core.user.user_utils import current_user
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from flask import request
+from graphql_relay.node.node import from_global_id
 
 
 class UserAttribute:
@@ -430,6 +431,23 @@ class BatchUserCreation(graphene.Mutation):
         return BatchUserCreation(users=users)
 
 
+class UserConnectionField(SQLAlchemyConnectionField):
+    RELAY_ARGS = ["first", "last", "before", "after"]
+
+    @classmethod
+    def get_query(cls, model, info, sort=None, **args):
+        query = super(UserConnectionField, cls).get_query(model, info, sort, **args)
+        for field, value in args.items():
+            if field == "id":
+                _type, _id = from_global_id(value)
+                query = query.filter(getattr(model, field) == _id)
+            elif len(field) > 5 and field[-4:] == "like":
+                query = query.filter(getattr(model, field[:-5]).ilike(f"%{value}%"))
+            elif field not in cls.RELAY_ARGS and hasattr(model, field):
+                query = query.filter(getattr(model, field) == value)
+        return query
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     """Some mutations are imported from core.auth/"""
@@ -448,7 +466,12 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    userList = SQLAlchemyConnectionField(User.connection)
+    userList = UserConnectionField(
+        User.connection,
+        id=graphene.ID(),
+        username_like=graphene.String(),
+        active=graphene.Boolean(),
+    )
 
     # oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
     # oneUser = OneUser.search
