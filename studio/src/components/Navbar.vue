@@ -40,9 +40,6 @@ const whoami = inject<ComputedRef<User>>(WhoAmI);
       </a>
       <template #overlay>
         <a-menu>
-          <a :href="to('backstage')">
-            <a-menu-item>{{ $t("backstage") }}</a-menu-item>
-          </a>
           <a :href="to('')">
             <a-menu-item>{{ $t("foyer") }}</a-menu-item>
           </a>
