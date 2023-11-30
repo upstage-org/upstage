@@ -36,7 +36,7 @@ def user_registration(user):
 Hi <b>{display_user(user)}</b>,
 <br>
 <br>
-We are glad that you're here! Your account has been created and waiting for approval! You will receive an email once your account has been approved.
+We are glad that you're here! Your account has been created and waiting for approval by an UpStage Admin. You will receive an email once your account has been approved.
 <br>
 <br>
 Please look at the <a href="https://docs.upstage.live/">UpStage User Manual</a> for documentation on how to use UpStage.
