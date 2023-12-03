@@ -32,8 +32,8 @@ const whoami = computed(() => result.value?.whoami);
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0
-  )
+    result.value?.whoami?.role ?? 0,
+  ),
 );
 
 const { mutate: updateUser, loading: savingUser } = useUpdateUser();
