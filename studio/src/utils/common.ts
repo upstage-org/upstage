@@ -1,6 +1,6 @@
 import configs from "config";
 import { SharedAuth, SharedConfigs } from "models/config";
-import { AdminPlayer } from "models/studio";
+import { User } from "models/studio";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
@@ -79,7 +79,7 @@ export function titleCase(str: string) {
   return splitStr.join(" ");
 }
 
-export function displayName(user: AdminPlayer) {
+export function displayName(user: User) {
   if (user.displayName?.trim()) return user.displayName;
   if (user.firstName || user.lastName)
     return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();

@@ -30,7 +30,7 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import QuickStageAssignment from "./QuickStageAssignment.vue";
 import { useI18n } from "vue-i18n";
-import { IsAdmin, WhoAmI } from "../../symbols";
+import { useWhoAmI } from "hooks/auth";
 
 const { t } = useI18n();
 const files = inject<Ref<UploadFile[]>>("files");
@@ -311,8 +311,7 @@ const filterTag = (tag: string) => {
   });
 };
 
-const whoami = inject<ComputedRef<User>>(WhoAmI);
-const isAdmin = inject(IsAdmin, false);
+const { whoami, isAdmin } = useWhoAmI();
 </script>
 
 <template>

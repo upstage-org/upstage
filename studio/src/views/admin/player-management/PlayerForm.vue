@@ -11,24 +11,24 @@ import {
   Tooltip,
   message,
 } from "ant-design-vue";
-import { h } from "vue";
+import { h, watch } from "vue";
 import { EditOutlined } from "@ant-design/icons-vue";
-import { AdminPlayer } from "models/studio";
 import { PropType } from "vue";
 import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { humanFileSize } from "utils/common";
+import { User } from "models/studio";
 
 export default {
   props: {
     player: {
-      type: Object as PropType<AdminPlayer>,
+      type: Object as PropType<User>,
       required: true,
     },
     onSave: {
-      type: Function as PropType<(player: AdminPlayer) => Promise<void>>,
+      type: Function as PropType<(player: User) => Promise<void>>,
       required: true,
     },
     saving: Boolean,
@@ -41,16 +41,20 @@ export default {
 
     const visible = ref(false);
 
-    const values = reactive({
-      firstName: props.player.firstName,
-      lastName: props.player.lastName,
-      displayName: props.player.displayName,
-      email: props.player.email,
-      active: props.player.active,
-      uploadLimit: props.player.uploadLimit,
-      intro: props.player.intro,
+    const values = reactive({ ...props.player });
+
+    const { validate, resetFields } = useForm(values, {});
+
+    watch(
+      () => props.player,
+      (newValues) => resetFields(newValues),
+    );
+
+    watch(visible, (val) => {
+      if (!val) {
+        resetFields();
+      }
     });
-    const { validate } = useForm(values, {});
 
     const customLimit = ref("");
 

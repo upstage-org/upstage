@@ -13,6 +13,7 @@ import configs from "config";
 import { getSharedAuth, setSharedAuth } from "utils/common";
 import gql from "graphql-tag";
 import { Media } from "models/studio";
+import { provideApolloClient } from "@vue/apollo-composable";
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
@@ -145,3 +146,5 @@ export const apolloClient = new ApolloClient({
   link: from([errorLink, authLink, httpLink]),
   cache,
 });
+
+provideApolloClient(apolloClient);

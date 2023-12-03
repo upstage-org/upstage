@@ -2,7 +2,7 @@
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { computed, reactive, watch, provide, ref, inject } from "vue";
-import type { AdminPlayer, Media, Stage, StudioGraph } from "models/studio";
+import type { Media, Stage, StudioGraph, User } from "models/studio";
 import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
@@ -136,7 +136,7 @@ export default {
       SUPER_ADMIN: 32,
     };
 
-    const columns: ColumnType<AdminPlayer>[] = [
+    const columns: ColumnType<User>[] = [
       {
         title: t("role"),
         dataIndex: "role",
@@ -273,7 +273,7 @@ export default {
             h(PlayerForm, {
               player: opt.record,
               saving: savingUser.value,
-              onSave: async (player: AdminPlayer) => {
+              onSave: async (player: User) => {
                 await updateUser({
                   ...player,
                 });
@@ -286,7 +286,7 @@ export default {
             h(ChangePassword, {
               player: opt.record,
               saving: savingUser,
-              onSave: async (player: AdminPlayer) => {
+              onSave: async (player: User) => {
                 await updateUser({
                   ...player,
                 });
@@ -297,7 +297,7 @@ export default {
             }),
             h(DeletePlayer, {
               player: opt.record,
-              onDone: async (player: AdminPlayer) => {
+              onDone: async (player: User) => {
                 refresh();
                 message.success(
                   `Successfully delete ${displayName(player)}'s account!`,

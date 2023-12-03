@@ -12,8 +12,8 @@
     "i18n": "node ../dashboard/src/i18n/scan.js"
   },
   "dependencies": {
-    "@apollo/client": "^3.4.16",
-    "@vue/apollo-composable": "^4.0.0-alpha.15",
+    "@apollo/client": "^3.8.8",
+    "@vue/apollo-composable": "^4.0.0-beta.12",
     "@vueuse/core": "^6.7.3",
     "ant-design-vue": "^4.0.3",
     "autoprefixer": "^10.3.7",

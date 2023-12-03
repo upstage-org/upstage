@@ -2,22 +2,22 @@
 import { useI18n } from "vue-i18n";
 import { Button, Form, Input, Modal, Tooltip, message } from "ant-design-vue";
 import { h } from "vue";
-import { AdminPlayer } from "models/studio";
 import { PropType } from "vue";
 import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { KeyOutlined } from "@ant-design/icons-vue";
+import { User } from "models/studio";
 
 export default {
   props: {
     player: {
-      type: Object as PropType<AdminPlayer>,
+      type: Object as PropType<User>,
       required: true,
     },
     onSave: {
-      type: Function as PropType<(player: AdminPlayer) => Promise<void>>,
+      type: Function as PropType<(player: User) => Promise<void>>,
     },
     saving: {
       type: Object as PropType<{ value: boolean }>,
