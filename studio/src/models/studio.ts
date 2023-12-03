@@ -20,7 +20,7 @@ export interface StudioGraph {
   whoami: User;
   notifications: Notification[];
   voices: VoiceGraph[];
-  adminPlayers: Connection<AdminPlayer>;
+  adminPlayers: Connection<User>;
 }
 
 export interface VoiceGraph {
@@ -42,12 +42,20 @@ export interface MediaType {
 
 export interface User {
   id: string;
-  dbId: number;
-  displayName: string;
+  active: boolean;
   username: string;
+  email: string;
+  binName: string;
   role: number;
   roleName: string;
+  firstName: string;
+  lastName: string;
+  displayName: string;
+  createdOn: string;
   uploadLimit: number;
+  intro: string | null;
+  dbId: number;
+  permission: null;
 }
 
 export interface Stage {
@@ -157,21 +165,3 @@ export type Privilege =
   | "APPROVED"
   | "PENDING_APPROVAL"
   | "REQUIRE_APPROVAL";
-
-export interface AdminPlayer {
-  id: string;
-  active: boolean;
-  username: string;
-  email: string;
-  binName: string;
-  role: number;
-  roleName: string;
-  firstName: string;
-  lastName: string;
-  displayName: string;
-  createdOn: string;
-  uploadLimit: number;
-  intro: string | null;
-  dbId: number;
-  permission: null;
-}

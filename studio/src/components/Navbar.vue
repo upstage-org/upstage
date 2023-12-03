@@ -3,31 +3,35 @@ import Notifications from "components/Notifications.vue";
 import LanguageSelector from "components/LanguageSelector.vue";
 import configs from "config";
 import logo from "assets/upstage.png";
-import { inject } from "vue";
-import type { ComputedRef } from "vue";
-import type { User } from "models/studio";
-import { WhoAmI } from "symbols";
 import StudioVersion from "./StudioVersion.vue";
+import { useUpdateProfile, useWhoAmI } from "hooks/auth";
+import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
-const whoami = inject<ComputedRef<User>>(WhoAmI);
+
+const { whoami, loading, save } = useUpdateProfile();
 </script>
 
 <template>
   <a-space>
-    <router-link
-      to="/legacy/backstage/profile/information"
+    <PlayerForm
       v-if="whoami"
-      style="line-height: 0.8"
-      class="text-right"
+      :player="whoami"
+      :onSave="save"
+      :saving="loading"
+      noUploadLimit
+      noStatusToggle
+      v-slot="{ onClick }"
     >
-      <span class="text-gray-500">{{ whoami.roleName }}</span>
-      <a-typography-title :level="5" style="margin-bottom: 0">
-        <span class="whitespace-nowrap">
-          {{ whoami.displayName || whoami.username }}
-        </span>
-      </a-typography-title>
-    </router-link>
+      <div :onClick="onClick" class="cursor-pointer">
+        <span class="text-gray-500 cursor-pointer">{{ whoami.roleName }}</span>
+        <a-typography-title :level="5" style="margin-bottom: 0">
+          <span class="whitespace-nowrap">
+            {{ whoami.displayName || whoami.username }}
+          </span>
+        </a-typography-title>
+      </div>
+    </PlayerForm>
     <Notifications />
     <a-space direction="vertical">
       <LanguageSelector />

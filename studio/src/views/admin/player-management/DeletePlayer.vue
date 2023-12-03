@@ -3,19 +3,19 @@ import { useI18n } from "vue-i18n";
 import { Button, Popconfirm, message } from "ant-design-vue";
 import { h } from "vue";
 import { DeleteOutlined } from "@ant-design/icons-vue";
-import { AdminPlayer } from "models/studio";
 import { PropType } from "vue";
 import gql from "graphql-tag";
 import { useMutation } from "@vue/apollo-composable";
+import { User } from "models/studio";
 
 export default {
   props: {
     player: {
-      type: Object as PropType<AdminPlayer>,
+      type: Object as PropType<User>,
       required: true,
     },
     onDone: {
-      type: Function as PropType<(player: AdminPlayer) => Promise<void>>,
+      type: Function as PropType<(player: User) => Promise<void>>,
       required: true,
     },
   },
@@ -48,7 +48,7 @@ export default {
               await props.onDone?.(props.player);
             } catch (error) {
               message.error(
-                error instanceof Error ? error.message : (error as string),
+                error instanceof Error ? error.message : (error as string)
               );
             }
           },
@@ -58,8 +58,8 @@ export default {
           { danger: true },
           {
             icon: () => h(DeleteOutlined),
-          },
-        ),
+          }
+        )
       );
   },
 };

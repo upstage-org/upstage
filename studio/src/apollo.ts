@@ -13,6 +13,7 @@ import configs from "config";
 import { getSharedAuth, setSharedAuth } from "utils/common";
 import gql from "graphql-tag";
 import { Media } from "models/studio";
+import { provideApolloClient } from "@vue/apollo-composable";
 
 // HTTP connection to the API
 const httpLink = createHttpLink({
@@ -54,10 +55,10 @@ const errorLink = onError(
                 .catch(() => {
                   // Handle token refresh errors e.g clear stored tokens, redirect to login
                   message.error(
-                    `Token expired, could not refresh your access token. Please login again!`,
+                    `Token expired, could not refresh your access token. Please login again!`
                   );
                   return;
-                }),
+                })
             )
               .map((value) => value?.data.refreshUser.newToken)
               .filter((value) => Boolean(value))
@@ -88,7 +89,7 @@ const errorLink = onError(
                   }
                 };
                 loop();
-              }),
+              })
             ).flatMap((accessToken) => {
               operation.setContext({
                 headers: {
@@ -103,7 +104,7 @@ const errorLink = onError(
       }
     }
     if (networkError) message.error(`[Network error]: ${networkError}`);
-  },
+  }
 );
 
 const authLink = setContext((request, { headers }) => {
@@ -145,3 +146,5 @@ export const apolloClient = new ApolloClient({
   link: from([errorLink, authLink, httpLink]),
   cache,
 });
+
+provideApolloClient(apolloClient);

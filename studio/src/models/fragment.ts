@@ -30,5 +30,6 @@ export const adminPlayerFragment = gql`
     role
     uploadLimit
     intro
+    roleName
   }
 `;

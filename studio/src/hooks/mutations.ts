@@ -1,13 +1,13 @@
 import { useMutation } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import { adminPlayerFragment } from "models/fragment";
-import { AdminPlayer } from "models/studio";
+import { User } from "models/studio";
 
 export function useUpdateUser() {
   return useMutation<
     {
       updateUser: {
-        user: AdminPlayer;
+        user: User;
       };
     },
     {

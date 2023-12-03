@@ -69,7 +69,7 @@ export default {
     const form = reactive(props.profile);
     const { loading, mutation: updateUser } = useMutation(
       userGraph.updateUser,
-      form,
+      form
     );
     const updateInformation = async () => {
       try {

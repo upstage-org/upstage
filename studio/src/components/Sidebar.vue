@@ -1,59 +1,11 @@
 <script setup lang="ts">
-import { computed, provide } from "vue";
-import { IsAdmin, WhoAmI } from "../symbols";
-import { useQuery } from "@vue/apollo-composable";
-import { AdminPlayer, StudioGraph } from "../models/studio";
-import gql from "graphql-tag";
-import configs from "../config";
 import { useRouter } from "vue-router";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
-import { useUpdateUser } from "hooks/mutations";
-import { message } from "ant-design-vue";
+import { useUpdateProfile } from "hooks/auth";
 
 const router = useRouter();
 
-const { result, loading } = useQuery<StudioGraph>(gql`
-  query WhoAmI {
-    whoami {
-      id
-      username
-      firstName
-      lastName
-      displayName
-      email
-      role
-      roleName
-      uploadLimit
-      active
-      intro
-    }
-  }
-`);
-
-const isAdmin = computed(() =>
-  [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    result.value?.whoami?.role ?? 0,
-  ),
-);
-
-const whoami = computed(() => result.value?.whoami);
-
-provide(WhoAmI, whoami);
-provide(IsAdmin, isAdmin);
-
-const {
-  mutate: updateUser,
-  loading: savingUser,
-  onDone: onUserUpdated,
-  onError: onUserUpdateError,
-} = useUpdateUser();
-
-const handleSaveProfile = async (player: AdminPlayer) => {
-  await updateUser({
-    ...player,
-  });
-  message.success(`Successfully update your profile!`);
-};
+const { whoami, loading, save } = useUpdateProfile();
 </script>
 
 <template>
@@ -81,9 +33,9 @@ const handleSaveProfile = async (player: AdminPlayer) => {
         </a-menu-item>
         <PlayerForm
           v-if="whoami"
-          :player="whoami as AdminPlayer"
-          :onSave="handleSaveProfile"
-          :saving="savingUser"
+          :player="whoami"
+          :onSave="save"
+          :saving="loading"
           noUploadLimit
           noStatusToggle
           v-slot="{ onClick }"
