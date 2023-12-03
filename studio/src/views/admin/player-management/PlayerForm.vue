@@ -47,7 +47,7 @@ export default {
 
     watch(
       () => props.player,
-      (newValues) => resetFields(newValues)
+      (newValues) => resetFields(newValues),
     );
 
     watch(visible, (val) => {
@@ -75,7 +75,7 @@ export default {
               visible.value = false;
             } catch (error) {
               message.error(
-                error instanceof Error ? error.message : (error as string)
+                error instanceof Error ? error.message : (error as string),
               );
             }
           },
@@ -103,7 +103,7 @@ export default {
                     "onUpdate:value": (value: string) =>
                       (values.firstName = value),
                   }),
-                ]
+                ],
               ),
               h(
                 Form.Item,
@@ -116,7 +116,7 @@ export default {
                     "onUpdate:value": (value: string) =>
                       (values.lastName = value),
                   }),
-                ]
+                ],
               ),
               h(
                 Form.Item,
@@ -130,7 +130,7 @@ export default {
                     "onUpdate:value": (value: string) =>
                       (values.displayName = value),
                   }),
-                ]
+                ],
               ),
               h(
                 Form.Item,
@@ -142,7 +142,7 @@ export default {
                     value: values.email,
                     "onUpdate:value": (value: string) => (values.email = value),
                   }),
-                ]
+                ],
               ),
               h(
                 Form.Item,
@@ -156,7 +156,7 @@ export default {
                     value: values.intro ?? "",
                     "onUpdate:value": (value: string) => (values.intro = value),
                   }),
-                ]
+                ],
               ),
               !props.noUploadLimit &&
                 h(
@@ -172,12 +172,12 @@ export default {
                       value: humanFileSize(
                         Number(values.uploadLimit),
                         false,
-                        0
+                        0,
                       ),
                       onSearch: (value) => {
                         customLimit.value = Math.min(
                           Number(value),
-                          999
+                          999,
                         ).toString();
                       },
                       options: ["2", "3", "5", "10", "100", "300"]
@@ -191,17 +191,17 @@ export default {
                                   value: `${customLimit.value} MB`,
                                 },
                               ]
-                            : []
+                            : [],
                         ),
                       onChange: async (value) => {
                         const limit = Number(
-                          (value as string).replace(" MB", "")
+                          (value as string).replace(" MB", ""),
                         );
                         const bytes = limit * 1024 * 1024;
                         values.uploadLimit = bytes;
                       },
                     }),
-                  ]
+                  ],
                 ),
               !props.noStatusToggle &&
                 h(
@@ -215,11 +215,11 @@ export default {
                       "onUpdate:checked": (value) =>
                         (values.active = value as boolean),
                     }),
-                  ]
+                  ],
                 ),
-            ]
+            ],
           ),
-        ]
+        ],
       ),
       slots.default
         ? slots.default({ onClick: () => (visible.value = true) })
@@ -237,10 +237,10 @@ export default {
                 },
                 {
                   icon: () => h(EditOutlined),
-                }
+                },
               ),
               ,
-            ]
+            ],
           ),
     ];
   },

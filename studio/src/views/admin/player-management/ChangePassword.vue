@@ -55,7 +55,7 @@ export default {
             },
             {
               icon: () => h(KeyOutlined),
-            }
+            },
           ),
           h(
             Modal,
@@ -99,13 +99,13 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.password = value),
                       }),
-                    ]
+                    ],
                   ),
-                ]
+                ],
               ),
-            ]
+            ],
           ),
-        ]
+        ],
       );
   },
 };

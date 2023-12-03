@@ -4,12 +4,14 @@ import LanguageSelector from "components/LanguageSelector.vue";
 import configs from "config";
 import logo from "assets/upstage.png";
 import StudioVersion from "./StudioVersion.vue";
-import { useUpdateProfile, useWhoAmI } from "hooks/auth";
+import { useUpdateProfile, useLogout } from "hooks/auth";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
 
 const { whoami, loading, save } = useUpdateProfile();
+
+const logout = useLogout();
 </script>
 
 <template>
@@ -47,7 +49,7 @@ const { whoami, loading, save } = useUpdateProfile();
           <a :href="to('')">
             <a-menu-item>{{ $t("foyer") }}</a-menu-item>
           </a>
-          <a-menu-item disabled> </a-menu-item>
+          <a-menu-item @click="logout">{{ $t("logout") }}</a-menu-item>
         </a-menu>
       </template>
     </a-dropdown>

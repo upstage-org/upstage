@@ -62,3 +62,10 @@ export function useWhoAmI() {
 export function useUpdateProfile() {
   return { whoami, loading, save };
 }
+
+export function useLogout() {
+  return () => {
+    localStorage.clear();
+    window.location.href = "/";
+  };
+}

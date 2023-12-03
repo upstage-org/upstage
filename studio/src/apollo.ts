@@ -55,10 +55,10 @@ const errorLink = onError(
                 .catch(() => {
                   // Handle token refresh errors e.g clear stored tokens, redirect to login
                   message.error(
-                    `Token expired, could not refresh your access token. Please login again!`
+                    `Token expired, could not refresh your access token. Please login again!`,
                   );
                   return;
-                })
+                }),
             )
               .map((value) => value?.data.refreshUser.newToken)
               .filter((value) => Boolean(value))
@@ -89,7 +89,7 @@ const errorLink = onError(
                   }
                 };
                 loop();
-              })
+              }),
             ).flatMap((accessToken) => {
               operation.setContext({
                 headers: {
@@ -104,7 +104,7 @@ const errorLink = onError(
       }
     }
     if (networkError) message.error(`[Network error]: ${networkError}`);
-  }
+  },
 );
 
 const authLink = setContext((request, { headers }) => {

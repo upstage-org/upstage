@@ -116,7 +116,7 @@ const { result, loading, fetchMore } = useQuery<
     ${permissionFragment}
   `,
   params.value,
-  { notifyOnNetworkStatusChange: true }
+  { notifyOnNetworkStatusChange: true },
 );
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
@@ -221,15 +221,15 @@ interface Sorter {
 const handleTableChange = (
   { current = 1, pageSize = 10 }: TablePaginationConfig,
   _: any,
-  sorter: SorterResult<Media> | SorterResult<Media>[]
+  sorter: SorterResult<Media> | SorterResult<Media>[],
 ) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort(
       (a, b) =>
-        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple,
     )
     .map(({ columnKey, order }) =>
-      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
     );
   Object.assign(tableParams, {
     cursor:
@@ -241,7 +241,7 @@ const handleTableChange = (
   });
 };
 const dataSource = computed(() =>
-  result.value ? result.value.media.edges.map((edge) => edge.node) : []
+  result.value ? result.value.media.edges.map((edge) => edge.node) : [],
 );
 
 const {
@@ -298,7 +298,7 @@ const addFrameToEditingMedia = (media: Media) => {
         file: {
           name: frame,
         } as File,
-      }))
+      })),
     );
     composingMode.value = false;
   }
@@ -380,7 +380,7 @@ const { whoami, isAdmin } = useWhoAmI();
         <template v-if="column.key === 'copyrightLevel'">
           <span class="leading-4">{{
             configs.MEDIA_COPYRIGHT_LEVELS.find(
-              (l) => l.value === record.copyrightLevel
+              (l) => l.value === record.copyrightLevel,
             )?.name
           }}</span>
         </template>
