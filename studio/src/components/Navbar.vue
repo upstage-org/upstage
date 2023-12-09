@@ -9,7 +9,7 @@ import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
 
-const { whoami, loading, save } = useUpdateProfile();
+const { whoami, save } = await useUpdateProfile();
 
 const logout = useLogout();
 </script>
@@ -20,7 +20,7 @@ const logout = useLogout();
       v-if="whoami"
       :player="whoami"
       :onSave="save"
-      :saving="loading"
+      :saving="true"
       noUploadLimit
       noStatusToggle
       v-slot="{ onClick }"

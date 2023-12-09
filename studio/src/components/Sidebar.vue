@@ -5,7 +5,7 @@ import { useUpdateProfile } from "hooks/auth";
 
 const router = useRouter();
 
-const { whoami, loading, save } = useUpdateProfile();
+const { whoami, save } = await useUpdateProfile();
 </script>
 
 <template>
@@ -16,7 +16,7 @@ const { whoami, loading, save } = useUpdateProfile();
     class="select-none"
     width="240"
   >
-    <a-spin :spinning="loading">
+    <a-spin :spinning="true">
       <a-menu
         :selected-keys="[router.currentRoute.value.path]"
         @select="router.push($event.key.toString())"
@@ -35,7 +35,7 @@ const { whoami, loading, save } = useUpdateProfile();
           v-if="whoami"
           :player="whoami"
           :onSave="save"
-          :saving="loading"
+          :saving="true"
           noUploadLimit
           noStatusToggle
           v-slot="{ onClick }"
