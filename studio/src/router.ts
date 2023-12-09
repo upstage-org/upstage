@@ -43,6 +43,9 @@ export const router = createRouter({
     {
       path: "/legacy/:path(.+)",
       component: LegacyPage,
+      meta: {
+        background: "#E5E6E6",
+      },
     },
   ],
 });
