@@ -36,7 +36,7 @@ export const router = createRouter({
       path: "/admin",
       component: AdminSection,
       meta: {
-        background: "#FFC5C5",
+        background: "#E6F2FF",
       },
       children: [{ path: "player", component: PlayerManagement }],
     },

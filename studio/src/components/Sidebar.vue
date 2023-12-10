@@ -6,18 +6,27 @@ import { useUpdateProfile } from "hooks/auth";
 import { h } from "vue";
 import {
   PictureOutlined,
-  MessageOutlined,
+  CommentOutlined,
   ReadOutlined,
   UserOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
-import { VNode } from "vue";
+import { computed } from "vue";
+import configs from "config";
 
 export default {
   setup(_, { slots }) {
     const router = useRouter();
 
     const { whoami, loading, save } = useUpdateProfile();
+
+    const isAdmin = computed(
+      () =>
+        whoami.value &&
+        [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
+          whoami.value.role,
+        ),
+    );
 
     return () => [
       h(
@@ -45,7 +54,7 @@ export default {
               },
               [
                 { key: "/media", icon: PictureOutlined, label: "Media" },
-                { key: "/stages", icon: MessageOutlined, label: "Stages" },
+                { key: "/stages", icon: CommentOutlined, label: "Stages" },
                 {
                   children: whoami.value
                     ? h(
@@ -70,56 +79,61 @@ export default {
                       )
                     : h("span"),
                 },
-                {
-                  children: h(
-                    SubMenu,
-                    {
-                      key: "/admin",
-                      style: {
-                        margin: 4,
-                        background: router.currentRoute.value.path.startsWith(
-                          "/admin",
-                        )
-                          ? router.currentRoute.value.meta.background
-                          : undefined,
+                ...(isAdmin.value
+                  ? [
+                      {
+                        children: h(
+                          SubMenu,
+                          {
+                            key: "/admin",
+                            style: {
+                              margin: 4,
+                              background:
+                                router.currentRoute.value.path.startsWith(
+                                  "/admin",
+                                )
+                                  ? router.currentRoute.value.meta.background
+                                  : undefined,
+                            },
+                          },
+                          {
+                            icon: () => h(SettingOutlined),
+                            title: () => "Admin",
+                            default: () => [
+                              h(
+                                MenuItem,
+                                {
+                                  key: "/admin/player",
+                                },
+                                "Player Management",
+                              ),
+                              h(
+                                MenuItem,
+                                {
+                                  key: "/legacy/backstage/admin/foyer-customisation",
+                                },
+                                "Foyer Customisation",
+                              ),
+                              h(
+                                MenuItem,
+                                {
+                                  key: "/legacy/backstage/admin/email-notification",
+                                },
+                                "Email Notification",
+                              ),
+                              h(
+                                MenuItem,
+                                {
+                                  key: "/legacy/backstage/admin/system-configuration",
+                                },
+                                "System Configuration",
+                              ),
+                            ],
+                          },
+                        ),
                       },
-                    },
-                    {
-                      icon: () => h(SettingOutlined),
-                      title: () => "Admin",
-                      default: () => [
-                        h(
-                          MenuItem,
-                          {
-                            key: "/admin/player",
-                          },
-                          "Player Management",
-                        ),
-                        h(
-                          MenuItem,
-                          {
-                            key: "/legacy/backstage/admin/foyer-customisation",
-                          },
-                          "Foyer Customisation",
-                        ),
-                        h(
-                          MenuItem,
-                          {
-                            key: "/legacy/backstage/admin/email-notification",
-                          },
-                          "Email Notification",
-                        ),
-                        h(
-                          MenuItem,
-                          {
-                            key: "/legacy/backstage/admin/system-configuration",
-                          },
-                          "System Configuration",
-                        ),
-                      ],
-                    },
-                  ),
-                },
+                    ]
+                  : []),
                 {
                   key: "/legacy/https://docs.upstage.live/",
                   icon: ReadOutlined,
