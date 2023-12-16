@@ -137,3 +137,4 @@ ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = [
 ]  # All client server endpoints. Only config on upstage server
 SEND_EMAIL_SERVER = "https://upstage.live"  # Send email server endpoint
 ACCEPT_EMAIL_HOST = ["app1"]
+CLOUDFLARE_CAPTCHA_SECRETKEY = ""

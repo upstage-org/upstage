@@ -67,6 +67,7 @@
                 <input type="checkbox" v-model="agreed" />
                 {{ $t("tos.register") }} <TermsOfService />.
               </label>
+              <turnstile :site-key="siteKey" v-model="form.token" />
             </div>
           </div>
           <footer class="card-footer">
@@ -96,9 +97,11 @@ import { useMutation } from "@/services/graphql/composable";
 import { userGraph } from "@/services/graphql";
 import { useRouter } from "vue-router";
 import { notification } from "@/utils/notification";
+import Turnstile from "vue-turnstile";
+import configs from "@/config";
 
 export default {
-  components: { Field, Password, TermsOfService },
+  components: { Field, Password, TermsOfService, Turnstile },
   setup: () => {
     const router = useRouter();
     const form = reactive({});
@@ -149,6 +152,7 @@ export default {
       confirmPasswordError,
       touched,
       agreed,
+      siteKey: configs.CLOUDFLARE_CAPTCHA_SITEKEY,
     };
   },
 };
