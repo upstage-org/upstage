@@ -99,7 +99,7 @@ class User(SQLAlchemyObjectType):
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
 
-    pass
+    token = graphene.String(description="Cloudflare captcha token.")
 
 
 class CreateUser(graphene.Mutation):
@@ -136,7 +136,9 @@ class CreateUser(graphene.Mutation):
         outcome = result.json()
 
         if not outcome["success"]:
-            raise Exception("You are not a human!")
+            raise Exception("You are not a human! " + ", ".join(outcome["error-codes"]))
+        else:
+            del data["token"]
 
         user = UserModel(**data)
         user_id = None

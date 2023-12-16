@@ -67,7 +67,11 @@
                 <input type="checkbox" v-model="agreed" />
                 {{ $t("tos.register") }} <TermsOfService />.
               </label>
-              <turnstile :site-key="siteKey" v-model="form.token" />
+              <turnstile
+                ref="captcha"
+                :site-key="siteKey"
+                v-model="form.token"
+              />
             </div>
           </div>
           <footer class="card-footer">
@@ -113,6 +117,7 @@ export default {
     );
     const touched = ref(false);
     const agreed = ref(false);
+    const captcha = ref();
 
     const submit = async () => {
       touched.value = true;
@@ -131,6 +136,7 @@ export default {
         );
         router.push("/login");
       } catch (error) {
+        captcha.value?.reset();
         if (error.includes("upstage_user_username_key")) {
           notification.error("Username " + form.username + " already exists!");
         } else if (error.includes("upstage_user_email_key")) {
@@ -153,6 +159,7 @@ export default {
       touched,
       agreed,
       siteKey: configs.CLOUDFLARE_CAPTCHA_SITEKEY,
+      captcha,
     };
   },
 };

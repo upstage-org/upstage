@@ -135,7 +135,6 @@ NGINX_CONFIG_FILE = "config/dev/dev_app1_nginx_upstage.conf"
 CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT = (
     "https://challenges.cloudflare.com/turnstile/v0/siteverify"
 )
-CLOUDFLARE_CAPTCHA_SECRETKEY = ""
 
 if __name__ == "__main__":
     print("Copy-paste this secret:{}".format(secrets.token_urlsafe(64)))
