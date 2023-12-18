@@ -16,6 +16,7 @@ from core.performance_config.models import ParentStage as ParentStageModel, Perf
 import sys, os
 import json
 import uuid
+import requests
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, "../.."))
@@ -37,7 +38,12 @@ from core.project_globals import (
     api,
     ScopedSession,
 )
-from config import URL_PREFIX, SUPPORT_EMAILS
+from config import (
+    URL_PREFIX,
+    SUPPORT_EMAILS,
+    CLOUDFLARE_CAPTCHA_SECRETKEY,
+    CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT,
+)
 from core.auth.auth_api import jwt_required
 from core.user.models import (
     ADMIN,
@@ -93,7 +99,7 @@ class User(SQLAlchemyObjectType):
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
 
-    pass
+    token = graphene.String(description="Cloudflare captcha token.")
 
 
 class CreateUser(graphene.Mutation):
@@ -114,6 +120,27 @@ class CreateUser(graphene.Mutation):
             data["email"] = str(uuid.uuid4()) + "@stub.stub"
         if not data["intro"]:
             raise Exception("Introduction is required!")
+
+        if not data["token"]:
+            raise Exception("We think you are not a human!")
+
+        # Validate the token by calling the verify API endpoint.
+        ip = request.headers.get("CF-Connecting-IP")
+        formData = {
+            "secret": CLOUDFLARE_CAPTCHA_SECRETKEY,
+            "response": data["token"],
+            "remoteip": ip,
+        }
+
+        result = requests.post(CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT, data=formData)
+        outcome = result.json()
+
+        if not outcome["success"]:
+            raise Exception(
+                "We think you are not a human! " + ", ".join(outcome["error-codes"])
+            )
+        else:
+            del data["token"]
 
         user = UserModel(**data)
         user_id = None
