@@ -122,7 +122,7 @@ class CreateUser(graphene.Mutation):
             raise Exception("Introduction is required!")
 
         if not data["token"]:
-            raise Exception("You are not a human!")
+            raise Exception("We think you are not a human!")
 
         # Validate the token by calling the verify API endpoint.
         ip = request.headers.get("CF-Connecting-IP")
@@ -136,7 +136,9 @@ class CreateUser(graphene.Mutation):
         outcome = result.json()
 
         if not outcome["success"]:
-            raise Exception("You are not a human! " + ", ".join(outcome["error-codes"]))
+            raise Exception(
+                "We think you are not a human! " + ", ".join(outcome["error-codes"])
+            )
         else:
             del data["token"]
 
