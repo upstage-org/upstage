@@ -1,0 +1,210 @@
+<script lang="ts" setup>
+import { useQuery } from '@vue/apollo-composable';
+import gql from 'graphql-tag';
+import { computed, reactive, watch } from 'vue';
+import configs from '../../config';
+import { StudioGraph } from '../../models/studio';
+import { absolutePath } from '../../utils/common';
+
+const tableParams = reactive({
+  limit: 10,
+  cursor: undefined
+})
+const { result: inquiryResult } = useQuery(gql`{ inquiry @client }`)
+const params = computed(() => ({
+  ...tableParams,
+  ...inquiryResult.value.inquiry
+}))
+watch(inquiryResult, () => {
+  tableParams.cursor = undefined
+})
+
+const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
+query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $createdBetween: [Date]) {
+  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, createdBetween: $createdBetween) {
+    totalCount
+    edges {
+      cursor
+      node {
+        id
+        name
+        src
+        createdOn
+        size
+        assetType {
+          name
+        }
+        owner {
+          username
+          displayName
+        }
+        stages {
+          name
+          url
+        }
+      }
+    }
+  }
+}
+`, params.value, { notifyOnNetworkStatusChange: true })
+
+watch(params, () => {
+  fetchMore({
+    variables: params.value,
+    updateQuery: (previousResult, { fetchMoreResult }) => {
+      return fetchMoreResult ?? previousResult
+    },
+  })
+})
+
+const columns = [
+  {
+    title: "Preview",
+    align: "center",
+    width: 96,
+    key: 'preview'
+  },
+  {
+    title: "Name",
+    dataIndex: "name",
+    key: "name",
+    sorter: {
+      multiple: 3,
+    },
+  },
+  {
+    title: "Type",
+    dataIndex: ['assetType', 'name'],
+    key: 'asset_type_id',
+    sorter: {
+      multiple: 1,
+    },
+  },
+  {
+    title: "Owner",
+    dataIndex: 'owner',
+    key: 'owner_id',
+    sorter: {
+      multiple: 2,
+    },
+  },
+  {
+    title: "Stages",
+    key: 'stages',
+    dataIndex: 'stages',
+    width: 250
+  },
+  {
+    title: "Size",
+    dataIndex: "size",
+    key: "size",
+    sorter: {
+      multiple: 4,
+    },
+  },
+  {
+    title: "Date",
+    dataIndex: "createdOn",
+    key: "created_on",
+    sorter: {
+      multiple: 5,
+    },
+    defaultSortOrder: 'descend'
+  },
+  {
+    title: "Manage Media",
+    align: "center",
+    fixed: "right",
+    key: 'actions'
+  },
+];
+
+interface Pagination {
+  current: number
+  pageSize: number
+  showQuickJumper: boolean
+  showSizeChanger: boolean
+  total: number
+}
+
+interface Sorter {
+  column: any
+  columnKey: string
+  field: string
+  order: "ascend" | "descend"
+}
+
+const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: Sorter | Sorter[]) => {
+  const sort = (Array.isArray(sorter) ? sorter : [sorter])
+    .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
+    .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
+  Object.assign(tableParams, {
+    cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+    limit: pageSize,
+    sort
+  })
+}
+const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
+</script>
+
+<template>
+  <a-table
+    class="mx-4 shadow rounded-md bg-white"
+    :columns="columns"
+    :data-source="dataSource"
+    rowKey="id"
+    :loading="loading"
+    @change="handleTableChange"
+    :pagination="{
+      showQuickJumper: true,
+      showSizeChanger: true,
+      total: result ? result.media.totalCount : 0,
+    } as Pagination"
+  >
+    <template #bodyCell="{ column, record, text }">
+      <template v-if="column.key === 'preview'">
+        <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
+          <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
+        </audio>
+        <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
+          <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
+        </video>
+        <a-image v-else :src="absolutePath(record.src)" class="w-24" />
+      </template>
+      <template v-if="column.key === 'asset_type_id'">
+        <span class="capitalize">{{ text }}</span>
+      </template>
+      <template v-if="column.key === 'owner_id'">
+        <span v-if="text.displayName">
+          <b>{{ text.displayName }}</b>
+          <br />
+          <span class="text-gray-500">{{ text.username }}</span>
+        </span>
+        <span v-else>
+          <span>{{ text.username }}</span>
+        </span>
+      </template>
+      <template v-if="column.key === 'stages'">
+        <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+          <a-tag color="#007011">{{ stage.name }}</a-tag>
+        </a>
+      </template>
+      <template v-if="column.key === 'size'">
+        <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
+          <d-size :value="text" />
+        </a-tag>
+        <a-tag v-else>Can't calculate size</a-tag>
+      </template>
+      <template v-if="column.key === 'created_on'">
+        <d-date :value="text" />
+      </template>
+      <template v-if="column.key === 'actions'">
+        <a :href="absolutePath(record.src)" :download="record.name">
+          <a-button>
+            <DownloadOutlined />Download
+          </a-button>
+        </a>
+      </template>
+    </template>
+  </a-table>
+</template>
