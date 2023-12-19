@@ -42,7 +42,7 @@ from config.settings import (ENV_TYPE,URL_PREFIX,JWT_REFRESH_TOKEN_DAYS,
 from config.signals import add_signals
 from utils.formatting import to_dict
 
-from user.models import (User,ROLES,PLAYER,MAKER,GUEST,ADMIN,CREATOR,SUPER_ADMIN)
+from user.models import (User,ROLES,PLAYER,GUEST,ADMIN,SUPER_ADMIN)
 
 from auth.fernet_crypto import encrypt,decrypt
 from auth.models import (UserSession,GoogleProfile,FacebookProfile,AppleProfile,
@@ -299,7 +299,7 @@ def call_login_logout(app_entry=True,num_value=None):
             if not verify_user_totp(user,num_value):
                 return make_response(jsonify({"error": "Invalid code."}), 401)
 
-        elif user.role in (PLAYER,MAKER,GUEST,ADMIN,CREATOR) and not app_entry: 
+        elif user.role in (PLAYER,GUEST,ADMIN) and not app_entry: 
             pass # password checked-out, that's all we need.
 
     # We may also have a fb/g login, if this is the first time a user is logging
@@ -574,7 +574,7 @@ def call_login_logout(app_entry=True,num_value=None):
         group={'id':0,'name':"test"}
         groups=[group]
 
-    elif user.role in (PLAYER,MAKER,GUEST,ADMIN,CREATOR) and not (group):
+    elif user.role in (PLAYER,GUEST,ADMIN) and not (group):
         group={'id':0,'name':"test"}
         groups=[group]
         #raise ProfileError("Attendee {0} has no associated group. User must have a group record!".format(user_id))
