@@ -1,4 +1,4 @@
-# mobilise
+# UpStage
 
 [![CI](https://github.com/upstage-org/mobilise/actions/workflows/app1.yml/badge.svg)](https://github.com/upstage-org/mobilise/actions/workflows/app1.yml)
 
