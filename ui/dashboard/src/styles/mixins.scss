@@ -20,6 +20,7 @@
     text-transform: uppercase;
 }
 @mixin differentiatedToolbar($color) {
+    background-color: $color;
     > div, > div span.tag {
         background-color: $color !important;
     }

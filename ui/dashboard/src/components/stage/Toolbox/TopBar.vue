@@ -89,8 +89,12 @@ export default {
   margin: auto;
   text-align: center;
   width: fit-content;
-  overflow: auto;
+  overflow: hidden;
   z-index: 2;
+
+  &:hover {
+    overflow-x: auto;
+  }
 
   .card-content {
     display: flex;
