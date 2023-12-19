@@ -11,11 +11,8 @@ export default {
         loadingStages(state) {
             return state.stageList === null
         },
-        liveStages(state) {
-            return state.stageList ? state.stageList.filter(s => s.status === 'live') : []
-        },
-        upcomingStages(state) {
-            return state.stageList ? state.stageList.filter(s => s.status === 'upcoming') : []
+        visibleStages(state) {
+            return state.stageList ? state.stageList.filter(s => s.visibility) : []
         },
     },
     mutations: {
