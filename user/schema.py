@@ -1,5 +1,8 @@
 # -*- coding: iso8859-15 -*-
+from datetime import datetime
 from auth.models import UserSession
+from mail.mail_utils import send
+from mail.templates import admin_registration_notification, user_approved, user_registration
 import performance_config.models
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
 import sys,os
@@ -16,7 +19,7 @@ from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
 from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession,
     app,api,ScopedSession)
-from config.settings import VERSION
+from config.settings import URL_PREFIX
 from auth.auth_api import jwt_required
 from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
 from flask_graphql import GraphQLView
@@ -25,6 +28,8 @@ from utils import graphql_utils
 from auth.auth_mutation import AuthMutation, PasswordResetMutation,RefreshMutation,RequestPasswordResetMutation, VerifyPasswordResetMutation
 from user.user_utils import current_user
 from flask_jwt_extended import jwt_required,get_jwt_identity
+from flask import request
+
 
 class UserAttribute:
     username = graphene.String(description="Username")
@@ -77,6 +82,10 @@ class CreateUser(graphene.Mutation):
             user_id = user.id
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
+        send(user.email, f"Welcome to UpStage!", user_registration(user))
+        admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
+        approval_url = f"{request.url_root}backstage/admin/player-management"
+        send(','.join(admin_emails), f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute):
@@ -109,6 +118,12 @@ class UpdateUser(graphene.Mutation):
             else:
                 del data['password']
             for key, value in data.items():
+                if key == 'active':
+                    if value and not user.active and not user.deactivated_on:
+                        send(user.email, f"Registration approved for user {user.username}", user_approved(user))
+                    if not value and user.active:
+                        user.deactivated_on = datetime.now()
+
                 if hasattr(user, key):
                     setattr(user, key, value)
 
@@ -325,7 +340,7 @@ class Query(graphene.ObjectType):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{VERSION}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    f'/{URL_PREFIX}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
 ))
 
