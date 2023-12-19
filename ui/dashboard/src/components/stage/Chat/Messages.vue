@@ -10,6 +10,9 @@
       <template v-if="item.clear">
         <Divider>{{ $t("clear_chat") }}</Divider>
       </template>
+      <template v-else-if="item.clearPlayerChat">
+        <Divider>{{ $t("clear_chat") }}</Divider>
+      </template>
       <template v-else>
         <ContextMenu>
           <template #trigger>
