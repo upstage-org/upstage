@@ -2,7 +2,7 @@
   <a-layout-footer
     class="text-sm opacity-50 p-0 flex justify-center items-center"
   >
-    UpStage v{{ version }} -
+    UpStage v{{ version }}&nbsp;-&nbsp;
     <span v-if="release">{{ release }}</span>
     <span v-else>{{ $t("under_construction") }}</span>
   </a-layout-footer>
