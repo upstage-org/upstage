@@ -1,14 +1,20 @@
 <script lang="ts" setup>
-import { useQuery } from '@vue/apollo-composable';
+import { useMutation, useQuery } from '@vue/apollo-composable';
+import { message } from 'ant-design-vue';
 import gql from 'graphql-tag';
-import { computed, reactive, watch } from 'vue';
+import { computed, reactive, watch, provide, ref, inject, Ref } from 'vue';
+import { editingMediaVar, inquiryVar } from '../../apollo';
 import configs from '../../config';
-import { StudioGraph } from '../../models/studio';
+import { Media, MediaAttributes, StudioGraph, UploadFile } from '../../models/studio';
 import { absolutePath } from '../../utils/common';
+import MediaPreview from './MediaPreview.vue';
+
+const files = inject<Ref<UploadFile[]>>("files")
 
 const tableParams = reactive({
   limit: 10,
-  cursor: undefined
+  cursor: undefined,
+  sort: 'CREATED_ON_DESC',
 })
 const { result: inquiryResult } = useQuery(gql`{ inquiry @client }`)
 const params = computed(() => ({
@@ -20,8 +26,8 @@ watch(inquiryResult, () => {
 })
 
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
-query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $createdBetween: [Date]) {
-  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, createdBetween: $createdBetween) {
+query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
+  media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
     totalCount
     edges {
       cursor
@@ -31,6 +37,7 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         src
         createdOn
         size
+        description
         assetType {
           name
         }
@@ -41,19 +48,23 @@ query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: St
         stages {
           name
           url
+          id
         }
+        tags
       }
     }
   }
 }
 `, params.value, { notifyOnNetworkStatusChange: true })
 
+const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
+  return fetchMoreResult ?? previousResult
+}
+
 watch(params, () => {
   fetchMore({
     variables: params.value,
-    updateQuery: (previousResult, { fetchMoreResult }) => {
-      return fetchMoreResult ?? previousResult
-    },
+    updateQuery
   })
 })
 
@@ -92,6 +103,12 @@ const columns = [
     title: "Stages",
     key: 'stages',
     dataIndex: 'stages',
+    width: 250
+  },
+  {
+    title: "Tags",
+    key: 'tags',
+    dataIndex: 'tags',
     width: 250
   },
   {
@@ -139,12 +156,72 @@ const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: So
     .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
   Object.assign(tableParams, {
-    cursor: window.btoa(`arrayconnection:${(current - 1) * pageSize}`),
+    cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
     limit: pageSize,
     sort
   })
 }
 const dataSource = computed(() => result.value ? result.value.media.edges.map((edge) => edge.node) : [])
+
+const { loading: deleting, mutate: deleteMedia, onDone } = useMutation(gql`
+mutation deleteMedia($id: ID!) {
+  deleteMedia(id: $id) {
+    success
+    message
+  }
+}`)
+onDone((result) => {
+  console.log()
+  if (result.data.deleteMedia.success) {
+    message.success('Media deleted successfully')
+  } else {
+    message.error(result.data.deleteMedia.message)
+  }
+  fetchMore({
+    variables: params.value,
+    updateQuery
+  })
+})
+
+provide('refresh', () => {
+  fetchMore({
+    variables: params.value,
+    updateQuery
+  })
+})
+
+const editMedia = (media: Media) => {
+  editingMediaVar(media)
+}
+
+const composingMode = inject<Ref<boolean>>('composingMode')
+
+const addFrameToEditingMedia = (media: Media) => {
+  if (files && composingMode) {
+    let frames = [media.src]
+    const attribute = JSON.parse(media.description || '{}') as MediaAttributes
+    if (attribute.multi) {
+      frames = attribute.frames
+    }
+    files.value = files.value.concat(frames.map<UploadFile>((frame, i) => ({
+      id: files.value.length + i,
+      preview: absolutePath(frame),
+      url: frame,
+      status: 'uploaded',
+      file: {
+        name: frame,
+      } as File
+    })))
+    composingMode.value = false
+  }
+}
+
+const filterTag = (tag: string) => {
+  inquiryVar({
+    ...inquiryVar(),
+    tags: [tag]
+  })
+}
 </script>
 
 <template>
@@ -163,13 +240,7 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
   >
     <template #bodyCell="{ column, record, text }">
       <template v-if="column.key === 'preview'">
-        <audio v-if="record.assetType.name === 'audio'" controls class="w-48">
-          <source :src="absolutePath(record.src)" />Your browser does not support the audio element.
-        </audio>
-        <video v-else-if="record.assetType.name === 'stream'" controls class="w-48">
-          <source :src="absolutePath(record.src)" />Your browser does not support the video tag.
-        </video>
-        <a-image v-else :src="absolutePath(record.src)" class="w-24" />
+        <MediaPreview :media="record" />
       </template>
       <template v-if="column.key === 'asset_type_id'">
         <span class="capitalize">{{ text }}</span>
@@ -185,26 +256,63 @@ const dataSource = computed(() => result.value ? result.value.media.edges.map((e
         </span>
       </template>
       <template v-if="column.key === 'stages'">
-        <a v-for="(stage,i) in text" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
+        <a v-for="(stage, i) in text" :key="i" :href="`${configs.UPSTAGE_URL}/${stage.url}`">
           <a-tag color="#007011">{{ stage.name }}</a-tag>
         </a>
+      </template>
+      <template v-if="column.key === 'tags'">
+        <a-tag
+          v-for="(tag, i) in text"
+          :key="i"
+          :color="tag"
+          @click="filterTag(tag)"
+          class="cursor-pointer"
+        >{{ tag }}</a-tag>
       </template>
       <template v-if="column.key === 'size'">
         <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
           <d-size :value="text" />
         </a-tag>
-        <a-tag v-else>Can't calculate size</a-tag>
+        <a-tag v-else>No size</a-tag>
       </template>
       <template v-if="column.key === 'created_on'">
         <d-date :value="text" />
       </template>
       <template v-if="column.key === 'actions'">
-        <a :href="absolutePath(record.src)" :download="record.name">
-          <a-button>
-            <DownloadOutlined />Download
+        <a-space v-if="composingMode">
+          <a-button type="primary" @click="addFrameToEditingMedia(record)">
+            <DoubleRightOutlined />Append frames
           </a-button>
-        </a>
+        </a-space>
+        <a-space v-else>
+          <a-button type="primary" @click="editMedia(record)">
+            <EditOutlined />Edit
+          </a-button>
+          <a :href="absolutePath(record.src)" :download="record.name">
+            <a-button>
+              <template #icon>
+                <DownloadOutlined />
+              </template>
+            </a-button>
+          </a>
+          <a-popconfirm
+            title="Are you sure delete this media?"
+            ok-text="Yes"
+            cancel-text="No"
+            @confirm="deleteMedia(record)"
+            placement="left"
+            :ok-button-props="{ danger: true }"
+            loading="deleting"
+          >
+            <a-button type="dashed" danger>
+              <template #icon>
+                <DeleteOutlined />
+              </template>
+            </a-button>
+          </a-popconfirm>
+        </a-space>
       </template>
     </template>
   </a-table>
+  <slot></slot>
 </template>
