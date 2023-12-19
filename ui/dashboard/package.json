@@ -34,7 +34,7 @@
     "marked": "^4.0.10",
     "masonry-layout": "^4.2.2",
     "modern-copy": "^1.0.3",
-    "moment": "^2.29.1",
+    "moment": "^2.29.4",
     "moveable": "^0.24.5",
     "mqtt": "^4.2.6",
     "object-hash": "^2.1.1",
