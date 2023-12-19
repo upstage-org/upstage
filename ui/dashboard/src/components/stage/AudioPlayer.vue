@@ -39,6 +39,7 @@ export default {
             el.play();
           } else {
             stopAudio(audios[refs.indexOf(el)]);
+            el.currentTime = 0;
           }
         });
         el.addEventListener("loadedmetadata", function () {

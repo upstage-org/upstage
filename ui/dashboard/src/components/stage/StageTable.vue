@@ -16,12 +16,6 @@
         >
           <i class="fa fa-lg fa-cog has-text-primary"></i>
         </router-link>
-        <DuplicateStage :stage="item" />
-        <DeleteStage v-if="item.permission === 'owner' || isAdmin" :stage="item" :refresh="refresh">
-          <a class="button is-light is-small is-danger" data-tooltip="Delete stage">
-            <Icon src="delete.svg" />
-          </a>
-        </DeleteStage>
       </template>
       <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
@@ -32,7 +26,7 @@
       <RecordActions :stage="item" />
     </template>
     <template #enter="{ item }">
-      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary">
+      <router-link :to="`/${item.fileLocation}`" class="button is-small is-primary" @click="updateLastAccess(item.dbId)" >
         <span>{{ $t("enter") }}</span>
         <span class="icon">
           <i class="fas fa-chevron-right"></i>
@@ -40,7 +34,7 @@
       </router-link>
     </template>
     <template #status="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">  
         <Switch
           :data-tooltip="item.status === 'live' ? 'Live' : 'Rehearsal'"
           :model-value="item.status === 'live'"
@@ -50,9 +44,10 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
     <template #visibility="{ item }">
-      <div class="field is-narrow">
+      <div class="field is-narrow" v-if="item.permission === 'editor' || item.permission === 'owner' || isAdmin">
         <Switch
           :data-tooltip="item.visibility ? 'On' : 'Off'"
           v-model="item.visibility"
@@ -62,6 +57,7 @@
           "
         />
       </div>
+      <span v-else data-tooltip="You don't have edit permission on this stage">🙅‍♀️🙅‍♂️</span>
     </template>
   </DataTable>
 </template>
@@ -70,9 +66,6 @@
 import DataTable from "@/components/DataTable/index";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import RecordActions from "./RecordActions";
-import DuplicateStage from "./DuplicateStage.vue";
-import DeleteStage from "./DeleteStage.vue";
-import Icon from "@/components/Icon";
 import { displayName } from "@/utils/auth";
 import { computed, inject } from "@vue/runtime-core";
 import { useStore } from "vuex";
@@ -81,14 +74,12 @@ import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 import { useMutation } from "@/services/graphql/composable";
 
+
 export default {
   components: {
     DataTable,
     PlayerAudienceCounter,
     RecordActions,
-    DuplicateStage,
-    DeleteStage,
-    Icon,
     Switch
   },
   props: { data: Array },
@@ -105,6 +96,22 @@ export default {
         render: (item) => displayName(item.owner),
       },
       {
+        title: "Create Date",
+        description: "date of creation",
+        key: "createdOn",
+        type: "date",
+        sortable: true,
+        defaultSortOrder: false,
+      },
+      {
+        title: "Last Access",
+        description: "date last used / accessed",
+        type: "date",
+        key: "lastAccess",      
+        sortable: true,
+        defaultSortOrder: false,
+      },
+      {
         title: "Statistics",
         description: "Players and audiences counter",
         slot: "statistics",
@@ -117,7 +124,7 @@ export default {
         align: "center",
       },
       {
-        title: "Manage Stage",
+        title: "Manage",
         slot: "manage",
         align: "center",
       },
@@ -143,13 +150,23 @@ export default {
         align: "center",
       },
     ];
-
+    
     const refresh = inject("refresh");
-
     const store = useStore();
     const isAdmin = computed(() => store.getters["user/isAdmin"]);
 
-    return { headers, isAdmin, refresh };
+    const updateLastAccess = (stageId) => {
+      try {
+        const { mutation } = useMutation(stageGraph.updateLastAccess, stageId);
+        mutation().then((res) => {
+          refresh()
+          return res.updateLastAccess.result;
+        });
+      } catch (error) {
+        notification.error(error);
+      }
+    }
+    return { headers, isAdmin, updateLastAccess };
   },
   methods: {
     async updateStageStatus(stageId) {
@@ -174,6 +191,7 @@ export default {
         notification.error(error);
       }
     },
+
   },
 };
 </script>
