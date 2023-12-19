@@ -46,11 +46,6 @@ const routes = [
         component: () => import('../views/backstage/Workshop.vue'),
       },
       {
-        path: '/backstage/media',
-        name: 'Media',
-        component: () => import('../views/backstage/Media/index.vue'),
-      },
-      {
         path: '/backstage/profile',
         name: 'Profile',
         component: () => import('../views/backstage/Profile/index.vue'),
@@ -99,6 +94,11 @@ const routes = [
             path: 'foyer-customisation',
             name: 'Foyer Customisation',
             component: () => import('../views/backstage/Admin/FoyerCustomisation.vue'),
+          },
+          {
+            path: 'email-notification',
+            name: 'Email Notification',
+            component: () => import('../views/backstage/Admin/EmailNotification.vue'),
           }
         ]
       },

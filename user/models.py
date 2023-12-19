@@ -56,7 +56,6 @@ class User(Base,db.Model):
     last_name = Column(Text, default='')
     display_name = Column(Text, default='')
     active = Column(Boolean, nullable=False, default=False)
-    agreed_to_terms = Column(Boolean, nullable=False, default=False)
     created_on = Column(DateTime, default=datetime.utcnow)
     firebase_pushnot_id = Column(Text, default=None)
     deactivated_on = Column(DateTime)
@@ -76,7 +75,7 @@ class UserPortalConfig(Base,db.Model):
     json_config = Column(Text, nullable=False, default='{"viewing_timezone":"US/Eastern"}')
     user = relationship(User, foreign_keys=[user_id])
 
-class OneTimeTOTPQRURL(Base, db.Model):
+class OneTimeTOTP(Base, db.Model):
     __tablename__ = 'admin_one_time_totp_qr_url'
 
     # This is a one-time link to get the QR code for the TOTP secret, for Google Authenticator, etc.

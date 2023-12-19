@@ -15,7 +15,7 @@ from stage.asset import DeleteMedia
 from studio.notification import Notification, resolve_notifications
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, ConfirmPermission, RequestPermission, SaveMedia, UploadFile)
+                          AssetType, CalcSizes, ConfirmPermission, RequestPermission, SaveMedia, UploadFile, Voice, resolve_voices)
 from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -67,6 +67,7 @@ class Query(graphene.ObjectType):
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int), tags=graphene.List(graphene.String))
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)
+    voices = graphene.List(Voice, resolver=resolve_voices)
 
     @jwt_required()
     def resolve_whoami(self, info):

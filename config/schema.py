@@ -1,11 +1,16 @@
 # -*- coding: iso8859-15 -*-
 from os import name
+
+from flask_jwt_extended.view_decorators import jwt_required
 from config.project_globals import DBSession, ScopedSession, app
 from flask_graphql import GraphQLView
 from config.settings import NGINX_CONFIG_FILE, VERSION
 from graphene import relay
 import graphene
 from config.models import Config as ConfigModel
+from mail.mail_utils import send
+from user.models import ADMIN, SUPER_ADMIN
+from user.user_utils import current_user
 
 TERMS_OF_SERVICE = 'TERMS_OF_SERVICE'
 
@@ -126,9 +131,33 @@ class SaveConfig(graphene.Mutation):
             return SaveConfig(success=True)
 
 
+class SendEmail(graphene.Mutation):
+    """Mutation to customise foyer."""
+    success = graphene.Boolean(description="True if the config was saved.")
+
+    class Arguments:
+        subject = graphene.String(
+            required=True, description="The subject of the email.")
+        body = graphene.String(
+            required=True, description="The body of the email. HTML is allowed.")
+        recipients = graphene.String(
+            required=True, description="The recipients of the email. Comma separated.")
+
+    @jwt_required()
+    def mutate(self, info, subject, body, recipients):
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN):
+            raise Exception(
+                "Only Admin can send notification emails!")
+
+        send(recipients, subject, body)
+        return SendEmail(success=True)
+
+
 class Mutation(graphene.ObjectType):
     updateTermsOfService = UpdateTermsOfService.Field()
     saveConfig = SaveConfig.Field()
+    sendEmail = SendEmail.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

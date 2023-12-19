@@ -10,7 +10,7 @@ import { Media } from './models/studio';
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: configs.GRAPHQL_ENDPOINT,
+  uri: `${configs.SHARED.GRAPHQL_ENDPOINT}studio_graphql/`,
 })
 
 let refreshing = false

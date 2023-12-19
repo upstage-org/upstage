@@ -9,7 +9,6 @@ CREATE TABLE public.upstage_user (
         last_name TEXT default null,
         display_name TEXT default null,
         active BOOLEAN not null default false,
-        agreed_to_terms BOOLEAN not null default false,
         firebase_pushnot_id TEXT default null,
         created_on timestamp without time zone default (now() at time zone 'utc'),
         deactivated_on timestamp without time zone default null,

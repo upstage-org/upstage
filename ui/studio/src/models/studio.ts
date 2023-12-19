@@ -17,6 +17,12 @@ export interface StudioGraph {
   media: Connection<Media>;
   whoami: User;
   notifications: Notification[];
+  voices: VoiceGraph[]
+}
+
+export interface VoiceGraph {
+  avatar: Media;
+  voice: AvatarVoice
 }
 
 export interface PageInfo {
@@ -63,6 +69,7 @@ export interface Media {
   id: string;
   name: string;
   src: string;
+  sign: string;
   description: string;
   createdOn: string;
   size: number;
@@ -78,8 +85,9 @@ export interface Media {
 export interface MediaAttributes {
   multi: boolean;
   frames: string[];
-  voice: Voice;
+  voice: AvatarVoice;
   link: Link;
+  isRTMP: boolean;
   w: number;
   h: number;
 }
@@ -87,9 +95,6 @@ export interface MediaAttributes {
 export interface Link {
   blank: boolean;
   url: string;
-}
-
-export interface Voice {
 }
 
 export interface UploadFile {
@@ -102,7 +107,7 @@ export interface UploadFile {
   method?: string;
   id: number;
   preview: string;
-  status: 'local' | 'uploaded';
+  status: 'local' | 'uploaded' | 'virtual';
   url?: string;
 }
 
@@ -122,6 +127,14 @@ export interface Notification {
   id: string;
   type: "MEDIA_USAGE";
   mediaUsage: Permission;
+}
+
+export interface AvatarVoice {
+  voice: string | null
+  variant: string
+  pitch: number
+  speed: number
+  amplitude: number
 }
 
 export type Privilege = 'NONE' | 'OWNER' | 'APPROVED' | 'PENDING_APPROVAL' | 'REQUIRE_APPROVAL'
