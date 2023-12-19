@@ -2,8 +2,10 @@
   <div v-for="stream in streams" :key="stream">
     <Skeleton :data="stream">
       <template v-if="stream.isRTMP">
-        <RTMPStream v-if="stream.alive" :src="stream.url"></RTMPStream>
-        <QRCodePopup v-else :stream="stream" />
+        <div class="centered">
+          <RTMPStream v-if="stream.alive" :src="stream.url"></RTMPStream>
+          <QRCodePopup v-else :stream="stream" />
+        </div>
       </template>
       <video v-else :src="stream.url"></video>
     </Skeleton>
@@ -82,5 +84,8 @@ export default {
 }
 video {
   height: 100%;
+}
+.centered {
+  margin: auto;
 }
 </style>

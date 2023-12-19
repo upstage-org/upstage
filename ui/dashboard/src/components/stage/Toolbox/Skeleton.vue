@@ -1,11 +1,13 @@
 <template>
   <div
-    class="is-flex is-align-items-center"
+    class="is-flex is-align-items-center skeleton"
+    :class="{ dropzone }"
     draggable="true"
     @dragstart="dragstart"
     @dragend="dragend"
     @dragenter.prevent
-    @dragover.prevent
+    @dragover.prevent="dropzone = true"
+    @dragleave.prevent="dropzone = false"
     @drop.prevent="drop"
     @touchmove="touchmove"
     @touchend="touchend"
@@ -36,7 +38,7 @@
       class="is-fullwidth"
       v-else-if="data.type === 'stream'"
     >
-      <Icon src="streams.svg" size="36" />
+      <Icon src="stream.svg" size="36" />
       <span class="tag is-light is-block stream-key">{{ data.name }}</span>
     </div>
     <Image v-else :src="data.src" />
@@ -57,7 +59,24 @@ import Icon from "@/components/Icon";
 import SavedDrawing from "./tools/Draw/SavedDrawing";
 
 export default {
-  props: ["data", "real", "ghost"],
+  props: {
+    data: {
+      type: Object,
+      required: true,
+    },
+    real: {
+      type: Boolean,
+      default: false,
+    },
+    ghost: {
+      type: Boolean,
+      default: false,
+    },
+    nodrop: {
+      type: Boolean,
+      default: false,
+    },
+  },
   components: { Image, Icon, SavedDrawing },
   setup: (props) => {
     const store = useStore();
@@ -69,7 +88,7 @@ export default {
     const dragstart = (e) => {
       e.dataTransfer.setData(
         "text",
-        JSON.stringify({ object: props.data, isReal: props.real })
+        JSON.stringify({ object: props.data, isReal: props.real, nodrop: props.nodrop })
       );
     };
 
@@ -121,14 +140,23 @@ export default {
     };
 
     const drop = (e) => {
+      dropzone.value = false;
+      const { object } = JSON.parse(e.dataTransfer.getData("text"));
       if (props.real) {
-        const { object } = JSON.parse(e.dataTransfer.getData("text"));
         store.dispatch("stage/bringToFrontOf", {
           front: object.id,
           back: props.data.id,
         });
+      } else {
+        // Re-order toolbox
+        store.commit("stage/REORDER_TOOLBOX", {
+          from: object,
+          to: props.data,
+        });
       }
     };
+
+    const dropzone = ref(false);
 
     return {
       dragstart,
@@ -140,15 +168,33 @@ export default {
       hold,
       showMovable,
       drop,
+      dropzone
     };
   },
 };
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .stream-key {
   width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.skeleton {
+  > * {
+    transition-duration: 0.25s;
+  }
+}
+.dropzone {
+  background: repeating-radial-gradient(
+    circle,
+    green,
+    green 10px,
+    #007011 10px,
+    #007011 20px
+  );
+  > * {
+    transform: translateX(50%) !important;
+  }
 }
 </style>

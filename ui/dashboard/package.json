@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
   "version": "1.17.0",
-  "versionAlias": "Tegenseer",
+  "versionAlias": "Franziskaner-18",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",
@@ -29,6 +29,7 @@
     "humanize-duration": "^3.27.0",
     "js-cookie": "^2.2.1",
     "marked": "^4.0.10",
+    "masonry-layout": "^4.2.2",
     "modern-copy": "^1.0.3",
     "moment": "^2.29.1",
     "moveable": "^0.24.5",

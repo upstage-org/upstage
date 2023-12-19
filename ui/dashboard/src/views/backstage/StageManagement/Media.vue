@@ -1,35 +1,51 @@
 <template>
   <div class="columns">
     <div class="column">
-      <Dropdown
-        class="mr-2"
-        v-model="filter.type"
-        :data="mediaTypes"
-        :render-value="(item) => item.value"
-        :render-label="(item) => item.label"
-        placeholder="Media type"
-      />
-      <Dropdown
-        class="mr-2"
-        v-model="filter.owner"
-        :data="owners.concat({ displayName: 'All players' })"
-        :render-value="(item) => item.id"
-        :render-label="displayName"
-        placeholder="Stage owner"
-      />
-      <Field
-        style="width: 200px; display: inline-block; vertical-align: top"
-        v-model="filter.keyword"
-        right="fas fa-search"
-        placeholder="Media name"
-      />
+      <button
+        class="button mr-2 is-dark"
+        :class="{ 'is-warning': reordering }"
+        @click="reordering = !reordering"
+      >
+        <span class="icon">
+          <i class="fas fa-arrow-left" v-if="reordering"></i>
+          <i class="fas fa-arrows-alt" v-else></i>
+        </span>
+        <span v-if="reordering">Exit Reorder Mode</span>
+        <span v-else>Reorder Mode</span>
+      </button>
+      <template v-if="!reordering">
+        <Dropdown
+          class="mr-2"
+          v-model="filter.type"
+          :data="mediaTypes"
+          :render-value="(item) => item.value"
+          :render-label="(item) => item.label"
+          placeholder="Media type"
+        />
+        <Dropdown
+          class="mr-2"
+          v-model="filter.owner"
+          :data="owners.concat({ displayName: 'All players' })"
+          :render-value="(item) => item.id"
+          :render-label="displayName"
+          placeholder="Stage owner"
+        />
+        <Field
+          style="width: 200px; display: inline-block; vertical-align: top"
+          v-model="filter.keyword"
+          right="fas fa-search"
+          placeholder="Media name"
+        />
+      </template>
     </div>
-    <div class="column">
+    <div class="column is-narrow">
       <SaveButton :loading="saving" :disabled="loading" @click="saveMedia" />
     </div>
   </div>
 
+  <Reorder v-if="reordering" v-model="selectedMedia" />
   <MultiSelectList
+    v-else
     :loading="loading"
     :titles="['Available Media', 'Selected Media']"
     :data="filteredMediaList"
@@ -40,7 +56,7 @@
       <div class="mx-3 my-1">
         <div class="columns">
           <div class="column is-narrow media-preview">
-            <Asset :asset="item" show-type />
+            <Asset v-if="!['audio', 'stream'].includes(item.mediaType)" :asset="item" show-type />
           </div>
           <div class="type-icon">
             <Icon :src="item.mediaType + '.svg'" />
@@ -78,9 +94,10 @@ import { displayName } from "@/utils/auth";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
 import MultiframePreview from "../Media/MultiframePreview";
+import Reorder from "./Reorder.vue";
 
 export default {
-  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview },
+  components: { MultiSelectList, Asset, SaveButton, Dropdown, Icon, Field, MultiframePreview, Reorder },
   setup: () => {
     const store = useStore();
     const stage = inject("stage");
@@ -106,9 +123,7 @@ export default {
 
     watchEffect(() => {
       if (!stage.value || !mediaList.value) return;
-      selectedMedia.value = mediaList.value.filter((media) => {
-        return stage.value.media.some((m) => m.id === media.dbId);
-      });
+      selectedMedia.value = stage.value.media.map(m => mediaList.value.find(media => media.dbId === m.id));
     });
 
     const saveMedia = async () => {
@@ -159,6 +174,8 @@ export default {
       }
     });
 
+    const reordering = ref(false);
+
     return {
       loading,
       mediaList,
@@ -170,6 +187,7 @@ export default {
       filteredMediaList,
       displayName,
       owners,
+      reordering
     };
   },
 };
