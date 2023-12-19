@@ -4,7 +4,6 @@ import router from './router'
 import store from './store'
 import i18n from './i18n'
 import './services/rest/base'
-import './styles/bulma.scss'
 import './styles/custom.scss'
 import "@fortawesome/fontawesome-free/css/all.css"
 import ClickOutside from '@/directives/ClickOutside'

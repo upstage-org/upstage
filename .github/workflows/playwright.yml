@@ -1,0 +1,30 @@
+name: Playwright Tests
+on:
+  push:
+    branches: [ main, Stiegl-22 ]
+  pull_request:
+    branches: [ main, Stiegl-22 ]
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: '14.x'
+    - name: Install dependencies
+      working-directory: ./ui/dashboard
+      run: yarn
+    - name: Install Playwright Browsers
+      working-directory: ./ui/dashboard
+      run: npx playwright install --with-deps
+    - name: Run Playwright tests
+      working-directory: ./ui/dashboard
+      run: yarn playwright test
+    - uses: actions/upload-artifact@v2
+      if: always()
+      with:
+        name: playwright-report
+        path: ui/dashboard/playwright-report/
+        retention-days: 30

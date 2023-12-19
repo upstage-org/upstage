@@ -3,10 +3,15 @@
         <span class="card-header-title">{{ $t("create_new_meeting_room") }}</span>
     </div>
     <div class="card-content voice-parameters">
-        <HorizontalField title="Room name">
-            <Field v-model="form.name" required required-message="Room name is required"></Field>
-        </HorizontalField>
-        <SaveButton @click="createRoom">{{ $t("create_room") }}</SaveButton>
+        <form @submit.prevent="createRoom">
+            <HorizontalField title="Room name">
+                <Field v-model="form.name" required required-message="Room name is required"
+                    pattern="^[^?&:&quot;'%#]+$"
+                    title="Meeting name should not contain any of these characters: ?, &, :, ', &quot;, %, #.">
+                </Field>
+            </HorizontalField>
+            <SaveButton :disabled="!form.name.trim()">{{ $t("create_room") }}</SaveButton>
+        </form>
     </div>
 </template>
 
@@ -19,11 +24,11 @@ import HorizontalField from "@/components/form/HorizontalField.vue";
 export default {
     components: { Field, SaveButton, HorizontalField },
     emits: ["close"],
-    setup: (props, { emit }) => {
+    setup: (_, { emit }) => {
         const store = useStore();
         const stageSize = computed(() => store.getters["stage/stageSize"]);
 
-        const form = reactive({});
+        const form = reactive({ name: '' });
         const createRoom = async () => {
             store.commit("stage/CREATE_ROOM", {
                 type: 'meeting',
