@@ -82,7 +82,7 @@ SUBDOMAIN = ''
 API_SUBDOMAIN = ''
 
 FULL_DOMAIN = HTTP_PROTOCOL + SUBDOMAIN + DOMAIN
-URL_PREFIX='{}/'.format(VERSION)
+URL_PREFIX='api/'
 DEFAULT_STATIC_CONTENT='{}/static_content/default/{}'.format(FULL_DOMAIN,URL_PREFIX)
 RELATIVE_STATIC_CONTENT='/static_content/default/{}'.format(URL_PREFIX)
 

@@ -237,7 +237,7 @@ Serve user uploaded media in `/static` path. Caching is important in this config
 Finally, pass the incoming request to `UpStage Service`
 
 ```nginx
-        location /V4.0 {
+        location /api {
             uwsgi_pass unix:///home/upstage/uwsgi_sockets/upstage.socket;
             uwsgi_read_timeout 1800s;
             uwsgi_send_timeout 900s;
