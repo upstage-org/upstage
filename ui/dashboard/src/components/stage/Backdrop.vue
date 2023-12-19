@@ -1,5 +1,6 @@
 <template>
   <Image
+    v-if="src"
     class="background-image"
     :src="src"
     :style="{

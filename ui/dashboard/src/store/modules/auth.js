@@ -11,10 +11,14 @@ import {
 export default {
   namespaced: true,
   state: {
+    username: "",
     token: "",
     refresh_token: "",
   },
   mutations: {
+    SET_USERNAME(state, data) {
+      state.username = data;
+    },
     SET_TOKEN(state, data) {
       state.token = data;
     },
@@ -36,6 +40,7 @@ export default {
               const { access_token, refresh_token } = resp;
               setToken(access_token);
               setRefreshToken(refresh_token);
+              commit("SET_USERNAME", user.username);
               commit("SET_TOKEN", access_token);
               commit("SET_REFRESH_TOKEN", refresh_token);
               dispatch("user/fetchCurrent", null, { root: true });

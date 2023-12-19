@@ -6,7 +6,7 @@ name: DEVAPP1 CI
 on:
   # Triggers the workflow on push or approved pull request on R1-2021 branch
   push:
-    branches: [ Augustiner-16 ]
+    branches: [ Tegenseer-17 ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
           script: |
             cd /home/upstage/upstage/ui/dashboard/
             git fetch
-            git checkout Augustiner-16
+            git checkout Tegenseer-17
             git pull
             yarn
             yarn build:dev

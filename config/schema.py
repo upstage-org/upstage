@@ -13,6 +13,7 @@ from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
 
 TERMS_OF_SERVICE = 'TERMS_OF_SERVICE'
+MANUAL = 'MANUAL'
 
 
 class NginxConfig(graphene.ObjectType):
@@ -42,9 +43,13 @@ def get_config(name):
 
 class SystemConfig(graphene.ObjectType):
     termsOfService = graphene.String()
+    manual = graphene.String()
 
     def resolve_termsOfService(self, info):
         return get_config(TERMS_OF_SERVICE)
+
+    def resolve_manual(self, info):
+        return get_config(MANUAL)
 
 
 class FoyerConfig(graphene.ObjectType):
