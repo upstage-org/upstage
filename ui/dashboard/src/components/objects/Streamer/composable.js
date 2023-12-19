@@ -1,4 +1,4 @@
-import { onMounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { cropImageFromCanvas } from "@/utils/canvas";
 import flvjs from "flv.js";
 
@@ -86,6 +86,12 @@ export const useFlv = (video, src) => {
             });
             flvPlayer.attachMediaElement(video.value);
             flvPlayer.load();
+            flvPlayer.on(flvjs.Events.ERROR, () => {
+                playable.value = false
+            });
+            video.value.addEventListener('ended', () => {
+                playable.value = false
+            }, { once: true });
         }
     };
 
@@ -93,4 +99,22 @@ export const useFlv = (video, src) => {
     watch(src, initPlayer);
 
     return { playable }
+}
+
+export const useCatchup = (video) => {
+    const onProgress = () => {
+        if (video.value.buffered.length) {
+            var end = video.value.buffered.end(0);
+            var delta = end - video.value.currentTime;
+            if (delta > 3) {
+                video.value.currentTime = (end - 0.5)
+            }
+        }
+    }
+    onMounted(() => {
+        video.value.addEventListener('progress', onProgress);
+    })
+    onBeforeUnmount(() => {
+        video.value.removeEventListener('progress', onProgress);
+    })
 }

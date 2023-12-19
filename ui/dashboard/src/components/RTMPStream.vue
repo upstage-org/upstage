@@ -4,16 +4,27 @@
 </template>
 
 <script>
-import { computed, ref } from "@vue/runtime-core";
+import { computed, ref, onMounted } from "@vue/runtime-core";
 import { getSubsribeLink } from "@/utils/streaming";
 import { useFlv } from "./objects/Streamer/composable";
 export default {
   props: ["src"],
-  setup: (props) => {
+  emits: ['scan'],
+  setup: (props, { emit }) => {
     const video = ref();
     const fullUrl = computed(() => getSubsribeLink(props.src));
 
     const { playable } = useFlv(video, fullUrl);
+    onMounted(() => {
+      video.value.addEventListener("loadedmetadata", () => {
+        emit('scan', {
+          width: video.value.videoWidth,
+          height: video.value.videoHeight,
+          duration: video.value.duration,
+          video: video.value
+        });
+      });
+    })
     return { video, playable };
   },
 };
