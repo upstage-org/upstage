@@ -1,6 +1,6 @@
 <template>
   <Loading v-if="loading" height="24px" />
-  <span v-else class="tag is-dark is-small">
+  <span v-else-if="players > 0 || audiences > 0" class="tag is-dark is-small">
     <span class="icon">
       <i class="fas fa-user"></i>
     </span>

@@ -14,11 +14,16 @@ export function getSharedAuth(): SharedAuth | undefined {
     const sharedStateJSON = localStorage.getItem('vuex')
     if (sharedStateJSON) {
       const sharedState = JSON.parse(sharedStateJSON)
-      return sharedState
+      return sharedState.auth
     }
   } catch (error) {
     console.log('No shared auth found. Try login using dashboard first!')
   }
+}
+
+export function setSharedAuth(auth: SharedAuth) {
+  const vuex = JSON.parse(localStorage.getItem('vuex') || '{}')
+  localStorage.setItem('vuex', JSON.stringify({ ...vuex, auth }))
 }
 
 export function humanFileSize(bytes: number, si = false, dp = 1) {
@@ -39,4 +44,8 @@ export function humanFileSize(bytes: number, si = false, dp = 1) {
 
 
   return bytes.toFixed(dp) + ' ' + units[u];
+}
+
+export function capitalize(str: string) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }

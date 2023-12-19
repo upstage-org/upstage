@@ -52,7 +52,7 @@
           </p>
         </div>
         <div
-          v-if="(background.id === currentBackground.id) && currentBackground.speed"
+          v-if="background.id === currentBackground.id"
           class="field has-addons menu-group px-4 my-2"
         >
           <p class="control menu-group-title">
@@ -128,10 +128,11 @@ export default {
     const toggleAutoplayFrames = () => {
       let speed = 0;
       if (!currentBackground.value.speed) {
-        speed = 0.5;
+        speed = currentBackground.value.lastSpeed ?? 0.5;
       }
       store.dispatch("stage/setBackground", {
         ...currentBackground.value,
+        lastSpeed: currentBackground.value.speed,
         speed,
       });
     };
