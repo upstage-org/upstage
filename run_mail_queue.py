@@ -17,13 +17,13 @@ class AsyncProcesses(object):
 
     def wait_for_all_then_repeat(self):
         async def rerun_these_forever(loop):
-            start_time = arrow.utcnow().timestamp()
+            start_time = arrow.utcnow().timestamp
             while True:
                 '''
                 Subtract the run time from the total sleep time, so we don't slip.
                 '''
                 sleep_time = self.total_sleep_time - \
-                    (arrow.utcnow().timestamp() - start_time)
+                    (arrow.utcnow().timestamp - start_time)
                 if sleep_time <= 0:
                     self.logger.error(
                         "Timer diff was negative, sleeping for 30 seconds")
@@ -31,7 +31,7 @@ class AsyncProcesses(object):
                 await asyncio.sleep(sleep_time)
                 self.logger.info(
                     f"Rerunning these processes: {pprint.pformat([x for x in self.function_list])}")
-                start_time = arrow.utcnow().timestamp()
+                start_time = arrow.utcnow().timestamp
                 await asyncio.wait(
                     [loop.create_task(f()) for f in self.function_list]
                 )
