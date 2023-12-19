@@ -6,7 +6,7 @@ After=syslog.target
 LimitNOFILE=100000
 User=upstage
 Group=upstage
-ExecStart=/bin/sh -c "exec /usr/local/bin/uwsgi --ini /home/upstage/mobilise/system/dev/upstage.ini"
+ExecStart=/bin/sh -c "exec /usr/local/bin/uwsgi --ini /home/upstage/upstage/system/dev/upstage.ini"
 # Requires systemd version 211 or newer
 RuntimeDirectory=uwsgi_socket
 Restart=always
