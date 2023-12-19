@@ -6,7 +6,7 @@ from graphql_server import json_encode
 from PIL import Image
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, "../../.."))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
@@ -29,7 +29,7 @@ if ENV_TYPE == 'Production':
     exit()
 """
 
-demo_media_folder = "uploads/demo"
+demo_media_folder = "dashboard/demo"
 owner_id = 0
 
 while not os.path.exists(demo_media_folder):
@@ -155,7 +155,7 @@ def create_demo_media():
 
 def create_demo_stage():
     if session.query(Stage).filter(Stage.name == "Demo").first():
-        print('❌ A stage named "Demo" already exists.')
+        print('⏩ A stage named "Demo" already exists.')
         return
     stage = Stage(
         name="Demo Stage",
@@ -196,15 +196,20 @@ def create_demo_users():
     # - Probably no other users as default
     admin_username = "admin"
     guest_username = "guest"
+    admin_email = "support@upstage.live"
+    guest_email = "guest@upstage.live"
     test_user_password = "12345678"
 
-    if session.query(User).filter(User.username == admin_username).first():
-        print('❌ A user named "{}" already exists.'.format(admin_username))
+    if (
+        session.query(User).filter(User.username == admin_username).first()
+        or session.query(User).filter(User.email == admin_email).first()
+    ):
+        print('⏩ An admin user with email "{}" already exists.'.format(admin_email))
     else:
         admin = User()
         admin.username = admin_username
         admin.password = encrypt(test_user_password)
-        admin.email = "support@upstage.live"
+        admin.email = admin_email
         admin.role = ADMIN
         admin.active = True
         session.add(admin)
@@ -214,12 +219,16 @@ def create_demo_users():
             )
         )
 
-    if session.query(User).filter(User.username == guest_username).first():
-        print('❌ A user named "{}" already exists.'.format(guest_username))
+    if (
+        session.query(User).filter(User.username == guest_username).first()
+        or session.query(User).filter(User.email == guest_email).first()
+    ):
+        print('⏩ A guest user with email "{}" already exists.'.format(guest_username))
     else:
         guest = User()
         guest.username = guest_username
         guest.password = encrypt(test_user_password)
+        guest.email = guest_email
         guest.role = GUEST
         guest.active = True
         session.add(guest)

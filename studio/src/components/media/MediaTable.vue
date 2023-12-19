@@ -354,6 +354,7 @@ const isAdmin = inject(IsAdmin, false);
             v-for="(stage, i) in text"
             :key="i"
             :href="`${configs.UPSTAGE_URL}/${stage.url}`"
+            target="_blank"
           >
             <a-tag color="#007011">{{ stage.name }}</a-tag>
           </a>

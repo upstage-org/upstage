@@ -45,7 +45,7 @@ def current_user(user_id=None, admin_initial=False, internal_use=False):
         .first()
     )
     if not user:
-        return 403, "Invalid user (1)", None, None, None, None
+        return 403, "Invalid user (1)", None, None
 
     if not user_id:
         user_session = (
@@ -56,7 +56,7 @@ def current_user(user_id=None, admin_initial=False, internal_use=False):
         )
 
         if not user_session and not internal_use:
-            return 403, "Bad user session (2)", None, None, None, None
+            return 403, "Bad user session (2)", None, None
 
     # TODO: Get user timezone from front end.
     timezone = "UTC"
