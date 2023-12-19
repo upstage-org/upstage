@@ -297,7 +297,7 @@ class UpdateAttributeVisibility(graphene.Mutation):
             attribute = local_db_session.query(StageAttributeModel).filter(
                 StageAttributeModel.stage_id == _id, StageAttributeModel.name == 'visibility').first()
             if attribute is not None:
-                attribute.description = True if not attribute.description else False
+                attribute.description = True if not attribute.description else ''
             else:
                 attribute = StageAttributeModel(
                     stage_id=_id,
