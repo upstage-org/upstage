@@ -1,7 +1,7 @@
-const STATIC_ASSETS_ENDPOINT = `https://dev-app1.upstage.org.nz/V4.0/static/assets/`
+import configs from "../config"
 
 export function absolutePath(path: string) {
-  return `${STATIC_ASSETS_ENDPOINT}${path}`
+  return `${configs.STATIC_ASSETS_ENDPOINT}${path}`
 }
 
 interface SharedAuth {
