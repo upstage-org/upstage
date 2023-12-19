@@ -68,10 +68,12 @@ export default {
         "text",
         JSON.stringify({ object: props.data, isReal: props.real, nodrop: props.nodrop })
       );
+      document.getElementById('meeting-room').classList.add('disable-pointer')
       emit("dragstart", e);
     };
 
     const dragend = () => {
+      document.getElementById('meeting-room').classList.remove('disable-pointer')
       if (props.real) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
