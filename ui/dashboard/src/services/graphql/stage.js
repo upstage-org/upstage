@@ -92,6 +92,20 @@ export default {
     }
     ${stageFragment}
   `, variables),
+  updateStatus: (stageId) => client.request(gql`
+  mutation {
+    updateStatus(stageId: "${stageId}" ) {
+      result
+    }
+  }
+  `),
+  updateVisibility: (stageId) => client.request(gql`
+  mutation {
+    updateVisibility(stageId: "${stageId}" ) {
+      result
+    }
+  }
+  `),
   sweepStage: (variables) => client.request(gql`
     mutation SweepStage($id: ID!) {
       sweepStage(input: {id: $id}) {

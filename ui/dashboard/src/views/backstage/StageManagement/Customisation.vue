@@ -8,7 +8,7 @@
   <table class="is-fullwidth" cellspacing="5">
     <tr>
       <td>
-        <h3 class="title">Animations</h3>
+        <h3 class="title">{{ $t("animations") }}</h3>
       </td>
       <td width="100%">
         <div>
@@ -21,7 +21,7 @@
           </HorizontalField>
           <HorizontalField title="Speed">
             <div class="speed-slider">
-              <span class="mr-2">Slow</span>
+              <span class="mr-2">{{ $t("slow") }}</span>
               <input
                 class="slider is-fullwidth"
                 step="0.01"
@@ -31,7 +31,7 @@
                 @change="animations.bubbleSpeed = 1000 / $event.target.value"
                 type="range"
               />
-              <span class="ml-2">Fast</span>
+              <span class="ml-2">{{ $t("fast") }}</span>
             </div>
           </HorizontalField>
           <HorizontalField title="Curtain">
@@ -52,7 +52,7 @@
           </HorizontalField>
           <HorizontalField title="Speed">
             <div class="speed-slider">
-              <span class="mr-2">Slow</span>
+              <span class="mr-2">{{ $t("slow") }}</span>
               <input
                 class="slider is-fullwidth"
                 step="0.01"
@@ -62,7 +62,7 @@
                 @change="animations.curtainSpeed = 5000 / $event.target.value"
                 type="range"
               />
-              <span class="ml-2">Fast</span>
+              <span class="ml-2">{{ $t("fast") }}</span>
             </div>
           </HorizontalField>
         </div>
@@ -70,7 +70,7 @@
     </tr>
     <tr>
       <td>
-        <h3 class="title">Streaming</h3>
+        <h3 class="title">{{ $t("streaming") }}</h3>
       </td>
       <td>
         <div>

@@ -3,7 +3,7 @@
     <div class="content has-text-centered">
       UpStage v{{ version }} -
       <span v-if="release">{{ release }}</span>
-      <span v-else>Under construction</span>
+      <span v-else>{{ $t("under_construction") }}</span>
     </div>
   </footer>
 </template>

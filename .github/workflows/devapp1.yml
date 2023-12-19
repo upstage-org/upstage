@@ -6,7 +6,7 @@ name: DEVAPP1 CI
 on:
   # Triggers the workflow on push or approved pull request on R1-2021 branch
   push:
-    branches: [ Schildbrau-20 ]
+    branches: [ Kingfisher-21 ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,7 +32,7 @@ jobs:
           script: |
             cd /home/upstage/upstage/ui/dashboard/
             git fetch
-            git checkout Schildbrau-20
+            git checkout Kingfisher-21
             git pull
             yarn
             yarn build:dev

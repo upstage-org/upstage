@@ -4,10 +4,10 @@
       <Breadcrumb
         description="Create a new stage, enter or manage an existing stage"
       />
-      <h1 class="title is-inline">Stages</h1>
+      <h1 class="title is-inline">{{ $t("stages") }}</h1>
       &nbsp;
       <router-link v-if="!isGuest" to="/backstage/new-stage" class="button">
-        <span>New</span>
+        <span>{{ $t("new") }}</span>
         <span class="icon">
           <i class="fa fa-plus"></i>
         </span>
@@ -16,7 +16,7 @@
   </section>
   <section class="section">
     <div class="container">
-      <h1 class="title mr-2" style="display: inline">Stages</h1>
+      <h1 class="title mr-2" style="display: inline">{{ $t("stages") }}</h1>
 
       <Switch
         v-model="filter.mine"
@@ -41,8 +41,8 @@
         placeholder="Stage name"
       />
       <h2 class="subtitle">
-        Click <strong>New</strong> button to create a new future stage. Click
-        <strong>Search</strong> button for search form to find Stage
+        Click <strong>{{ $t("new") }}</strong> button to create a new future stage. Click
+        <strong>{{ $t("search") }}</strong> button for search form to find Stage
       </h2>
       <Loading v-if="loading" />
       <StageTable v-else :data="stageList" />
