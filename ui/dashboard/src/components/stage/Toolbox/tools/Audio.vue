@@ -6,58 +6,60 @@
     :class="{ 'is-playing': audio.isPlaying }"
     @mouseenter="i > audios.length - 3 ? scrollToEnd() : null"
   >
-    <div class="audio-name">
-      <span v-if="i < 10">{{ i + 1 }}.</span>
-      <span :title="audio.file">{{ audio.name }}</span>
-    </div>
-    <div class="buttons">
-      <template v-if="audio.isPlaying">
-        <div class="icon" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
-          <Icon size="24" src="pause.svg" />
-        </div>
-        <div class="icon" @click="stopAudio(audio)">
-          <Icon size="24" src="clear.svg" />
-        </div>
-      </template>
-      <template v-else>
-        <div class="icon play-button" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
-          <Icon size="24" src="play.svg" />
-        </div>
-      </template>
-      <div
-        class="icon"
-        :class="{ grayscale: !audio.loop }"
-        @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
-      >
-        <Icon size="24" src="loop.svg" />
+    <div>
+      <div class="audio-name">
+        <span v-if="i < 10">{{ i + 1 }}.</span>
+        <span :title="audio.file">{{ audio.name }}</span>
       </div>
-    </div>
-    <div class="sliders">
-      <div class="addon volume">
-        <div class="icon">
-          <Icon size="24" src="voice-setting.svg" />
+      <div class="buttons">
+        <template v-if="audio.isPlaying">
+          <div class="icon" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
+            <Icon size="24" src="pause.svg" />
+          </div>
+          <div class="icon" @click="stopAudio(audio)">
+            <Icon size="24" src="clear.svg" />
+          </div>
+        </template>
+        <template v-else>
+          <div class="icon play-button" @click="togglePlaying(audio, audioPlayers[i]?.currentTime)">
+            <Icon size="24" src="play.svg" />
+          </div>
+        </template>
+        <div
+          class="icon"
+          :class="{ grayscale: !audio.loop }"
+          @click="toggleLoop(audio, audioPlayers[i]?.currentTime)"
+        >
+          <Icon size="24" src="loop.svg" />
+        </div>
+      </div>
+      <div class="sliders">
+        <div class="addon volume">
+          <div class="icon">
+            <Icon size="24" src="voice-setting.svg" />
+          </div>
+          <input
+            class="slider is-fullwidth is-dark my-0"
+            step="0.01"
+            min="0"
+            max="1"
+            :value="audio.volume ?? 1"
+            @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
+            type="range"
+          />
         </div>
         <input
-          class="slider is-fullwidth is-dark my-0"
-          step="0.01"
+          class="slider is-fullwidth is-primary mt-0"
           min="0"
-          max="1"
-          :value="audio.volume ?? 1"
-          @change="setVolume(audio, $event, audioPlayers[i]?.currentTime)"
+          :max="audioPlayers[i]?.duration"
+          :value="audioPlayers[i]?.currentTime ?? 0"
+          @change="seek(audio, $event)"
           type="range"
         />
-      </div>
-      <input
-        class="slider is-fullwidth is-primary mt-0"
-        min="0"
-        :max="audioPlayers[i]?.duration"
-        :value="audioPlayers[i]?.currentTime ?? 0"
-        @change="seek(audio, $event)"
-        type="range"
-      />
-      <div class="addon">
-        <span v-if="audio.isPlaying">{{ displayTimestamp(audioPlayers[i]?.currentTime ?? 0) }}</span>
-        <span v-else>{{ displayTimestamp(audioPlayers[i]?.duration) }}</span>
+        <div class="addon">
+          <span v-if="audio.isPlaying">{{ displayTimestamp(audioPlayers[i]?.currentTime ?? 0) }}</span>
+          <span v-else>{{ displayTimestamp(audioPlayers[i]?.duration) }}</span>
+        </div>
       </div>
     </div>
   </div>
@@ -154,6 +156,10 @@ export default {
   overflow-y: hidden;
   margin-top: -6px;
   height: 86px !important;
+
+  > div {
+    width: 100%;
+  }
 
   .buttons {
     display: flex;

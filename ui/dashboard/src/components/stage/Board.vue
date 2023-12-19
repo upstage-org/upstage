@@ -72,7 +72,7 @@ export default {
     const objects = computed(() => store.getters["stage/objects"]);
 
     const drop = (e) => {
-      const { object, isReal } = JSON.parse(e.dataTransfer.getData("text"));
+      const { object, isReal, nodrop } = JSON.parse(e.dataTransfer.getData("text"));
       if (isReal) {
         if (
           confirm("Are you sure you want to take this object out of the stage?")
@@ -80,7 +80,7 @@ export default {
           store.dispatch("stage/deleteObject", object);
         }
       } else {
-        if (e.clientX > 0 && e.clientY > 0) {
+        if (e.clientX > 0 && e.clientY > 0 && !nodrop) {
           store.dispatch("stage/placeObjectOnStage", {
             ...object,
             x: e.clientX - 50 - stageSize.value.left,

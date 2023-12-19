@@ -228,6 +228,8 @@ class UpdateStage(graphene.Mutation):
                 StageModel.id == data['id']
             ).first()
             for key, value in data.items():
+                if key == 'file_location':
+                    continue
                 if hasattr(stage, key):
                     setattr(stage, key, value)
                 elif value:

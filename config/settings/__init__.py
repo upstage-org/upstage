@@ -18,25 +18,32 @@ import socket
 # Override these in your local settings file if you wish.
 # Things which must be overridden aren't listed here.
 
+ADMIN_EMAIL= "support@upstage.org"
+
+# A list of developers who should receive email crash reports in dev.
+# In prod, they should all go to the support address.
+DEVS = []
+
 CHECK_VERSION_STRING=False
 VERSION_STRING_IOS = ''
 VERSION_STRING_ANDROID = ''
 
 EMAIL_USE_TLS = True
 EMAIL_HOST = ''
+EMAIL_PORT = 465
 EMAIL_HOST_USER = ''
 EMAIL_HOST_PASSWORD = ''
 
-MONGO_HOST = "10.116.0.5"
-MONGO_PORT = 27018
-MONGO_DB = "upstage"
-EVENT_COLLECTION = "events"
+MONGO_HOST = ""
+MONGO_PORT = 0
+MONGO_DB = ""
+EVENT_COLLECTION = ""
 
-MQTT_BROKER = "10.116.0.5"
-MQTT_PORT = 1884
+MQTT_BROKER = ""
+MQTT_PORT = 0
 MQTT_TRANSPORT = "tcp"
-MQTT_USER = "performance"
-MQTT_PASSWORD = "z48FCTsJVEUkYmtUw5S9"
+MQTT_USER = ""
+MQTT_PASSWORD = ""
 PERFORMANCE_TOPIC_RULE = "#"
 
 MONGODB_COLLECTION_EMAIL = 'EMAIL_OUTBOUND_QUEUE'
