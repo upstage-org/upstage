@@ -459,7 +459,7 @@ class ConfirmPermission(graphene.Mutation):
             description="Whether the permission is approved. True for approving, False for rejecting")
 
     @jwt_required()
-    def mutate(self, info, id, approved):
+    async def mutate(self, info, id, approved):
         id = from_global_id(id)[1]
         with ScopedSession() as local_db_session:
             asset_usage = local_db_session.query(AssetUsageModel).get(id)
@@ -476,7 +476,7 @@ class ConfirmPermission(graphene.Mutation):
                     local_db_session.delete(asset_usage)
                 local_db_session.flush()
                 studio_url = f"{request.url_root}studio"
-                send([asset_usage.user.email],
+                await send([asset_usage.user.email],
                     f"Permission approved for media {asset_usage.asset.name}" if approved else f"Permission rejected for media {asset_usage.asset.name}",
                     permission_response_for_media(asset_usage.user, asset_usage.asset, asset_usage.note, approved, studio_url)
                 )
@@ -495,7 +495,7 @@ class RequestPermission(graphene.Mutation):
             description="Note for the media usage request", required=False)
 
     @jwt_required()
-    def mutate(self, info, asset_id, note=None):
+    async def mutate(self, info, asset_id, note=None):
         asset_id = from_global_id(asset_id)[1]
         with ScopedSession() as local_db_session:
             asset = local_db_session.query(AssetModel).get(asset_id)
@@ -511,7 +511,7 @@ class RequestPermission(graphene.Mutation):
                 local_db_session.flush()
                 local_db_session.commit()
                 studio_url = f"{request.url_root}studio"
-                send([asset.owner.email], f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
+                await send([asset.owner.email], f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
         return ConfirmPermission(success=True)
 
 

@@ -11,8 +11,8 @@ flask-restx
 flask-sqlalchemy
 flask-talisman
 gevent
-graphql-core==2.2.1
-graphene==2.1.8
+graphql-core
+graphene
 graphene-sqlalchemy
 paho-mqtt
 pillow
@@ -29,3 +29,4 @@ pymongo
 stripe
 APScheduler==3.3.1
 aiosmtplib
+asgiref

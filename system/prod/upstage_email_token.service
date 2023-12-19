@@ -1,12 +1,12 @@
 [Unit]
-Description=Upstage Email Queue Service
+Description=Upstage Send Email Token To Cient Server
 After=syslog.target
 
 [Service]
 User=upstage
 Group=upstage
 Type=simple
-ExecStart=/bin/python3 /home/upstage/upstage/run_mail_queue.py
+ExecStart=/bin/python3 /home/upstage/upstage/run_upstage_email.py
 StandardOutput=append:/var/log/uwsgi/upstage.log
 
 [Install]

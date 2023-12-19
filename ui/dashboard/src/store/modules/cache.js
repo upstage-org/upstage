@@ -42,7 +42,7 @@ export default {
     actions: {
         async fetchStages({ commit }) {
             try {
-                commit('SET_STAGE_LIST', null)
+                // commit('SET_STAGE_LIST', null)
                 const { nodes, refresh } = useRequest(stageGraph.stageList);
                 await refresh()
                 if (nodes.value) {

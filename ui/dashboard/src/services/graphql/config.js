@@ -13,6 +13,7 @@ export default {
         termsOfService
         manual
         esp
+        enableDonate
       }
       foyer {
         title

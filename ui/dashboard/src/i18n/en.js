@@ -168,6 +168,7 @@ export default {
   date: 'Date',
   manage_media: 'Manage Media',
   registration_button: 'Registration Button',
+  enable_upstage_donate: 'Enable Upstage Donate',
   shape: 'Shape',
   loop: {
     on: 'Loop',

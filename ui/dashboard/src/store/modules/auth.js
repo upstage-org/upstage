@@ -35,7 +35,7 @@ export default {
       return new Promise((resolve, reject) => {
         authService
           .login(user)
-          .then((resp) => {
+          .then(async (resp) => {
             if (resp) {
               const { access_token, refresh_token } = resp;
               setToken(access_token);
@@ -44,7 +44,7 @@ export default {
               commit("SET_TOKEN", access_token);
               commit("SET_REFRESH_TOKEN", refresh_token);
               dispatch("user/fetchCurrent", null, { root: true });
-              dispatch("cache/fetchStages", null, { root: true });
+              await dispatch("cache/fetchStages", null, { root: true });
               resolve();
             }
           })
