@@ -94,11 +94,11 @@
         </p>
       </div>
       <div class="field-body" style="flex-wrap: wrap">
-        <MultiTransferColumn :columns="[
+        <MultiTransferAccessColumn :columns="[
           'Audience access only',
           'Player access',
           'Player and edit access',
-        ]" :data="users" :renderLabel="displayName" :renderValue="(item) => item.dbId" :renderKeywords="
+        ]" :data="users" :owner="owner" :renderLabel="displayName" :renderValue="(item) => item.dbId" :renderKeywords="
   (item) =>
     `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
 " v-model="playerAccess" />
@@ -127,7 +127,7 @@ import { stageGraph, userGraph } from "@/services/graphql";
 import { inject, reactive, ref, watch, computed, provide } from "vue";
 import Field from "@/components/form/Field";
 import ImagePicker from "@/components/form/ImagePicker";
-import MultiTransferColumn from "@/components/MultiTransferColumn";
+import MultiTransferAccessColumn from "@/components/MultiTransferAccessColumn.vue";
 import { notification } from "@/utils/notification";
 import { useRouter } from "vue-router";
 import { displayName } from "@/utils/auth";
@@ -144,7 +144,7 @@ export default {
     Field,
     ClearChat,
     SweepStage,
-    MultiTransferColumn,
+    MultiTransferAccessColumn,
     ImagePicker,
     DuplicateStage,
     DeleteStage,
@@ -180,6 +180,14 @@ export default {
       }
       return u.username !== store.state.user.user.username
     }) : []);
+
+    const owner = computed(() => nodes.value ? nodes.value.find(u => {
+      if (stage.value && stage.value.owner) {
+        return u.username === stage.value.owner.username
+      }
+      return u.username === store.state.user.user.username
+    }) : []);
+
     const { loading, mutation } = useMutation(
       stage.value.id ? stageGraph.updateStage : stageGraph.createStage,
       form
@@ -265,6 +273,7 @@ export default {
       updateStage,
       loading,
       users,
+      owner,
       displayName,
       checkURL,
       validatingURL,
