@@ -17,63 +17,40 @@
 
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> About </a>
-          <div class="navbar-dropdown">
-            <a class="navbar-item" href="#"> FAQs </a>
-            <a class="navbar-item" href="#"> Contacts </a>
-            <a class="navbar-item" href="#"> Diversity + Inclusion </a>
-          </div>
-        </div>
-        <div class="vertical-divider" />
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> &nbsp; Learn &nbsp; </a>
-          <div class="navbar-dropdown">
-            <a class="navbar-item" href="#"> Research </a>
-            <a
-              class="navbar-item"
-              href="https://github.com/upstage-org/documentation"
-              target="_blank"
-            >
-              Documentation
-            </a>
-          </div>
-        </div>
-        <div class="vertical-divider" />
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> Festivals </a>
-          <div class="navbar-dropdown">
-            <a class="navbar-item" href="#"> 10th Birthday </a>
-            <a class="navbar-item" href="#"> 121212 </a>
-          </div>
-        </div>
-        <div class="vertical-divider" />
-        <a
+        <div
+          v-if="!navigations"
           class="navbar-item"
-          href="https://github.com/upstage-org/mobilise/"
-          target="_blank"
-        >
-          Develop
-        </a>
-        <div class="vertical-divider" />
-        <a class="navbar-item" to="/#">Donate</a>
-        <div class="vertical-divider" />
-        <div class="navbar-item has-dropdown is-hoverable">
-          <a class="navbar-link is-arrowless"> Stage </a>
-          <div class="navbar-dropdown">
-            <Loading v-if="loadingStages" />
-            <template v-else>
-              <router-link
-                v-for="stage in liveStages"
-                :key="stage.id"
-                class="navbar-item"
-                :to="`/${stage.fileLocation}`"
-              >
-                {{ stage.name }}
-              </router-link>
-            </template>
-          </div>
-        </div>
+          style="text-transform: none;"
+        >Cannot display navigation properly, please check your menu syntax in Admin section!</div>
+        <template v-else>
+          <template v-for="(menu, i) in navigations" :key="i">
+            <div v-if="menu.children" class="navbar-item has-dropdown is-hoverable">
+              <a
+                v-if="menu.url"
+                class="navbar-link is-arrowless"
+                :href="menu.url"
+                :target="menu.url?.startsWith('http') ? '_blank' : ''"
+              >{{ menu.title }}</a>
+              <a v-else class="navbar-link is-arrowless">{{ menu.title }}</a>
+              <div class="navbar-dropdown">
+                <a
+                  v-for="(submenu, j) in menu.children"
+                  :key="{ j }"
+                  class="navbar-item"
+                  :href="submenu.url"
+                  :target="submenu.url?.startsWith('http') ? '_blank' : ''"
+                >{{ submenu.title }}</a>
+              </div>
+            </div>
+            <a
+              v-else
+              class="navbar-item"
+              :href="menu.url"
+              :target="menu.url?.startsWith('http') ? '_blank' : ''"
+            >{{ menu.title }}</a>
+            <div v-if="i < navigations.length - 1" class="vertical-divider" />
+          </template>
+        </template>
       </div>
 
       <div class="navbar-end">
@@ -103,25 +80,22 @@ import { computed, ref } from "vue";
 import { loggedIn, logout } from "@/utils/auth";
 import Logo from "./Logo";
 import { useStore } from "vuex";
-import Loading from "@/components/Loading";
 
 export default {
-  components: { Logo, Loading },
+  components: { Logo },
   setup() {
     const store = useStore();
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
-    const loadingStages = computed(() => store.getters["cache/loadingStages"]);
-    const liveStages = computed(() => store.getters["cache/liveStages"]);
+    const navigations = computed(() => store.getters["config/navigations"]);
 
     return {
       expanded,
       toggleExpanded,
       loggedIn,
       logout,
-      loadingStages,
-      liveStages,
+      navigations
     };
   },
 };

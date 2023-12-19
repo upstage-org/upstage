@@ -44,9 +44,11 @@ class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     class Meta:
         model = UserModel
-        model.db_id = model.id
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
+    
+    def resolve_db_id(self, info):
+        return self.id
 
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
