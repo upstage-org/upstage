@@ -44,6 +44,7 @@ export default {
     const isDragging = ref(false);
 
     const store = useStore();
+    const canPlay = computed(() => store.getters["stage/canPlay"]);
     const config = store.getters["stage/config"];
     const moveable = new Moveable(document.body, {
       draggable: true,
@@ -170,18 +171,18 @@ export default {
     };
 
     const activeMovable = computed(
-      () => store.state.stage.activeMovable === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id
     );
 
     const clickInside = (e) => {
-      if (props.controlable) {
+      if (props.controlable && canPlay.value) {
         showControls(true, e);
         store.commit("stage/SET_ACTIVE_MOVABLE", props.object.id);
       }
     };
 
     const clickOutside = (e) => {
-      if ((!e || e.target.id === "board") && props.controlable) {
+      if ((!e || e.target.id === "board") && props.controlable && canPlay.value) {
         store.commit("stage/SET_ACTIVE_MOVABLE", null);
       }
     };

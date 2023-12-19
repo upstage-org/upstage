@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <img v-if="fallback" src="@/assets/notfound.svg" />
+    <img v-if="fallback && !noFallback" src="@/assets/notfound.svg" />
     <img
       v-else
       v-bind="$props"
@@ -19,7 +19,7 @@
 import { computed, ref } from "@vue/reactivity";
 import { watch } from "@vue/runtime-core";
 export default {
-  props: ["src", "fit", "opacity", "rotate", "transition"],
+  props: ["src", "fit", "opacity", "rotate", "transition", "noFallback"],
   setup: (props) => {
     const fallback = ref(false);
     watch(

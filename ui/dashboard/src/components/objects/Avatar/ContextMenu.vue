@@ -61,6 +61,12 @@
         </span>
         <span>Play</span>
       </a>
+      <a v-if="object.type === 'stream'" class="panel-block has-text-info" @click="restartStream">
+        <span class="panel-icon">
+          <i class="fas fa-sync"></i>
+        </span>
+        <span>Restart</span>
+      </a>
 
       <a class="panel-block" @click="openVolumePopup(slotProps)">
         <span class="panel-icon">
@@ -114,7 +120,7 @@
           </span>
         </button>
       </p>
-      <p class="control menu-group-item">
+      <p v-if="object.type !== 'stream'" class="control menu-group-item">
         <button
           class="button is-light"
           :class="{
@@ -225,6 +231,8 @@
 import { useStore } from "vuex";
 import { computed, inject, ref, reactive } from "vue";
 import Icon from "@/components/Icon";
+import { getSubsribeLink } from "@/utils/streaming";
+import flvjs from "flv.js";
 
 export default {
   props: [
@@ -371,6 +379,28 @@ export default {
         .then(props.closeMenu);
     };
 
+    const restartStream = () => {
+      store.dispatch("stage/getRunningStreams")
+      let video = document.getElementById('video' + props.stream.id);
+      if (stream.isPlaying && video) {
+        const fullUrl = computed(() => getSubsribeLink('your_stream_key'));
+
+        if (flvjs.isSupported()) {
+          const flvPlayer = flvjs.createPlayer({
+            type: "flv",
+            url: fullUrl.value + "?" + new Date(), 
+          });
+          flvPlayer.attachMediaElement(video);
+          flvPlayer.load();
+          flvPlayer.play();
+        }
+
+        video.play()
+      } else {
+        video.pause()
+      }
+    }
+
     const playStream = () => {
       store
         .dispatch("stage/shapeObject", {
@@ -426,7 +456,8 @@ export default {
       pauseStream,
       playStream,
       clip,
-      openVolumePopup
+      openVolumePopup,
+      restartStream
     };
   },
 };

@@ -30,7 +30,7 @@
                 <button class="button is-primary is-loading" />
                 <span style="line-height: 2">
                   <span>
-                    Preloading avatars, props and backdrops...
+                    Preloading media...
                     {{ progress }}/{{ preloadableAssets.length }}
                     <div id="preloading-area">
                       <img

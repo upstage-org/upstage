@@ -5,6 +5,7 @@
     <template v-if="ready">
       <Board />
       <ConnectionStatus />
+      <MasqueradingStatus />
       <Toolbox v-if="canPlay" />
       <Chat />
       <PlayerChat v-if="canPlay" />
@@ -26,6 +27,7 @@ import AudioPlayer from "@/components/stage/AudioPlayer";
 import Preloader from "./Preloader";
 import LoginPrompt from "./LoginPrompt";
 import ConnectionStatus from "./ConnectionStatus";
+import MasqueradingStatus from "./MasqueradingStatus";
 import { useStore } from "vuex";
 import { computed, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
@@ -41,6 +43,7 @@ export default {
     Board,
     AudioPlayer,
     ConnectionStatus,
+    MasqueradingStatus
   },
   setup: () => {
     const store = useStore();
