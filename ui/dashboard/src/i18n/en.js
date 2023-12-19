@@ -155,7 +155,7 @@ export default {
   tos: {
     login: 'By logging in, you are agreeing to our',
     register: 'I agree to the',
-    terms_of_service: 'Điều khoản dịch vụ',
+    terms_of_service: 'Terms & Conditions',
   },
   upload_hint: 'Drag files here to upload. You can drop multiple files to make a multiframes media',
   upload_accepted_format: 'Accepted file formats: {image} for images, {audio} for audios and {video} for videos',
