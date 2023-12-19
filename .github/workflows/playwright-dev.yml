@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
   push:
-    branches: [ main ]
+    branches: [ Stiegl-22 ]
   pull_request:
-    branches: [ main ]
+    branches: [ Stiegl-22 ]
 jobs:
   test:
     timeout-minutes: 60

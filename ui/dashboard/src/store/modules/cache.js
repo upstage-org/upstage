@@ -31,6 +31,12 @@ export default {
         },
         SET_STAGE_LIST(state, list) {
             state.stageList = list
+        },
+        UPDATE_STAGE_VISIBILITY(state, { stageId, visibility }) {
+            const stage = state.stageList.find(s => s.id === stageId);
+            if (stage) {
+                stage.visibility = visibility;
+            }
         }
     },
     actions: {

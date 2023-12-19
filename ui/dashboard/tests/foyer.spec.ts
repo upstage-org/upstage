@@ -2,6 +2,7 @@ import test, { expect } from "@playwright/test";
 
 test.beforeEach(async ({ page }) => {
   await page.goto("https://dev-app1.upstage.live");
+  await new Promise(f => setTimeout(f, 3000));
 })
 
 test.describe('Foyer', () => {
