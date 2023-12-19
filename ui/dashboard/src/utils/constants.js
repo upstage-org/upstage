@@ -48,6 +48,13 @@ export const ROLES = {
   SUPER_ADMIN: 32,
 }
 
+export const UPDATE_LIMIT = {
+  1: 1024*1024,
+  2: 1024*1024*2,
+  5: 1024*1024*5,
+  10:1024*1024*10,
+}
+
 export const COLORS = {
   DEFAULT_BACKDROP: '#30ac45'
 }
