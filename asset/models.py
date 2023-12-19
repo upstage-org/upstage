@@ -62,6 +62,7 @@ class Stage(Base, db.Model):
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
+    last_access = Column(DateTime, nullable=True)
     owner = relationship(User, foreign_keys=[owner_id])
     attributes = relationship(lambda: StageAttribute, lazy='dynamic', back_populates='stage')
     assets = relationship('ParentStage', lazy='dynamic', back_populates='stage')
