@@ -4,6 +4,7 @@
     :key="audio"
     class="audio has-text-centered"
     :class="{ 'is-playing': audio.isPlaying }"
+    @mouseenter="i > audios.length - 3 ? scrollToEnd() : null"
   >
     <div class="audio-name">
       <span v-if="i < 10">{{ i + 1 }}.</span>
@@ -73,6 +74,7 @@ import Icon from "@/components/Icon";
 import { computed, ref } from "@vue/runtime-core";
 import { useShortcut } from "../../composable";
 import { displayTimestamp } from "@/utils/common";
+import anime from "animejs";
 
 export default {
   components: { Icon },
@@ -117,6 +119,16 @@ export default {
       }
     });
     const showVolumeSlider = ref(false)
+    const scrollToEnd = () => {
+      const topbar = document.querySelector('#topbar')
+      if (topbar) {
+        anime({
+          targets: topbar,
+          scrollLeft: topbar.scrollWidth,
+          easing: "easeInOutQuad",
+        });
+      }
+    };
 
     return {
       audios,
@@ -127,7 +139,8 @@ export default {
       audioPlayers,
       seek,
       displayTimestamp,
-      showVolumeSlider
+      showVolumeSlider,
+      scrollToEnd
     };
   },
 };
