@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.20.0",
-  "versionAlias": "Schildbrau-20",
+  "version": "1.22.0",
+  "versionAlias": "Stiegl-22",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
