@@ -6,7 +6,7 @@
           class="button ml-2 is-primary"
           :class="{ 'is-loading': loading }"
           @click="updateStage"
-          :disabled="!shortNameValid"
+          :disabled="!urlValid"
         >Save Stage</button>
         <ClearChat />
         <SweepStage />
@@ -20,7 +20,7 @@
           class="button ml-2 is-primary"
           :class="{ 'is-loading': loading }"
           @click="createStage"
-          :disabled="!shortNameValid"
+          :disabled="!urlValid"
         >Create Stage</button>
       </template>
     </div>
@@ -41,23 +41,26 @@
         />
         <Field
           required
-          placeholder="Short Name"
+          placeholder="URL"
           v-model="form.fileLocation"
-          requiredMessage="Short name is required"
+          requiredMessage="URL is required"
           expanded
-          @keyup="shortNameValid = null"
-          @input="checkShortName"
+          @keyup="urlValid = null"
+          @input="checkURL"
           :right="
-            validatingShortName
+            validatingURL
               ? 'fas fa-circle-notch fa-spin'
-              : shortNameValid === true
+              : urlValid === true
                 ? 'fas fa-check'
-                : shortNameValid === false
+                : urlValid === false
                   ? 'fas fa-times'
                   : 'fas'
           "
-          :help="!form.fileLocation && `From which the stage URL is created`"
-          :error="shortNameError"
+          :help="!form.fileLocation && `URL must be unique and can't be changed! Please avoid typos, unnecessarily long urls, spaces and punctuation inside URL.`"
+          :error="urlError"
+          :disabled="!!stage.id"
+          class="half-flex"
+          maxlength="20"
         />
       </div>
     </div>
@@ -217,34 +220,39 @@ export default {
     };
 
     const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay', 'api']
-    const shortNameValid = ref(!!stage.value.id);
-    const { loading: validatingShortName, fetch } = useRequest(
+    const urlValid = ref(!!stage.value.id);
+    const { loading: validatingURL, fetch } = useRequest(
       stageGraph.stageList
     );
-    const checkShortName = debounce(async () => {
-      const shortname = form.fileLocation.trim()
-      if (!shortname || preservedPaths.includes(shortname)) {
-        shortNameValid.value = false
+
+    const validRegex = /^[a-zA-Z0-9-_]*$/;
+    const checkURL = debounce(async () => {
+      const url = form.fileLocation.trim()
+      if (!url || !validRegex.test(url) || preservedPaths.includes(url)) {
+        urlValid.value = false
         return;
       }
       const response = await fetch({
-        fileLocation: shortname,
+        fileLocation: url,
       });
-      shortNameValid.value = true;
+      urlValid.value = true;
       if (response.stageList.edges.length) {
         const existingStage = response.stageList.edges[0].node;
         if (existingStage.fileLocation !== stage.value.fileLocation) {
-          shortNameValid.value = false;
+          urlValid.value = false;
         }
       }
     }, 500);
 
-    const shortNameError = computed(() => {
-      if (preservedPaths.includes(form.fileLocation.trim())) {
-        return `These shortname are not allowed: ${preservedPaths.join(', ')}`
+    const urlError = computed(() => {
+      if (!validRegex.test(form.fileLocation)) {
+        return "URL cannot contain special characters or spaces!";
       }
-      if (!shortNameValid.value && form.fileLocation) {
-        return 'This short name already existed!'
+      if (preservedPaths.includes(form.fileLocation.trim())) {
+        return `These URL are not allowed: ${preservedPaths.join(', ')}`
+      }
+      if (!urlValid.value && form.fileLocation) {
+        return 'This URL already existed!'
       }
       return null
     })
@@ -262,12 +270,12 @@ export default {
       loading,
       users,
       displayName,
-      checkShortName,
-      validatingShortName,
-      shortNameValid,
+      checkURL,
+      validatingURL,
+      urlValid,
       playerAccess,
       afterDelete,
-      shortNameError
+      urlError
     };
   },
 };
