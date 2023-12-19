@@ -5,7 +5,6 @@ export const getSubsribeLink = (key: string) => {
 }
 
 export const getPublishLink = (key: string) => {
-    console.log(configs.SHARED)
     return `${configs.SHARED.STREAMING.publish}/${key}`
 }
 
