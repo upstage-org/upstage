@@ -16,7 +16,7 @@
             <router-link
               v-for="stage in liveStages"
               :key="stage.id"
-              :to="`/live/${stage.fileLocation}`"
+              :to="`/${stage.fileLocation}`"
               class="link my-4"
               :style="backgroundImage(stage.cover, 'live-stage.png')"
             >
@@ -31,7 +31,7 @@
             <router-link
               v-for="stage in upcomingStages"
               :key="stage.id"
-              :to="`/live/${stage.fileLocation}`"
+              :to="`/${stage.fileLocation}`"
               class="link my-4"
               :style="backgroundImage(stage.cover, 'upcoming-performance.png')"
             >
@@ -40,7 +40,7 @@
           </div>
           <div class="column">
             <router-link
-              to="/live/demo"
+              to="/demo"
               class="link my-4"
               :style="backgroundImage(null, 'latest-news.jpg')"
             >

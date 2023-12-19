@@ -1,22 +1,21 @@
 # -*- coding: iso8859-15 -*-
+from config.project_globals import db, Base, metadata, app, api, DBSession
+from user.models import User
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
 from datetime import datetime
 from licenses.models import AssetLicense
 import os
 import sys
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir,'..'))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from sqlalchemy import Column, DateTime, String, BigInteger, Integer, ForeignKey, Text
-from sqlalchemy.orm import relationship
 
-from config.project_globals import db,Base,metadata,app,api,DBSession
-from user.models import User
-
-class AssetType(Base,db.Model):
+class AssetType(Base, db.Model):
     '''
     Asset type is Prop, Avatar/Sprite, Backdrop, for example. 
     Over time we should be able to add more types or variations on 
@@ -29,22 +28,27 @@ class AssetType(Base,db.Model):
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-class Asset(Base,db.Model):
+
+class Asset(Base, db.Model):
     __tablename__ = "asset"
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)
-    asset_type_id = Column(Integer, ForeignKey(AssetType.id), nullable=False, default=0)
+    asset_type_id = Column(Integer, ForeignKey(
+        AssetType.id), nullable=False, default=0)
     owner_id = Column(Integer, ForeignKey(User.id), nullable=False, default=0)
     description = Column(Text, nullable=True)
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_on = Column(DateTime, nullable=False, default=datetime.utcnow)
+    size = Column(BigInteger, nullable=False, default=0)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
     asset_license = relationship(AssetLicense, uselist=False, backref="asset")
     owner = relationship(User, foreign_keys=[owner_id])
     stages = relationship('ParentStage', lazy='dynamic')
+    tags = relationship('MediaTag', lazy='dynamic')
 
-class Stage(Base,db.Model):
+
+class Stage(Base, db.Model):
     '''
     Stage is yet another asset type, with its own attributes, 
     but is broken out for convenience of group licensing/permissions.
@@ -60,7 +64,8 @@ class Stage(Base,db.Model):
     attributes = relationship(lambda: StageAttribute, lazy='dynamic')
     assets = relationship('ParentStage', lazy='dynamic')
 
-class AssetAttribute(Base,db.Model):
+
+class AssetAttribute(Base, db.Model):
     '''
     Attributes are the abilities of the asset: What the asset can do or be. 
     For example, flip, rotate, draw, overlay, be opaque, dissolve, loop.
@@ -75,7 +80,8 @@ class AssetAttribute(Base,db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     asset = relationship(Asset, foreign_keys=[asset_id])
 
-class StageAttribute(Base,db.Model):
+
+class StageAttribute(Base, db.Model):
     __tablename__ = "stage_attribute"
     id = Column(BigInteger, primary_key=True)
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
@@ -83,3 +89,20 @@ class StageAttribute(Base,db.Model):
     description = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     stage = relationship(Stage, foreign_keys=[stage_id])
+
+
+class Tag(Base, db.Model):
+    __tablename__ = "tag"
+    id = Column(BigInteger, primary_key=True)
+    name = Column(String, nullable=False)
+    color = Column(String, nullable=True)
+    created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
+
+
+class MediaTag(Base, db.Model):
+    __tablename__ = "media_tag"
+    id = Column(BigInteger, primary_key=True)
+    asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
+    tag_id = Column(Integer, ForeignKey(Tag.id), nullable=False, default=0)
+    asset = relationship(Asset, foreign_keys=[asset_id])
+    tag = relationship(Tag, foreign_keys=[tag_id])

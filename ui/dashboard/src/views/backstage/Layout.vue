@@ -3,25 +3,27 @@
     <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
       <div class="navbar-start">
         &nbsp;
-        <router-link class="navbar-item" to="/backstage/stages">
-          Stages
-        </router-link>
+        <router-link class="navbar-item" to="/backstage/stages">Stages</router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/media">
-          Media
-        </router-link>
+        <router-link class="navbar-item" to="/backstage/media">Media</router-link>
         <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/profile/">
-          Profile
-        </router-link>
+        <router-link class="navbar-item" to="/backstage/profile/">Profile</router-link>
         <template v-if="isAdmin">
           <div class="vertical-divider" />
           <router-link class="navbar-item" to="/backstage/admin/">
             <span>
-              Admin <i class="fas fa-shield-alt has-text-warning"></i>
+              Admin
+              <i class="fas fa-shield-alt has-text-warning"></i>
             </span>
           </router-link>
         </template>
+        <div class="vertical-divider" />
+        <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
+          <span>
+            Studio
+            <i class="fas fa-magic has-text-info"></i>
+          </span>
+        </a>
       </div>
     </div>
 
@@ -51,6 +53,8 @@ import Footer from "@/components/Footer";
 import Logo from "@/components/Logo";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
+import configs from "@/config";
+
 export default {
   components: { Footer, Logo },
   setup: () => {
@@ -60,7 +64,7 @@ export default {
     const expanded = ref(false);
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
-    return { isAdmin, expanded, toggleExpanded };
+    return { isAdmin, expanded, toggleExpanded, configs };
   },
 };
 </script>
