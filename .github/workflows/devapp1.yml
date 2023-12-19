@@ -6,7 +6,7 @@ name: DEVAPP1 CI
 on:
   # Triggers the workflow on push or approved pull request on R1-2021 branch
   push:
-    branches: [ IG-11 ]
+    branches: [ LE-12 ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -32,8 +32,11 @@ jobs:
           script: |
             cd /home/upstage/mobilise/ui/dashboard/
             git fetch
-            git checkout IG-11
+            git checkout LE-12
             git pull
+            yarn
+            yarn build:dev
+            cd /home/upstage/mobilise/ui/studio/
             yarn
             yarn build:dev
             systemctl restart upstage.service

@@ -1,0 +1,32 @@
+{
+  "name": "studio",
+  "version": "0.0.0",
+  "scripts": {
+    "serve": "vite",
+    "build": "vue-tsc --noEmit && vite build",
+    "build:dev": "vue-tsc --noEmit && vite build --mode dev",
+    "serve:localhost": "vite --mode localhost",
+    "start": "vite preview"
+  },
+  "dependencies": {
+    "@apollo/client": "^3.4.16",
+    "@vue/apollo-composable": "^4.0.0-alpha.15",
+    "@vueuse/core": "^6.7.3",
+    "ant-design-vue": "^3.0.0-alpha.4",
+    "autoprefixer": "^10.3.7",
+    "graphql": "^15.6.1",
+    "graphql-tag": "^2.12.5",
+    "less": "^4.1.2",
+    "moment": "^2.29.1",
+    "postcss": "^8.3.9",
+    "tailwindcss": "^2.2.17",
+    "unplugin-vue-components": "^0.15.6",
+    "vue": "^3.2.16"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^1.9.3",
+    "typescript": "^4.4.3",
+    "vite": "^2.6.4",
+    "vue-tsc": "^0.3.0"
+  }
+}
