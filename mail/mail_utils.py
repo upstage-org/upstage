@@ -91,8 +91,8 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
     that it can be read.
     '''
     msg_alternative = MIMEMultipart('alternative')
-    msg_alternative.attach(MIMEText(remove_html(html), 'plain', 'utf-8'))
-    msg_alternative.attach(MIMEText(html, 'html', 'iso8859-15'))
+    msg_alternative.attach(MIMEText(remove_html(html), 'plain', 'latin-1'))
+    msg_alternative.attach(MIMEText(html, 'html', 'latin-1'))
     '''
     Attach plain and HTML variations of the body to main message content.
     '''
