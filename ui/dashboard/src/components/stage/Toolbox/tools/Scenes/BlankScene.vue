@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon src="new.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">Blank Scene</span>
+    <span class="tag is-light is-block">{{ $t("blank_scene") }}</span>
   </div>
 </template>
 

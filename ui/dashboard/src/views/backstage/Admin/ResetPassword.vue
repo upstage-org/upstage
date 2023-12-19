@@ -23,7 +23,7 @@
           <span class="icon">
             <i class="fas fa-times"></i>
           </span>
-          <span>No</span>
+          <span>{{ $t("no") }}</span>
         </button>
         <SaveButton
           class="is-dark"
@@ -33,7 +33,7 @@
           <span class="icon">
             <i class="fas fa-shield-alt has-text-warning"></i>
           </span>
-          <span>Yes</span>
+          <span>{{ $t("yes") }}</span>
         </SaveButton>
       </template>
       <SaveButton v-else :disabled="!password" @click="confirming = true" />

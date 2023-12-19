@@ -1,10 +1,22 @@
 # -*- coding: iso8859-15 -*-
+import re
+import graphene
+import sys
+import os
+import json
+
+appdir = os.path.abspath(os.path.dirname(__file__))
+projdir = os.path.abspath(os.path.join(appdir, '..'))
+if projdir not in sys.path:
+    sys.path.append(appdir)
+    sys.path.append(projdir)
+
 from user.models import ADMIN, SUPER_ADMIN
 from sqlalchemy import desc
 from graphql_relay.node.node import from_global_id, to_global_id
 from graphene import relay
 from graphene_sqlalchemy import SQLAlchemyObjectType, SQLAlchemyConnectionField
-from config.settings import URL_PREFIX
+from config.settings import PERFORMANCE_TOPIC_RULE, URL_PREFIX
 from event_archive.models import Event as EventModel
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel
 from flask_graphql import GraphQLView
@@ -20,18 +32,6 @@ from user.user_utils import current_user
 from stage.scene import DeleteScene, SaveScene, Scene
 from sqlalchemy.orm.session import make_transient
 from stage.performance import Performance, DeletePerformance, SaveRecording, StartRecording, UpdatePerformance
-import re
-import graphene
-import sys
-import os
-import json
-
-appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, '..'))
-if projdir not in sys.path:
-    sys.path.append(appdir)
-    sys.path.append(projdir)
-
 
 class StageAttribute:
     name = graphene.String(description="Stage Name")
@@ -254,6 +254,60 @@ class UpdateStage(graphene.Mutation):
             return UpdateStage(stage=stage)
 
 
+class UpdateAttributeStatus(graphene.Mutation):
+    """Mutation to update a stage status attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(from_global_id(stage_id)[1])
+            attribute = local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage_id == _id, StageAttributeModel.name == 'status').first()
+            if attribute is not None:
+                attribute.description = 'rehearsal' if attribute.description == 'live' else 'live'
+            else:
+                attribute = StageAttributeModel(
+                    stage_id=_id,
+                    name='status',
+                    description='live'
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+
+            return UpdateAttributeStatus(result=attribute.description)
+
+
+class UpdateAttributeVisibility(graphene.Mutation):
+    """Mutation to update a stage visibility attribute."""
+    result = graphene.String()
+
+    class Arguments:
+        stage_id = graphene.ID(
+            required=True, description="Global Id of the stage.")
+
+    # decorate this with jwt login decorator.
+    def mutate(self, info, stage_id):
+        with ScopedSession() as local_db_session:
+            _id = int(from_global_id(stage_id)[1])
+            attribute = local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage_id == _id, StageAttributeModel.name == 'visibility').first()
+            if attribute is not None:
+                attribute.description = True if not attribute.description else False
+            else:
+                attribute = StageAttributeModel(
+                    stage_id=_id,
+                    name='visibility',
+                    description=True
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+            return UpdateAttributeVisibility(result=attribute.description)
+
 class AssignMediaInput(graphene.InputObjectType):
     id = graphene.ID(required=True, description="Global Id of the stage.")
     media_ids = graphene.List(graphene.Int, description="Id of assigned media")
@@ -354,6 +408,8 @@ class DeleteStage(graphene.Mutation):
                     local_db_session.query(EventModel).filter(
                         EventModel.performance_id == performance.id).delete(synchronize_session=False)
                     local_db_session.delete(performance)
+                topic_prefix = PERFORMANCE_TOPIC_RULE.replace('#', stage.file_location)
+                local_db_session.query(EventModel).filter(EventModel.topic.startswith(topic_prefix)).delete(synchronize_session=False)
                 local_db_session.delete(stage)
                 local_db_session.flush()
                 local_db_session.commit()
@@ -440,6 +496,8 @@ class Mutation(graphene.ObjectType):
     deletePerformance = DeletePerformance.Field()
     startRecording = StartRecording.Field()
     saveRecording = SaveRecording.Field()
+    updateStatus = UpdateAttributeStatus.Field()
+    updateVisibility = UpdateAttributeVisibility.Field()
 
 
 class Query(graphene.ObjectType):

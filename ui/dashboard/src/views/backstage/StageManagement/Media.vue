@@ -10,8 +10,8 @@
           <i class="fas fa-arrow-left" v-if="reordering"></i>
           <i class="fas fa-arrows-alt" v-else></i>
         </span>
-        <span v-if="reordering">Exit Reorder Mode</span>
-        <span v-else>Reorder Mode</span>
+        <span v-if="reordering">{{ $t("exit_reorder_mode") }}</span>
+        <span v-else>{{ $t("reorder_mode") }}</span>
       </button>
       <template v-if="!reordering">
         <Dropdown
@@ -63,7 +63,7 @@
           </div>
           <div class="column">{{ item.name }}</div>
           <div class="column has-text-right has-text-grey-dark">
-            <small>created by</small>
+            <small>{{ $t("created_by") }}</small>
             {{ displayName(item.owner) }}
           </div>
         </div>

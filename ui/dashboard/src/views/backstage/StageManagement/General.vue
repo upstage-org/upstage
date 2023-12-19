@@ -3,23 +3,23 @@
     <div class="column" align="right">
       <template v-if="stage.id">
         <button class="button ml-2 is-primary" :class="{ 'is-loading': loading }" @click="updateStage"
-          :disabled="!urlValid">Save Stage</button>
+          :disabled="!urlValid">{{ $t("save_stage") }}</button>
         <ClearChat />
         <SweepStage />
         <DeleteStage :stage="stage" :refresh="afterDelete">
-          <button class="button ml-2 is-danger">Delete Stage</button>
+          <button class="button ml-2 is-danger">{{ $t("delete_stage") }}</button>
         </DeleteStage>
       </template>
       <template v-else>
         <button class="button ml-2 is-primary" :class="{ 'is-loading': loading }" @click="createStage"
-          :disabled="!urlValid">Create Stage</button>
+          :disabled="!urlValid">{{ $t("create_stage") }}</button>
       </template>
     </div>
   </div>
   <div>
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Stage Name</label>
+        <label class="label">{{ $t("stage_name") }}</label>
       </div>
       <div class="field-body">
         <Field placeholder="Full Name" v-model="form.name" required requiredMessage="Stage name is required" expanded
@@ -41,7 +41,7 @@
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Description</label>
+        <label class="label">{{ $t("description") }}</label>
       </div>
       <div class="field-body">
         <div class="field">
@@ -56,7 +56,7 @@
 
     <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
-        <label class="label">Status</label>
+        <label class="label">{{ $t("status") }}</label>
       </div>
       <div class="field-body">
         <div class="field is-narrow">
@@ -72,7 +72,7 @@
 
     <div class="field is-horizontal" v-if="stage">
       <div class="field-label">
-        <label class="label">Visibility</label>
+        <label class="label">{{ $t("visibility") }}</label>
       </div>
       <div class="field-body">
         <div class="field is-narrow">
@@ -84,7 +84,7 @@
 
     <div class="field is-horizontal">
       <div class="field-label is-normal">
-        <label class="label">Player access</label>
+        <label class="label">{{ $t("player_access") }}</label>
         <p class="help">
           Click on a player's name to move them to the column to the right. Use
           a right-click to move them back to the left.
@@ -104,7 +104,7 @@
 
     <div class="field is-horizontal">
       <div class="field-label">
-        <label class="label">Cover image</label>
+        <label class="label">{{ $t("cover_image") }}</label>
       </div>
       <div class="field-body">
         <ImagePicker v-model="form.cover" />

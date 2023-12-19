@@ -9,7 +9,7 @@
           </div>
           <div class="column is-narrow">
             <Field horizontal label="Media Type">
-              <button v-if="media.isRTMP" class="button" disabled>Stream</button>
+              <button v-if="media.isRTMP" class="button" disabled>{{ $t("stream") }}</button>
               <MediaType v-else v-model="form.mediaType" :data="availableTypes" />
             </Field>
           </div>
@@ -24,7 +24,7 @@
             <span class="icon">
               <i class="fas fa-retweet"></i>
             </span>
-            <span>Replace</span>
+            <span>{{ $t("replace") }}</span>
           </Upload>
         </template>
         <template #preview>

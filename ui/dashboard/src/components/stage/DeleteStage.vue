@@ -37,7 +37,7 @@ const deleteStage = async (complete) => {
         :to="`/backstage/stage-management/${stage.id}/archive`"
         :data-tooltip="`Archives of ${stage.name}`"
       >
-        <b>here</b>
+        <b>{{ $t("here") }}</b>
       </router-link>.
     </p>
     <template #trigger>

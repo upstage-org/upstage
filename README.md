@@ -248,5 +248,52 @@ Finally, pass the incoming request to `UpStage Service`
         }
 }
 ```
+
+## Troubleshooting
+
+### Stages offline when entering with firefox
+
+If you are using firefox and doesn't have the red `LIVE` status on the top right when entering a stage although the stage is live using other browsers, it's because the version of Mosquitto (MQTT Broker) you are using doesn't use `libwebsockets` or it's using a version of `libwebsockets` that having an issue in protocol handling of HTTP2. Whilst Chromium does not attempt a HTTP2 connection in this case, Firefox tries it first and gets a denied reply from the server. More explanation can be found [here](https://www.bluhm-de.com/content/os-tools/en/applications/mqtt/websocket-connections-fail-with-javascript-paho-client.html).
+
+The solution is to build `libwebsockets` and `mosquitto` from source and use it instead of the one provided by your distro.
+
+Instruction on how to do this:
+
+```bash
+apt install libssl-dev xsltproc docbook-xsl
+git clone https://github.com/warmcat/libwebsockets.git
+cd libwebsockets
+mkdir build
+cd build
+cmake .. -DLWS_WITH_HTTP2=OFF
+make
+make install
+ldconfig
+cd ../..
+git clone https://github.com/eclipse/mosquitto.git
+cd mosquitto
+make install WITH_WEBSOCKETS=yes WITH_CJSON=no
+sudo systemctl edit mosquitto.service
+```
+
+Put this into the override file of the service:
+
+```ini
+[Unit]
+ConditionPathExists=/etc/mosquitto/mosquitto.conf
+Requires=network.target
+
+[Service]
+Type=
+Type=simple
+ExecStart=
+ExecStart=/usr/local/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf
+```
+Finally restart the service
+
+```bash
+sudo systemctl restart mosquitto.service
+```
+
 ## License
 [GPL-3.0 License](https://github.com/upstage-org/upstage/blob/main/LICENSE)
