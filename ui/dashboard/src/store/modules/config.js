@@ -20,6 +20,9 @@ export default {
         esp(state) {
             return state.system.esp
         },
+        enableDonate(state) {
+            return state.system.enableDonate
+        },
         foyer(state) {
             return state.foyer ?? {}
         },

@@ -89,8 +89,9 @@ class RequestPasswordResetMutation(graphene.Mutation):
 
     message = graphene.String()
     username = graphene.String()
-
-    def mutate(self, info, username_or_email):
+    
+    @staticmethod
+    async def mutate(self, info, username_or_email):
         with ScopedSession() as local_db_session:
             if '@' in username_or_email:
                 user = local_db_session.query(User).filter(
@@ -114,7 +115,7 @@ class RequestPasswordResetMutation(graphene.Mutation):
             local_db_session.flush()
             local_db_session.add(OneTimeTOTP(user_id=user.id, code=otp))
             local_db_session.flush()
-            send([email], f"Password reset for account {user.username}", password_reset(user, otp))
+            await send([email], f"Password reset for account {user.username}", password_reset(user, otp))
 
         return RequestPasswordResetMutation(
             message=f"We've sent an email with a code to reset your password to {email}.",
