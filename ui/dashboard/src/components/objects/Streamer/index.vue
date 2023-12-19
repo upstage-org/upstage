@@ -88,7 +88,7 @@ export default {
       });
     };
 
-    const localMuted = ref(true);
+    const localMuted = ref(false);
     const toggleMuted = () => {
       localMuted.value = !localMuted.value;
     };
