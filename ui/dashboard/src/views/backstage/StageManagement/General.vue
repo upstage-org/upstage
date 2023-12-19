@@ -2,26 +2,17 @@
   <div class="columns">
     <div class="column" align="right">
       <template v-if="stage.id">
-        <button
-          class="button ml-2 is-primary"
-          :class="{ 'is-loading': loading }"
-          @click="updateStage"
-          :disabled="!urlValid"
-        >Save Stage</button>
+        <button class="button ml-2 is-primary" :class="{ 'is-loading': loading }" @click="updateStage"
+          :disabled="!urlValid">Save Stage</button>
         <ClearChat />
         <SweepStage />
-        <button class="button ml-2 is-dark">Hide From Stage List</button>
         <DeleteStage :stage="stage" :refresh="afterDelete">
           <button class="button ml-2 is-danger">Delete Stage</button>
         </DeleteStage>
       </template>
       <template v-else>
-        <button
-          class="button ml-2 is-primary"
-          :class="{ 'is-loading': loading }"
-          @click="createStage"
-          :disabled="!urlValid"
-        >Create Stage</button>
+        <button class="button ml-2 is-primary" :class="{ 'is-loading': loading }" @click="createStage"
+          :disabled="!urlValid">Create Stage</button>
       </template>
     </div>
   </div>
@@ -31,23 +22,10 @@
         <label class="label">Stage Name</label>
       </div>
       <div class="field-body">
-        <Field
-          placeholder="Full Name"
-          v-model="form.name"
-          required
-          requiredMessage="Stage name is required"
-          expanded
-          class="half-flex"
-        />
-        <Field
-          required
-          placeholder="URL"
-          v-model="form.fileLocation"
-          requiredMessage="URL is required"
-          expanded
-          @keyup="urlValid = null"
-          @input="checkURL"
-          :right="
+        <Field placeholder="Full Name" v-model="form.name" required requiredMessage="Stage name is required" expanded
+          class="half-flex" />
+        <Field required placeholder="URL" v-model="form.fileLocation" requiredMessage="URL is required" expanded
+          @keyup="urlValid = null" @input="checkURL" :right="
             validatingURL
               ? 'fas fa-circle-notch fa-spin'
               : urlValid === true
@@ -57,11 +35,7 @@
                   : 'fas'
           "
           :help="!form.fileLocation && `URL must be unique and can't be changed! Please avoid typos, unnecessarily long urls, spaces and punctuation inside URL.`"
-          :error="urlError"
-          :disabled="!!stage.id"
-          class="half-flex"
-          maxlength="20"
-        />
+          :error="urlError" :disabled="!!stage.id" class="half-flex" maxlength="20" />
       </div>
     </div>
 
@@ -72,13 +46,39 @@
       <div class="field-body">
         <div class="field">
           <div class="control">
-            <textarea
-              class="textarea"
+            <textarea class="textarea"
               placeholder="enter a description (previously only for the splash screen that displays while loading - do we need 2 description fields now, one for the foyer display & one for the splash screen?)"
-              v-model="form.description"
-            ></textarea>
+              v-model="form.description"></textarea>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div class="field is-horizontal" v-if="stage">
+      <div class="field-label">
+        <label class="label">Status</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <Switch :data-tooltip="form.status === 'live' ? 'Live' : 'Rehearsal'" :model-value="form.status === 'live'"
+            @update:model-value="form.status = $event ? 'live' : 'rehearsal'" />
+        </div>
+        <p class="help">
+          The public can only enter your stage when its status is Live. With Rehearsal status, only players who have
+          access to the stage can enter.
+        </p>
+      </div>
+    </div>
+
+    <div class="field is-horizontal" v-if="stage">
+      <div class="field-label">
+        <label class="label">Visibility</label>
+      </div>
+      <div class="field-body">
+        <div class="field is-narrow">
+          <Switch :data-tooltip="form.visibility ? 'On' : 'Off'" v-model="form.visibility" />
+        </div>
+        <p class="help">Select whether this Stage is visible in the Foyer or not.</p>
       </div>
     </div>
 
@@ -91,45 +91,14 @@
         </p>
       </div>
       <div class="field-body" style="flex-wrap: wrap">
-        <MultiTransferColumn
-          :columns="[
-            'Audience access only',
-            'Player access',
-            'Player and edit access',
-          ]"
-          :data="users"
-          :renderLabel="displayName"
-          :renderValue="(item) => item.dbId"
-          :renderKeywords="
-            (item) =>
-              `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
-          "
-          v-model="playerAccess"
-        />
-      </div>
-    </div>
-
-    <div class="field is-horizontal" v-if="stage">
-      <div class="field-label">
-        <label class="label">Stage Status</label>
-      </div>
-      <div class="field-body">
-        <div class="field is-narrow">
-          <div class="control">
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="live" />
-              Live
-            </label>
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="upcoming" />
-              Upcoming
-            </label>
-            <label class="radio">
-              <input type="radio" v-model="form.status" value="rehearsal" />
-              Rehearsal
-            </label>
-          </div>
-        </div>
+        <MultiTransferColumn :columns="[
+          'Audience access only',
+          'Player access',
+          'Player and edit access',
+        ]" :data="users" :renderLabel="displayName" :renderValue="(item) => item.dbId" :renderKeywords="
+  (item) =>
+    `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
+" v-model="playerAccess" />
       </div>
     </div>
 
@@ -164,6 +133,7 @@ import ClearChat from "./ClearChat";
 import SweepStage from "./SweepStage";
 import DeleteStage from "@/components/stage/DeleteStage";
 import { useStore } from "vuex";
+import Switch from "@/components/form/Switch.vue";
 
 export default {
   components: {
@@ -172,7 +142,8 @@ export default {
     SweepStage,
     MultiTransferColumn,
     ImagePicker,
-    DeleteStage
+    DeleteStage,
+    Switch
   },
   setup: () => {
     const store = useStore();
@@ -183,7 +154,8 @@ export default {
       fileLocation: '',
       ...stage.value,
       ownerId: stage.value.owner?.id,
-      status: useAttribute(stage, "status").value,
+      status: useAttribute(stage, "status").value ?? "rehearsal",
+      visibility: useAttribute(stage, "visibility").value,
       cover: useAttribute(stage, "cover").value,
     });
 
