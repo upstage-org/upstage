@@ -3,9 +3,9 @@ import { useQuery } from '@vue/apollo-composable';
 import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import gql from 'graphql-tag';
-import { ref, computed, inject, Ref, createVNode, watch, reactive } from 'vue'
+import { ref, computed, inject, Ref, createVNode, watch, reactive, ComputedRef } from 'vue'
 import { SlickList, SlickItem } from 'vue-slicksort';
-import { AvatarVoice as Voice, CopyrightLevel, Link, Media, MediaAttributes, StudioGraph, UploadFile } from '../../../models/studio';
+import { AvatarVoice as Voice, CopyrightLevel, Link, Media, MediaAttributes, StudioGraph, UploadFile, User } from '../../../models/studio';
 import { absolutePath, capitalize } from '../../../utils/common';
 import StageAssignment from './StageAssignment.vue';
 import { useSaveMedia } from './composable';
@@ -24,6 +24,7 @@ watch(editingMediaResult, () => {
     name.value = editingMedia.name;
     type.value = editingMedia.assetType.name;
     tags.value = editingMedia.tags;
+    owner.value = editingMedia.owner.username;
     copyrightLevel.value = editingMedia.copyrightLevel;
     const attributes = JSON.parse(editingMedia.description) as MediaAttributes;
     if (files?.value) {
@@ -47,6 +48,7 @@ watch(editingMediaResult, () => {
     if (attributes.link) {
       Object.assign(link, attributes.link);
     }
+    note.value = attributes.note ?? '';
     if (editingMedia.stages) {
       stageIds.value = editingMedia.stages.map(stage => stage.id);
     }
@@ -59,6 +61,7 @@ const type = ref('avatar')
 const tags = ref<string[]>([])
 const stageIds = ref<number[]>([])
 const userIds = ref<number[]>([])
+const note = ref<string>('')
 const mediaName = computed(() => {
   if (name.value) {
     return name.value
@@ -69,8 +72,18 @@ const mediaName = computed(() => {
   return ''
 })
 const copyrightLevel = ref<CopyrightLevel>(0)
+const owner = ref<string>('')
 const voice = reactive<Voice>(getDefaultAvatarVoice())
 const link = reactive<Link>({ url: '', blank: true });
+
+const whoami = inject<ComputedRef<User>>("whoami")
+if (whoami) {
+  watch(whoami, () => {
+    if (whoami.value) {
+      owner.value = whoami.value.username;
+    }
+  })
+}
 
 const handleFrameClick = ({ event, index }: { event: any, index: number }) => {
   event.preventDefault()
@@ -153,11 +166,13 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
       name: mediaName.value,
       mediaType: type.value,
       copyrightLevel: copyrightLevel.value,
+      owner: owner.value,
       stageIds: stageIds.value,
       userIds: userIds.value,
       tags: tags.value,
       w: frameSize.value.width,
       h: frameSize.value.height,
+      note: note.value,
       urls: [],
       voice,
       link
@@ -165,6 +180,7 @@ const { progress, saveMedia, saving } = useSaveMedia(() => {
   }
 }, id => {
   if (files && refresh) {
+    editingMediaVar(undefined)
     files.value = []
     refresh()
   }
@@ -186,6 +202,7 @@ const composingMode = inject<Ref<boolean>>('composingMode')
 watch(visibleDropzone as Ref, (val) => {
   if (files?.value && files.value.length === 0 && val) {
     name.value = ''
+    note.value = ''
   }
 })
 
@@ -263,7 +280,7 @@ const clearSign = () => {
     </template>
     <a-row :gutter="12">
       <a-col :span="6">
-        <div class="bg-gray-200 flex items-center justify-center h-full max-h-96">
+        <div class="bg-gray-200 flex items-center justify-center h-full" style="max-height: 600px;">
           <audio v-if="type === 'audio'" controls class="w-48" :key="files?.[0]?.preview">
             <source v-if="files && files.length" :src="files[0].preview" />Your browser does not support the audio element.
           </audio>
@@ -321,7 +338,9 @@ const clearSign = () => {
               <MediaPermissions
                 :key="editingMediaResult?.editingMedia?.id"
                 v-model="copyrightLevel"
+                v-model:owner="owner"
                 v-model:users="userIds"
+                v-model:note="note"
                 :media="editingMediaResult?.editingMedia"
               />
             </a-tab-pane>
