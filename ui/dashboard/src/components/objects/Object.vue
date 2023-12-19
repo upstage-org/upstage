@@ -160,7 +160,7 @@ export default {
       }
     };
     const activeMovable = computed(
-      () => store.state.stage.activeMovable === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id
     );
 
     const isWearing = computed(

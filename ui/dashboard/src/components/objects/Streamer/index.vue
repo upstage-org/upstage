@@ -14,14 +14,18 @@
           :src="object.url"
           :muted="localMuted"
           preload="auto"
-          disablePictureInPicture
+          disablepictureinpicture
           @loadeddata="loadeddata"
           @ended="stream.isPlaying = false"
           :style="{
             'border-radius': stream.shape === 'circle' ? '100%' : 0,
           }"
         ></video>
-        <button class="button is-small mute-icon clickable" @mousedown="toggleMuted">
+        <button
+          v-if="isPlayer"
+          class="button is-small mute-icon clickable"
+          @mousedown="toggleMuted"
+        >
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -31,13 +35,12 @@
 </template>
 
 <script>
-import { computed, onMounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import Object from "../Object.vue";
 import { useStore } from "vuex";
 import { useFlv } from "./composable";
 import { getSubsribeLink } from "@/utils/streaming";
 import Loading from "@/components/Loading.vue";
-import { nmsService } from "@/services/rest";
 import MenuContent from '../Avatar/ContextMenu'
 
 export default {
@@ -50,6 +53,7 @@ export default {
 
     const stream = reactive({ ...props.object, isPlaying: true, src: loading });
     const video = ref();
+    const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
     const synchronize = () => {
       if (stream.isPlaying && video.value) {
@@ -66,7 +70,6 @@ export default {
         synchronize();
       }
     );
-
     const loading = ref(true);
     const loadeddata = () => {
       loading.value = false;
@@ -77,7 +80,6 @@ export default {
       const fullUrl = computed(() => getSubsribeLink(props.object.url));
       useFlv(video, fullUrl);
     }
-
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
@@ -91,14 +93,6 @@ export default {
       localMuted.value = !localMuted.value;
     };
 
-    onMounted(async () => {
-      const streams = await nmsService.getStreams();
-      if (!streams.some((s) => s.url === props.object.url)) {
-        // Delete stream because it is not running anymore
-        store.dispatch("stage/deleteObject", props.object);
-      }
-    });
-
     return {
       video,
       stream,
@@ -108,6 +102,7 @@ export default {
       loading,
       localMuted,
       toggleMuted,
+      isPlayer,
     };
   },
 };

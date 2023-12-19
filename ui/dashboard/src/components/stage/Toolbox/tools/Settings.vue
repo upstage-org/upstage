@@ -42,6 +42,12 @@
     </div>
     <span class="tag is-light is-block p-0">Backdrop Colour</span>
   </div>
+  <div @click="masqueradeAudience">
+    <div class="icon is-large">
+      <Icon src="incognito.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">Audience View</span>
+  </div>
 </template>
 
 <script>
@@ -88,6 +94,10 @@ export default {
       );
     };
 
+    const masqueradeAudience = () => {
+      store.commit("stage/TOGGLE_MASQUERADING")
+    }
+
     return {
       showChat,
       chatVisibility,
@@ -98,6 +108,7 @@ export default {
       backdropColor,
       chatPosition,
       toggleChatPosition,
+      masqueradeAudience
     };
   },
 };

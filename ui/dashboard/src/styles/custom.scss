@@ -164,20 +164,6 @@ div.moveable-control-box {
             }
         }
     }
-    ::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
-    }
-    ::-webkit-scrollbar-button {
-        background: #ccc;
-        width: 5px;
-    }
-    ::-webkit-scrollbar-track-piece {
-        background: #888;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: $primary;
-    }
 }
 @media screen and (max-width: 1280px) {
     #app {
@@ -206,4 +192,18 @@ div.moveable-control-box {
             content: none !important;
         }
     }
+}
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-button {
+    background: #ccc;
+    width: 5px;
+}
+::-webkit-scrollbar-track-piece {
+    background: #888;
+}
+::-webkit-scrollbar-thumb {
+    background: $primary;
 }
