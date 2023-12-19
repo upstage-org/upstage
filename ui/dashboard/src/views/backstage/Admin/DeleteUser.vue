@@ -1,13 +1,7 @@
 <template>
-  <Confirm
-    @confirm="(close) => deleteUser({ item, displayName, close, refresh })"
-    :loading="loading"
-  >
+  <Confirm @confirm="(close) => deleteUser({ item, displayName, close, refresh })" :loading="loading">
     <template #trigger>
-      <a
-        class="button is-light is-small is-danger"
-        data-tooltip="Delete player"
-      >
+      <a class="button is-light is-small is-danger" data-tooltip="Delete player">
         <Icon src="delete.svg" />
       </a>
     </template>
@@ -16,7 +10,8 @@
       <span class="has-text-danger">
         {{ displayName }}
       </span>
-      will also delete all of {{ displayName }}'s stages. This cannot be undo!
+      will also delete all of {{ displayName }}'s stages. All of this user's media will belong to you. This cannot be
+      undone!
       <br />
       <strong>Are you sure you want to continue?</strong>
     </div>

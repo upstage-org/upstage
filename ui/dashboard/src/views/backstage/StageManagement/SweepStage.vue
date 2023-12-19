@@ -4,7 +4,7 @@
       <button class="button is-warning is-loading"></button>
       <span>{{ status }}</span>
     </template>
-    <span v-else><slot>Sweep Stage</slot></span>
+    <span v-else><slot>{{ $t("sweep_stage") }}</slot></span>
   </button>
 </template>
 

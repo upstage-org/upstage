@@ -5,15 +5,15 @@
         <h1 class="title" v-if="stage.name">
           {{ stage.name }}
           <router-link :to="`/${stage.fileLocation}`" class="button is-light">
-            <span>ENTER</span>
+            <span>{{ $t("enter") }}</span>
             <span class="icon">
               <i class="fas fa-chevron-right"></i>
             </span>
           </router-link>
         </h1>
-        <p class="subtitle">Stage Management</p>
+        <p class="subtitle">{{ $t("stage_management") }}</p>
       </template>
-      <h1 v-else class="title">Create new stage</h1>
+      <h1 v-else class="title">{{ $t("create_new_stage") }}</h1>
     </div>
   </section>
   <div class="container-fluid">
@@ -29,20 +29,20 @@
                     : '/backstage/new-stage'
                 "
                 exact-active-class="is-active"
-              >General Information</router-link>
+              >{{ $t("general_information") }}</router-link>
             </li>
             <template v-if="id">
               <li>
-                <router-link to="customisation" exact-active-class="is-active">Customisation</router-link>
+                <router-link to="customisation" exact-active-class="is-active">{{ $t("customisation") }}</router-link>
               </li>
               <li id="media-menu">
-                <router-link to="media" exact-active-class="is-active">Media</router-link>
+                <router-link to="media" exact-active-class="is-active">{{ $t("media") }}</router-link>
               </li>
               <li>
-                <router-link to="archive" exact-active-class="is-active">Archive</router-link>
+                <router-link to="archive" exact-active-class="is-active">{{ $t("archive") }}</router-link>
               </li>
               <li>
-                <router-link to="scenes" exact-active-class="is-active">Scenes</router-link>
+                <router-link to="scenes" exact-active-class="is-active">{{ $t("scenes") }}</router-link>
               </li>
             </template>
           </ul>

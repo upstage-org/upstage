@@ -41,7 +41,7 @@
       <div class="columns">
         <div class="column is-4 mt-6">
           <b>Step 3:</b>&nbsp;Change the value to
-          <code>false</code>
+          <code>{{ "false" }}</code>
         </div>
         <div class="column">
           <img :src="`${publicPath}/instruction/firefox/3.png`" alt="Step 3" />

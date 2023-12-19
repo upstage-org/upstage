@@ -5,7 +5,7 @@ from mail.mail_utils import send
 from mail.templates import admin_registration_notification, user_approved, user_registration
 import performance_config.models
 from asset.models import Stage as StageModel, StageAttribute as StageAttributeModel, Asset as AssetModel
-from performance_config.models import ParentStage as ParentStageModel
+from performance_config.models import ParentStage as ParentStageModel, Performance
 import sys,os
 import json
 
@@ -22,7 +22,7 @@ from config.project_globals import (DBSession,Base,metadata,engine,ScopedSession
     app,api,ScopedSession)
 from config.settings import URL_PREFIX
 from auth.auth_api import jwt_required
-from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, User as UserModel
+from user.models import ADMIN, GUEST, PLAYER, SUPER_ADMIN, OneTimeTOTP, User as UserModel
 from flask_graphql import GraphQLView
 from auth.fernet_crypto import encrypt,decrypt
 from utils import graphql_utils
@@ -238,9 +238,11 @@ class DeleteUser(graphene.Mutation):
         with ScopedSession() as local_db_session:
             # Delete all existed user's sessions
             local_db_session.query(UserSession).filter(UserSession.user_id==data['id']).delete()
+            local_db_session.query(OneTimeTOTP).filter(OneTimeTOTP.user_id==data['id']).delete()
             # Delete all stages created by this user
             local_db_session.query(StageAttributeModel).filter(StageAttributeModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
             local_db_session.query(ParentStageModel).filter(ParentStageModel.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
+            local_db_session.query(Performance).filter(Performance.stage.has(StageModel.owner_id==data['id'])).delete(synchronize_session='fetch')
             local_db_session.query(StageModel).filter(StageModel.owner_id==data['id']).delete()
             # Change the owner of media uploaded by this user to the one who process the delete
             # Because delete the media would cause impact to other stage, this would be a workaround for now

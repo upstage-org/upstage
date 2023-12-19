@@ -15,13 +15,13 @@
       <span class="icon">
         <i class="fas fa-times"></i>
       </span>
-      <span>Cancel</span>
+      <span>{{ $t("cancel") }}</span>
     </template>
     <template #yes>
       <span class="icon">
         <i class="fas fa-clone"></i>
       </span>
-      <span>Duplicate</span>
+      <span>{{ $t("duplicate") }}</span>
     </template>
   </Confirm>
 </template>

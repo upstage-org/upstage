@@ -20,7 +20,7 @@ auth.value = sharedState
   >
     <template #extra>
       <a :href="`${configs.UPSTAGE_URL}/backstage`">
-        <a-button type="primary">Login</a-button>
+        <a-button type="primary">{{ $t("login") }}</a-button>
       </a>
     </template>
   </a-result>

@@ -8,7 +8,7 @@
   <div v-else>
     <p v-for="item in messages" :key="item" :class="{ guest: !item.isPlayer }">
       <template v-if="item.clear">
-        <Divider>Clear Chat</Divider>
+        <Divider>{{ $t("clear_chat") }}</Divider>
       </template>
       <template v-else>
         <ContextMenu>
@@ -45,7 +45,7 @@
                 <div>
                   <small class="has-text-dark">
                     Sent by
-                    <span v-if="session === item.session">you</span>
+                    <span v-if="session === item.session">{{ $t("you") }}</span>
                     <span v-else>{{ item.user }}</span>
                     {{ time(item.at) }}
                   </small>
@@ -57,7 +57,7 @@
                 <span class="panel-icon">
                   <Icon src="remove.svg" />
                 </span>
-                <span>Remove</span>
+                <span>{{ $t("remove") }}</span>
               </a>
               <template v-if="canPlay">
                 <a
@@ -68,7 +68,7 @@
                   <span class="panel-icon">
                     <Icon src="object-drawing.svg" />
                   </span>
-                  <span>Unhighlight</span>
+                  <span>{{ $t("unhighlight") }}</span>
                 </a>
                 <a
                   v-else
@@ -78,7 +78,7 @@
                   <span class="panel-icon">
                     <Icon src="object-drawing.svg" />
                   </span>
-                  <span>Highlight</span>
+                  <span>{{ $t("highlight") }}</span>
                 </a>
               </template>
             </template>

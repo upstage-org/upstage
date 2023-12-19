@@ -9,6 +9,7 @@ import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
 import { capitalize, getSharedAuth } from '../../utils/common';
+import LanguageSelector from '../LanguageSelector.vue';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -148,9 +149,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
 
 <template>
   <a-affix :offset-top="0">
-    <a-space
-      class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
-    >
+    <a-space class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between">
       <a-space class="flex-wrap">
         <a-button v-if="composingMode" type="primary" danger @click="composingMode = false">
           <template #icon>
@@ -159,7 +158,7 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           Back to editing
         </a-button>
         <a-dropdown-button type="primary" v-else @click="visibleDropzone = true">
-          <PlusOutlined />New
+          <PlusOutlined /> {{ $t("new") }}
           <template #overlay>
             <a-menu>
               <a-menu-item key="rtmp" @click="createRTMPStream">
@@ -172,81 +171,41 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           </template>
         </a-dropdown-button>
         <a-input-search allowClear class="w-48" placeholder="Search media" v-model:value="name" />
-        <a-select
-          allowClear
-          showArrow
-          :filterOption="handleFilterOwnerName"
-          mode="tags"
-          style="min-width: 124px"
-          placeholder="Owners"
-          :loading="loading"
-          v-model:value="owners"
-          :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
-        >
+        <a-select allowClear showArrow :filterOption="handleFilterOwnerName" mode="tags" style="min-width: 124px"
+          placeholder="Owners" :loading="loading" v-model:value="owners"
+          :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []">
           <template #dropdownRender="{ menuNode: menu }">
             <v-nodes :vnodes="menu" />
             <a-divider style="margin: 4px 0" />
-            <div
-              class="w-full cursor-pointer text-center"
-              @mousedown.prevent
-              @click.stop.prevent="owners = []"
-            >
+            <div class="w-full cursor-pointer text-center" @mousedown.prevent @click.stop.prevent="owners = []">
               <team-outlined />&nbsp;All players
             </div>
           </template>
         </a-select>
-        <a-select
-          allowClear
-          showArrow
-          filterOption
-          mode="tags"
-          style="min-width: 128px"
-          placeholder="Media types"
-          :loading="loading"
-          v-model:value="types"
-          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []"
-        ></a-select>
-        <a-select
-          allowClear
-          showArrow
-          :filterOption="handleFilterStageName"
-          mode="tags"
-          style="min-width: 160px"
-          placeholder="Stages assigned"
-          :loading="loading"
-          v-model:value="stages"
-          :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []"
-        ></a-select>
-        <a-select
-          allowClear
-          showArrow
-          mode="tags"
-          style="min-width: 160px"
-          placeholder="Tags"
-          :loading="loading"
+        <a-select allowClear showArrow filterOption mode="tags" style="min-width: 128px" placeholder="Media types"
+          :loading="loading" v-model:value="types"
+          :options="result ? result.mediaTypes.edges.map(e => ({ value: e.node.name, label: capitalize(e.node.name) })) : []">
+        </a-select>
+        <a-select allowClear showArrow :filterOption="handleFilterStageName" mode="tags" style="min-width: 160px"
+          placeholder="Stages assigned" :loading="loading" v-model:value="stages"
+          :options="result ? result.stages.edges.map(e => ({ value: e.node.dbId, label: e.node.name })) : []">
+        </a-select>
+        <a-select allowClear showArrow mode="tags" style="min-width: 160px" placeholder="Tags" :loading="loading"
           v-model:value="tags"
-          :options="result ? result.tags.edges.map(e => ({ value: e.node.name, label: e.node.name })) : []"
-        ></a-select>
-        <a-range-picker
-          :placeholder="['Created from', 'to date']"
-          v-model:value="(dates as any)"
-          :ranges="(ranges as any)"
-        />
+          :options="result ? result.tags.edges.map(e => ({ value: e.node.name, label: e.node.name })) : []"></a-select>
+        <a-range-picker :placeholder="['Created from', 'to date']" v-model:value="(dates as any)"
+          :ranges="(ranges as any)" />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters
         </a-button>
       </a-space>
       <a-space>
-        <a
-          :href="to('backstage/profile')"
-          v-if="result"
-          style="line-height: 0.8;"
-          class="text-right"
-        >
+        <a :href="to('backstage/profile')" v-if="result" style="line-height: 0.8;" class="text-right">
           <h2 class="mb-0">{{ result.whoami.displayName || result.whoami.username }}</h2>
           <span class="text-gray-500">{{ result.whoami.roleName }}</span>
         </a>
         <Notifications />
+        <LanguageSelector />
         <a-dropdown class="ml-4">
           <a class="ant-dropdown-link flex-nowrap block w-24" @click.prevent>
             <img src="../../assets/upstage.png" class="h-6" />
@@ -255,10 +214,10 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
           <template #overlay>
             <a-menu>
               <a :href="to('backstage')">
-                <a-menu-item>Backstage</a-menu-item>
+                <a-menu-item>{{ $t("backstage") }}</a-menu-item>
               </a>
               <a :href="to('')">
-                <a-menu-item>Foyer</a-menu-item>
+                <a-menu-item>{{ $t("foyer") }}</a-menu-item>
               </a>
             </a-menu>
           </template>
