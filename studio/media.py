@@ -252,10 +252,15 @@ class AvatarVoice:
     amplitude = graphene.Int(
         required=True, description="Voice amplitude, range from 0 to 100")
 
-
 class AvatarVoiceInput(graphene.InputObjectType, AvatarVoice):
     pass
 
+class Link:
+    url = graphene.String(required=True, description="Link url")
+    blank = graphene.Boolean(required=True, description="Open in new tab?")
+
+class LinkInput(graphene.InputObjectType, Link):
+    pass
 
 class SaveMediaInput(graphene.InputObjectType):
     """Arguments to update a stage."""
@@ -276,6 +281,7 @@ class SaveMediaInput(graphene.InputObjectType):
     w = graphene.Int(description="Width of the media")
     h = graphene.Int(description="Height of the media")
     voice = AvatarVoiceInput(description="Voice settings", required=False)
+    link = LinkInput(description="On click action link", required=False)
 
 
 class SaveMedia(graphene.Mutation):
@@ -304,6 +310,13 @@ class SaveMedia(graphene.Mutation):
                 id = from_global_id(input['id'])[1]
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
+
+                if asset:
+                    code, error, user, timezone = current_user()
+                    if not user.role in (ADMIN, SUPER_ADMIN):
+                        if not user.id == asset.owner_id:
+                            raise Exception("You don't have permission to edit this media")
+
             else:
                 asset = AssetModel(owner_id=current_user_id)
                 local_db_session.add(asset)
@@ -355,16 +368,25 @@ class SaveMedia(graphene.Mutation):
                 attributes['h'] = h
                 if asset_type.name == 'stream' and '/' not in file_location:
                     attributes['isRTMP'] = True
+                    
                 if 'voice' in input:
                     voice = input['voice']
                     if voice and voice.voice:
                         attributes['voice'] = voice
                     elif 'voice' in attributes:
                         del attributes['voice']
+
+                if 'link' in input:
+                    link = input['link']
+                    if link and link.url:
+                        attributes['link'] = link
+                    elif 'link' in attributes:
+                        del attributes['link']
+
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
 
-            if stage_ids:
+            if stage_ids != None:
                 asset.stages.delete()
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
@@ -498,3 +520,27 @@ def resolve_voices(self, info):
                                 setattr(av, key, 50)
                     voices.append(Voice(avatar=media, voice=av))
     return voices
+
+class QuickAssignMutation(graphene.Mutation):
+    """Mutation to assign a stage to a media"""
+    success = graphene.Boolean(description="Success")
+    message = graphene.String(description="Reason for why the mutation failed")
+
+    class Arguments:
+        id = graphene.ID(description="ID of the media")
+        stage_id = graphene.Int(description="ID of the stage")
+
+    @jwt_required()
+    def mutate(self, info, id, stage_id):
+        id = from_global_id(id)[1]
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).get(id)
+            if asset:
+                code, error, user, timezone = current_user()
+                stage = local_db_session.query(StageModel).get(stage_id)
+                if stage:
+                    asset.stages.append(ParentStage(stage_id=stage_id))
+                    local_db_session.flush()
+                    local_db_session.commit()
+                    return QuickAssignMutation(success=True)
+        return QuickAssignMutation(success=False, message="Stage not found")

@@ -11,6 +11,9 @@ import { absolutePath } from '../../utils/common';
 import MediaPreview from './MediaPreview.vue';
 import RequestPermission from './MediaForm/RequestPermission.vue';
 import RequestAcknowledge from './MediaForm/RequestAcknowledge.vue';
+import { ColumnType, TablePaginationConfig } from 'ant-design-vue/lib/table';
+import { SorterResult } from 'ant-design-vue/lib/table/interface';
+import QuickStageAssignment from './QuickStageAssignment.vue';
 
 const files = inject<Ref<UploadFile[]>>("files")
 
@@ -30,6 +33,12 @@ watch(inquiryResult, () => {
 
 const { result, loading, fetchMore } = useQuery<StudioGraph, { cursor?: string, limit: number, sort?: string[] }>(gql`
 query MediaTable($cursor: String, $limit: Int, $sort: [AssetSortEnum], $name: String, $mediaTypes: [String], $owners: [String], $stages: [Int], $tags: [String], $createdBetween: [Date]) {
+  whoami {
+    username
+    displayName
+    role
+    roleName
+  }
   media(after: $cursor, first: $limit, sort: $sort, nameLike: $name, mediaTypes: $mediaTypes, owners: $owners, stages: $stages, tags: $tags, createdBetween: $createdBetween) {
     totalCount
     edges {
@@ -78,7 +87,7 @@ watch(params, () => {
   })
 })
 
-const columns = [
+const columns: ColumnType<Media>[] = [
   {
     title: "Preview",
     align: "center",
@@ -166,9 +175,9 @@ interface Sorter {
   order: "ascend" | "descend"
 }
 
-const handleTableChange = ({ current, pageSize }: Pagination, _: any, sorter: Sorter | Sorter[]) => {
+const handleTableChange = ({ current = 1, pageSize = 10 }: TablePaginationConfig, _: any, sorter: SorterResult<Media> | SorterResult<Media>[]) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
-    .sort((a, b) => a.column.sorter.multiple - b.column.sorter.multiple)
+    .sort((a, b) => (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple)
     .map(({ columnKey, order }) => `${columnKey}_${order === 'ascend' ? 'ASC' : 'DESC'}`.toUpperCase())
   Object.assign(tableParams, {
     cursor: current > 1 ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`) : undefined,
@@ -237,11 +246,13 @@ const filterTag = (tag: string) => {
     tags: [tag]
   })
 }
+
+const isAdmin = computed(() => [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(result.value?.whoami?.role ?? 0))
 </script>
 
 <template>
   <a-table
-    class="mx-4 shadow rounded-md bg-white"
+    class="shadow rounded-md bg-white w-full overflow-auto"
     :columns="columns"
     :data-source="dataSource"
     rowKey="id"
@@ -324,31 +335,36 @@ const filterTag = (tag: string) => {
             <small>Please wait for the media owner's approval</small>
           </a-space>
           <a-space v-else>
-            <a-button type="primary" @click="editMedia(record)">
-              <EditOutlined />Edit
-            </a-button>
-            <a :href="absolutePath(record.src)" :download="record.name">
-              <a-button>
-                <template #icon>
-                  <DownloadOutlined />
-                </template>
+            <template v-if="isAdmin || record.owner.username === result?.whoami.username">
+              <a-button type="primary" @click="editMedia(record)">
+                <EditOutlined />Edit
               </a-button>
-            </a>
-            <a-popconfirm
-              title="Are you sure delete this media?"
-              ok-text="Yes"
-              cancel-text="No"
-              @confirm="deleteMedia(record)"
-              placement="left"
-              :ok-button-props="{ danger: true }"
-              loading="deleting"
-            >
-              <a-button type="dashed" danger>
-                <template #icon>
-                  <DeleteOutlined />
-                </template>
-              </a-button>
-            </a-popconfirm>
+              <a :href="absolutePath(record.src)" :download="record.name">
+                <a-button>
+                  <template #icon>
+                    <DownloadOutlined />
+                  </template>
+                </a-button>
+              </a>
+              <a-popconfirm
+                title="Are you sure delete this media?"
+                ok-text="Yes"
+                cancel-text="No"
+                @confirm="deleteMedia(record)"
+                placement="left"
+                :ok-button-props="{ danger: true }"
+                loading="deleting"
+              >
+                <a-button type="dashed" danger>
+                  <template #icon>
+                    <DeleteOutlined />
+                  </template>
+                </a-button>
+              </a-popconfirm>
+            </template>
+            <template v-else>
+              <QuickStageAssignment :media="record" />
+            </template>
           </a-space>
         </template>
       </template>

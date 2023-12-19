@@ -35,4 +35,5 @@ export interface Auth {
 export interface SharedAuth {
     refresh_token: string
     token: string
+    username: string
 }

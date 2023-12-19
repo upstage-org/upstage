@@ -15,7 +15,7 @@ from stage.asset import DeleteMedia
 from studio.notification import Notification, resolve_notifications
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, ConfirmPermission, RequestPermission, SaveMedia, UploadFile, Voice, resolve_voices)
+                          AssetType, CalcSizes, ConfirmPermission, QuickAssignMutation, RequestPermission, SaveMedia, UploadFile, Voice, resolve_voices)
 from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -83,12 +83,13 @@ class Mutation(graphene.ObjectType):
     refreshUser = RefreshMutation.Field()
     confirmPermission = ConfirmPermission.Field()
     requestPermission = RequestPermission.Field()
+    quickAssignMutation = QuickAssignMutation.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 studio_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{URL_PREFIX}/studio_graphql/', view_func=GraphQLView.as_view(
+    f'/{URL_PREFIX}studio_graphql/', view_func=GraphQLView.as_view(
         "studio_graphql", schema=studio_schema,
         graphiql=True
     )
