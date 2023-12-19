@@ -33,4 +33,10 @@ export default {
       }
     }
   `, { name, value }),
+  sendEmail: (variables) => client.request(gql`
+  mutation SendEmail($subject: String!, $body: String!, $recipients: String!) {
+    sendEmail(subject: $subject, body: $body, recipients: $recipients) {
+      success
+    }
+  }`, variables),
 }

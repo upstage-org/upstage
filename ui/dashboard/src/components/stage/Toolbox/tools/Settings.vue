@@ -40,16 +40,25 @@
     <div class="icon is-large">
       <ColorPicker v-model="backdropColor" @update:modelValue="sendBackdropColor" />
     </div>
-    <span
-      class="tag is-light is-block p-0"
-      style="white-space: break-spaces; line-height: 1;"
-    >Background Colour</span>
+    <span class="tag is-light is-block p-0 long-label">Background Colour</span>
   </div>
   <div @click="masqueradeAudience">
     <div class="icon is-large">
       <Icon src="incognito.svg" size="36" />
     </div>
     <span class="tag is-light is-block">Audience View</span>
+  </div>
+  <div v-if="chatDarkMode" @click="enableDarkModeChat(false)">
+    <div class="icon is-large">
+      <i class="fas fa-sun fa-2x has-text-warning"></i>
+    </div>
+    <span class="tag is-light is-block long-label">Light Mode Chat</span>
+  </div>
+  <div v-else @click="enableDarkModeChat(true)">
+    <div class="icon is-large">
+      <i class="fas fa-moon fa-2x"></i>
+    </div>
+    <span class="tag is-light is-block long-label">Dark Mode Chat</span>
   </div>
 </template>
 
@@ -66,12 +75,19 @@ export default {
     const chatVisibility = computed(
       () => store.state.stage.settings.chatVisibility
     );
+    const chatDarkMode = computed(
+      () => store.state.stage.settings.chatDarkMode
+    );
     const reactionVisibility = computed(
       () => store.state.stage.settings.reactionVisibility
     );
 
     const showChat = (value) => {
       store.dispatch("stage/showChatBox", value);
+    };
+
+    const enableDarkModeChat = (value) => {
+      store.dispatch("stage/enableDarkModeChat", value);
     };
 
     const showReactions = (value) => {
@@ -104,6 +120,8 @@ export default {
     return {
       showChat,
       chatVisibility,
+      chatDarkMode,
+      enableDarkModeChat,
       showReactions,
       reactionVisibility,
       clearChat,
@@ -117,5 +135,9 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.long-label {
+  white-space: break-spaces;
+  line-height: 1;
+}
 </style>

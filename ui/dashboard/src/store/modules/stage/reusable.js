@@ -66,7 +66,8 @@ export function getDefaultStageConfig() {
 export function getDefaultStageSettings() {
     return {
         chatVisibility: true,
-        reactionVisibility: true
+        chatDarkMode: false,
+        reactionVisibility: true,
     }
 }
 

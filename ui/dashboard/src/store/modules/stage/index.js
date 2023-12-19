@@ -46,6 +46,7 @@ export default {
             backdrops: [],
             audios: [],
             streams: [],
+            meetings: [],
             curtains: [],
         },
         config: getDefaultStageConfig(),
@@ -144,7 +145,8 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission
+            return state.model
+                && state.model.permission
                 && state.model.permission !== 'audience'
                 && !state.replay.isReplaying
                 && !state.masquerading
@@ -445,6 +447,9 @@ export default {
         SET_CHAT_VISIBILITY(state, visible) {
             state.settings.chatVisibility = visible
         },
+        SET_DARK_MODE_CHAT(state, enabled) {
+            state.settings.chatDarkMode = enabled
+        },
         SET_REACTION_VISIBILITY(state, visible) {
             state.settings.reactionVisibility = visible
         },
@@ -521,6 +526,9 @@ export default {
         },
         TOGGLE_MASQUERADING(state) {
             state.masquerading = !state.masquerading
+        },
+        CREATE_ROOM(state, room) {
+            state.tools.meetings.push(room)
         }
     },
     actions: {
@@ -695,7 +703,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar' || data.type === 'stream') {
+            if (data.type === 'avatar') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
@@ -816,6 +824,9 @@ export default {
         showChatBox(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY, visible })
         },
+        enableDarkModeChat(action, enabled) {
+            mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_DARK_MODE_CHAT, enabled })
+        },
         showReactionsBar(action, visible) {
             mqtt.sendMessage(TOPICS.BACKGROUND, { type: BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY, visible })
         },
@@ -844,6 +855,9 @@ export default {
                     break;
                 case BACKGROUND_ACTIONS.SET_CHAT_VISIBILITY:
                     commit('SET_CHAT_VISIBILITY', message.visible)
+                    break;
+                case BACKGROUND_ACTIONS.SET_DARK_MODE_CHAT:
+                    commit('SET_DARK_MODE_CHAT', message.enabled)
                     break;
                 case BACKGROUND_ACTIONS.SET_REACTION_VISIBILITY:
                     commit('SET_REACTION_VISIBILITY', message.visible)

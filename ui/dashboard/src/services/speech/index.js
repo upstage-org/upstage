@@ -4,7 +4,7 @@ const { loadVoice, speak, stop } = window.meSpeak
 
 export const avatarSpeak = (avatar, message = avatar.speak.message) => {
     const params = {}
-    if (avatar.voice) {
+    if (avatar.voice && avatar.voice.voice) {
         const { voice, variant, amplitude, pitch, speed } = avatar.voice
         params.variant = variant
         params.amplitude = amplitude ?? 100
