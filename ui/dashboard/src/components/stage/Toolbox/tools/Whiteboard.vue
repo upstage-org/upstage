@@ -17,7 +17,7 @@
     <div class="icon is-large">
       <ColorPicker v-model="color" />
     </div>
-    <span class="tag is-light is-block">Color</span>
+    <span class="tag is-light is-block">Colour</span>
   </div>
   <div class="drawing-tool" style="width: 200px">
     <div class="size-preview">

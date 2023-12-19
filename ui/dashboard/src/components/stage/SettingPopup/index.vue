@@ -25,9 +25,10 @@ import ChatParameters from "./settings/ChatParameters";
 import VoiceParameters from "./settings/VoiceParameters";
 import SaveScene from "./settings/SaveScene";
 import Icon from "@/components/Icon";
+import VolumeParameters from "./settings/VolumeParameters";
 
 export default {
-  components: { ChatParameters, VoiceParameters, Icon, ChatBox, SaveScene },
+  components: { ChatParameters, VoiceParameters, Icon, ChatBox, SaveScene, VolumeParameters },
   setup: () => {
     const store = useStore();
     const isActive = computed(() => store.state.stage.settingPopup.isActive);

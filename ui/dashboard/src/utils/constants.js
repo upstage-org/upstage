@@ -80,6 +80,6 @@ export const MEDIA_COPYRIGHT_LEVELS = [
   },
 ]
 
-export const imageExtensions = ".svg,.jpg,.png,.gif";
+export const imageExtensions = ".svg,.jpg,.jpeg,.png,.gif";
 export const audioExtensions = ".wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a";
 export const videoExtensions = ".mp4,.webm,.opgg,.3gp,.flv";
