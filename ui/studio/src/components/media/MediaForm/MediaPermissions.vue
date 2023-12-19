@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { useQuery } from '@vue/apollo-composable';
-import { message } from 'ant-design-vue';
+import { message, Modal } from 'ant-design-vue';
+import { SelectValue } from 'ant-design-vue/lib/select';
 import { TransferItem } from 'ant-design-vue/lib/transfer';
 import gql from 'graphql-tag';
-import { ref, watchEffect, PropType } from 'vue';
+import { ref, watchEffect, PropType, inject, ComputedRef, watch } from 'vue';
 import { editingMediaVar } from '../../../apollo';
 import configs from '../../../config';
-import { Media, StudioGraph, User } from '../../../models/studio';
+import { Media, StudioGraph } from '../../../models/studio';
 import { useConfirmPermission } from './composable';
 
 const props = defineProps({
@@ -19,8 +20,14 @@ const props = defineProps({
         default: [],
     },
     media: Object as PropType<Media>,
+    note: {
+        type: String
+    },
+    owner: {
+        type: String
+    },
 });
-const emits = defineEmits(['update:modelValue', 'update:users']);
+const emits = defineEmits(['update:modelValue', 'update:users', 'update:owner', 'update:note']);
 
 const copyrightLevel = ref();
 const targetKeys = ref();
@@ -65,10 +72,31 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
         })
     }
 })
+const isAdmin = inject('isAdmin') as ComputedRef<boolean>
+const handleOwnerChange = (newOwner: SelectValue) => {
+    Modal.confirm({
+        title: 'Are you sure you want to change the owner of this media?',
+        content: 'You won\'t see this media in your default studio view anymore. The owner can then edit the media and delete it, or change the permisison level so that you might not be able to use it again!',
+        okText: 'Yes, I know what I\'m doing',
+        onOk: () => {
+            emits('update:owner', newOwner)
+        },
+    });
+}
+watch(isAdmin, console.log)
 </script>
 
 <template>
     <a-space direction="vertical" class="w-full mb-4">
+        <div v-if="isAdmin">
+            👑 Owner:
+            <a-select
+                :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) as any : []"
+                style="min-width: 124px"
+                :value="owner"
+                @change="handleOwnerChange"
+            />
+        </div>
         <a-select class="w-80" placeholder="Media copyright level" v-model:value="copyrightLevel">
             <a-select-option
                 v-for="level in configs.MEDIA_COPYRIGHT_LEVELS"
@@ -76,10 +104,10 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
                 :value="level.value"
             >
                 <span>{{ level.name }}</span>
-                <span class="relative top-1">
+                <span>
                     <a-tooltip placement="right">
                         <template #title>{{ level.description }}</template>
-                        <QuestionCircleOutlined class="float-right" />
+                        <QuestionCircleOutlined class="float-right relative top-1" />
                     </a-tooltip>
                 </span>
             </a-select-option>
@@ -154,5 +182,12 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
                 :render="renderItem"
             />
         </template>
+        <a-tooltip title="Notes">
+            <a-textarea
+                placeholder="You can put any notes here, like what the image is of, when or where taken, the actual copyright owner,..."
+                :value="note"
+                @change="$emit('update:note', $event.target.value)"
+            ></a-textarea>
+        </a-tooltip>
     </a-space>
 </template>

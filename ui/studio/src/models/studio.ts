@@ -93,6 +93,7 @@ export interface MediaAttributes {
   isRTMP: boolean;
   w: number;
   h: number;
+  note: string;
 }
 
 export interface Link {

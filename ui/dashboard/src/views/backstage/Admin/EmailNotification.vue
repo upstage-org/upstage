@@ -7,28 +7,29 @@
   <HorizontalField title="Subject" class="mt-4">
     <Field placeholder="Provide a subject for your email" v-model="subject" />
   </HorizontalField>
-  <HorizontalField title="To" class="recipients">
-    <MultiSelectList
-      :loading="loadingUsers"
-      :titles="['Available players:', 'Selected players:']"
-      :data="(users ?? []).filter(u => !!u.email)"
-      :column-class="() => 'is-12 p-1'"
-      v-model="selectedPlayers"
-    >
-      <template #render="{ item }">
-        <div class="p-2">
-          <b>{{ item.displayName || item.username }}</b>
-          &lt;{{ item.email }}&gt;
-        </div>
-      </template>
-    </MultiSelectList>
-    <Field
-      label="Additional receivers"
-      placeholder="someone@gmail.com,another@gmail.com"
-      help="You can send this notification to email addresses that haven't registered UpStage!"
-      v-model="additionalReceivers"
-    />
-  </HorizontalField>
+  <div class="field is-horizontal recipients">
+    <div class="field-label is-normal">
+      <label class="label">To</label>
+      <p class="help">
+        Click on a player's name to move them to the column to the right. Use
+        a right-click to move them back to the left.
+      </p>
+    </div>
+    <div class="field-body" style="flex-wrap: wrap">
+      <MultiTransferColumn style="width: 100%" :columns="[
+        'Available players',
+        'Selected players',
+      ]" :data="(users ?? []).filter(u => !!u.email)"
+        :renderLabel="(item) => `${item.displayName || item.username} <${item.email}>`"
+        :renderValue="(item) => item.dbId" :renderKeywords="
+          (item) =>
+            `${item.firstName} ${item.lastName} ${item.username} ${item.email} ${item.displayName}`
+        " v-model="selectedPlayers" />
+      <Field label="Additional receivers" placeholder="someone@gmail.com,another@gmail.com"
+        help="You can send this notification to email addresses that haven't registered UpStage!"
+        v-model="additionalReceivers" />
+    </div>
+  </div>
   <HorizontalField title="Body">
     <RichTextEditor v-model="body" />
   </HorizontalField>
@@ -38,14 +39,14 @@
 import { configGraph, userGraph } from '@/services/graphql';
 import { useMutation, useQuery } from '@/services/graphql/composable';
 import { ref } from 'vue';
-import MultiSelectList from '@/components/MultiSelectList.vue';
+import MultiTransferColumn from '@/components/MultiTransferColumn.vue';
 import Field from '@/components/form/Field.vue';
 import HorizontalField from '@/components/form/HorizontalField.vue';
 import SaveButton from '@/components/form/SaveButton.vue';
 import { notification } from '@/utils/notification';
 import RichTextEditor from '@/components/form/RichTextEditor.vue';
 
-const { nodes: users, loading: loadingUsers } = useQuery(userGraph.userList);
+const { nodes: users } = useQuery(userGraph.userList);
 const selectedPlayers = ref([])
 
 
@@ -54,26 +55,28 @@ const body = ref(`<div>
 <p>&nbsp;</p>
 <p>Thank you and best regards,</p>
 </div>
-<div><img class="avatar flex-shrink-0 mb-3 mr-3 mb-md-0 mr-md-4" src="https://avatars.githubusercontent.com/u/14158792?s=200&amp;v=4" alt="@upstage-org" width="100" height="100" />
+<div><img class="avatar flex-shrink-0 mb-3 mr-3 mb-md-0 mr-md-4" src="https://docs.upstage.live/wp-content/uploads/2021/12/logo-upstage-official-300px.png" alt="@upstage-org" width="100" />
 </div>`);
 const additionalReceivers = ref('');
 
 const { save, loading } = useMutation(configGraph.sendEmail);
 const send = async () => {
-  console.log(selectedPlayers.value);
+  const selectedRecipientsIds = selectedPlayers.value[0] ?? [];
+  const selectedRecipients = users.value.filter(u => selectedRecipientsIds.includes(u.dbId));
+  console.log(selectedRecipients);
   if (!subject.value) {
     return notification.error('Please provide a subject for your email');
   }
   if (!body.value) {
     return notification.error('Please provide a body for your email');
   }
-  if (!selectedPlayers.value.length && !additionalReceivers.value.trim()) {
+  if (!selectedRecipients.length && !additionalReceivers.value.trim()) {
     return notification.error('Please select at least one player or provide an email address');
   }
-  await save(`Notification has been successfully sent to ${selectedPlayers.value.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
+  await save(`Notification has been successfully sent to ${selectedRecipients.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
     subject: subject.value,
     body: body.value,
-    recipients: selectedPlayers.value.map(p => p.email).join(',').concat(additionalReceivers.value)
+    recipients: selectedRecipients.map(p => p.email).join(',').concat(additionalReceivers.value ? `,${additionalReceivers.value}` : ''),
   })
 }
 </script>
@@ -83,6 +86,7 @@ const send = async () => {
   .container-fluid {
     overflow: visible;
   }
+
   .columns.is-multiline {
     max-height: 30vh;
     overflow-y: auto;

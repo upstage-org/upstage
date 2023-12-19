@@ -51,7 +51,7 @@ const responseInterceptor = axios.interceptors.response.use(
     const token = store.getters["auth/getToken"] || "";
 
     if (
-      error?.response?.status === 401 ||
+      error?.response?.status === 403 ||
       (error?.response?.status && token && token.length > 0)
     ) {
       if (!originalRequest._retry) {
