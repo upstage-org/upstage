@@ -56,7 +56,7 @@ html_theme_options = {
     "description": "UpStage is a platform for cyberformance: remote players combine digital media in real-time for an online audience. All you need is a web browser!",
     "logo": "logo.svg",
     "github_user": "upstage-org",
-    "github_repo": "mobilise",
+    "github_repo": "upstage",
     "github_banner": "true",
     "page_width": "90%",
     "donate_url": "https://upstage.org.nz/?page_id=278",

@@ -2,7 +2,8 @@ import { useMutation } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { ref, computed } from "vue";
-import { Media, UploadFile } from "../../../models/studio";
+import { permissionFragment } from "../../../models/fragment";
+import { CopyrightLevel, Media, Permission, UploadFile } from "../../../models/studio";
 
 interface SaveMediaPayload {
   files: UploadFile[];
@@ -12,12 +13,14 @@ interface SaveMediaPayload {
 interface SaveMediaMutationVariables {
   id?: string
   name: string
-  urls?: string[]
+  urls: string[]
   mediaType: string
-  playerAccess?: string
-  copyrightLevel: 0 | 1 | 2 | 3
+  copyrightLevel: CopyrightLevel
   stageIds: number[]
-  tags: string[]
+  userIds: number[]
+  tags: string[],
+  w: number,
+  h: number,
 }
 
 const getBase64 = (file: File) => new Promise<string>((resolve) => {
@@ -39,9 +42,9 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
       }
     }
   `)
-  const { mutate } = useMutation<{ saveMedia: { asset: Media } }, SaveMediaMutationVariables>(gql`
-    mutation SaveMedia($id: ID, $name: String!, $urls: [String], $mediaType: String, $playerAccess: String, $copyrightLevel: Int, $stageIds: [Int], $tags: [String]) {
-      saveMedia(id: $id, name: $name, urls: $urls, mediaType: $mediaType, playerAccess: $playerAccess, copyrightLevel: $copyrightLevel, stageIds: $stageIds, tags: $tags) {
+  const { mutate } = useMutation<{ saveMedia: { asset: Media } }, { input: SaveMediaMutationVariables }>(gql`
+    mutation SaveMedia($input: SaveStageInput!) {
+      saveMedia(input: $input) {
         asset {
           id
         }
@@ -75,7 +78,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
         }
       }
       payload.media.urls = payload.files.filter(file => file.status === 'uploaded').map(file => file.url!)
-      const result = await mutate(payload.media)
+      const result = await mutate({ input: payload.media })
       const mediaId = result?.data?.saveMedia.asset.id
       if (mediaId) {
         message.success("Media saved successfully")
@@ -91,4 +94,29 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
   const saving = computed(() => progress.value < 100)
 
   return { progress, saveMedia, saving }
+}
+
+export const useConfirmPermission = () => {
+  return useMutation<{ confirmPermission: { success: boolean, message: string, permissions: Permission[] } }, { id: string, approved: boolean }>(gql`
+    mutation ConfirmPermission($id: ID, $approved: Boolean) {
+      confirmPermission(id: $id, approved: $approved) {
+        success
+        message
+        permissions {
+          ...permissionFragment
+        }
+      }
+    }
+    ${permissionFragment}
+  `)
+}
+
+export const useRequestPermission = () => {
+  return useMutation<{ requestPermission: { success: boolean, message: string } }, { assetId: string, note?: string }>(gql`
+    mutation RequestPermission($assetId: ID, $note: String) {
+      requestPermission(assetId: $assetId, note: $note) {
+        success
+      }
+    }
+  `)
 }
