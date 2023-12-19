@@ -8,9 +8,9 @@ from base64 import b64decode
 from datetime import datetime, timedelta
 
 import graphene
-from asset.models import Asset as AssetModel, Stage as StageModel
+from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
-from user.models import User as UserModel
+from user.models import MAKER, PLAYER, User as UserModel
 from config.project_globals import ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
@@ -55,6 +55,7 @@ class Asset(SQLAlchemyObjectType):
         description="What permission the logged in user is granted to this media")
     sign = graphene.String(
         description="Stream sign that is required to publish from broadcaster")
+    tags = graphene.List(graphene.String, description="Media tags")
 
     class Meta:
         model = AssetModel
@@ -68,6 +69,9 @@ class Asset(SQLAlchemyObjectType):
 
     def resolve_stages(self, info):
         return [{'id': x.stage_id, 'name': x.stage.name, 'url': x.stage.file_location} for x in self.stages.all()]
+
+    def resolve_tags(self, info):
+        return [x.tag.name for x in self.tags.all()]
 
     def resolve_copyright_level(self, info):
         if self.asset_license:
@@ -155,6 +159,12 @@ class AssetConnectionField(SQLAlchemyConnectionField):
                     query = query\
                         .join(ParentStage, AssetModel.stages)\
                         .filter(ParentStage.stage_id.in_(value))
+            elif field == 'tags':
+                if len(value):
+                    query = query\
+                        .join(MediaTag, AssetModel.tags)\
+                        .join(Tag, MediaTag.tag)\
+                        .filter(Tag.name.in_(value))
             elif field == 'created_between':
                 if len(value) == 2:
                     query = query\
@@ -191,3 +201,142 @@ class CalcSizes(graphene.Mutation):
             local_db_session.commit()
             local_db_session.close()
             return CalcSizes(size=total)
+
+
+class UploadFile(graphene.Mutation):
+    """Mutation to upload a media."""
+    url = graphene.String(description="Uploaded file url")
+
+    class Arguments:
+        base64 = graphene.String(
+            required=True, description="Base64 encoded content of the uploading media")
+        filename = graphene.String(
+            required=True, description="Original file name")
+
+    @jwt_required()
+    def mutate(self, info, base64, filename):
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN, PLAYER, MAKER):
+            raise Exception("You don't have permission to upload media")
+
+        # Save base64 to file
+        filename, file_extension = os.path.splitext(filename)
+        unique_filename = uuid.uuid4().hex + file_extension
+        subpath = 'media'
+        mediaDirectory = os.path.join(
+            absolutePath, storagePath, subpath)
+        if not os.path.exists(mediaDirectory):
+            os.makedirs(mediaDirectory)
+        with open(os.path.join(mediaDirectory, unique_filename), "wb") as fh:
+            fh.write(b64decode(base64.split(',')[1]))
+
+        file_location = os.path.join(subpath, unique_filename)
+        return UploadFile(url=file_location)
+
+
+class SaveMedia(graphene.Mutation):
+    """Mutation to upload a media."""
+    asset = graphene.Field(
+        lambda: Asset, description="Media saved by this mutation.")
+
+    class Arguments:
+        name = graphene.String(
+            required=True, description="Name of the media")
+        urls = graphene.List(
+            graphene.String, description="Uploaded url of files")
+        media_type = graphene.String(
+            description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+        id = graphene.ID(description="ID of the media (for updating)")
+        copyright_level = graphene.Int(description="Copyright level")
+        player_access = graphene.String(
+            description="Users who can access and edit this media")
+        stage_ids = graphene.List(
+            graphene.Int, description="Id of stages to be assigned to")
+        tags = graphene.List(
+            graphene.String, description="Media tags")
+
+    @jwt_required()
+    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, player_access=None, stage_ids=None, tags=None):
+        current_user_id = get_jwt_identity()
+        with ScopedSession() as local_db_session:
+            asset_type = local_db_session.query(AssetTypeModel).filter(
+                AssetTypeModel.name == media_type).first()
+            if not asset_type:
+                asset_type = AssetTypeModel(
+                    name=media_type, file_location=media_type)
+                local_db_session.add(asset_type)
+                local_db_session.flush()
+
+            if id:
+                id = from_global_id(id)[1]
+                asset = local_db_session.query(AssetModel).filter(
+                    AssetModel.id == id).first()
+            else:
+                asset = AssetModel(owner_id=current_user_id)
+                local_db_session.add(asset)
+
+            if asset:
+                asset.name = name
+                asset.asset_type = asset_type
+                asset.file_location = urls[0]
+                asset.updated_on = datetime.utcnow()
+
+                if asset.asset_license:
+                    asset.asset_license.level = copyright_level
+                    asset.asset_license.permissions = player_access
+                else:
+                    if not asset.id:
+                        local_db_session.flush()
+
+                    asset_license = AssetLicense(
+                        asset_id=asset.id,
+                        level=copyright_level,
+                        permissions=player_access
+                    )
+                    local_db_session.add(asset_license)
+                local_db_session.flush()
+
+            if urls:
+                if not asset.description:
+                    asset.description = "{}"
+                attributes = json.loads(asset.description)
+                if not 'frame' in attributes or attributes['frames']:
+                    attributes['frames'] = []
+
+                asset.size = 0
+                for url in urls:
+                    attributes['frames'].append(url)
+                    full_path = os.path.join(absolutePath, storagePath, url)
+                    try:
+                        size = os.path.getsize(full_path)
+                    except:
+                        size = 0  # file not exist
+                    asset.size += size
+
+                if len(urls) > 1:
+                    attributes['multi'] = True
+
+                asset.description = json.dumps(attributes)
+                local_db_session.flush()
+
+            if stage_ids:
+                asset.stages.delete()
+                for id in stage_ids:
+                    asset.stages.append(ParentStage(stage_id=id))
+
+            if tags:
+                asset.tags.delete()
+                for tag in tags:
+                    tag_model = local_db_session.query(
+                        Tag).filter(Tag.name == tag).first()
+                    if not tag_model:
+                        tag_model = Tag(name=tag)
+                        local_db_session.add(tag_model)
+                        local_db_session.flush()
+                    asset.tags.append(MediaTag(tag_id=tag_model.id))
+
+            local_db_session.flush()
+            local_db_session.commit()
+            asset = local_db_session.query(AssetModel).filter(
+                AssetModel.id == asset.id).first()
+            return SaveMedia(asset=asset)

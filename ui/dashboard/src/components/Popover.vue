@@ -1,5 +1,5 @@
 <template>
-  <div @mouseover="mouseover" @mouseout="mouseout" class="popover">
+  <div @mouseenter="show" @mouseleave="hide" v-click-outside="hide" class="popover">
     <slot name="trigger" />
 
     <transition @enter="enter">
@@ -16,14 +16,14 @@ import anime from "animejs";
 export default {
   setup: () => {
     const position = ref();
-    const mouseover = (e) => {
+    const show = (e) => {
       position.value = {
         x: e.clientX,
         y: e.clientY,
       };
     };
 
-    const mouseout = () => {
+    const hide = () => {
       position.value = null;
     };
 
@@ -34,7 +34,7 @@ export default {
       });
     };
 
-    return { mouseover, mouseout, position, enter };
+    return { show, hide, position, enter };
   },
 };
 </script>
