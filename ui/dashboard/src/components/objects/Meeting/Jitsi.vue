@@ -80,7 +80,6 @@ export default {
     }, { immediate: true })
 
     onMounted(loadTrack);
-    watch(tracks, loadTrack);
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
