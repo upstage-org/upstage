@@ -169,6 +169,11 @@ const routes = [{
             import ('../views/replay/Layout.vue'),
     },
     {
+        path: '/playground',
+        name: 'Playground',
+        component: () => import('../views/Playground.vue'),
+    },
+    {
         path: '/:url', // Keep it in the last of the route list so it won't block these other pages when conflict happens
         name: 'Live',
         component: () =>

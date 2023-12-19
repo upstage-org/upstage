@@ -44,6 +44,7 @@ class UserAttribute:
     active =  graphene.Boolean(description="Active record or not")
     firebase_pushnot_id = graphene.String(description="firebase_pushnot_id")
     upload_limit = graphene.Int(description="Maximum file upload size limit, in bytes")
+    intro = graphene.String(description="Introduction")
 
 class User(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
@@ -70,6 +71,8 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         if not data['email'] and data['role'] != GUEST:
             raise Exception("Email is required!")
+        if not data['intro']:
+            raise Exception("Introduction is required!")
 
         user = UserModel(**data)
         user_id = None
@@ -83,10 +86,10 @@ class CreateUser(graphene.Mutation):
             user_id = user.id
 
         user = DBSession.query(UserModel).filter(UserModel.id==user_id).first()
-        send(user.email, f"Welcome to UpStage!", user_registration(user))
+        send([user.email], f"Welcome to UpStage!", user_registration(user))
         admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
         approval_url = f"{request.url_root}backstage/admin/player-management"
-        send(','.join(admin_emails), f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
+        send(admin_emails, f"Approval required for {user.username}'s registration", admin_registration_notification(user, approval_url))
         return CreateUser(user=user)
 
 class UpdateUserInput(graphene.InputObjectType,UserAttribute):
@@ -121,7 +124,7 @@ class UpdateUser(graphene.Mutation):
             for key, value in data.items():
                 if key == 'active':
                     if value and not user.active and not user.deactivated_on:
-                        send(user.email, f"Registration approved for user {user.username}", user_approved(user))
+                        send([user.email], f"Registration approved for user {user.username}", user_approved(user))
                     if not value and user.active:
                         user.deactivated_on = datetime.now()
 

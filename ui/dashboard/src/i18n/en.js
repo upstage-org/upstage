@@ -167,4 +167,10 @@ export default {
   size: 'Size',
   date: 'Date',
   manage_media: 'Manage Media',
+  registration_button: 'Registration Button',
+  shape: 'Shape',
+  loop: {
+    on: 'Loop',
+    off: 'No Loop',
+  }
 }
