@@ -49,16 +49,12 @@
                 class="button is-small is-rounded mx-1"
                 data-tooltip="Increase font size"
                 @click="increateFontSize()"
-              >
-                ➕
-              </button>
+              >➕</button>
               <button
                 data-tooltip="Decrease font size"
                 class="button is-small is-rounded mx-1"
                 @click="decreaseFontSize()"
-              >
-                ➖
-              </button>
+              >➖</button>
             </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
@@ -111,8 +107,15 @@ export default {
         scrollToEnd();
       }
     };
-    watch(messages.value, scrollToEnd);
     onMounted(scrollToEnd);
+    watch(messages.value, scrollToEnd);
+    watch(collapsed, val => {
+      if (!val) {
+        setTimeout(() => {
+          scrollToEnd();
+        });
+      }
+    });
 
     const openChatSetting = () =>
       store.dispatch("stage/openSettingPopup", {
@@ -244,6 +247,7 @@ export default {
     position: absolute;
     right: 24px;
     top: 10px;
+    z-index: 1;
     button {
       width: 26px;
       height: 26px;
