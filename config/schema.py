@@ -1,20 +1,23 @@
 # -*- coding: iso8859-15 -*-
 from os import name
 
-from flask_jwt_extended.view_decorators import jwt_required
-from config.project_globals import DBSession, ScopedSession, app
-from flask_graphql import GraphQLView
-from config.settings import NGINX_CONFIG_FILE, URL_PREFIX
-from graphene import relay
 import graphene
-from config.models import Config as ConfigModel
+from flask_graphql import GraphQLView
+from flask_jwt_extended.view_decorators import jwt_required
+from graphene import relay
+from graphql.execution.executors.asyncio import AsyncioExecutor
 from mail.mail_utils import send
 from user.models import ADMIN, SUPER_ADMIN
 from user.user_utils import current_user
 
+from config.models import Config as ConfigModel
+from config.project_globals import DBSession, ScopedSession, app
+from config.settings import NGINX_CONFIG_FILE, URL_PREFIX
+
 TERMS_OF_SERVICE = 'TERMS_OF_SERVICE'
 MANUAL = 'MANUAL'
 EMAIL_SUBJECT_PREFIX = 'EMAIL_SUBJECT_PREFIX'
+ENABLE_DONATE = 'ENABLE_DONATE'
 
 
 class NginxConfig(graphene.ObjectType):
@@ -46,6 +49,7 @@ class SystemConfig(graphene.ObjectType):
     termsOfService = graphene.String()
     manual = graphene.String()
     esp = graphene.String()
+    enableDonate = graphene.Boolean()
 
     def resolve_termsOfService(self, info):
         return get_config(TERMS_OF_SERVICE)
@@ -55,6 +59,9 @@ class SystemConfig(graphene.ObjectType):
 
     def resolve_esp(self, info):
         return get_config(EMAIL_SUBJECT_PREFIX)
+
+    def resolve_enableDonate(self, info):
+        return get_config(ENABLE_DONATE)
 
 class FoyerConfig(graphene.ObjectType):
     title = graphene.String()
@@ -73,6 +80,7 @@ class FoyerConfig(graphene.ObjectType):
 
     def resolve_showRegistration(self, info):
         return get_config('SHOW_REGISTRATION')
+
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
@@ -158,13 +166,13 @@ class SendEmail(graphene.Mutation):
             required=False, description="The bcc recipients of the email. Comma separated.")
 
     @jwt_required()
-    def mutate(self, info, subject, body, recipients, bcc):
+    async def mutate(self, info, subject, body, recipients, bcc):
         code, error, user, timezone = current_user()
-        if not user.role in (ADMIN, SUPER_ADMIN):
+        if not user.role in (ADMIN, SUPER_ADMIN) and not user.can_send_email:
             raise Exception(
                 "Only Admin can send notification emails!")
 
-        send(recipients.split(','), subject, body, bcc.split(','))
+        await send(recipients.split(','), subject, body, bcc.split(','))
         return SendEmail(success=True)
 
 
@@ -179,6 +187,6 @@ config_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
     f'/{URL_PREFIX}config_graphql/', view_func=GraphQLView.as_view(
         "config_graphql", schema=config_schema,
-        graphiql=True
+        graphiql=True, executor=AsyncioExecutor()
     )
 )

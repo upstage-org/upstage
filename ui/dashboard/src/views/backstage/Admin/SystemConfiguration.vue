@@ -56,7 +56,6 @@
       </div>
     </template>
   </div>
-
 </template>
 
 <script>
@@ -67,7 +66,7 @@ import { useMutation } from "@/services/graphql/composable";
 import { configGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
 export default {
-  components: { Field },
+  components: { Field},
   setup: () => {
     const store = useStore();
     const termsOfService = ref();
@@ -110,7 +109,7 @@ export default {
       }, 'EMAIL_SUBJECT_PREFIX', esp.value);
     };
 
-    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP };
+    return { termsOfService, edit, saveToS, loadingTOS, manual, saveManual, loading, esp, saveESP};
   },
 };
 </script>
