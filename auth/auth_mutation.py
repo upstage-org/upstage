@@ -13,6 +13,7 @@ import graphene
 import pyotp
 
 from mail.mail_utils import send
+from mail.templates import password_reset
 appdir = os.path.abspath(os.path.dirname(__file__))
 projdir = os.path.abspath(os.path.join(appdir, '..'))
 if projdir not in sys.path:
@@ -113,26 +114,7 @@ class RequestPasswordResetMutation(graphene.Mutation):
             local_db_session.flush()
             local_db_session.add(OneTimeTOTP(user_id=user.id, code=otp))
             local_db_session.flush()
-            send(email, f"Password reset for account {user.username}",
-                 f"""
-<p>
-Hi <b>{user.display_name if user.display_name else user.username}</b>,
-<br>
-<br>
-We received a request to reset your forgotten password. Please use the following code to proceed your password reset:
-<b style="color: #007011">{otp}</b>
-<br>
-The code will expire in 30 minutes.
-<br>
-<br>
-If you did not request a password reset, please ignore this email.
-<br>
-<br>
-Thank you,
-<br>
-<i style="color: #007011">The Upstage Team!</i>
-</p>
-""")
+            send(email, f"Password reset for account {user.username}", password_reset(user, otp))
 
         return RequestPasswordResetMutation(
             message=f"We've sent an email with a code to reset your password to {email}.",

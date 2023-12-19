@@ -216,7 +216,7 @@ export default {
       }
     };
 
-    const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay']
+    const preservedPaths = ['backstage', 'login', 'register', 'static', 'studio', 'replay', 'api']
     const shortNameValid = ref(!!stage.value.id);
     const { loading: validatingShortName, fetch } = useRequest(
       stageGraph.stageList

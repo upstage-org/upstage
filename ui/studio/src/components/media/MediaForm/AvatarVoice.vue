@@ -29,7 +29,6 @@ const handleVoicePicked = (voice: AvatarVoice) => {
         v-model:value="props.voice.voice"
         placeholder="No voice"
         :options="getVoiceList()"
-        allowClear
       />
       <VoicePicker @change="handleVoicePicked" />
     </div>

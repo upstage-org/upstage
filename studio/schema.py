@@ -7,7 +7,7 @@ import graphene
 from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from auth.auth_mutation import RefreshMutation
 from config.project_globals import DBSession, app
-from config.settings import VERSION
+from config.settings import URL_PREFIX
 from flask_graphql import GraphQLView
 from graphene import relay
 from asset.models import Stage as StageModel, Tag as TagModel
@@ -88,7 +88,7 @@ class Mutation(graphene.ObjectType):
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 studio_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{VERSION}/studio_graphql/', view_func=GraphQLView.as_view(
+    f'/{URL_PREFIX}/studio_graphql/', view_func=GraphQLView.as_view(
         "studio_graphql", schema=studio_schema,
         graphiql=True
     )

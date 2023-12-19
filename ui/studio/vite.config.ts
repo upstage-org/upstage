@@ -21,6 +21,7 @@ export default defineConfig({
           'border-radius-base': '4px',
           'font-size-base': '16px',
           'font-family': 'Josefin Sans, sans-serif',
+          'table-padding-vertical': '8px'
         },
         javascriptEnabled: true,
       },

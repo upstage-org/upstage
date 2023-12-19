@@ -2,7 +2,9 @@ import { computed, onMounted, reactive, ref, watch } from "vue";
 import * as canvasUtil from '@/utils/canvas';
 
 const eraseDot = (ctx, { x, y, size }) => {
-    ctx.clearRect(x, y, size, size);
+    ctx.globalCompositeOperation = 'destination-out';
+    drawDot(ctx, { x, y, size, color: 'white' });
+    ctx.globalCompositeOperation = 'source-over';
 }
 
 const drawDot = (ctx, { x, y, size, color }) => {
@@ -194,22 +196,17 @@ export const useDrawable = () => {
         canvas.width = size.value;
         canvas.height = size.value;
         const ctx = canvas.getContext("2d");
+        ctx.beginPath();
+        const r = size.value / 2;
+        ctx.arc(r, r, r, 0, Math.PI * 2, true);
+        ctx.closePath();
         if (mode.value === 'draw') {
-            ctx.beginPath();
-            const r = size.value / 2;
-            ctx.arc(r, r, r, 0, Math.PI * 2, true);
-            ctx.closePath();
             ctx.fillStyle = color.value;
-            ctx.fill();
-            return `url(${canvas.toDataURL()}) ${r} ${r}, pointer`
-        }
-        if (mode.value === 'erase') {
+        } else if (mode.value === 'erase') {
             ctx.fillStyle = "white";
-            ctx.fillRect(0, 0, size.value, size.value);
-            ctx.strokeRect(0, 0, size.value, size.value);
         }
-        return `url(${canvas.toDataURL()}), pointer`
-
+        ctx.fill();
+        return `url(${canvas.toDataURL()}) ${r} ${r}, pointer`
     })
 
     const toggleErase = () => {
