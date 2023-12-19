@@ -83,8 +83,8 @@ $link-invert: $primary-invert;
 $link-focus-border: $primary;
 
 // Visual Identity
-$control-shadow: 0 0 0 1px black;
 $border-color: #363636;
+$control-shadow: 0 0 0 1px black;
 $button-hover-border-color: $border-color;
 $navbar-dropdown-radius: none;
 $navbar-dropdown-border-top: none;
@@ -102,9 +102,3 @@ $tabs-toggle-link-active-border-color: transparent;
 $dropdown-content-padding-top: 0;
 $dropdown-content-padding-bottom: 0;
 $dropdown-content-shadow: $control-shadow;
-
-// Import Bulma and Buefy styles
-@import "~bulma";
-@import "~bulma-slider";
-@import "~bulma-switch";
-@import "~bulma-tooltip";

@@ -167,7 +167,13 @@ export default {
       form.playerAccess = JSON.stringify(val);
     });
 
-    const { nodes: users } = useQuery(userGraph.userList);
+    const { nodes } = useQuery(userGraph.userList);
+    const users = computed(() => nodes.value ? nodes.value.filter(u => {
+      if (stage.value && stage.value.owner) {
+        return u.username !== stage.value.owner.username
+      }
+      return u.username !== store.state.user.user.username
+    }) : []);
     const { loading, mutation } = useMutation(
       stage.value.id ? stageGraph.updateStage : stageGraph.createStage,
       form

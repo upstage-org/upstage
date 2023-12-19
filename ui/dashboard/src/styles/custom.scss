@@ -5,6 +5,12 @@
 @import "./mixins";
 @import "./bulma";
 @import "./speech";
+
+// Import Bulma and Buefy styles
+@import "~bulma-slider";
+@import "~bulma-switch";
+@import "~bulma-tooltip";
+@import "~bulma";
 * {
     font-family: 'Josefin Sans', sans-serif;
 }
@@ -182,6 +188,9 @@ div.moveable-control-box {
         &:first-child {
             margin-left: 0;
         }
+    }
+    .modal-card-title {
+        font-size: 1rem;
     }
 }
 @media (pointer: coarse) { // touch devices

@@ -12,6 +12,9 @@ module.exports = {
         name: "UpStage",
         themeColor: "#30ac45",
         msTileColor: "#ffffff",
-        manifestCrossorigin: "use-credentials"
+        manifestCrossorigin: "use-credentials",
+        workboxOptions: {
+            skipWaiting: true
+        }
     }
 }

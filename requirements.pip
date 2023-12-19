@@ -27,3 +27,5 @@ vimeo
 websockets
 pymongo
 stripe
+APScheduler==3.3.1
+aiosmtplib

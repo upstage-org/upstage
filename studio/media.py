@@ -476,7 +476,7 @@ class ConfirmPermission(graphene.Mutation):
                     local_db_session.delete(asset_usage)
                 local_db_session.flush()
                 studio_url = f"{request.url_root}studio"
-                send(asset_usage.user.email,
+                send([asset_usage.user.email],
                     f"Permission approved for media {asset_usage.asset.name}" if approved else f"Permission rejected for media {asset_usage.asset.name}",
                     permission_response_for_media(asset_usage.user, asset_usage.asset, asset_usage.note, approved, studio_url)
                 )
@@ -511,7 +511,7 @@ class RequestPermission(graphene.Mutation):
                 local_db_session.flush()
                 local_db_session.commit()
                 studio_url = f"{request.url_root}studio"
-                send(asset.owner.email, f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
+                send([asset.owner.email], f"Pending permission request for media {asset.name}", request_permission_for_media(user, asset, note, studio_url))
         return ConfirmPermission(success=True)
 
 

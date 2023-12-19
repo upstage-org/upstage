@@ -1,34 +1,19 @@
 <template>
-  <section
-    id="live-stage"
-    class="hero bg-cover is-fullheight"
-    :style="{ 'background-color': backdropColor }"
-  >
-    <div
-      id="board"
-      @dragenter.prevent
-      @dragover.prevent
-      @drop.prevent="drop"
-      :style="{
-        width: stageSize.width + 'px',
-        height: stageSize.height + 'px',
-        transform:
-          'translateX(' +
-          stageSize.left +
-          'px) translateY(' +
-          stageSize.top +
-          'px)',
-      }"
-    >
+  <section id="live-stage" class="hero bg-cover is-fullheight" :style="{ 'background-color': backdropColor }">
+    <div id="board" @dragenter.prevent @dragover.prevent @drop.prevent="drop" :style="{
+      width: stageSize.width + 'px',
+      height: stageSize.height + 'px',
+      transform:
+        'translateX(' +
+        stageSize.left +
+        'px) translateY(' +
+        stageSize.top +
+        'px)',
+    }">
       <Backdrop />
       <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
-        <component
-          v-for="object in objects"
-          :id="object.id"
-          :key="object.id"
-          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'"
-          :object="object"
-        />
+        <component v-for="object in objects" :id="object.id" :key="object.id"
+          :is="object.drawingId ? 'drawing' : object.type ?? 'avatar'" :object="object" />
       </transition-group>
     </div>
   </section>
@@ -43,6 +28,7 @@ import Avatar from "@/components/objects/Avatar/index";
 import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
 import Meeting from "@/components/objects/Meeting/index";
+import Jitsi from "@/components/objects/Meeting/Jitsi";
 import Text from "@/components/objects/Text";
 import Curtain from "@/components/stage/Curtain";
 import Whiteboard from "@/components/stage/Whiteboard";
@@ -62,6 +48,7 @@ export default {
     Image,
     Backdrop,
     Meeting,
+    Jitsi,
   },
   setup: () => {
     const store = useStore();
