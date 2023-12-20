@@ -33,7 +33,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   saveConfig: (name, value) =>
     client.request(
@@ -44,7 +44,7 @@ export default {
           }
         }
       `,
-      { name, value }
+      { name, value },
     ),
   sendEmail: (variables) =>
     client.request(
@@ -65,6 +65,6 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
 };

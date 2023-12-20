@@ -155,22 +155,22 @@ export default {
       list = list.filter((m) => type_dis.includes(m.assetType.name));
       if (filter.name) {
         list = list.filter((media) =>
-          media.name.toLowerCase().includes(filter.name.toLowerCase())
+          media.name.toLowerCase().includes(filter.name.toLowerCase()),
         );
       }
       if (filter.mediaType && filter.mediaType.id) {
         list = list.filter(
-          (media) => media.assetType.name === filter.mediaType.name
+          (media) => media.assetType.name === filter.mediaType.name,
         );
       }
       if (filter.owner && filter.owner.id) {
         list = list.filter(
-          (media) => media.owner.username === filter.owner.username
+          (media) => media.owner.username === filter.owner.username,
         );
       }
       if (filter.stage && filter.stage.id) {
         list = list.filter((media) =>
-          media.stages.find((s) => s.id === filter.stage.dbId)
+          media.stages.find((s) => s.id === filter.stage.dbId),
         );
       }
       return list;

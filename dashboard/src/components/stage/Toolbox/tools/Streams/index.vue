@@ -55,7 +55,7 @@ export default {
     };
 
     const autoDetect = computed(
-      () => store.state.stage.config.streaming?.autoDetect
+      () => store.state.stage.config.streaming?.autoDetect,
     );
     onMounted(() => {
       fetchRunningStreams();

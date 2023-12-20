@@ -274,7 +274,7 @@ export default {
     const isHolding = computed(
       () =>
         props.object.holder &&
-        props.object.holder.id === store.state.stage.session
+        props.object.holder.id === store.state.stage.session,
     );
 
     const openVoiceSetting = () => {

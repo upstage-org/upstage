@@ -28,7 +28,7 @@ const { result, loading } = useQuery<StudioGraph>(
     }
   `,
   null,
-  { fetchPolicy: "cache-only" }
+  { fetchPolicy: "cache-only" },
 );
 const stages = computed(() => {
   if (result.value?.stages) {
@@ -69,7 +69,7 @@ const renderItem = (item: TransferItem) => item.name;
     }"
     :titles="[' available', ' assigned']"
     v-model:target-keys="targetKeys"
-    :data-source="(stages as any)"
+    :data-source="stages as any"
     show-search
     :filter-option="filterOption"
     :render="renderItem"

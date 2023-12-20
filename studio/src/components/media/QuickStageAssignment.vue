@@ -39,7 +39,7 @@ const { result, loading } = useQuery<StudioGraph>(
   null,
   {
     fetchPolicy: "cache-only",
-  }
+  },
 );
 
 const dataSource = computed(() => {
@@ -79,7 +79,7 @@ const quickAssign = async (stage: Stage) => {
     stageId: stage.dbId,
   });
   message.success(
-    `${props.media.name} had been assigned to ${stage.name} successfully!`
+    `${props.media.name} had been assigned to ${stage.name} successfully!`,
   );
   refresh();
 };

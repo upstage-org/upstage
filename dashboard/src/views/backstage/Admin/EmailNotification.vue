@@ -96,11 +96,11 @@ const { save, loading } = useMutation(configGraph.sendEmail);
 const send = async () => {
   const selectedRecipientsIds = selectedPlayers.value[0] ?? [];
   const selectedRecipients = users.value.filter((u) =>
-    selectedRecipientsIds.includes(u.dbId)
+    selectedRecipientsIds.includes(u.dbId),
   );
   const selectedBccIds = selectedPlayers.value[1] ?? [];
   const selectedBccs = users.value.filter((u) =>
-    selectedBccIds.includes(u.dbId)
+    selectedBccIds.includes(u.dbId),
   );
   console.log(selectedRecipients, selectedBccs);
   if (!subject.value) {
@@ -116,7 +116,7 @@ const send = async () => {
     !additionalBcc.value.trim()
   ) {
     return notification.emailError(
-      "Please select at least one player or provide an email address"
+      "Please select at least one player or provide an email address",
     );
   }
   await save(
@@ -134,13 +134,13 @@ const send = async () => {
         .map((p) => p.email)
         .join(",")
         .concat(
-          additionalReceivers.value ? `,${additionalReceivers.value}` : ""
+          additionalReceivers.value ? `,${additionalReceivers.value}` : "",
         ),
       bcc: selectedBccs
         .map((p) => p.email)
         .join(",")
         .concat(additionalBcc.value ? `,${additionalBcc.value}` : ""),
-    }
+    },
   );
   reset();
 };

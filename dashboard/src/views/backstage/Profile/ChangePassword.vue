@@ -54,7 +54,7 @@ export default {
     const confirmPasswordError = computed(() =>
       form.newPassword !== form.confirmPassword
         ? "Confirm password mismatch"
-        : false
+        : false,
     );
     const changePassword = async () => {
       if (confirmPasswordError.value) return;

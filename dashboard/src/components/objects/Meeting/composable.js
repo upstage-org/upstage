@@ -47,21 +47,21 @@ export const useJitsi = () => {
         });
 
         jitsi.room.join();
-      }
+      },
     );
     jitsi.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_FAILED,
       (e) => {
         console.error("Connection failed", e);
         joined.value = false;
-      }
+      },
     );
     jitsi.connection.addEventListener(
       JitsiMeetJS.events.connection.CONNECTION_DISCONNECTED,
       (e) => {
         console.error("Connection disconnected", e);
         joined.value = false;
-      }
+      },
     );
 
     jitsi.connection.connect();

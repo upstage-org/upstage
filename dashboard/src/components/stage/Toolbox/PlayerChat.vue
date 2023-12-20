@@ -27,7 +27,7 @@ export default {
       store.dispatch("stage/showPlayerChat", !showPlayerChat.value);
     };
     const unread = computed(
-      () => store.getters["stage/unreadPrivateMessageCount"]
+      () => store.getters["stage/unreadPrivateMessageCount"],
     );
 
     return { showPlayerChat, togglePlayerChat, unread };

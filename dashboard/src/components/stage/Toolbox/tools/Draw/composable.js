@@ -52,7 +52,7 @@ const execute = async (ctx, command, animate) => {
           x,
           y,
           size,
-        })
+        }),
       );
     }
   } else {
@@ -155,28 +155,28 @@ export const useDrawable = () => {
         (e) => {
           findxy("move", e);
         },
-        false
+        false,
       );
       canvas.addEventListener(
         "mousedown",
         (e) => {
           findxy("down", e);
         },
-        false
+        false,
       );
       canvas.addEventListener(
         "mouseup",
         (e) => {
           findxy("up", e);
         },
-        false
+        false,
       );
       canvas.addEventListener(
         "mouseout",
         (e) => {
           findxy("out", e);
         },
-        false
+        false,
       );
     }
   };

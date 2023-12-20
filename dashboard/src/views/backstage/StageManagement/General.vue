@@ -218,7 +218,7 @@ export default {
     });
 
     const playerAccess = ref(
-      useAttribute(stage, "playerAccess", true).value ?? []
+      useAttribute(stage, "playerAccess", true).value ?? [],
     );
 
     watch(playerAccess, (val) => {
@@ -234,7 +234,7 @@ export default {
             }
             return u.username !== store.state.user.user.username;
           })
-        : []
+        : [],
     );
 
     const owner = computed(() =>
@@ -245,12 +245,12 @@ export default {
             }
             return u.username === store.state.user.user.username;
           })
-        : []
+        : [],
     );
 
     const { loading, mutation } = useMutation(
       stage.value.id ? stageGraph.updateStage : stageGraph.createStage,
-      form
+      form,
     );
     const createStage = async () => {
       try {

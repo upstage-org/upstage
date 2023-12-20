@@ -80,7 +80,7 @@ export default {
 
     const drop = (e) => {
       const { object, isReal, nodrop } = JSON.parse(
-        e.dataTransfer.getData("text")
+        e.dataTransfer.getData("text"),
       );
       if (isReal) {
         if (

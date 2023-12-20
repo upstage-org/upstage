@@ -306,12 +306,13 @@ export default {
       return res;
     });
     const { nodes: stageList, loading: loadingAllStages } = useQuery(
-      stageGraph.stageList
+      stageGraph.stageList,
     );
     const availableStages = computed(() => {
       if (!stageList.value) return [];
       const res = stageList.value.filter(
-        (stage) => stage.permission === "owner" || stage.permission === "editor"
+        (stage) =>
+          stage.permission === "owner" || stage.permission === "editor",
       );
       res.sort((a, b) => (a.name > b.name ? 1 : -1));
       return res;
@@ -321,13 +322,13 @@ export default {
       (val) => {
         if (val) {
           form.assignedStages = form.stages.map((stage) =>
-            val.find((s) => s.dbId === stage.id)
+            val.find((s) => s.dbId === stage.id),
           );
         } else {
           form.assignedStages = [];
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
 
     const closeModal = inject("closeModal");
@@ -345,7 +346,7 @@ export default {
     const copyrightLevels = MEDIA_COPYRIGHT_LEVELS;
     const { nodes: users } = useQuery(userGraph.userList);
     const playerAccess = ref(
-      form.playerAccess ? JSON.parse(form.playerAccess) : []
+      form.playerAccess ? JSON.parse(form.playerAccess) : [],
     );
     watch(playerAccess, (val) => {
       form.playerAccess = JSON.stringify(val);

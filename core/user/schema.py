@@ -15,9 +15,11 @@ from core.asset.models import (
 from core.performance_config.models import ParentStage as ParentStageModel, Performance
 import sys, os
 import json
+import uuid
+import requests
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, ".."))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
@@ -36,7 +38,12 @@ from core.project_globals import (
     api,
     ScopedSession,
 )
-from config import URL_PREFIX, SUPPORT_EMAILS
+from config import (
+    URL_PREFIX,
+    SUPPORT_EMAILS,
+    CLOUDFLARE_CAPTCHA_SECRETKEY,
+    CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT,
+)
 from core.auth.auth_api import jwt_required
 from core.user.models import (
     ADMIN,
@@ -57,8 +64,9 @@ from core.auth.auth_mutation import (
     VerifyPasswordResetMutation,
 )
 from core.user.user_utils import current_user
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required
 from flask import request
+from graphql_relay.node.node import from_global_id
 
 
 class UserAttribute:
@@ -91,7 +99,7 @@ class User(SQLAlchemyObjectType):
 class CreateUserInput(graphene.InputObjectType, UserAttribute):
     """Arguments to create a user."""
 
-    pass
+    token = graphene.String(description="Cloudflare captcha token.")
 
 
 class CreateUser(graphene.Mutation):
@@ -106,10 +114,33 @@ class CreateUser(graphene.Mutation):
         data = graphql_utils.input_to_dictionary(inbound)
         # We have GUEST role because Helen wants to create batch users for demo purposes
         # GUEST users don't neccessarily need an email address to keep batch creation simple
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("", None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
         if not data["intro"]:
             raise Exception("Introduction is required!")
+
+        if not data["token"]:
+            raise Exception("We think you are not a human!")
+
+        # Validate the token by calling the verify API endpoint.
+        ip = request.headers.get("CF-Connecting-IP")
+        formData = {
+            "secret": CLOUDFLARE_CAPTCHA_SECRETKEY,
+            "response": data["token"],
+            "remoteip": ip,
+        }
+
+        result = requests.post(CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT, data=formData)
+        outcome = result.json()
+
+        if not outcome["success"]:
+            raise Exception(
+                "We think you are not a human! " + ", ".join(outcome["error-codes"])
+            )
+        else:
+            del data["token"]
 
         user = UserModel(**data)
         user_id = None
@@ -158,8 +189,10 @@ class UpdateUser(graphene.Mutation):
             if not user.id == int(data["id"]):
                 raise Exception("Permission denied!")
 
-        if not data["email"] and data["role"] != GUEST:
-            raise Exception("Email is required!")
+        if data["email"] in ("", None):
+            if data["role"] != GUEST:
+                raise Exception("Email is required!")
+            data["email"] = str(uuid.uuid4()) + "@stub.stub"
 
         with ScopedSession() as local_db_session:
             try:
@@ -425,6 +458,23 @@ class BatchUserCreation(graphene.Mutation):
         return BatchUserCreation(users=users)
 
 
+class UserConnectionField(SQLAlchemyConnectionField):
+    RELAY_ARGS = ["first", "last", "before", "after"]
+
+    @classmethod
+    def get_query(cls, model, info, sort=None, **args):
+        query = super(UserConnectionField, cls).get_query(model, info, sort, **args)
+        for field, value in args.items():
+            if field == "id":
+                _type, _id = from_global_id(value)
+                query = query.filter(getattr(model, field) == _id)
+            elif len(field) > 5 and field[-4:] == "like":
+                query = query.filter(getattr(model, field[:-5]).ilike(f"%{value}%"))
+            elif field not in cls.RELAY_ARGS and hasattr(model, field):
+                query = query.filter(getattr(model, field) == value)
+        return query
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Mutation(graphene.ObjectType):
     """Some mutations are imported from core.auth/"""
@@ -443,7 +493,12 @@ class Mutation(graphene.ObjectType):
 
 class Query(graphene.ObjectType):
     node = relay.Node.Field()
-    userList = SQLAlchemyConnectionField(User.connection)
+    userList = UserConnectionField(
+        User.connection,
+        id=graphene.ID(),
+        username_like=graphene.String(),
+        active=graphene.Boolean(),
+    )
 
     # oneUser = graphql_utils.FilteredConnectionField(User, OneUserInput)
     # oneUser = OneUser.search

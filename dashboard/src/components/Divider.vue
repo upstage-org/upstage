@@ -23,7 +23,8 @@ hr.zag {
   margin: 0 16px;
 }
 hr.zig {
-  background: linear-gradient(-135deg, #fff 20px, rgba(0, 0, 0, 0) 0) 0 5px,
+  background:
+    linear-gradient(-135deg, #fff 20px, rgba(0, 0, 0, 0) 0) 0 5px,
     linear-gradient(135deg, #fff 20px, rgba(0, 0, 0, 0) 0) 0 5px;
   background-color: rgba(0, 0, 0, 0);
   background-position: center bottom;
@@ -33,7 +34,8 @@ hr.zig {
   position: relative;
 }
 hr.zag {
-  background: linear-gradient(-135deg, #333 20px, rgba(0, 0, 0, 0) 0) 0 5px,
+  background:
+    linear-gradient(-135deg, #333 20px, rgba(0, 0, 0, 0) 0) 0 5px,
     linear-gradient(135deg, #333 20px, #fff 0) 0 5px;
   background-color: rgba(0, 0, 0, 0);
   background-position: center bottom;

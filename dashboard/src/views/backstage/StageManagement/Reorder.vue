@@ -105,7 +105,7 @@ const drop = (e) => {
       props.modelValue
         .slice(0, toIndex)
         .concat(media)
-        .concat(props.modelValue.slice(toIndex))
+        .concat(props.modelValue.slice(toIndex)),
     );
   }
 };

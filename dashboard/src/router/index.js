@@ -84,7 +84,7 @@ const routes = [
           },
           {
             path: "batch-user-creation",
-            name: "Batch User Creation",
+            name: "Add New Players",
             component: () =>
               import("../views/backstage/Admin/BatchUserCreation.vue"),
           },

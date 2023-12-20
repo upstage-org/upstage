@@ -60,9 +60,9 @@ export default {
       user.uploadLimit = user.selectSize;
       await save(
         `Successfully change ${displayName(
-          user
+          user,
         )}'s upload limit to ${humanFileSize(user.uploadLimit)}!`,
-        user
+        user,
       );
       close();
     };

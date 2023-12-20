@@ -96,14 +96,14 @@ export default {
     };
 
     const isHolding = computed(
-      () => props.object.id === store.state.user.avatarId
+      () => props.object.id === store.state.user.avatarId,
     );
     const holdable = computed(() => ["avatar"].includes(props.object.type));
     const activeMovable = computed(() => store.getters["stage/activeMovable"]);
     const showSlider = computed(
       () =>
         (isHolding.value || !holdable.value) &&
-        activeMovable.value === props.object.id
+        activeMovable.value === props.object.id,
     );
 
     return { keepActive, handleChange, value, isHolding, showSlider };

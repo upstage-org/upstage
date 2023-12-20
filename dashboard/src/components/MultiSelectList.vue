@@ -90,7 +90,7 @@ export default {
     const remove = (item) => {
       emit(
         "update:modelValue",
-        props.modelValue.filter((value) => value !== item)
+        props.modelValue.filter((value) => value !== item),
       );
     };
 
@@ -109,7 +109,7 @@ export default {
     const removeAll = () => {
       emit(
         "update:modelValue",
-        props.modelValue.filter((item) => !props.data.includes(item))
+        props.modelValue.filter((item) => !props.data.includes(item)),
       );
     };
 

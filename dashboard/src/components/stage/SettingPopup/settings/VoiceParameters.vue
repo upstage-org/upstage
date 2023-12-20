@@ -103,7 +103,7 @@ export default {
     const voices = [{ id: undefined, name: "No voice" }].concat(getVoiceList());
     const variants = getVariantList();
     const parameters = reactive(
-      props.modelValue ? props.modelValue : currentAvatar.value?.voice
+      props.modelValue ? props.modelValue : currentAvatar.value?.voice,
     );
     if (!parameters.variant) {
       parameters.variant = getDefaultVariant();

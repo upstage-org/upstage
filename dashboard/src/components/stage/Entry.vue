@@ -23,7 +23,7 @@ const props = defineProps({
 });
 console.log(
   props.fallbackCover,
-  `${config.publicPath}img/${props.fallbackCover}`
+  `${config.publicPath}img/${props.fallbackCover}`,
 );
 const coverImage = (src) =>
   src ? absolutePath(src) : `${config.publicPath}img/${props.fallbackCover}`;

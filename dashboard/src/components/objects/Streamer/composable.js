@@ -74,7 +74,7 @@ export const useShape = (video, object) => {
         draw();
       }
     },
-    { immediate: true }
+    { immediate: true },
   );
 
   return { src };
@@ -99,7 +99,7 @@ export const useFlv = (video, src) => {
         () => {
           playable.value = false;
         },
-        { once: true }
+        { once: true },
       );
     }
   };

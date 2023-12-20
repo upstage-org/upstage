@@ -255,7 +255,7 @@ def scaffold_foyer():
     save_config("FOYER_TITLE", "Your New UpStage")
     save_config(
         "FOYER_DESCRIPTION",
-        'Welcome to your new UpStage! Click on the "Customise Foyer" above to change this message and other settings on this Foyer, then go to the Backstage to get started creating your cyberformance!',
+        "Welcome to your new UpStage! Log in to get started.",
     )
     print("✅ Foyer Scaffolding Completed")
 

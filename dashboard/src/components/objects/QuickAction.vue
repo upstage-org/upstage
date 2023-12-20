@@ -35,7 +35,7 @@ export default {
   setup: (props, { emit }) => {
     const store = useStore();
     const isHolding = computed(
-      () => props.object.id === store.state.user.avatarId
+      () => props.object.id === store.state.user.avatarId,
     );
 
     const keepActive = () => {
@@ -65,7 +65,7 @@ export default {
     const showQuickActions = computed(
       () =>
         (isHolding.value || !holdable.value) &&
-        activeMovable.value === props.object.id
+        activeMovable.value === props.object.id,
     );
 
     return {

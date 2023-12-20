@@ -117,7 +117,7 @@ export default {
   setup: () => {
     const store = useStore();
     const currentBackground = computed(
-      () => store.state.stage.background ?? {}
+      () => store.state.stage.background ?? {},
     );
 
     const backgrounds = computed(() => store.state.stage.tools.backdrops);

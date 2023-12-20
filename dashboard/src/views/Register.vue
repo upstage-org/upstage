@@ -67,6 +67,11 @@
                 <input type="checkbox" v-model="agreed" />
                 {{ $t("tos.register") }} <TermsOfService />.
               </label>
+              <turnstile
+                ref="captcha"
+                :site-key="siteKey"
+                v-model="form.token"
+              />
             </div>
           </div>
           <footer class="card-footer">
@@ -96,9 +101,11 @@ import { useMutation } from "@/services/graphql/composable";
 import { userGraph } from "@/services/graphql";
 import { useRouter } from "vue-router";
 import { notification } from "@/utils/notification";
+import Turnstile from "vue-turnstile";
+import configs from "@/config";
 
 export default {
-  components: { Field, Password, TermsOfService },
+  components: { Field, Password, TermsOfService, Turnstile },
   setup: () => {
     const router = useRouter();
     const form = reactive({});
@@ -106,10 +113,11 @@ export default {
     const confirmPasswordError = computed(() =>
       form.password !== form.confirmPassword
         ? "Confirm password mismatch"
-        : false
+        : false,
     );
     const touched = ref(false);
     const agreed = ref(false);
+    const captcha = ref();
 
     const submit = async () => {
       touched.value = true;
@@ -124,10 +132,11 @@ export default {
         notification.success(
           "Username " +
             response.createUser.user.username +
-            " created successfully!"
+            " created successfully!",
         );
         router.push("/login");
       } catch (error) {
+        captcha.value?.reset();
         if (error.includes("upstage_user_username_key")) {
           notification.error("Username " + form.username + " already exists!");
         } else if (error.includes("upstage_user_email_key")) {
@@ -149,6 +158,8 @@ export default {
       confirmPasswordError,
       touched,
       agreed,
+      siteKey: configs.CLOUDFLARE_CAPTCHA_SITEKEY,
+      captcha,
     };
   },
 };

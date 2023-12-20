@@ -120,7 +120,7 @@ export default {
 
     const chats = computed(() => store.state.stage.chat);
     const downloadChatVisibility = computed(
-      () => store.state.stage.showDownloadChatSetting
+      () => store.state.stage.showDownloadChatSetting,
     );
     const stageUrl = store.getters["stage/url"];
 
@@ -150,7 +150,7 @@ export default {
         let content = [];
         link.setAttribute(
           "download",
-          `${stageUrl}-Audience-chat-${timeStamp()}.txt`
+          `${stageUrl}-Audience-chat-${timeStamp()}.txt`,
         );
         content = chats.value.messages.map((item) => {
           let line = "";
@@ -175,7 +175,7 @@ export default {
         let content = [];
         link.setAttribute(
           "download",
-          `${stageUrl}-Player-chat-${timeStamp()}.txt`
+          `${stageUrl}-Player-chat-${timeStamp()}.txt`,
         );
         content = chats.value.privateMessages.map((item) => {
           let line = "";
@@ -204,7 +204,7 @@ export default {
     const formatDate = (date) => {
       return (
         [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
-          ""
+          "",
         ) +
         "-" +
         [
