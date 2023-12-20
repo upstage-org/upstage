@@ -69,7 +69,7 @@ SQLALCHEMY_POOL_RECYCLE = 3600
 PAGE_LIMIT = 100
 
 # user content defaults
-UPLOAD_USER_CONTENT_FOLDER = '/home/projectname/uploads'
+UPLOAD_USER_CONTENT_FOLDER = '/home/upstage/assets_all_releases'
 MAX_BINS = 1000000
 
 TWILIO_ACCOUNT_ID = ""
