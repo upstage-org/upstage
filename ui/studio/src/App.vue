@@ -7,19 +7,21 @@ import { DefaultApolloClient } from '@vue/apollo-composable'
 import { apolloClient } from './apollo';
 import Dropzone from './components/media/Dropzone.vue';
 import MediaUpload from './components/media/MediaForm/index.vue';
+import Footer from './components/Footer.vue';
 
 provide(DefaultApolloClient, apolloClient)
 </script>
 
 <template>
   <Authorized>
-    <a-layout class="pb-4 layout">
+    <a-layout class="layout">
       <Dropzone>
         <MediaFilter />
         <MediaTable>
           <MediaUpload />
         </MediaTable>
       </Dropzone>
+      <Footer />
     </a-layout>
   </Authorized>
 </template>
