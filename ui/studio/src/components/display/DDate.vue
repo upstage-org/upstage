@@ -6,7 +6,7 @@ const { value } = defineProps({
   value: Date
 })
 
-const text = computed(() => moment(value).fromNow())
+const text = computed(() => moment.utc(value).fromNow())
 </script>
 
 <template>{{ text }}</template>

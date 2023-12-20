@@ -7,7 +7,7 @@ from base64 import b64decode
 import graphene
 from graphql_relay.node.node import from_global_id
 from graphene_sqlalchemy import SQLAlchemyObjectType
-from asset.models import Asset as AssetModel, AssetType as AssetTypeModel
+from asset.models import Asset as AssetModel, AssetType as AssetTypeModel, MediaTag
 from config.project_globals import appdir, ScopedSession
 import sys
 import time
@@ -131,7 +131,8 @@ class Asset(SQLAlchemyObjectType):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         if self.owner_id == user_id:
-            timestamp = int((datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp())
+            timestamp = int(
+                (datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp())
             payload = "/live/{0}-{1}-{2}".format(
                 self.file_location, timestamp, STREAM_KEY)
             hashvalue = hashlib.md5(payload.encode('utf-8')).hexdigest()
@@ -320,7 +321,7 @@ class UpdateMedia(graphene.Mutation):
 
 
 class DeleteMedia(graphene.Mutation):
-    """Mutation to sweep a stage."""
+    """Mutation to delete a media."""
     success = graphene.Boolean()
     message = graphene.String()
 
@@ -342,20 +343,23 @@ class DeleteMedia(graphene.Mutation):
 
                 if asset.description:
                     attributes = json.loads(asset.description)
-                    # Delete frames that was assigned only to this media
-                    for frame in attributes['frames']:
-                        frame_asset = local_db_session.query(AssetModel).filter(
-                            AssetModel.file_location == frame).first()
-                        if not frame_asset:
-                            physical_path = os.path.join(
-                                absolutePath, storagePath, frame)
-                            if os.path.exists(physical_path):
-                                os.remove(physical_path)
+                    if 'frames' in attributes and attributes['frames']:
+                        # Delete frames that was assigned only to this media
+                        for frame in attributes['frames']:
+                            frame_asset = local_db_session.query(AssetModel).filter(
+                                or_(AssetModel.file_location == frame, AssetModel.description.contains(frame))).first()
+                            if not frame_asset:
+                                physical_path = os.path.join(
+                                    absolutePath, storagePath, frame)
+                                if os.path.exists(physical_path):
+                                    os.remove(physical_path)
 
                 physical_path = os.path.join(
                     absolutePath, storagePath, asset.file_location)
                 local_db_session.query(ParentStage).filter(
                     ParentStage.child_asset_id == id).delete(synchronize_session=False)
+                local_db_session.query(MediaTag).filter(
+                    MediaTag.asset_id == id).delete(synchronize_session=False)
                 local_db_session.query(AssetLicense).filter(
                     AssetLicense.asset_id == id).delete(synchronize_session=False)
 
