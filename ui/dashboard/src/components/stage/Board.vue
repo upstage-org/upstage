@@ -42,6 +42,7 @@ import { useStore } from "vuex";
 import Avatar from "@/components/objects/Avatar/index";
 import Drawing from "@/components/objects/Drawing";
 import Stream from "@/components/objects/Streamer/index";
+import Meeting from "@/components/objects/Meeting/index";
 import Text from "@/components/objects/Text";
 import Curtain from "@/components/stage/Curtain";
 import Whiteboard from "@/components/stage/Whiteboard";
@@ -59,7 +60,8 @@ export default {
     Curtain,
     Whiteboard,
     Image,
-    Backdrop
+    Backdrop,
+    Meeting,
   },
   setup: () => {
     const store = useStore();

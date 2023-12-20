@@ -21,6 +21,7 @@ import Audio from "./tools/Audio";
 import Draw from "./tools/Draw/index";
 import Whiteboard from "./tools/Whiteboard";
 import Streams from "./tools/Streams/index";
+import Meeting from "./tools/Meeting/index";
 import Text from "./tools/Text";
 import Settings from "./tools/Settings";
 import Depth from "./tools/Depth";
@@ -36,6 +37,7 @@ export default {
     Audio,
     Draw,
     Streams,
+    Meeting,
     Text,
     Settings,
     Depth,

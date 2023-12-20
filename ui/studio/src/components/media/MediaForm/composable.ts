@@ -3,7 +3,7 @@ import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { ref, computed } from "vue";
 import { permissionFragment } from "../../../models/fragment";
-import { CopyrightLevel, Media, Permission, UploadFile } from "../../../models/studio";
+import { AvatarVoice, CopyrightLevel, Media, Permission, UploadFile } from "../../../models/studio";
 
 interface SaveMediaPayload {
   files: UploadFile[];
@@ -21,6 +21,7 @@ interface SaveMediaMutationVariables {
   tags: string[],
   w: number,
   h: number,
+  voice: AvatarVoice
 }
 
 const getBase64 = (file: File) => new Promise<string>((resolve) => {
@@ -43,7 +44,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
     }
   `)
   const { mutate } = useMutation<{ saveMedia: { asset: Media } }, { input: SaveMediaMutationVariables }>(gql`
-    mutation SaveMedia($input: SaveStageInput!) {
+    mutation SaveMedia($input: SaveMediaInput!) {
       saveMedia(input: $input) {
         asset {
           id
@@ -77,7 +78,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
           }
         }
       }
-      payload.media.urls = payload.files.filter(file => file.status === 'uploaded').map(file => file.url!)
+      payload.media.urls = payload.files.filter(file => file.status !== 'local').map(file => file.url!)
       const result = await mutate({ input: payload.media })
       const mediaId = result?.data?.saveMedia.asset.id
       if (mediaId) {
@@ -85,7 +86,7 @@ export const useSaveMedia = (collectData: () => SaveMediaPayload, handleSuccess:
         handleSuccess(mediaId)
       }
     } catch (error) {
-      message.error("Error saving media. Detail: " + error)
+      message.error('' + error)
     } finally {
       progress.value = 100
     }
