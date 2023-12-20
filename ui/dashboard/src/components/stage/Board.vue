@@ -20,15 +20,7 @@
           'px)',
       }"
     >
-      <Image
-        class="background-image"
-        :src="background"
-        :style="{
-          opacity: backgroundOpacity,
-        }"
-        :transition="backgroundSpeed"
-        :no-fallback="true"
-      />
+      <Backdrop />
       <transition-group name="stage-avatars" :css="false" @enter="avatarEnter" @leave="avatarLeave">
         <component
           v-for="object in objects"
@@ -55,6 +47,7 @@ import Curtain from "@/components/stage/Curtain";
 import Whiteboard from "@/components/stage/Whiteboard";
 import Image from "../Image";
 import anime from "animejs";
+import Backdrop from "./Backdrop.vue";
 
 export default {
   components: {
@@ -65,23 +58,13 @@ export default {
     Text,
     Curtain,
     Whiteboard,
-    Image
+    Image,
+    Backdrop
   },
   setup: () => {
     const store = useStore();
     const canPlay = computed(() => store.getters["stage/canPlay"]);
-    const background = computed(() => {
-      const background = store.state.stage.background ?? {};
-      if (background.multi && background.currentFrame) {
-        return background.currentFrame;
-      } else {
-        return background.src;
-      }
-    });
-    const backgroundOpacity = computed(
-      () => store.state.stage.background?.opacity ?? 1
-    );
-    const backgroundSpeed = computed(() => 100 / store.state.stage.background?.speed);
+
     const stageSize = computed(() => store.getters["stage/stageSize"]);
     const config = computed(() => store.getters["stage/config"]);
     const objects = computed(() => store.getters["stage/objects"]);
@@ -136,11 +119,8 @@ export default {
       avatarEnter,
       avatarLeave,
       stageSize,
-      background,
       backdropColor,
       canPlay,
-      backgroundOpacity,
-      backgroundSpeed
     };
   },
 };
@@ -151,12 +131,5 @@ export default {
   position: fixed;
   background-size: cover;
   overflow: hidden;
-}
-.background-image {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: auto;
 }
 </style>

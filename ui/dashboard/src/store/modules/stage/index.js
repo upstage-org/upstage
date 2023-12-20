@@ -211,9 +211,6 @@ export default {
             }
             state.status = 'OFFLINE';
             state.replay.isReplaying = false;
-            if (state.background?.interval) {
-                clearInterval(state.background.interval);
-            }
             state.background = null;
             state.curtain = null;
             state.backdropColor = COLORS.DEFAULT_BACKDROP;
@@ -235,9 +232,6 @@ export default {
         SET_BACKGROUND(state, background) {
             if (background) {
                 if (!state.background || !state.background.at || (state.background.at < background.at)) {
-                    if (state.background?.interval) {
-                        clearInterval(state.background.interval);
-                    }
                     if (!state.background || state.background.id !== background.id) { // Not playing animation if only opacity change
                         anime({
                             targets: "#board",
@@ -246,16 +240,6 @@ export default {
                         });
                     }
                     state.background = background
-                    if (background.multi && background.speed > 0) {
-                        const { speed, frames } = state.background;
-                        state.background.interval = setInterval(() => {
-                            let nextFrame = frames.indexOf(state.background.currentFrame) + 1;
-                            if (nextFrame >= frames.length) {
-                                nextFrame = 0;
-                            }
-                            state.background.currentFrame = frames[nextFrame];
-                        }, 100 / speed);
-                    }
                 }
             }
         },
