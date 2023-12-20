@@ -6,7 +6,7 @@ After=syslog.target
 User=upstage
 Group=upstage
 Type=simple
-ExecStart=/bin/python3 /home/upstage/upstage/run_upstage_email.py
+ExecStart=/bin/python3 /home/upstage/upstage/scripts/run_upstage_email.py
 StandardOutput=append:/var/log/uwsgi/upstage.log
 
 [Install]

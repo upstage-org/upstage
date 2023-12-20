@@ -4,7 +4,11 @@
       <template v-if="id">
         <h1 class="title" v-if="stage.name">
           {{ stage.name }}
-          <router-link :to="`/${stage.fileLocation}`" class="button is-light">
+          <router-link
+            :to="`/${stage.fileLocation}`"
+            target="_blank"
+            class="button is-light"
+          >
             <span>{{ $t("enter") }}</span>
             <span class="icon">
               <i class="fas fa-chevron-right"></i>

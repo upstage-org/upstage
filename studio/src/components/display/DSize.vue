@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import { humanFileSize } from "utils/common";
 
 const { value } = defineProps({
@@ -12,4 +12,6 @@ const { value } = defineProps({
 const text = computed(() => humanFileSize(value));
 </script>
 
-<template>{{ text }}</template>
+<template>
+  {{ text }}
+</template>

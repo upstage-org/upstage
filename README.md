@@ -285,6 +285,20 @@ Finally, pass the incoming request to `UpStage Service`
 }
 ```
 
+## Recipes
+
+### Scaffolding demo content & base media
+
+Execute the scaffold script at:
+
+```bash
+python3 scripts/devtools/scaffold-base-media.py
+```
+
+The script uses the same configuration as the `upstage.service`, so there is no need to do additional setup.
+
+It will use the media inside `dashboard/demo` folder to create base media, the subfolder of the media will decide its type (for example, an image inside `dashboard/demo/avatar` folder will be uploaded as an avatar, while another image inside `dashboard/demo/prop` would be uploaded as a prop). You will be asked for a username to whom these media will belong. A demo stage will be created afterward, in which all these media are assigned as the default.
+
 ## Troubleshooting
 
 ### Stages offline when entering with firefox
