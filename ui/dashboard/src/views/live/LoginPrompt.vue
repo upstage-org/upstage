@@ -5,7 +5,7 @@
       <LoginForm v-if="showLoginForm" @success="onLoginSuccess" />
       <div v-else class="card">
         <header class="card-header">
-          <p class="card-header-title">Click anywhere to enter the stage</p>
+          <p class="card-header-title">{{ $t("click_anywhere_to_enter_the_stage") }}</p>
         </header>
         <div class="card-content">
           <div class="content">
@@ -31,14 +31,14 @@
       <span class="icon">
         <i class="fas fa-chevron-left"></i>
       </span>
-      <span>Enter as Audience</span>
+      <span>{{ $t("enter_as_audience") }}</span>
     </button>
     <button
       v-else
       class="button is-light is-outlined mt-4"
       @click="showLoginForm = true"
     >
-      <span>Player Login</span>
+      <span>{{ $t("player_login") }}</span>
       <span class="icon">
         <i class="fas fa-chevron-right"></i>
       </span>

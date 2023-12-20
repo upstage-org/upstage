@@ -22,5 +22,8 @@ const props = defineProps({
     <a-form-item label="Open in new tab" :labelCol="{ span: 6 }" class="mb-2">
       <a-switch v-model:checked="props.link.blank" />
     </a-form-item>
+    <a-form-item label="Hover effect" :labelCol="{ span: 6 }" class="mb-2">
+      <a-switch v-model:checked="props.link.effect" />
+    </a-form-item>
   </a-space>
 </template>

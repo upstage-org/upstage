@@ -34,7 +34,7 @@
           class="pagination-link"
           :class="{ 'is-current': modelValue === 1 }"
           @click="goToPage(1)"
-          >1</a
+          >{{ 1 }}</a
         >
       </li>
       <li v-if="visibleNavigationButtons[0] > 2">

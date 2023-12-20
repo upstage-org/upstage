@@ -8,7 +8,7 @@
       <span class="icon is-small">
         <i class="fas fa-check"></i>
       </span>
-      <span>Save</span>
+      <span>{{ $t("save") }}</span>
     </slot>
   </button>
 </template>

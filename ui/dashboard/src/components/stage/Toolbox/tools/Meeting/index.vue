@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon src="new.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">New Room</span>
+    <span class="tag is-light is-block">{{ $t("new_room") }}</span>
   </div>
   <Skeleton v-for="room, i in rooms" :key="i" :data="room">
     <div class="room-skeleton">
