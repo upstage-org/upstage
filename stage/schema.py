@@ -80,9 +80,11 @@ class Stage(SQLAlchemyObjectType):
 
     class Meta:
         model = StageModel
-        model.db_id = model.id
         interfaces = (relay.Node,)
         connection_class = graphql_utils.CountableConnection
+
+    def resolve_db_id(self, info):
+        return self.id
 
     def resolve_events(self, info, performance_id=None, cursor=0):
         events = DBSession.query(EventModel)\

@@ -25,10 +25,10 @@ jobs:
         # uses: appleboy/ssh-action@1d1b21ca96111b1eb4c03c21c14ebb971d2200f6
         uses: appleboy/ssh-action@v0.1.4
         with:
-          host: ${{ secrets.APP1_HOST }}
-          username: ${{ secrets.APP1_USERNAME }}
-          key: ${{ secrets.APP1_KEY }}
-          port: ${{ secrets.APP1_PORT }}
+          host: ${{ secrets.META_HOST }}
+          username: ${{ secrets.META_USERNAME }}
+          key: ${{ secrets.META_KEY }}
+          port: ${{ secrets.META_PORT }}
           script: |
             cd /home/upstage/upstage/ui/dashboard/
             git fetch

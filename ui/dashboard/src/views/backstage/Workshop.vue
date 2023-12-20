@@ -5,7 +5,7 @@
         <h1 class="title">WORKSHOP</h1>
         <h2 class="subtitle">
           <ul>
-            <li>View Workshop wireframes <a class="has-text-primary" href="https://github.com/upstage-org/mobilise/issues/64" target="_blank">here</a></li>
+            <li>View Workshop wireframes <a class="has-text-primary" href="https://github.com/upstage-org/upstage/issues/64" target="_blank">here</a></li>
           </ul>
         </h2>
       </div>

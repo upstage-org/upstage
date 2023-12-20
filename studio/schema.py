@@ -10,12 +10,12 @@ from config.project_globals import DBSession, app
 from config.settings import VERSION
 from flask_graphql import GraphQLView
 from graphene import relay
-from asset.models import Stage as StageModel
-from asset.models import Tag as TagModel
+from asset.models import Stage as StageModel, Tag as TagModel
 from stage.asset import DeleteMedia
+from studio.notification import Notification, resolve_notifications
 from user.models import ROLES, User as UserModel, role_conv
 from studio.media import (Asset, AssetConnectionField,
-                          AssetType, CalcSizes, SaveMedia, UploadFile)
+                          AssetType, CalcSizes, ConfirmPermission, RequestPermission, SaveMedia, UploadFile)
 from user.user_utils import current_user
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -66,6 +66,7 @@ class Query(graphene.ObjectType):
     media = AssetConnectionField(
         Asset.connection, id=graphene.ID(), name_like=graphene.String(), created_between=graphene.List(graphene.Date), file_location=graphene.String(), media_types=graphene.List(graphene.String), owners=graphene.List(graphene.String), stages=graphene.List(graphene.Int), tags=graphene.List(graphene.String))
     whoami = graphene.Field(User, description="Logged in user info")
+    notifications = graphene.List(Notification, resolver=resolve_notifications)
 
     @jwt_required()
     def resolve_whoami(self, info):
@@ -79,6 +80,8 @@ class Mutation(graphene.ObjectType):
     uploadFile = UploadFile.Field()
     saveMedia = SaveMedia.Field()
     refreshUser = RefreshMutation.Field()
+    confirmPermission = ConfirmPermission.Field()
+    requestPermission = RequestPermission.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

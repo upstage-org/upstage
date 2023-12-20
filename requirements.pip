@@ -11,6 +11,8 @@ flask-restx
 flask-sqlalchemy
 flask-talisman
 gevent
+graphql-core==2.2.1
+graphene==2.1.8
 graphene-sqlalchemy
 paho-mqtt
 pillow

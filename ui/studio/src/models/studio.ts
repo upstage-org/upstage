@@ -16,6 +16,7 @@ export interface StudioGraph {
   tags: Connection<Tag>;
   media: Connection<Media>;
   whoami: User;
+  notifications: Notification[];
 }
 
 export interface PageInfo {
@@ -32,6 +33,7 @@ export interface MediaType {
 
 export interface User {
   id: string;
+  dbId: number;
   displayName: string;
   username: string;
   roleName: string;
@@ -55,6 +57,8 @@ export interface AssignedStage {
   url: string
 }
 
+export type CopyrightLevel = 0 | 1 | 2 | 3;
+
 export interface Media {
   id: string;
   name: string;
@@ -62,10 +66,13 @@ export interface Media {
   description: string;
   createdOn: string;
   size: number;
+  copyrightLevel: CopyrightLevel;
+  permissions: Permission[];
   assetType: MediaType;
   owner: User;
   stages: AssignedStage[];
   tags: string[];
+  privilege: Privilege;
 }
 
 export interface MediaAttributes {
@@ -98,3 +105,23 @@ export interface UploadFile {
   status: 'local' | 'uploaded';
   url?: string;
 }
+
+export interface Permission {
+  id: string;
+  approved: boolean;
+  userId: number;
+  assetId: number;
+  seen: boolean;
+  createdOn: string;
+  note: null;
+  user: User;
+  asset: Media;
+}
+
+export interface Notification {
+  id: string;
+  type: "MEDIA_USAGE";
+  mediaUsage: Permission;
+}
+
+export type Privilege = 'NONE' | 'OWNER' | 'APPROVED' | 'PENDING_APPROVAL' | 'REQUIRE_APPROVAL'
