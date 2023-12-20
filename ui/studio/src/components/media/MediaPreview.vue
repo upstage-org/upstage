@@ -53,7 +53,7 @@ const showStreamInstruction = ref(false);
     <a-image :src="absolutePath(props.media.src)" class="w-24 max-h-24 object-contain" />
     <a-popover v-if="attributes.multi" placement="right">
       <template #title>
-        <b>Multiframes</b>
+        <b>{{ $t("multiframes") }}</b>
         <br />
         <span>Total frames: {{ attributes.frames.length }}</span>
       </template>

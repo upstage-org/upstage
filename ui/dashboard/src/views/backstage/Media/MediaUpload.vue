@@ -2,7 +2,7 @@
   <div class="dropdown is-hoverable">
     <div class="dropdown-trigger">
       <Upload v-if="!active" v-model="base64" @change="handleFileChange">
-        <span>New</span>
+        <span>{{ $t("new") }}</span>
         <span class="icon">
           <i class="fas fa-plus"></i>
         </span>
@@ -18,7 +18,7 @@
           <span class="icon">
             <i class="fas fa-video"></i>
           </span>
-          <span>RTMP Stream</span>
+          <span>{{ $t("rtmp_stream") }}</span>
         </a>
       </div>
     </div>

@@ -10,7 +10,7 @@
             <i class="fas fa-tools" /><br />
             Coming Soon
           </h1>
-          <h2 class="subtitle">This is page is under construction</h2>
+          <h2 class="subtitle">{{ $t("this_is_page_is_under_construction") }}</h2>
           <div v-if="fullscreen" class="field is-grouped is-grouped-centered">
             <p class="control">
               <a

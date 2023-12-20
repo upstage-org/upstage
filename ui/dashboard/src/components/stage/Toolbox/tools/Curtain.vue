@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon size="36" src="clear.svg" />
     </div>
-    <span class="tag is-light is-block">No curtain</span>
+    <span class="tag is-light is-block">{{ $t("no_curtain") }}</span>
   </div>
   <div
     v-for="curtain in curtains"

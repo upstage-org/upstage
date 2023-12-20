@@ -1,11 +1,11 @@
 <template>
   <div class="card-header">
-    <span class="card-header-title">Scene name</span>
+    <span class="card-header-title">{{ $t("scene_name") }}</span>
   </div>
   <div class="card-content voice-parameters">
-    <Field v-model="form.name"> </Field>
+    <Field v-model="form.name" />
 
-    <SaveButton @click="saveScene">Save Scene</SaveButton>
+    <SaveButton @click="saveScene">{{ $t("save_scene") }}</SaveButton>
   </div>
 </template>
 

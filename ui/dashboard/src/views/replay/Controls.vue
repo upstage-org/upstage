@@ -32,11 +32,11 @@
               </span>
             </button>
           </template>
-          <template #header>Tips</template>
+          <template #header>{{ $t("tips") }}</template>
           <template #content>
             <p>
               Replay controls are hidden! You can toggle the
-              <code>Esc</code> key to quickly hide the replay controls or bring
+              <code>{{ $t("esc") }}</code> key to quickly hide the replay controls or bring
               it back 👌
             </p>
           </template>
@@ -53,7 +53,7 @@
                 @select="changeSpeed($event, open)"
               />
             </template>
-            <template #header>Warning</template>
+            <template #header>{{ $t("warning") }}</template>
             <template #content>
               <p>
                 Audio and avatar speeches won't be able to play in 16x speed or

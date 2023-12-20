@@ -59,12 +59,12 @@
         <span class="has-text-danger">will be cleared!</span> You might wish to
         save your scene before proceed.
       </p>
-      <template #no> Cancel </template>
+      <template #no>{{ $t("cancel") }}</template>
       <template #yes>
         <span class="mr-2">
           <i class="fas fa-video"></i>
         </span>
-        <span>Start Recording</span>
+        <span>{{ $t("start_recording") }}</span>
       </template>
       <template #trigger>
         <button class="button is-light is-small" data-tooltip="Start recording">

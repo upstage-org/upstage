@@ -18,7 +18,7 @@
       <div class="icon is-large">
         <ColorPicker v-model="color" />
       </div>
-      <span class="tag is-light is-block">Colour</span>
+      <span class="tag is-light is-block">{{ $t("colour") }}</span>
     </div>
     <div class="drawing-tool" style="width: 200px">
       <div class="size-preview">
@@ -51,19 +51,19 @@
       <div class="icon is-large">
         <Icon size="36" src="erase.svg" />
       </div>
-      <span class="tag is-light is-block">Erase</span>
+      <span class="tag is-light is-block">{{ $t("erase") }}</span>
     </div>
     <div class="drawing-tool" @click="undo">
       <div class="icon is-large">
         <Icon size="36" src="undo.svg" />
       </div>
-      <span class="tag is-light is-block">Undo</span>
+      <span class="tag is-light is-block">{{ $t("undo") }}</span>
     </div>
     <div class="drawing-tool" @click="clearCanvas(true)">
       <div class="icon is-large">
         <Icon size="36" src="clear.svg" />
       </div>
-      <span class="tag is-light is-block">Clear</span>
+      <span class="tag is-light is-block">{{ $t("clear") }}</span>
     </div>
     <div class="drawing-tool" @click="save('avatar')">
       <div class="icon is-large">
@@ -71,7 +71,7 @@
         &nbsp;
         <Icon size="24" src="avatar.svg" />
       </div>
-      <span class="tag is-light is-block">Save as Avatar</span>
+      <span class="tag is-light is-block">{{ $t("save_as_avatar") }}</span>
     </div>
     <div class="drawing-tool" @click="save('prop')">
       <div class="icon is-large">
@@ -79,13 +79,13 @@
         &nbsp;
         <Icon size="24" src="prop.svg" />
       </div>
-      <span class="tag is-light is-block">Save as Prop</span>
+      <span class="tag is-light is-block">{{ $t("save_as_prop") }}</span>
     </div>
     <div class="drawing-tool" @click="cancel">
       <div class="icon is-large">
         <Icon size="36" src="cancel.svg" />
       </div>
-      <span class="tag is-light is-block">Cancel</span>
+      <span class="tag is-light is-block">{{ $t("cancel") }}</span>
     </div>
   </template>
   <template v-else>
@@ -93,7 +93,7 @@
       <div class="icon is-large">
         <Icon src="new.svg" size="36" />
       </div>
-      <span class="tag is-light is-block">New Drawing</span>
+      <span class="tag is-light is-block">{{ $t("new_drawing") }}</span>
     </div>
     <div v-for="drawing in drawings" :key="drawing">
       <ContextMenu>
@@ -108,7 +108,7 @@
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permanently</span>
+            <span>{{ $t("delete_permanently") }}</span>
           </a>
         </template>
       </ContextMenu>

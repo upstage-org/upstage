@@ -1,12 +1,12 @@
 <template>
     <div class="card-header">
-        <span class="card-header-title">Create new meeting room</span>
+        <span class="card-header-title">{{ $t("create_new_meeting_room") }}</span>
     </div>
     <div class="card-content voice-parameters">
         <HorizontalField title="Room name">
             <Field v-model="form.name" required required-message="Room name is required"></Field>
         </HorizontalField>
-        <SaveButton @click="createRoom">Create Room</SaveButton>
+        <SaveButton @click="createRoom">{{ $t("create_room") }}</SaveButton>
     </div>
 </template>
 

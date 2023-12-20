@@ -45,6 +45,7 @@ watch(editingMediaResult, () => {
     }
     link.url = '';
     link.blank = true;
+    link.effect = false;
     if (attributes.link) {
       Object.assign(link, attributes.link);
     }
@@ -74,7 +75,7 @@ const mediaName = computed(() => {
 const copyrightLevel = ref<CopyrightLevel>(0)
 const owner = ref<string>('')
 const voice = reactive<Voice>(getDefaultAvatarVoice())
-const link = reactive<Link>({ url: '', blank: true });
+const link = reactive<Link>({ url: '', blank: true, effect: false });
 
 const whoami = inject<ComputedRef<User>>("whoami")
 if (whoami) {
@@ -347,7 +348,7 @@ const clearSign = () => {
         </a-select>
         <a-button key="submit" type="primary" :loading="saving" @click="saveMedia">
           <span v-if="saving">Saving {{ progress }}%</span>
-          <span v-else>Save</span>
+          <span v-else>{{ $t("save") }}</span>
         </a-button>
       </a-space>
     </template>

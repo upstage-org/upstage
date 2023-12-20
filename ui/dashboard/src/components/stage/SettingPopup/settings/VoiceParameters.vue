@@ -1,6 +1,6 @@
 <template>
   <div v-if="!modelValue" class="card-header">
-    <span class="card-header-title">Voice Setting</span>
+    <span class="card-header-title">{{ $t("voice_setting") }}</span>
   </div>
   <div class="card-content voice-parameters">
     <HorizontalField title="Voice">
