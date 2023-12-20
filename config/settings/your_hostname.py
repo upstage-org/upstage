@@ -120,3 +120,12 @@ SECRET_KEY='' # Paste the result from running __init__.py
 STREAM_KEY='' # Paste the secret key from node media server config
 STRIPE_KEY = ''
 STRIPE_PRODUCT_ID = ''
+
+EMAIL_HOST = ''
+EMAIL_HOST_USER = ''
+EMAIL_HOST_PASSWORD = ''
+ADMIN_EMAIL = ''
+EMAIL_HOST_DISPLAY_NAME = ''
+ACCEPT_SERVER_SEND_EMAIL_EXTERNAL = ['https://dev-app1.upstage.live'] # All client server endpoints. Only config on upstage server
+SEND_EMAIL_SERVER = 'https://upstage.live' # Send email server endpoint
+ACCEPT_EMAIL_HOST = ['app1']
