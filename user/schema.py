@@ -340,7 +340,7 @@ class Query(graphene.ObjectType):
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 user_schema = graphene.Schema(query=Query, mutation=Mutation)
 app.add_url_rule(
-    f'/{URL_PREFIX}/user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
+    f'/{URL_PREFIX}user_graphql/', view_func=GraphQLView.as_view("user_graphql", schema=user_schema,
     graphiql=True
 ))
 
