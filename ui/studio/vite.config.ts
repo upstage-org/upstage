@@ -12,6 +12,12 @@ export default defineConfig({
       resolvers: [AntDesignVueResolver({ importStyle: 'less', resolveIcons: true })]
     })
   ],
+  server: {
+    fs: {
+      // Allow serving files from one level up to the project root
+      allow: ['..'],
+    },
+  },
   css: {
     preprocessorOptions: {
       less: {

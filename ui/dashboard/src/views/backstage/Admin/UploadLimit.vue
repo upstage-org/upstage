@@ -1,23 +1,21 @@
 <template>
   <Confirm
-    @confirm="(close) => saveUploadLimit(item, close)"
-    :loading="loading"
-  >
+    @confirm="(close) => saveUploadLimit(item, close)" :loading="loading">
     <template #render="{ confirm }">
-      <input
-        class="slider is-fullwidth m-0"
-        step="1"
-        :min="1024 * 1024"
-        :max="nginxLimit"
-        type="range"
+      <Dropdown
+        :data="limitSize"
+        :render-label="(item) => item.label"
+        :render-value="(item) => item.value"
         v-model="item.uploadLimit"
-        :data-tooltip="humanFileSize(item.uploadLimit)"
-        @change="confirm"
+        @update:model-value="
+          item.selectSize = $event;
+          confirm();
+        "
       />
     </template>
     Are you sure you want to change {{ displayName }}'s upload limit to<br />
     <span class="has-text-danger">
-      {{ humanFileSize(item.uploadLimit) }}
+      {{ humanFileSize(item.selectSize) }}
     </span>
     ?
   </Confirm>
@@ -31,15 +29,33 @@ import { displayName } from "@/utils/auth";
 import Confirm from "@/components/Confirm";
 import { useStore } from "vuex";
 import { computed } from "@vue/runtime-core";
+import { UPDATE_LIMIT } from "@/utils/constants";
+import Dropdown from "@/components/form/Dropdown.vue";
+
 
 export default {
-  components: { Confirm },
+  components: { Confirm, Dropdown },
   props: ["user", "displayName"],
   setup: (props) => {
     const store = useStore();
     const nginxLimit = computed(() => store.getters["config/uploadLimit"]);
+    const limitSize = [];
+
+    for (let item in UPDATE_LIMIT) {
+      limitSize.push({
+        label: humanFileSize(UPDATE_LIMIT[item]),
+        value: UPDATE_LIMIT[item],
+      });
+    }
+
+    limitSize.push({
+      label: humanFileSize(nginxLimit.value),
+      value: nginxLimit.value,
+    })
+
     const { save, loading } = useMutation(userGraph.updateUser);
     const saveUploadLimit = async (user, close) => {
+      user.uploadLimit = user.selectSize;
       await save(
         `Successfully change ${displayName(
           user
@@ -50,6 +66,7 @@ export default {
     };
 
     return {
+      limitSize,
       loading,
       saveUploadLimit,
       humanFileSize,
