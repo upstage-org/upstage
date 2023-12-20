@@ -5,7 +5,7 @@
     :style="{
       opacity: backgroundOpacity,
     }"
-    :transition="backgroundSpeed"
+    :transition="transitionDuration"
     :no-fallback="true"
   />
 </template>
@@ -24,13 +24,16 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
-    const backgroundSpeed = computed(() => 100 / store.state.stage.background?.speed);
+    const transitionDuration = computed(() => 10 / store.state.stage.background?.speed);
 
     const frameAnimation = reactive({
       interval: null,
       currentFrame: null,
     });
     const src = computed(() => {
+      if (!background.value) {
+        return null
+      }
       if (background.value.multi && background.value.speed > 0) {
         return frameAnimation.currentFrame
       } else {
@@ -39,6 +42,7 @@ export default {
     })
 
     watch(background, (value) => {
+      if (!value) return;
       const { speed, frames, currentFrame } = value;
       if (currentFrame) {
         frameAnimation.currentFrame = currentFrame
@@ -51,9 +55,9 @@ export default {
         }
         frameAnimation.currentFrame = frames[nextFrame];
       }, 100 / speed);
-    })
+    }, { immediate: true });
 
-    return { backgroundOpacity, backgroundSpeed, src }
+    return { backgroundOpacity, transitionDuration, src }
   }
 }
 </script>
