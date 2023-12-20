@@ -11,7 +11,6 @@ uploads/
 .DS_Store
 node_modules
 /dist
-/ui/static/assets
 
 # reStructuredText
 docs/_build
