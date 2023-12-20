@@ -17,7 +17,7 @@
     "@tinymce/tinymce-vue": "^4",
     "@yeger/vue-masonry-wall": "^3.0.29",
     "animejs": "^3.2.1",
-    "axios": "^0.21.4",
+    "axios": "^1.6.0",
     "bulma": "^0.9.4",
     "bulma-slider": "^2.0.5",
     "bulma-switch": "^2.0.4",
