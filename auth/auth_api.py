@@ -125,7 +125,7 @@ jwt.token_in_blocklist_loader(TNL.check)
 @app.route('/{0}'.format(URL_PREFIX),defaults={'path': ''})
 def catch_all(path):
     if not get_jwt_identity():
-        abort(401,'Invalid endpoint (11)')
+        abort(403,'Invalid endpoint (11)')
     return make_response(jsonify({'error':None}), 201)
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 def has_no_empty_params(rule):
@@ -165,7 +165,7 @@ def portal_login():
     #sys.stdout.flush()
     num_value = request.json.get('num_value',None)
     #if not num_value:
-    #    return make_response(jsonify({"error": "Invalid access code."}), 401)
+    #    return make_response(jsonify({"error": "Invalid access code."}), 403)
     return call_login_logout(app_entry=False,num_value=num_value)
 
 
@@ -242,7 +242,7 @@ def call_login_logout(app_entry=True,num_value=None):
         if '@' in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
-                return make_response(jsonify({"error": "Invalid username or email (14)"}), 401)
+                return make_response(jsonify({"error": "Invalid username or email (14)"}), 403)
 
         if email:
             user = DBSession.query(User).filter(User.email==email
@@ -255,7 +255,7 @@ def call_login_logout(app_entry=True,num_value=None):
 
         if user:
             if not decrypt(user.password) == password:
-                return make_response(jsonify({"error": "Bad email or password (16)"}), 401)
+                return make_response(jsonify({"error": "Bad email or password (16)"}), 403)
         else:
             if '@' in username:
                 user = DBSession.query(User).filter(User.email==username
@@ -265,14 +265,14 @@ def call_login_logout(app_entry=True,num_value=None):
                     User.email==username)).filter(User.active==False).first()
 
             if not user:
-                return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account or contact us."}), 401)
+                return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account or contact us."}), 403)
 
             # User is inactive and needs to re-verify their phone or email,
             # if we are down here.
             if not decrypt(user.password) == password:
-                return make_response(jsonify({"error": "Bad email or password (17)"}), 401)
+                return make_response(jsonify({"error": "Bad email or password (17)"}), 403)
             else:
-                return make_response(jsonify({"error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!", "level": "warning"}), 401)
+                return make_response(jsonify({"error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!", "level": "warning"}), 403)
 
             # Re-send their signup code.
             existing_code = get_security_code(user.id,SIGNUP_VALIDATION)
@@ -297,7 +297,7 @@ def call_login_logout(app_entry=True,num_value=None):
         # Kludge: uncomment the below line. remove the line after.
         if user.role in (SUPER_ADMIN,):
             if not verify_user_totp(user,num_value):
-                return make_response(jsonify({"error": "Invalid code."}), 401)
+                return make_response(jsonify({"error": "Invalid code."}), 403)
 
         elif user.role in (PLAYER,GUEST,ADMIN) and not app_entry: 
             pass # password checked-out, that's all we need.
@@ -346,11 +346,11 @@ def call_login_logout(app_entry=True,num_value=None):
                         if not result.ok:
                             # get rid of old refresh token.
                             other_profile.other_profile_json = None
-                            return make_response(jsonify({"error": "Invalid Source Sign-in (2)."}), 401)
+                            return make_response(jsonify({"error": "Invalid Source Sign-in (2)."}), 403)
     
                         did_refresh = False
                     else:
-                        return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+                        return make_response(jsonify({"error": "Invalid Source Sign-in."}), 403)
     
                 #pprint.pprint(json.loads(result.text))
                 response = json.loads(result.text)
@@ -402,10 +402,10 @@ def call_login_logout(app_entry=True,num_value=None):
                             return make_response(jsonify({"user_id":user.id,
                                 "message": "User needs to verify account"}), 409)
                         else:
-                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 403)
     
                     if other_profile.user_id != user.id:
-                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 403)
     
             elif from_other == 'facebook':
                 other_profile = local_db_session.query(FacebookProfile).filter(
@@ -417,7 +417,7 @@ def call_login_logout(app_entry=True,num_value=None):
                 # We first have to create our own access token. Then we verify the inbound token.
                 result = requests.get(FACEBOOK_ACCESS_TOKEN_CREATE)
                 if not result.ok:
-                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 403)
                 response = json.loads(result.text)
                 #pprint.pprint(response)
                 access_token=response['access_token']
@@ -425,7 +425,7 @@ def call_login_logout(app_entry=True,num_value=None):
                 #pprint.pprint(FACEBOOK_TOKEN_VERIFY.format(signin_token,access_token))
                 #pprint.pprint(result.text)
                 if not result.ok:
-                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 401)
+                    return make_response(jsonify({"error": "Invalid Source Sign-in."}), 403)
                 response = json.loads(result.text)
                 #pprint.pprint(response)
                 if 'data' in response and 'expires_at' in response['data'] and response['data']['expires_at']:
@@ -464,10 +464,10 @@ def call_login_logout(app_entry=True,num_value=None):
                             return make_response(jsonify({"user_id":user.id,
                                 "message": "User needs to verify account"}), 409)
                         else:
-                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 403)
     
                     if other_profile.user_id != user.id:
-                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 403)
     
             elif from_other == 'google':
                 other_profile = local_db_session.query(GoogleProfile).filter(
@@ -478,7 +478,7 @@ def call_login_logout(app_entry=True,num_value=None):
                 # they log in via FB/Google.
                 result = requests.get(GOOGLE_TOKEN_VERIFY.format(signin_token))
                 if not result.ok:
-                    return make_response(jsonify({"error": "Invalid Source Sign-in"}), 401)
+                    return make_response(jsonify({"error": "Invalid Source Sign-in"}), 403)
                 response = json.loads(result.text)
                 #pprint.pprint(response)
                 if 'expires_in' in response and response['expires_in']:
@@ -510,12 +510,12 @@ def call_login_logout(app_entry=True,num_value=None):
                                     )
                                 '''
                         else:
-                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 401)
+                            return make_response(jsonify({"error": "User not found. Please verify that you have an Upstage account by sign-in in directly, then retry this new sign-in method. If this does not work please contact us."}), 403)
     
                     if other_profile.user_id != user.id:
-                        return make_response(jsonify({"error": "Invalid Source Match"}), 401)
+                        return make_response(jsonify({"error": "Invalid Source Match"}), 403)
             else:
-                return make_response(jsonify({"error": "Invalid Source."}), 401)
+                return make_response(jsonify({"error": "Invalid Source."}), 403)
 
 
     # Generate session tokens
@@ -605,7 +605,7 @@ def refresh():
 
     if not user:
         TNL.add(refresh_token)
-        return make_response(jsonify({'error':"Your session expired. Please log in again."}), 401)
+        return make_response(jsonify({'error':"Your session expired. Please log in again."}), 403)
 
     access_token = create_access_token(identity=current_user_id)
 
@@ -740,13 +740,13 @@ def jwt_required(fn):
             verify_jwt_in_request()
         except ExpiredSignatureError:
             app.logger.warning("Signature Expired")
-            return make_response(jsonify({'error':"You have been logged out on this session."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session."}), 403)
         except RevokedTokenError:
             app.logger.warning("Token Revoked")
-            return make_response(jsonify({'error':"You have been logged out on this session ."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session ."}), 403)
         except NoAuthorizationError:
             app.logger.warning("Token Revoked from another login")
-            return make_response(jsonify({'error':"You have been logged out on this session  ."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session  ."}), 403)
         return fn(*args, **kwargs)
     return wrapper
 
@@ -772,15 +772,15 @@ def admin_jwt_required(fn):
 
         except ExpiredSignatureError:
             app.logger.warning("Signature Expired")
-            return make_response(jsonify({'error':"You have been logged out on this session."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session."}), 403)
 
         except RevokedTokenError:
             app.logger.warning("Token Revoked")
-            return make_response(jsonify({'error':"You have been logged out on this session ."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session ."}), 403)
 
         except NoAuthorizationError:
             app.logger.warning("Token Revoked from another login")
-            return make_response(jsonify({'error':"You have been logged out on this session  ."}), 401)
+            return make_response(jsonify({'error':"You have been logged out on this session  ."}), 403)
 
         return fn(*args, **kwargs)
     return wrapper
