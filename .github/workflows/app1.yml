@@ -30,13 +30,15 @@ jobs:
           key: ${{ secrets.APP1_KEY }}
           port: ${{ secrets.APP1_PORT }}
           script: |
-            cd /home/upstage/mobilise/ui/dashboard/
+            cd /home/upstage/upstage/ui/dashboard/
+            git fetch
+            git checkout main
             git pull
             yarn
             yarn build
-            cd /home/upstage/mobilise/ui/studio/
+            cd /home/upstage/upstage/ui/studio/
             yarn
             yarn build
             systemctl restart upstage.service
             systemctl restart event_archive.service
-            chown -R upstage:upstage /home/upstage/mobilise
+            chown -R upstage:upstage /home/upstage/upstage
