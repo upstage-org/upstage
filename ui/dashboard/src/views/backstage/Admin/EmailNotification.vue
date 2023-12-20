@@ -84,12 +84,22 @@ const send = async () => {
   if (!selectedRecipients.length && !additionalReceivers.value.trim() && !selectedBccs.length && !additionalBcc.value.trim()) {
     return notification.error('Please select at least one player or provide an email address');
   }
-  await save(`Notification has been successfully sent to ${selectedRecipients.map(u => u.displayName || u.username).join(', ')}${additionalReceivers.value.trim() ? ` and ${additionalReceivers.value.trim()}` : ''}!`, {
-    subject: subject.value,
-    body: body.value,
-    recipients: selectedRecipients.map(p => p.email).join(',').concat(additionalReceivers.value ? `,${additionalReceivers.value}` : ''),
-    bcc: selectedBccs.map(p => p.email).join(',').concat(additionalBcc.value ? `,${additionalBcc.value}` : ''),
-  })
+  await save(
+    `Notification has been successfully sent to ${selectedRecipients
+      .map((u) => u.displayName || u.username)
+      .concat([additionalReceivers.value.trim()])
+      .concat(selectedBccs.map((u) => u.displayName || u.username))
+      .concat([additionalBcc.value.trim()])
+      .filter(e => e)
+      .join(", ")
+    }!`,
+    {
+      subject: subject.value,
+      body: body.value,
+      recipients: selectedRecipients.map(p => p.email).join(',').concat(additionalReceivers.value ? `,${additionalReceivers.value}` : ''),
+      bcc: selectedBccs.map(p => p.email).join(',').concat(additionalBcc.value ? `,${additionalBcc.value}` : ''),
+    }
+  )
 }
 </script>
 

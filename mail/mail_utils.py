@@ -58,9 +58,9 @@ def create_email(to, subject, html, filenames=[], cc=[], bcc=[], sender=EMAIL_HO
     msg = MIMEMultipart('fixed')
     with ScopedSession() as local_db_session:
         subject_prefix = local_db_session.query(Config).filter(
-            Config.name == 'EMAIL_SUBJECT_PREFIX').first().value
+            Config.name == 'EMAIL_SUBJECT_PREFIX').first()
     if subject_prefix:
-        subject = f'{subject_prefix}: {subject}'
+        subject = f'{subject_prefix.value}: {subject}'
     msg.preamble = subject
     msg['Subject'] = subject
     msg['From'] = f'{EMAIL_HOST_DISPLAY_NAME} <{sender}>'
@@ -108,7 +108,7 @@ def push_mail_info_to_queue(email_info):
         db[MONGODB_COLLECTION_EMAIL].insert_one(
             email_info if isinstance(email_info, dict) else email_info.__dict__)
         client.close()
-        app.logger('Push email success')
+        app.logger.info('Push email success')
     except Exception as e:
         app.logger.error(f'Failed to push email to queue: {e}')
 
