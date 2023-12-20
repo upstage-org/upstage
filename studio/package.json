@@ -25,7 +25,7 @@
     "postcss": "^8.4.31",
     "qr-code-styling": "^1.6.0-rc.1",
     "tailwindcss": "^2.2.17",
-    "unplugin-vue-components": "^0.15.6",
+    "unplugin-vue-components": "^0.26.0",
     "vue": "^3.2.16",
     "vue-i18n": "9",
     "vue-slicksort": "^2.0.0-alpha.5"
