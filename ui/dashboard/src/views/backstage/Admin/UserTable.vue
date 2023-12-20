@@ -13,7 +13,13 @@
     placeholder="Player name or email"
   />
   <Loading v-if="loading" />
-  <DataTable v-show="!firstLoad" :data="users" :headers="headers" numbered :wrapper="false">
+  <DataTable
+    v-show="!loading || !firstLoad"
+    :data="users"
+    :headers="headers"
+    :wrapper="false"
+    numbered
+  >
     <template #status="{ item }">
       <registration-approval :user="item" />
     </template>

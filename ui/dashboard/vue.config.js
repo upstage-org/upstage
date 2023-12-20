@@ -9,8 +9,9 @@ module.exports = {
             })
     },
     pwa: {
-        name: 'UpStage',
+        name: "UpStage",
         themeColor: "#30ac45",
         msTileColor: "#ffffff",
+        manifestCrossorigin: "use-credentials"
     }
 }

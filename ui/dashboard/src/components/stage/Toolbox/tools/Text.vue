@@ -22,7 +22,7 @@
       </div>
       <span class="tag is-block">New Text</span>
     </div>
-    <div v-for="text in savedTexts" :key="text" class="is-pulled-left">
+    <div v-for="text in savedTexts" :key="text" class="is-pulled-left saved-text">
       <ContextMenu>
         <template #trigger>
           <Skeleton :data="text" />
@@ -288,5 +288,10 @@ export default {
   z-index: 1001;
   position: relative;
   float: left;
+}
+.saved-text {
+  > div {
+    width: 100%;
+  }
 }
 </style>
