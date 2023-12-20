@@ -272,6 +272,7 @@ class SaveMediaInput(graphene.InputObjectType):
         description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
     id = graphene.ID(description="ID of the media (for updating)")
     copyright_level = graphene.Int(description="Copyright level")
+    owner = graphene.String(description="Owner of the media, in case of uploading for someone else")
     user_ids = graphene.List(
         graphene.Int, description="Users who can access and edit this media")
     stage_ids = graphene.List(
@@ -280,6 +281,7 @@ class SaveMediaInput(graphene.InputObjectType):
         graphene.String, description="Media tags")
     w = graphene.Int(description="Width of the media")
     h = graphene.Int(description="Height of the media")
+    note = graphene.String(description="It would be useful to have a 'Notes' field on the permissions tab, where i could note the actual copyright owner when it's not me, and other information such as what the image is of, when or where taken, this kind of thing.")
     voice = AvatarVoiceInput(description="Voice settings", required=False)
     link = LinkInput(description="On click action link", required=False)
 
@@ -294,9 +296,11 @@ class SaveMedia(graphene.Mutation):
 
     @jwt_required()
     def mutate(self, info, input):
-        name, urls, media_type, copyright_level, user_ids, stage_ids, tags, w, h = itemgetter(
-            'name', 'urls', 'media_type', 'copyright_level', 'user_ids', 'stage_ids', 'tags', 'w', 'h')(input)
-        current_user_id = get_jwt_identity()
+        name, urls, media_type, copyright_level, owner, user_ids, stage_ids, tags, w, h, note = itemgetter(
+            'name', 'urls', 'media_type', 'copyright_level', 'owner', 'user_ids', 'stage_ids', 'tags', 'w', 'h', 'note')(input)
+
+        code, error, user, timezone = current_user()
+        current_user_id = user.id
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
                 AssetTypeModel.name == media_type).first()
@@ -312,7 +316,6 @@ class SaveMedia(graphene.Mutation):
                     AssetModel.id == id).first()
 
                 if asset:
-                    code, error, user, timezone = current_user()
                     if not user.role in (ADMIN, SUPER_ADMIN):
                         if not user.id == asset.owner_id:
                             raise Exception("You don't have permission to edit this media")
@@ -339,6 +342,15 @@ class SaveMedia(graphene.Mutation):
                 else:
                     asset.file_location = uuid.uuid4()
                 asset.copyright_level = copyright_level
+                if owner:
+                    new_owner = local_db_session.query(UserModel).filter(
+                            UserModel.username == owner).first()
+                    if new_owner:
+                        if new_owner.id != asset.owner_id and user.role in (ADMIN, SUPER_ADMIN):
+                            asset.owner_id = new_owner.id
+                    else:
+                        raise Exception("Owner not found")
+                        
                 asset.updated_on = datetime.utcnow()
                 local_db_session.flush()
 
@@ -382,6 +394,8 @@ class SaveMedia(graphene.Mutation):
                         attributes['link'] = link
                     elif 'link' in attributes:
                         del attributes['link']
+
+                attributes['note'] = note
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
