@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import moment from "moment";
 
 const { value } = defineProps({
@@ -9,4 +9,6 @@ const { value } = defineProps({
 const text = computed(() => moment.utc(value).fromNow());
 </script>
 
-<template>{{ text }}</template>
+<template>
+  {{ text }}
+</template>

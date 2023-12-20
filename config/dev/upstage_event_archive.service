@@ -5,7 +5,7 @@ Description=UpStage event archive service
 User=upstage
 Group=upstage
 Type=simple
-ExecStart=/usr/bin/python3 /home/upstage/upstage/run_event_archive.py
+ExecStart=/usr/bin/python3 /home/upstage/upstage/scripts/run_event_archive.py
 
 [Install]
 WantedBy=multi-user.target
