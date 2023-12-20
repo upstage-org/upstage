@@ -11,40 +11,24 @@
           available free to anyone who would like to use it.
         </h2>
         <Loading v-if="loading" />
-        <div v-else class="links columns my-4">
-          <div class="column">
+        <div v-else class="links columns is-multiline my-4 pt-6">
+          <div v-for="stage in liveStages" :key="stage.id" class="column is-4">
             <router-link
-              v-for="stage in liveStages"
-              :key="stage.id"
               :to="`/${stage.fileLocation}`"
-              class="link my-4"
+              class="link"
               :style="backgroundImage(stage.cover, 'live-stage.png')"
             >
-              <PlayerAudienceCounter
-                :stage-url="stage.fileLocation"
-                class="counter"
-              />
+              <PlayerAudienceCounter :stage-url="stage.fileLocation" class="counter" />
               <span>{{ stage.name }}</span>
             </router-link>
           </div>
-          <div class="column">
+          <div v-for="stage in upcomingStages" :key="stage.id" class="column is-4">
             <router-link
-              v-for="stage in upcomingStages"
-              :key="stage.id"
               :to="`/${stage.fileLocation}`"
-              class="link my-4"
+              class="link"
               :style="backgroundImage(stage.cover, 'upcoming-performance.png')"
             >
               <span>{{ stage.name }}</span>
-            </router-link>
-          </div>
-          <div class="column">
-            <router-link
-              to="/demo"
-              class="link my-4"
-              :style="backgroundImage(null, 'latest-news.jpg')"
-            >
-              <span>Latest News</span>
             </router-link>
           </div>
         </div>
@@ -73,9 +57,8 @@ export default {
       () => store.getters["cache/upcomingStages"]
     );
     const backgroundImage = (src, defaultSrc) => ({
-      "background-image": `url(${
-        src ? absolutePath(src) : `${config.publicPath}img/${defaultSrc}`
-      })`,
+      "background-image": `url(${src ? absolutePath(src) : `${config.publicPath}img/${defaultSrc}`
+        })`,
     });
 
     return {
