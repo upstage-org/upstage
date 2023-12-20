@@ -1,6 +1,6 @@
 # UpStage
 
-[![CI](https://github.com/upstage-org/upstage/actions/workflows/devapp1.yml/badge.svg)](https://github.com/upstage-org/upstage/actions/workflows/app1.yml)
+[![CI](https://github.com/upstage-org/upstage/actions/workflows/devapp1.yml/badge.svg)](https://github.com/upstage-org/upstage/actions/workflows/devapp1.yml) [![CI](https://github.com/upstage-org/upstage/actions/workflows/playwright.yml/badge.svg)](https://github.com/upstage-org/upstage/actions/workflows/playwright.yml)
 
 UpStage is a platform for cyberformance - remote players combine digital media in real-time for an online audience. All you need is a web browser!
 
