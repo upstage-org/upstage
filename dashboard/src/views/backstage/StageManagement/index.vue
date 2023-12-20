@@ -83,7 +83,7 @@ export default {
   components: { Loading },
   setup: (props) => {
     const { nodes, loading, fetch, data, refresh, clearCache } = useRequest(
-      stageGraph.getStage
+      stageGraph.getStage,
     );
     const stage = useFirst(nodes);
     provide("stage", stage);
@@ -98,7 +98,7 @@ export default {
           data.value = null;
         }
       },
-      { immediate: true }
+      { immediate: true },
     );
     return { stage, loading };
   },

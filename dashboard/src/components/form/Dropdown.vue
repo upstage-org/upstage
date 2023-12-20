@@ -80,7 +80,7 @@ export default {
   emits: ["update:modelValue", "select", "open"],
   setup: (props, { emit }) => {
     const selectedItem = computed(() =>
-      props.data?.find((item) => props.renderValue(item) === props.modelValue)
+      props.data?.find((item) => props.renderValue(item) === props.modelValue),
     );
     const isActive = ref();
     watch(isActive, (value) => emit("open", value));

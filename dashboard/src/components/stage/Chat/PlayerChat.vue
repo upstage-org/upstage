@@ -163,7 +163,7 @@ export default {
           }
           target.style.left = `${left}px`;
           target.style.top = `${top}px`;
-        }
+        },
       );
     });
 
@@ -176,7 +176,7 @@ export default {
     };
 
     const playerChatVisibility = computed(
-      () => store.state.stage.showPlayerChat
+      () => store.state.stage.showPlayerChat,
     );
     const minimiseToToolbox = () => {
       store.dispatch("stage/showPlayerChat", false);
@@ -192,7 +192,7 @@ export default {
       };
       store.commit("stage/SET_PLAYER_CHAT_PARAMETERS", parameters);
       setTimeout(
-        () => (theContent.value.scrollTop = theContent.value.scrollHeight)
+        () => (theContent.value.scrollTop = theContent.value.scrollHeight),
       );
     };
 

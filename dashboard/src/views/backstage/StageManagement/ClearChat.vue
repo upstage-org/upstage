@@ -29,7 +29,7 @@ export default {
         mqttClient.connect().on("connect", () => {
           const topicChat = namespaceTopic(
             TOPICS.CHAT,
-            stage.value.fileLocation
+            stage.value.fileLocation,
           );
           mqttClient.sendMessage(topicChat, { clear: true }, true);
           mqttClient

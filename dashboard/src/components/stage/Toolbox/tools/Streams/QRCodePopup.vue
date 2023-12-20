@@ -20,7 +20,7 @@ watch(
   (sign) => {
     Object.assign(props.stream, { sign });
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const copyLink = () => {

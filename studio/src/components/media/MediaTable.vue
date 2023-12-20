@@ -30,7 +30,7 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import QuickStageAssignment from "./QuickStageAssignment.vue";
 import { useI18n } from "vue-i18n";
-import { IsAdmin, WhoAmI } from "../../symbols";
+import { useWhoAmI } from "hooks/auth";
 
 const { t } = useI18n();
 const files = inject<Ref<UploadFile[]>>("files");
@@ -40,13 +40,11 @@ const tableParams = reactive({
   cursor: undefined,
   sort: "CREATED_ON_DESC",
 });
-const { result: inquiryResult } = useQuery(
-  gql`
-    {
-      inquiry @client
-    }
-  `
-);
+const { result: inquiryResult } = useQuery(gql`
+  {
+    inquiry @client
+  }
+`);
 const params = computed(() => ({
   ...tableParams,
   ...inquiryResult.value.inquiry,
@@ -118,7 +116,7 @@ const { result, loading, fetchMore } = useQuery<
     ${permissionFragment}
   `,
   params.value,
-  { notifyOnNetworkStatusChange: true }
+  { notifyOnNetworkStatusChange: true },
 );
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
@@ -223,15 +221,15 @@ interface Sorter {
 const handleTableChange = (
   { current = 1, pageSize = 10 }: TablePaginationConfig,
   _: any,
-  sorter: SorterResult<Media> | SorterResult<Media>[]
+  sorter: SorterResult<Media> | SorterResult<Media>[],
 ) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort(
       (a, b) =>
-        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple,
     )
     .map(({ columnKey, order }) =>
-      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
     );
   Object.assign(tableParams, {
     cursor:
@@ -243,7 +241,7 @@ const handleTableChange = (
   });
 };
 const dataSource = computed(() =>
-  result.value ? result.value.media.edges.map((edge) => edge.node) : []
+  result.value ? result.value.media.edges.map((edge) => edge.node) : [],
 );
 
 const {
@@ -300,7 +298,7 @@ const addFrameToEditingMedia = (media: Media) => {
         file: {
           name: frame,
         } as File,
-      }))
+      })),
     );
     composingMode.value = false;
   }
@@ -313,28 +311,29 @@ const filterTag = (tag: string) => {
   });
 };
 
-const whoami = inject<ComputedRef<User>>(WhoAmI);
-const isAdmin = inject(IsAdmin, false);
+const { whoami, isAdmin } = useWhoAmI();
 </script>
 
 <template>
-  <a-layout class="w-full">
+  <a-layout class="w-full shadow rounded-xl bg-white overflow-hidden">
     <a-table
-      class="w-full shadow rounded-xl bg-white overflow-auto"
+      class="w-full overflow-auto"
       :columns="columns"
       :data-source="dataSource"
       rowKey="id"
       :loading="loading"
       @change="handleTableChange"
-      :pagination="{
-      showQuickJumper: true,
-      showSizeChanger: true,
-      total: result ? result.media.totalCount : 0,
-    } as Pagination"
+      :pagination="
+        {
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: result ? result.media.totalCount : 0,
+        } as Pagination
+      "
     >
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'preview'">
-          <MediaPreview :media="record" />
+          <MediaPreview :media="record as Media" />
         </template>
         <template v-if="column.key === 'asset_type_id'">
           <span class="capitalize">{{ text }}</span>
@@ -381,7 +380,7 @@ const isAdmin = inject(IsAdmin, false);
         <template v-if="column.key === 'copyrightLevel'">
           <span class="leading-4">{{
             configs.MEDIA_COPYRIGHT_LEVELS.find(
-              (l) => l.value === record.copyrightLevel
+              (l) => l.value === record.copyrightLevel,
             )?.name
           }}</span>
         </template>
@@ -390,7 +389,10 @@ const isAdmin = inject(IsAdmin, false);
         </template>
         <template v-if="column.key === 'actions'">
           <a-space v-if="composingMode">
-            <a-button type="primary" @click="addFrameToEditingMedia(record)">
+            <a-button
+              type="primary"
+              @click="addFrameToEditingMedia(record as Media)"
+            >
               <DoubleRightOutlined />
               Append frames
             </a-button>
@@ -407,9 +409,9 @@ const isAdmin = inject(IsAdmin, false);
             <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
               <RequestPermission
                 v-if="record.copyrightLevel === 2"
-                :media="record"
+                :media="record as Media"
               />
-              <RequestAcknowledge v-else :media="record" />
+              <RequestAcknowledge v-else :media="record as Media" />
             </a-space>
             <a-space
               v-else-if="record.privilege === 'PENDING_APPROVAL'"
@@ -423,7 +425,7 @@ const isAdmin = inject(IsAdmin, false);
               <template
                 v-if="isAdmin || record.owner.username === whoami?.username"
               >
-                <a-button type="primary" @click="editMedia(record)">
+                <a-button type="primary" @click="editMedia(record as Media)">
                   <EditOutlined />
                   Edit
                 </a-button>
@@ -451,7 +453,7 @@ const isAdmin = inject(IsAdmin, false);
                 </a-popconfirm>
               </template>
               <template v-else>
-                <QuickStageAssignment :media="record" />
+                <QuickStageAssignment :media="record as Media" />
               </template>
             </a-space>
           </template>

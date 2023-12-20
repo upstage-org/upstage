@@ -25,7 +25,7 @@ export default {
       notification.success(
         response.updateUser.user.active
           ? `Account ${displayName(user)} activated successfully!`
-          : `Account ${displayName(user)} deactivated successfully!`
+          : `Account ${displayName(user)} deactivated successfully!`,
       );
       user.loading = false;
     };

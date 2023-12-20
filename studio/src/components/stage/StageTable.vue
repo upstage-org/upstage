@@ -8,15 +8,11 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { capitalize } from "utils/common";
-import { IframeSrc } from "../../symbols";
 import { message } from "ant-design-vue";
 import { FetchResult } from "@apollo/client/core";
 
 const { t } = useI18n();
 
-const iframeSrc = inject(IframeSrc, ref(""));
-const manageStage = (stage: Stage) =>
-  (iframeSrc.value = `/backstage/stage-management/${stage.id}/`);
 const enterStage = (stage: Stage) => {
   window.open(`/${stage.fileLocation}`, "_blank");
 };
@@ -25,13 +21,11 @@ const tableParams = reactive({
   cursor: undefined,
   sort: "CREATED_ON_DESC",
 });
-const { result: inquiryResult } = useQuery(
-  gql`
-    {
-      inquiry @client
-    }
-  `
-);
+const { result: inquiryResult } = useQuery(gql`
+  {
+    inquiry @client
+  }
+`);
 const params = computed(() => ({
   ...tableParams,
   ...inquiryResult.value.inquiry,
@@ -85,7 +79,7 @@ const { result, loading, fetchMore } = useQuery<
     }
   `,
   params.value,
-  { notifyOnNetworkStatusChange: true }
+  { notifyOnNetworkStatusChange: true },
 );
 
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
@@ -93,7 +87,6 @@ const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
 };
 
 watch(params, () => {
-  iframeSrc.value = "";
   fetchMore({
     variables: params.value,
     updateQuery,
@@ -190,15 +183,15 @@ interface Sorter {
 const handleTableChange = (
   { current = 1, pageSize = 10 }: TablePaginationConfig,
   _: any,
-  sorter: SorterResult<Media> | SorterResult<Media>[]
+  sorter: SorterResult<Media> | SorterResult<Media>[],
 ) => {
   const sort = (Array.isArray(sorter) ? sorter : [sorter])
     .sort(
       (a, b) =>
-        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple
+        (a.column?.sorter as any).multiple - (b.column?.sorter as any).multiple,
     )
     .map(({ columnKey, order }) =>
-      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+      `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
     );
   Object.assign(tableParams, {
     cursor:
@@ -210,7 +203,7 @@ const handleTableChange = (
   });
 };
 const dataSource = computed(() =>
-  result.value ? result.value.stages.edges.map((edge) => edge.node) : []
+  result.value ? result.value.stages.edges.map((edge) => edge.node) : [],
 );
 
 provide("refresh", () => {
@@ -241,16 +234,15 @@ const {
   mutate: updateVisibility,
   loading: loadingUpdateVisibility,
   onDone: onVisibilityUpdated,
-} = useMutation<
-  { updateVisibility: { result: string } },
-  { stageId: string }
->(gql`
-  mutation UpdateVisibility($stageId: ID!) {
-    updateVisibility(stageId: $stageId) {
-      result
+} = useMutation<{ updateVisibility: { result: string } }, { stageId: string }>(
+  gql`
+    mutation UpdateVisibility($stageId: ID!) {
+      updateVisibility(stageId: $stageId) {
+        result
+      }
     }
-  }
-`);
+  `,
+);
 const handleChangeVisibility = async (record: Stage) => {
   await updateVisibility({
     stageId: record.id,
@@ -274,19 +266,21 @@ onVisibilityUpdated(handleUpdate);
 </script>
 
 <template>
-  <a-layout class="w-full">
+  <a-layout class="w-full rounded-xl bg-white overflow-hidden">
     <a-table
-      class="w-full shadow rounded-xl bg-white overflow-auto"
+      class="w-full shadow overflow-auto"
       :columns="columns"
       :data-source="dataSource"
       rowKey="id"
       :loading="loading"
       @change="handleTableChange"
-      :pagination="{
-        showQuickJumper: true,
-        showSizeChanger: true,
-        total: result ? result.stages.totalCount : 0,
-      } as Pagination"
+      :pagination="
+        {
+          showQuickJumper: true,
+          showSizeChanger: true,
+          total: result ? result.stages.totalCount : 0,
+        } as Pagination
+      "
     >
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">
@@ -305,7 +299,9 @@ onVisibilityUpdated(handleUpdate);
             <span>{{ text.username }}</span>
           </span>
         </template>
-        <template v-if="['created_on', 'last_access'].includes(column.key)">
+        <template
+          v-if="['created_on', 'last_access'].includes(column.key as string)"
+        >
           <d-date v-if="text" :value="text" />
         </template>
         <template v-if="column.key === 'permission'">
@@ -321,7 +317,7 @@ onVisibilityUpdated(handleUpdate);
               un-checked-children="R"
               :checked="text === 'live'"
               :loading="loadingUpdateStatus"
-              @change="handleChangeStatus(record)"
+              @change="handleChangeStatus(record as Stage)"
             />
           </a-tooltip>
         </template>
@@ -329,16 +325,20 @@ onVisibilityUpdated(handleUpdate);
           <a-switch
             :checked="!!text"
             :loading="loadingUpdateVisibility"
-            @change="handleChangeVisibility(record)"
+            @change="handleChangeVisibility(record as Stage)"
           />
         </template>
         <template v-if="column.key === 'actions'">
           <a-space>
-            <a-button @click="manageStage(record)">
-              <setting-outlined />
-              Manage
-            </a-button>
-            <a-button type="primary" @click="enterStage(record)">
+            <router-link
+              :to="`/legacy/backstage/stage-management/${record.id}/`"
+            >
+              <a-button>
+                <setting-outlined />
+                Manage
+              </a-button>
+            </router-link>
+            <a-button type="primary" @click="enterStage(record as Stage)">
               <login-outlined />
               Enter
             </a-button>

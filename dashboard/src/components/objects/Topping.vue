@@ -50,7 +50,7 @@ export default {
   setup: (props) => {
     const store = useStore();
     const isHolding = computed(
-      () => props.object.id === store.state.user.avatarId
+      () => props.object.id === store.state.user.avatarId,
     );
     const canPlay = computed(() => store.getters["stage/canPlay"]);
 

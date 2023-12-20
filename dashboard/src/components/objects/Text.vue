@@ -55,11 +55,11 @@ export default {
         if (!isFocus.value) {
           el.value.innerHTML = props.object.content;
         }
-      }
+      },
     );
 
     const activeMovable = computed(
-      () => store.getters["stage/activeMovable"] === props.object.id
+      () => store.getters["stage/activeMovable"] === props.object.id,
     );
     const mousedown = (e) => {
       if (activeMovable.value && props.object.editing) {

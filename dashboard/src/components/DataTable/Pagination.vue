@@ -104,7 +104,7 @@ export default {
     const visibleNavigationButtons = computed(() => {
       const buttons = [];
       let begin = Math.ceil(
-        props.modelValue - (props.maxNavigationButtons - 2) / 2
+        props.modelValue - (props.maxNavigationButtons - 2) / 2,
       );
       if (begin < 2) {
         begin = 2;

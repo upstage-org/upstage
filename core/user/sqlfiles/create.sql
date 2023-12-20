@@ -15,6 +15,7 @@ CREATE TABLE public.upstage_user (
         upload_limit INTEGER,
         intro TEXT default null,
         can_send_email BOOLEAN default false,
+        last_login timestamp without time zone default null,
         PRIMARY KEY (id)
 );
 -- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

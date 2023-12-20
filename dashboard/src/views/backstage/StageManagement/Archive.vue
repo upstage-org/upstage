@@ -214,10 +214,10 @@ export default {
       });
       res.forEach((session) => {
         session.privateMessages = session.messages.filter(
-          (m) => m.isPrivate || m.clearPlayerChat
+          (m) => m.isPrivate || m.clearPlayerChat,
         );
         session.publicMessages = session.messages.filter(
-          (m) => !m.isPrivate && !m.clearPlayerChat
+          (m) => !m.isPrivate && !m.clearPlayerChat,
         );
       });
       return res;
@@ -250,7 +250,7 @@ export default {
               session.end
                 ? timeStamp(session.end)
                 : timeStamp(session.createdOn)
-            }.txt`
+            }.txt`,
           );
           content = session.publicMessages.map((item) => {
             let line = "";
@@ -264,7 +264,7 @@ export default {
         } else {
           link.setAttribute(
             "download",
-            `${stage.value.name}-Audience-chat.txt`
+            `${stage.value.name}-Audience-chat.txt`,
           );
           sessions.value.forEach((session) => {
             content = content.concat(
@@ -274,7 +274,7 @@ export default {
                 } else {
                   return `${item.user}: ${item.message}\r\n`;
                 }
-              })
+              }),
             );
           });
         }
@@ -286,7 +286,7 @@ export default {
               session.end
                 ? timeStamp(session.end)
                 : timeStamp(session.createdOn)
-            }.txt`
+            }.txt`,
           );
           content = session.privateMessages.map((item) => {
             let line = "";
@@ -307,7 +307,7 @@ export default {
                 } else {
                   return `${item.user}: ${item.message}\r\n`;
                 }
-              })
+              }),
             );
           });
         }
@@ -330,7 +330,7 @@ export default {
     const formatDate = (date) => {
       return (
         [padTo2Digits(date.getHours()), padTo2Digits(date.getMinutes())].join(
-          ""
+          "",
         ) +
         "-" +
         [
@@ -347,20 +347,20 @@ export default {
     };
 
     const { loading: updating, save: updateMutation } = useMutation(
-      stageGraph.updatePerformance
+      stageGraph.updatePerformance,
     );
     const updatePerformance = async (item, complete) => {
       await updateMutation(
         "Performance updated successfully!",
         item.id,
         item.name,
-        item.description
+        item.description,
       );
       complete();
     };
 
     const { loading: deleting, save: deleteMutation } = useMutation(
-      stageGraph.deletePerformance
+      stageGraph.deletePerformance,
     );
     const deletePerformance = async (item, complete) => {
       await deleteMutation("Performance deleted successfully!", item.id);

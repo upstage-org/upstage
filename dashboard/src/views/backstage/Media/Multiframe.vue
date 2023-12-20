@@ -16,7 +16,7 @@ const props = defineProps({
 });
 
 const { nodes: allMedia, loading: loadingAllMedia } = useQuery(
-  stageGraph.mediaList
+  stageGraph.mediaList,
 );
 
 const uploadedFrames = reactive([]);

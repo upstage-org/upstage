@@ -135,19 +135,19 @@ export default {
           now.value.diff(from, "milliseconds"),
           {
             round: true,
-          }
+          },
         );
         return `${name} - ${duration}`;
       }
     });
 
     const { loading: deleting, save: deleteMutation } = useMutation(
-      stageGraph.deletePerformance
+      stageGraph.deletePerformance,
     );
     const deleteRecording = async (complete) => {
       await deleteMutation(
         "Recording deleted successfully!",
-        props.stage.activeRecording.id
+        props.stage.activeRecording.id,
       );
       Object.assign(props.stage, {
         activeRecording: null,
@@ -158,7 +158,7 @@ export default {
 
     const saved = ref(false);
     const { loading: saving, save: saveMutation } = useMutation(
-      stageGraph.saveRecording
+      stageGraph.saveRecording,
     );
     const saveRecording = async () => {
       await saveMutation(() => {

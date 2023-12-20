@@ -1,31 +1,30 @@
-from core.project_globals import app, DBSession, ScopedSession
-from core.auth.fernet_crypto import encrypt, decrypt
+import sys
+import os
+import graphene
+import pyotp
+from datetime import datetime
+from flask import request
 from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity,
     create_access_token,
     create_refresh_token,
-    verify_jwt_in_request,
     JWTManager,
 )
-from core.user.models import OneTimeTOTP, User
-from core.auth.models import UserSession
-from core.auth.auth_api import TNL
-from flask import request
-import sys
-import os
-import graphene
-import pyotp
-
-from core.mail.mail_utils import send
-from core.mail.templates import password_reset
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, ".."))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
+from core.project_globals import app, DBSession, ScopedSession
+from core.auth.fernet_crypto import encrypt, decrypt
+from core.user.models import OneTimeTOTP, User
+from core.auth.models import UserSession
+from core.auth.auth_api import TNL
+from core.mail.mail_utils import send
+from core.mail.templates import password_reset
 
 jwt = JWTManager(app)
 
@@ -57,6 +56,9 @@ class AuthMutation(graphene.Mutation):
             app_os_version=request.headers.get("X-Upstage-Os-Version"),
             app_device=request.headers.get("X-Upstage-Device-Model"),
         )
+
+        user.last_login = datetime.utcnow()
+
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)
             local_db_session.flush()
@@ -100,6 +102,8 @@ class RefreshMutation(graphene.Mutation):
             app_os_version=request.headers.get("X-Upstage-Os-Version"),
             app_device=request.headers.get("X-Upstage-Device-Model"),
         )
+
+        user.last_login = datetime.utcnow()
 
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)

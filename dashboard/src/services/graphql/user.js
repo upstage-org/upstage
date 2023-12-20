@@ -31,6 +31,7 @@ export default {
           $firstName: String
           $lastName: String
           $intro: String
+          $token: String
         ) {
           createUser(
             inbound: {
@@ -40,6 +41,7 @@ export default {
               firstName: $firstName
               lastName: $lastName
               intro: $intro
+              token: $token
             }
           ) {
             user {
@@ -49,7 +51,7 @@ export default {
         }
         ${userFragment}
       `,
-      variables
+      variables,
     ),
   updateUser: (variables) =>
     client.request(
@@ -85,7 +87,7 @@ export default {
         }
         ${userFragment}
       `,
-      variables
+      variables,
     ),
   refreshUser: (variables, headers) =>
     client.request(
@@ -97,7 +99,7 @@ export default {
         }
       `,
       variables,
-      headers
+      headers,
     ),
   currentUser: () =>
     client.request(gql`
@@ -111,7 +113,12 @@ export default {
   userList: () =>
     client.request(gql`
       query UserList($first: Int, $after: String) {
-        userList(sort: USERNAME_ASC, first: $first, after: $after) {
+        userList(
+          sort: USERNAME_ASC
+          active: true
+          first: $first
+          after: $after
+        ) {
           totalCount
           edges {
             node {
@@ -141,7 +148,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   deleteUser: (variables) =>
     client.request(
@@ -152,7 +159,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   batchUserCreation: (variables) =>
     client.request(
@@ -168,7 +175,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   requestPasswordReset: (variables) =>
     client.request(
@@ -180,7 +187,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   verifyPasswordReset: (variables) =>
     client.request(
@@ -191,7 +198,7 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
   passwordReset: (variables) =>
     client.request(
@@ -206,6 +213,6 @@ export default {
           }
         }
       `,
-      variables
+      variables,
     ),
 };

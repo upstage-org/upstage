@@ -11,6 +11,7 @@
           <div class="field">
             <p class="control has-icons-left">
               <input
+                name="username"
                 class="input"
                 v-model="username"
                 placeholder="Username"
@@ -24,6 +25,7 @@
           <div class="field">
             <p class="control has-icons-left has-icons-right">
               <input
+                name="password"
                 class="input"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Password"
@@ -97,6 +99,8 @@
           <div class="field">
             <p class="control has-icons-left">
               <input
+                name="otp"
+                autocomplete="one-time-code"
                 class="input"
                 v-model="otp"
                 placeholder="XXXXXX"
@@ -242,7 +246,7 @@ const requestPasswordReset = async () => {
     },
     {
       usernameOrEmail: username.value.trim(),
-    }
+    },
   );
   loading.value = false;
 };
@@ -259,7 +263,7 @@ const verifyOTP = async () => {
     {
       otp: otp.value.trim(),
       username: username.value.trim(),
-    }
+    },
   );
   loading.value = false;
 };
@@ -278,7 +282,7 @@ const processPasswordReset = async () => {
       otp: otp.value.trim(),
       username: username.value.trim(),
       password: password.value,
-    }
+    },
   );
   loading.value = false;
 };

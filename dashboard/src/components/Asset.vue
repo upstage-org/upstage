@@ -26,7 +26,7 @@ export default {
       Object.assign(props.asset, { mediaType: props.asset.assetType.name });
     }
     const src = computed(
-      () => props.asset.base64 ?? absolutePath(props.asset.src)
+      () => props.asset.base64 ?? absolutePath(props.asset.src),
     );
     const meta = computed(() => {
       if (props.asset.description) {

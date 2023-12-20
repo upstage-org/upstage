@@ -189,7 +189,7 @@ export default {
     },
     unreadPrivateMessageCount(state) {
       return state.chat.privateMessages.filter(
-        (m) => m.at > state.lastSeenPrivateMessage
+        (m) => m.at > state.lastSeenPrivateMessage,
       ).length;
     },
     whiteboard(state) {
@@ -381,11 +381,14 @@ export default {
           if (!mute && (state.status === "LIVE" || state.replay.isReplaying)) {
             avatarSpeak(model);
           }
-          setTimeout(() => {
-            if (model.speak?.message === speak.message) {
-              model.speak = null;
-            }
-          }, 1000 + speak.message.split(" ").length * 1000);
+          setTimeout(
+            () => {
+              if (model.speak?.message === speak.message) {
+                model.speak = null;
+              }
+            },
+            1000 + speak.message.split(" ").length * 1000,
+          );
         }
       }
     },
@@ -404,7 +407,7 @@ export default {
     },
     SEND_TO_BACK(state, object) {
       const index = state.board.objects.findIndex(
-        (avatar) => avatar.id === object.id
+        (avatar) => avatar.id === object.id,
       );
       if (index > -1) {
         state.board.objects.unshift(state.board.objects.splice(index, 1)[0]);
@@ -412,7 +415,7 @@ export default {
     },
     BRING_TO_FRONT(state, object) {
       const index = state.board.objects.findIndex(
-        (avatar) => avatar.id === object.id
+        (avatar) => avatar.id === object.id,
       );
       if (index > -1) {
         state.board.objects.push(state.board.objects.splice(index, 1)[0]);
@@ -420,16 +423,16 @@ export default {
     },
     BRING_TO_FRONT_OF(state, { front, back }) {
       const frontIndex = state.board.objects.findIndex(
-        (avatar) => avatar.id === front
+        (avatar) => avatar.id === front,
       );
       const backIndex = state.board.objects.findIndex(
-        (avatar) => avatar.id === back
+        (avatar) => avatar.id === back,
       );
       if (frontIndex > -1 && backIndex > -1) {
         state.board.objects.splice(
           backIndex,
           0,
-          state.board.objects.splice(frontIndex, 1)[0]
+          state.board.objects.splice(frontIndex, 1)[0],
         );
       }
     },
@@ -441,7 +444,7 @@ export default {
     },
     POP_DRAWING(state, drawingId) {
       state.board.drawings = state.board.drawings.filter(
-        (d) => d.drawingId !== drawingId
+        (d) => d.drawingId !== drawingId,
       );
     },
     PUSH_TEXT(state, text) {
@@ -506,7 +509,7 @@ export default {
         state.sessions.push(session);
       }
       state.sessions = state.sessions.filter(
-        (s) => moment().diff(moment(new Date(s.at)), "minute") < 60
+        (s) => moment().diff(moment(new Date(s.at)), "minute") < 60,
       );
       state.sessions.sort((a, b) => b.at - a.at);
     },
@@ -589,7 +592,7 @@ export default {
           state.chat.privateMessages[length - 1].at;
         localStorage.setItem(
           "lastSeenPrivateMessage",
-          state.lastSeenPrivateMessage
+          state.lastSeenPrivateMessage,
         );
       }
     },
@@ -600,12 +603,12 @@ export default {
       switch (message.type) {
         case DRAW_ACTIONS.NEW_LINE:
           state.board.whiteboard = state.board.whiteboard.concat(
-            message.command
+            message.command,
           );
           break;
         case DRAW_ACTIONS.UNDO:
           state.board.whiteboard = state.board.whiteboard.filter(
-            (e, i) => i !== message.index
+            (e, i) => i !== message.index,
           );
           break;
         case DRAW_ACTIONS.CLEAR:
@@ -634,10 +637,10 @@ export default {
       } else if (from.drawingId) {
         // is drawing
         const fromIndex = state.board.drawings.findIndex(
-          (t) => t.drawingId === from.drawingId
+          (t) => t.drawingId === from.drawingId,
         );
         const toIndex = state.board.drawings.findIndex(
-          (t) => t.drawingId === to.drawingId
+          (t) => t.drawingId === to.drawingId,
         );
         if (fromIndex > -1 && toIndex > -1) {
           const tool = state.board.drawings.splice(fromIndex, 1)[0];
@@ -646,10 +649,10 @@ export default {
       } else if (from.textId) {
         // is text
         const fromIndex = state.board.texts.findIndex(
-          (t) => t.textId === from.textId
+          (t) => t.textId === from.textId,
         );
         const toIndex = state.board.texts.findIndex(
-          (t) => t.textId === to.textId
+          (t) => t.textId === to.textId,
         );
         if (fromIndex > -1 && toIndex > -1) {
           const tool = state.board.texts.splice(fromIndex, 1)[0];
@@ -659,10 +662,10 @@ export default {
         const toolName = from.type + "s";
         if (state.tools[toolName]) {
           const fromIndex = state.tools[toolName].findIndex(
-            (t) => t.id === from.id
+            (t) => t.id === from.id,
           );
           const toIndex = state.tools[toolName].findIndex(
-            (t) => t.id === to.id
+            (t) => t.id === to.id,
           );
           if (fromIndex > -1 && toIndex > -1) {
             const tool = state.tools[toolName].splice(fromIndex, 1)[0];
@@ -1141,7 +1144,7 @@ export default {
     },
     async reloadPermission({ state }) {
       const permission = await stageGraph.loadPermission(
-        state.model.fileLocation
+        state.model.fileLocation,
       );
       if (permission) {
         state.model.permission = permission;
@@ -1149,7 +1152,7 @@ export default {
     },
     async loadPermission({ state, commit }) {
       const permission = await stageGraph.loadPermission(
-        state.model.fileLocation
+        state.model.fileLocation,
       );
       if (permission == "owner" || permission == "editor") {
         commit("SET_SHOW_CLEAR_CHAT_SETTINGS", true);
@@ -1172,7 +1175,7 @@ export default {
         state.model.events[state.model.events.length - 1]?.id ?? 0;
       const events = await stageGraph.loadEvents(
         state.model.fileLocation,
-        lastEventId
+        lastEventId,
       );
       if (events) {
         events.forEach((event) => dispatch("replicateEvent", event));
@@ -1229,9 +1232,12 @@ export default {
       }, 1000 / speed);
       events.forEach((event) => {
         if (event.mqttTimestamp - current >= 0) {
-          const timer = setTimeout(() => {
-            dispatch("replayEvent", event);
-          }, ((event.mqttTimestamp - current) * 1000) / speed);
+          const timer = setTimeout(
+            () => {
+              dispatch("replayEvent", event);
+            },
+            ((event.mqttTimestamp - current) * 1000) / speed,
+          );
           state.replay.timers.push(timer);
         } else {
           dispatch("replicateEvent", event);
@@ -1251,7 +1257,7 @@ export default {
     seekForwardReplay({ state, dispatch }) {
       const current = state.replay.timestamp.current + 10000;
       const nextEvent = state.model.events.find(
-        (e) => e.mqttTimestamp > current
+        (e) => e.mqttTimestamp > current,
       );
       if (nextEvent) {
         dispatch("replayRecording", nextEvent.mqttTimestamp);
@@ -1309,7 +1315,7 @@ export default {
         TOPICS.STATISTICS,
         { players: players, audiences: audiences },
         false,
-        true
+        true,
       );
     },
     async sendCounterLeave({ state, commit }) {
@@ -1327,7 +1333,7 @@ export default {
             audiences: getters.audiences.length,
           },
           false,
-          true
+          true,
         );
       }
     },

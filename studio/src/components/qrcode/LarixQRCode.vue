@@ -9,7 +9,7 @@ const props = defineProps({
   size: Number,
 });
 const code = computed(() =>
-  getLarixLink(props.stream.src, props.stream.sign, props.stream.name)
+  getLarixLink(props.stream.src, props.stream.sign, props.stream.name),
 );
 watchEffect(() => {
   console.log(code.value, props.stream);

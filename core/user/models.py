@@ -7,7 +7,7 @@ import traceback
 from datetime import datetime
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, ".."))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
@@ -83,6 +83,7 @@ class User(Base, db.Model):
     upload_limit = Column(Integer, default=1024 * 1024)
     intro = Column(Text, default="")
     can_send_email = Column(Boolean, default=False)
+    last_login = Column(DateTime)
 
 
 class UserPushnot(Base, db.Model):

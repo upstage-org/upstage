@@ -1,5 +1,6 @@
 import configs from "config";
 import { SharedAuth, SharedConfigs } from "models/config";
+import { User } from "models/studio";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
@@ -64,4 +65,23 @@ export function humanFileSize(bytes: number, si = false, dp = 1) {
 
 export function capitalize(str: string) {
   return str ? str.charAt(0).toUpperCase() + str.slice(1) : "";
+}
+
+export function titleCase(str: string) {
+  if (!str) {
+    return "";
+  }
+  var splitStr = str.toLowerCase().replace(/_/g, " ").split(" ");
+  for (var i = 0; i < splitStr.length; i++) {
+    splitStr[i] =
+      splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);
+  }
+  return splitStr.join(" ");
+}
+
+export function displayName(user: User) {
+  if (user.displayName?.trim()) return user.displayName;
+  if (user.firstName || user.lastName)
+    return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
+  return user.username;
 }

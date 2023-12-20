@@ -1,14 +1,14 @@
 # -*- coding: iso8859-15 -*-
 import os
 import sys
+import graphene
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-projdir = os.path.abspath(os.path.join(appdir, ".."))
+projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-import graphene
 from core.asset.models import Stage as StageModel
 from core.asset.models import Tag as TagModel
 from core.auth.auth_mutation import AuthMutation, RefreshMutation
@@ -25,7 +25,6 @@ from core.user.models import ROLES
 from core.user.models import User as UserModel
 from core.user.models import role_conv
 from core.user.user_utils import current_user
-
 from core.studio.media import (
     Asset,
     AssetConnectionField,
@@ -41,6 +40,13 @@ from core.studio.media import (
 )
 from core.studio.stage import StageConnectionField, Stage
 from core.studio.notification import Notification, resolve_notifications
+from core.studio.user import (
+    BatchUserCreation,
+    DeleteUser,
+    UpdateUser,
+    UserConnectionField,
+    AdminPlayer,
+)
 
 
 class Tag(SQLAlchemyObjectType):
@@ -69,7 +75,7 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     mediaTypes = SQLAlchemyConnectionField(AssetType.connection)
     tags = SQLAlchemyConnectionField(Tag.connection)
-    users = SQLAlchemyConnectionField(User.connection)
+    users = UserConnectionField(User.connection, active=graphene.Boolean())
     media = AssetConnectionField(
         Asset.connection,
         id=graphene.ID(),
@@ -88,6 +94,12 @@ class Query(graphene.ObjectType):
         created_between=graphene.List(graphene.Date),
         file_location=graphene.String(),
         owners=graphene.List(graphene.String),
+    )
+    adminPlayers = UserConnectionField(
+        AdminPlayer.connection,
+        id=graphene.ID(),
+        username_like=graphene.String(),
+        created_between=graphene.List(graphene.Date),
     )
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)
@@ -111,6 +123,9 @@ class Mutation(graphene.ObjectType):
     quickAssignMutation = QuickAssignMutation.Field()
     updateStatus = UpdateAttributeStatus.Field()
     updateVisibility = UpdateAttributeVisibility.Field()
+    updateUser = UpdateUser.Field()
+    deleteUser = DeleteUser.Field()
+    batchUserCreation = BatchUserCreation.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

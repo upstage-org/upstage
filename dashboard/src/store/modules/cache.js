@@ -48,7 +48,7 @@ export default {
         if (nodes.value) {
           nodes.value.forEach((node) => {
             node.attributes.forEach(
-              (attr) => (node[attr.name] = attr.description)
+              (attr) => (node[attr.name] = attr.description),
             );
           });
         }

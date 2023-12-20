@@ -9348,6 +9348,11 @@ vue-template-es2015-compiler@^1.9.0:
   resolved "https://registry.yarnpkg.com/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz#1ee3bc9a16ecbf5118be334bb15f9c46f82f5825"
   integrity sha512-4gDntzrifFnCEvyoO8PqyJDmguXgVPxKiIxrBKjIowvL9l+N66196+72XVYR8BBf1Uv1Fgt3bGevJ+sEmxfZzw==
 
+vue-turnstile@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/vue-turnstile/-/vue-turnstile-1.0.5.tgz#63e3905fc5a5ad199fa5224235a5b7807e7da454"
+  integrity sha512-ayXZGL4aWeBOERPXS2Ufwkni1tJKNSUL3y+9bwDChyQHTJaqXBqWVnrgb+sL5ilnYnphnoBVqvGTmFjGzj6ZjQ==
+
 vue@^3.2.2:
   version "3.2.31"
   resolved "https://registry.yarnpkg.com/vue/-/vue-3.2.31.tgz#e0c49924335e9f188352816788a4cca10f817ce6"

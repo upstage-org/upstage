@@ -150,7 +150,7 @@ export default {
       () => stream.replayed,
       () => {
         video.value.currentTime = 0;
-      }
+      },
     );
 
     watch(
@@ -158,7 +158,7 @@ export default {
       () => {
         window.Object.assign(stream, props.object);
         synchronize();
-      }
+      },
     );
     const loading = ref(true);
     const loadeddata = () => {

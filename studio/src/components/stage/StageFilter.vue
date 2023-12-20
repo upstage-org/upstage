@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch, watchEffect, inject, computed, Ref } from "vue";
+import { ref, watch, watchEffect, inject, computed } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import { useDebounceFn } from "@vueuse/core";
 import gql from "graphql-tag";
@@ -7,12 +7,9 @@ import { StudioGraph } from "models/studio";
 import { inquiryVar } from "apollo";
 import moment, { Moment } from "moment";
 import configs from "config";
-import { getSharedAuth } from "utils/common";
 import Navbar from "../Navbar.vue";
-import { IframeSrc } from "../../symbols";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
-const iframeSrc = inject(IframeSrc, ref(""));
 const { result, loading } = useQuery<StudioGraph>(gql`
   query StageFilter {
     whoami {
@@ -20,7 +17,7 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       displayName
       roleName
     }
-    users {
+    users(active: true) {
       edges {
         node {
           dbId
@@ -59,12 +56,8 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   }
 `);
 
-const sharedAuth = getSharedAuth();
-
 const name = ref("");
-const owners = ref(
-  sharedAuth && sharedAuth.username ? [sharedAuth.username] : []
-);
+const owners = ref([]);
 const types = ref([]);
 const stages = ref([]);
 const tags = ref([]);
@@ -94,7 +87,6 @@ const updateInquiry = (vars: any) =>
 const watchInquiryVar = (vars: any) => {
   types.value = vars.mediaTypes ?? [];
   tags.value = vars.tags ?? [];
-  console.log(vars);
   inquiryVar.onNextChange(watchInquiryVar);
 };
 inquiryVar.onNextChange(watchInquiryVar);
@@ -111,7 +103,7 @@ watch(
   name,
   useDebounceFn(() => {
     updateInquiry({ name: name.value });
-  }, 500)
+  }, 500),
 );
 watch(dates, (dates) => {
   updateInquiry({
@@ -138,7 +130,7 @@ const hasFilter = computed(
     types.value.length ||
     stages.value.length ||
     tags.value.length ||
-    dates.value
+    dates.value,
 );
 const handleFilterOwnerName = (keyword: string, option: any) => {
   const s = keyword.toLowerCase();
@@ -157,9 +149,11 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
   <a-affix :offset-top="0">
     <a-space class="shadow rounded-xl px-4 py-2 bg-white flex justify-between">
       <a-space class="flex-wrap">
-        <a-button type="primary" @click="iframeSrc = '/backstage/new-stage'">
-          <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
-        </a-button>
+        <RouterLink to="/legacy/backstage/new-stage">
+          <a-button type="primary">
+            <PlusOutlined /> {{ $t("new") }} {{ $t("stage") }}
+          </a-button>
+        </RouterLink>
         <a-input-search
           allowClear
           class="w-48"
@@ -198,27 +192,14 @@ const VNodes = (_: any, { attrs }: { attrs: any }) => {
         </a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
-          v-model:value="(dates as any)"
-          :ranges="(ranges as any)"
+          v-model:value="dates as any"
+          :ranges="ranges as any"
         />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters
         </a-button>
       </a-space>
-      <a-space>
-        <a
-          :href="to('backstage/profile')"
-          v-if="result"
-          style="line-height: 0.8"
-          class="text-right"
-        >
-          <h2 class="mb-0">
-            {{ result.whoami.displayName || result.whoami.username }}
-          </h2>
-          <span class="text-gray-500">{{ result.whoami.roleName }}</span>
-        </a>
-        <Navbar />
-      </a-space>
+      <Navbar />
     </a-space>
   </a-affix>
 </template>
