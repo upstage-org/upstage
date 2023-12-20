@@ -183,3 +183,15 @@ export function outOfViewportPosition(el) {
   }
   return false
 }
+
+export const displayTimestamp = (t) => {
+  let s = Math.round(t);
+  let m = Math.floor(s / 60);
+  s = String(s % 60).padStart(2, 0);
+  if (m < 60) {
+    return `${m}:${s}`;
+  }
+  let h = Math.floor(m / 60);
+  m = String(m % 60).padStart(2, 0);
+  return `${h}:${m}:${s}`;
+};

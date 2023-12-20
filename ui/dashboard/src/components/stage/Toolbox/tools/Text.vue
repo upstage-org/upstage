@@ -28,11 +28,11 @@
           <Skeleton :data="text" />
         </template>
         <template #context>
-          <a class="panel-block has-text-danger" @click="deleteTextPermantly(text)">
+          <a class="panel-block has-text-danger" @click="deleteTextPermanently(text)">
             <span class="panel-icon">
               <Icon src="remove.svg" />
             </span>
-            <span>Delete Permantly</span>
+            <span>Delete Permanently</span>
           </a>
         </template>
       </ContextMenu>
@@ -61,7 +61,7 @@
       />
     </div>
     <div class="text-tool" style="z-index: 1003">
-      <span class="tag muted is-block">Color</span>
+      <span class="tag muted is-block">Colour</span>
       <ColorPicker v-model="options.color" />
     </div>
     <div class="text-tool" :class="{ active: options.fontWeight }" @click="toggleBold">
@@ -241,7 +241,7 @@ export default {
       }
     });
 
-    const deleteTextPermantly = (text) => {
+    const deleteTextPermanently = (text) => {
       store.commit("stage/POP_TEXT", text.textId);
       store.getters["stage/objects"]
         .filter((o) => o.textId === text.textId)
@@ -269,7 +269,7 @@ export default {
       changeFontSize,
       savedTexts,
       fontDropdownOpen,
-      deleteTextPermantly
+      deleteTextPermanently
     };
   },
 };

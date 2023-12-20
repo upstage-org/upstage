@@ -7,7 +7,9 @@
   />
   <table class="is-fullwidth" cellspacing="5">
     <tr>
-      <td><h3 class="title">Animations</h3></td>
+      <td>
+        <h3 class="title">Animations</h3>
+      </td>
       <td width="100%">
         <div>
           <HorizontalField title="Speech bubble">
@@ -56,8 +58,8 @@
                 step="0.01"
                 min="0.1"
                 max="1"
-                :value="1000 / animations.curtainSpeed"
-                @change="animations.curtainSpeed = 1000 / $event.target.value"
+                :value="5000 / animations.curtainSpeed"
+                @change="animations.curtainSpeed = 5000 / $event.target.value"
                 type="range"
               />
               <span class="ml-2">Fast</span>
@@ -73,10 +75,7 @@
       <td>
         <div>
           <HorizontalField title="Auto detect">
-            <Switch
-              v-model="streaming.autoDetect"
-              label="Auto detect for live streams"
-            />
+            <Switch v-model="streaming.autoDetect" label="Auto detect for live streams" />
           </HorizontalField>
         </div>
       </td>
@@ -85,9 +84,9 @@
       <td>
         <h3 class="title">
           Stage Ratio
-          <span v-if="selectedRatio">
-            : {{ selectedRatio.width }}/{{ selectedRatio.height }}
-          </span>
+          <span
+            v-if="selectedRatio"
+          >: {{ selectedRatio.width }}/{{ selectedRatio.height }}</span>
         </h3>
       </td>
       <td>
@@ -96,8 +95,8 @@
             <Selectable
               :selected="selectedRatio.width == 4 && selectedRatio.height == 3"
               @select="
-                selectedRatio.width = 4;
-                selectedRatio.height = 3;
+              selectedRatio.width = 4;
+              selectedRatio.height = 3;
               "
             >
               <div class="box size-option" style="padding-bottom: 75%">
@@ -109,8 +108,8 @@
             <Selectable
               :selected="selectedRatio.width == 16 && selectedRatio.height == 9"
               @select="
-                selectedRatio.width = 16;
-                selectedRatio.height = 9;
+              selectedRatio.width = 16;
+              selectedRatio.height = 9;
               "
             >
               <div class="box size-option" style="padding-bottom: 56.25%">
@@ -122,8 +121,8 @@
             <Selectable
               :selected="selectedRatio.width == 2 && selectedRatio.height == 1"
               @select="
-                selectedRatio.width = 2;
-                selectedRatio.height = 1;
+              selectedRatio.width = 2;
+              selectedRatio.height = 1;
               "
             >
               <div class="box size-option" style="padding-bottom: 50%">
@@ -135,9 +134,8 @@
             <div
               class="box size-option has-primary-background"
               :style="{
-                'padding-bottom': `${
-                  (selectedRatio.height * 100) / selectedRatio.width
-                }%`,
+                'padding-bottom': `${(selectedRatio.height * 100) / selectedRatio.width
+                  }%`,
               }"
             >
               <div>
@@ -172,6 +170,7 @@ export default {
   components: { Selectable, SaveButton, HorizontalField, Dropdown, Switch },
   setup: () => {
     const stage = inject("stage");
+    const refresh = inject("refresh");
     const config = useAttribute(stage, "config", true).value ?? {
       ratio: {
         width: 16,
@@ -181,7 +180,7 @@ export default {
         bubble: "fade",
         curtain: "drop",
         bubbleSpeed: 1000,
-        curtainSpeed: 1000,
+        curtainSpeed: 5000,
       },
       streaming: {
         autoDetect: false,
@@ -200,7 +199,10 @@ export default {
         streaming,
       });
       await save(
-        () => notification.success("Layout saved successfully!"),
+        () => {
+          notification.success("Customisation saved!");
+          refresh(stage.value.id);
+        },
         stage.value.id,
         config
       );
