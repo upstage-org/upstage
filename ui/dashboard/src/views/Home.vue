@@ -5,7 +5,11 @@
         <h1 class="title" v-html="foyer.title" />
         <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description" />
         <Loading v-if="loading" />
-        <div v-else class="links columns is-multiline my-4 pt-6">
+        <div
+          v-else
+          class="links columns is-multiline my-4 pt-6"
+          data-masonry="{ 'itemSelector': '.column', 'columnWidth': 200 }"
+        >
           <div v-for="stage in liveStages" :key="stage.id" class="column is-4">
             <router-link
               :to="`/${stage.fileLocation}`"

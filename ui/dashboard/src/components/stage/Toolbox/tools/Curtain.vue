@@ -1,6 +1,8 @@
 <template>
   <div @click="toggleCurtain(null)">
-    <div class="icon is-large"><Icon size="36" src="clear.svg" /></div>
+    <div class="icon is-large">
+      <Icon size="36" src="clear.svg" />
+    </div>
     <span class="tag is-light is-block">No curtain</span>
   </div>
   <div
@@ -10,11 +12,9 @@
       active: curtain.src === currentCurtain,
     }"
   >
-    <Image
-      :src="curtain.src"
-      :title="curtain.name"
-      @click="toggleCurtain(curtain.src)"
-    />
+    <Skeleton :data="curtain" nodrop>
+      <Image :src="curtain.src" :title="curtain.name" @click="toggleCurtain(curtain.src)" />
+    </Skeleton>
   </div>
 </template>
 
@@ -23,9 +23,10 @@ import { useStore } from "vuex";
 import Image from "@/components/Image";
 import Icon from "@/components/Icon";
 import { computed } from "@vue/runtime-core";
+import Skeleton from "../Skeleton.vue";
 
 export default {
-  components: { Image, Icon },
+  components: { Image, Icon, Skeleton },
   setup: () => {
     const store = useStore();
     const curtains = store.state.stage.tools.curtains;

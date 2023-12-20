@@ -21,7 +21,7 @@
               :placeholder="placeholder"
               :value="modelValue"
               @input="$emit('update:modelValue', $event.target.value)"
-              @blur="stateTouched = true"
+              @blur="handleBlur"
               v-bind="$attrs"
             />
             <slot name="left">
@@ -95,16 +95,27 @@ export default {
       type: Boolean,
       default: false,
     },
+    noTrim: {
+      type: Boolean,
+      default: false,
+    },
   },
   emits: ["update:modelValue"],
-  setup: (props) => {
+  setup: (props, { emit }) => {
     const stateTouched = ref(false);
     const isTouched = computed(() => props.touched || stateTouched.value);
     const isRequired = computed(
       () => props.required && isTouched.value && !props.modelValue
     );
 
-    return { isRequired, stateTouched, isTouched };
+    const handleBlur = (e) => {
+      stateTouched.value = true
+      if (!props.noTrim) {
+        emit("update:modelValue", e.target.value.trim())
+      }
+    }
+
+    return { isRequired, stateTouched, isTouched, handleBlur };
   },
 };
 </script>
