@@ -105,7 +105,9 @@ export default {
                 .concat(state.tools.avatars.map(a => a.src))
                 .concat(state.tools.avatars.map(a => a.frames ?? []).flat())
                 .concat(state.tools.props.map(p => p.src))
+                .concat(state.tools.props.map(a => a.frames ?? []).flat())
                 .concat(state.tools.backdrops.map(b => b.src))
+                .concat(state.tools.backdrops.map(a => a.frames ?? []).flat())
                 .concat(state.tools.curtains.map(b => b.src))
             return assets;
         },
