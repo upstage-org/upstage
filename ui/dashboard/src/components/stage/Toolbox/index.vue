@@ -65,7 +65,7 @@ export default {
   background-color: white;
   opacity: 0.9;
   transition: transform 0.5s;
-  z-index: 2;
+  z-index: 6;
   hr {
     margin: 0;
   }

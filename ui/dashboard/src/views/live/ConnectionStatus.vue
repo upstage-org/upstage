@@ -94,7 +94,7 @@ export default {
   top: 50px;
   width: 250px;
   text-align: center;
-  z-index: 2;
+  z-index: 4;
 
   @media screen and (max-width: 767px) {
     right: unset;
