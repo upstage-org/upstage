@@ -20,9 +20,11 @@ from terminal_colors import bcolors
 from config.settings import UPLOAD_USER_CONTENT_FOLDER, ENV_TYPE
 from auth.fernet_crypto import encrypt
 
+'''
 if ENV_TYPE == 'Production':
     print(bcolors.FAIL + "This script is not meant to be run in production." + bcolors.ENDC)
     exit()
+'''
 
 demo_media_folder = 'ui/static/demo'
 owner_id = 0
