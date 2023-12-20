@@ -101,7 +101,7 @@ export default {
     const holdable = computed(() =>
       ["avatar"].includes(props.object.type)
     );
-    const activeMovable = computed(() => store.state.stage.activeMovable);
+    const activeMovable = computed(() => store.getters["stage/activeMovable"]);
     const showSlider = computed(
       () => (isHolding.value || !holdable.value) && activeMovable.value === props.object.id
     );

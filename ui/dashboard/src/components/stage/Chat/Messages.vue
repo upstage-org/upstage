@@ -142,7 +142,7 @@ export default {
   height: unset;
   .highlight-star {
     position: absolute;
-    right: -4px;
+    right: -16px;
   }
 }
 </style>

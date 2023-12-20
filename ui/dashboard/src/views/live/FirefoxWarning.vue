@@ -15,7 +15,7 @@
       <div class="columns">
         <div class="column is-3 mt-6">
           <b>Step 1:</b>&nbsp;Open a new tab and go to
-          <code>about:config</code>
+          <Copy value="about:config" />
         </div>
         <div class="column">
           <img src="@/assets/firefox-instruction/1.png" alt="Step 1" />
@@ -30,16 +30,16 @@
         </div>
       </div>
       <div class="columns">
-        <div class="column is-3 mt-6">
+        <div class="column is-4 mt-6">
           <b>Step 2:</b>&nbsp;Search for
-          <code>network.http.spdy.websockets</code>
+          <Copy value="network.http.spdy.websockets" />
         </div>
         <div class="column">
           <img src="@/assets/firefox-instruction/2.png" alt="Step 2" />
         </div>
       </div>
       <div class="columns">
-        <div class="column is-3 mt-6">
+        <div class="column is-4 mt-6">
           <b>Step 3:</b>&nbsp;Change the value to
           <code>false</code>
         </div>
@@ -56,15 +56,16 @@ import { computed, onUnmounted, ref } from "@vue/runtime-core";
 import { useStore } from "vuex";
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
+import Copy from "@/components/Copy.vue";
 import anime from "animejs";
 
 export default {
-  components: { Icon, Modal },
+  components: { Icon, Modal, Copy },
   setup: () => {
     const store = useStore();
     const isFirefox = navigator.userAgent.indexOf("Firefox") != -1;
     const status = computed(() => store.state.stage.status);
-    const visible = computed(() => isFirefox && status.value !== "LIVE");
+    const visible = computed(() => isFirefox && (status.value === "CONNECTING" || status.value === "OFFLINE"));
     const open = ref(true);
 
     const reload = () => window.location.reload();
