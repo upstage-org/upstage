@@ -16,7 +16,7 @@ import { ref } from "@vue/reactivity";
 import { computed, watch } from "@vue/runtime-core";
 import Modal from "@/components/Modal";
 import Loading from "@/components/Loading";
-import marked from "marked";
+import { marked } from "marked";
 import { useStore } from "vuex";
 
 export default {

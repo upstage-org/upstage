@@ -9,6 +9,12 @@ const configs = {
     AUDIO: '.wav,.mpeg,.mp3,.aac,.aacp,.ogg,.webm,.flac,.m4a',
     VIDEO: '.mp4,.webm,.opgg,.3gp,.flv'
   },
+  ROLES: {
+    GUEST: 4,
+    PLAYER: 1,
+    ADMIN: 8,
+    SUPER_ADMIN: 32,
+  },
   MEDIA_COPYRIGHT_LEVELS: [
     {
       value: 0,

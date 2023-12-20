@@ -18,13 +18,13 @@
           <Copy value="about:config" />
         </div>
         <div class="column">
-          <img src="@/assets/firefox-instruction/1.png" alt="Step 1" />
+          <img :src="`${publicPath}/instruction/firefox/1.png`" alt="Step 1" />
           <div class="columns">
             <div class="column is-4 mt-6">
               <code>Note:</code>&nbsp;If you see this screen, click to continue. Don't worry, the setting change needed for UpStage to work will not impact on performance or security of Firefox.
             </div>
             <div class="column">
-              <img src="@/assets/firefox-instruction/1.2.png" alt="Step 1.2" />
+              <img :src="`${publicPath}/instruction/firefox/1.2.png`" alt="Step 1.2" />
             </div>
           </div>
         </div>
@@ -35,7 +35,7 @@
           <Copy value="network.http.spdy.websockets" />
         </div>
         <div class="column">
-          <img src="@/assets/firefox-instruction/2.png" alt="Step 2" />
+          <img :src="`${publicPath}/instruction/firefox/2.png`" alt="Step 2" />
         </div>
       </div>
       <div class="columns">
@@ -44,7 +44,7 @@
           <code>false</code>
         </div>
         <div class="column">
-          <img src="@/assets/firefox-instruction/3.png" alt="Step 3" />
+          <img :src="`${publicPath}/instruction/firefox/3.png`" alt="Step 3" />
         </div>
       </div>
     </template>
@@ -58,6 +58,7 @@ import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";
 import Copy from "@/components/Copy.vue";
 import anime from "animejs";
+import { publicPath } from '@/../vue.config';
 
 export default {
   components: { Icon, Modal, Copy },
@@ -85,7 +86,7 @@ export default {
     onUnmounted(() => {
       clearInterval(interval);
     });
-    return { isFirefox, status, reload, visible, icon, open };
+    return { isFirefox, status, reload, visible, icon, open, publicPath };
   },
 };
 </script>

@@ -3,7 +3,7 @@ import { message } from "ant-design-vue";
 import gql from "graphql-tag";
 import { ref, computed } from "vue";
 import { permissionFragment } from "../../../models/fragment";
-import { AvatarVoice, CopyrightLevel, Media, Permission, UploadFile } from "../../../models/studio";
+import { AvatarVoice, CopyrightLevel, Link, Media, Permission, UploadFile } from "../../../models/studio";
 
 interface SaveMediaPayload {
   files: UploadFile[];
@@ -22,6 +22,7 @@ interface SaveMediaMutationVariables {
   w: number,
   h: number,
   voice: AvatarVoice
+  link: Link
 }
 
 const getBase64 = (file: File) => new Promise<string>((resolve) => {

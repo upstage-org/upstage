@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useQuery } from '@vue/apollo-composable';
 import { message } from 'ant-design-vue';
+import { TransferItem } from 'ant-design-vue/lib/transfer';
 import gql from 'graphql-tag';
 import { ref, watchEffect, PropType } from 'vue';
 import { editingMediaVar } from '../../../apollo';
@@ -52,7 +53,7 @@ const filterOption = (keyword: string, option: any) => {
     return option.value.toLowerCase().includes(s) || option.label.toLowerCase().includes(s)
 }
 
-const renderItem = (item: User) => item.displayName || item.username;
+const renderItem = (item: TransferItem) => item.displayName || item.username;
 
 const { mutate: confirmPermission } = useConfirmPermission();
 const confirm = (id: string, approved: boolean) => confirmPermission({ id, approved }).then(result => {
@@ -75,10 +76,12 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
                 :value="level.value"
             >
                 <span>{{ level.name }}</span>
-                <a-tooltip placement="right">
-                    <template #title>{{ level.description }}</template>
-                    <QuestionCircleOutlined class="float-right" />
-                </a-tooltip>
+                <span class="relative top-1">
+                    <a-tooltip placement="right">
+                        <template #title>{{ level.description }}</template>
+                        <QuestionCircleOutlined class="float-right" />
+                    </a-tooltip>
+                </span>
             </a-select-option>
         </a-select>
         <template v-if="copyrightLevel === 1">
@@ -145,7 +148,7 @@ const confirm = (id: string, approved: boolean) => confirmPermission({ id, appro
                 }"
                 :titles="[' available', ' granted']"
                 v-model:target-keys="targetKeys"
-                :data-source="result ? result.users.edges.map(e => ({ key: e.node.dbId, ...e.node })) : []"
+                :data-source="result ? result.users.edges.map(e => ({ key: e.node.dbId, ...e.node })) as any : []"
                 show-search
                 :filter-option="filterOption"
                 :render="renderItem"

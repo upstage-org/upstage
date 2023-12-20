@@ -42,6 +42,7 @@ export interface User {
   dbId: number;
   displayName: string;
   username: string;
+  role: number;
   roleName: string;
 }
 
@@ -49,6 +50,8 @@ export interface Stage {
   id: string;
   name: string;
   dbId: number;
+  createdOn: Date;
+  owner: User;
 }
 
 export interface Tag {
@@ -130,7 +133,7 @@ export interface Notification {
 }
 
 export interface AvatarVoice {
-  voice: string | null
+  voice: string
   variant: string
   pitch: number
   speed: number

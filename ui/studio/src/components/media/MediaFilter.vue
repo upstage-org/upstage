@@ -8,8 +8,7 @@ import { StudioGraph, UploadFile } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
-import { capitalize } from '../../utils/common';
-import { permissionFragment } from '../../models/fragment';
+import { capitalize, getSharedAuth } from '../../utils/common';
 
 const { result, loading } = useQuery<StudioGraph>(gql`
 {
@@ -32,6 +31,11 @@ const { result, loading } = useQuery<StudioGraph>(gql`
       node {
         dbId
         name
+        createdOn
+        owner {
+          username
+          displayName
+        }
       }
     }
   }
@@ -51,8 +55,10 @@ const { result, loading } = useQuery<StudioGraph>(gql`
   }
 }`)
 
+const sharedAuth = getSharedAuth();
+
 const name = ref('')
-const owners = ref([])
+const owners = ref(sharedAuth && sharedAuth.username ? [sharedAuth.username] : [])
 const types = ref([])
 const stages = ref([])
 const tags = ref([])
@@ -134,6 +140,10 @@ const createRTMPStream = () => {
     }]
   }
 }
+
+const VNodes = (_: any, { attrs }: { attrs: any }) => {
+  return attrs.vnodes;
+}
 </script>
 
 <template>
@@ -142,7 +152,7 @@ const createRTMPStream = () => {
       class="shadow rounded-md m-4 px-4 py-2 bg-gradient-to-r from-gray-800 to-white flex justify-between"
     >
       <a-space class="flex-wrap">
-        <a-button v-if="composingMode" type="danger" @click="composingMode = false">
+        <a-button v-if="composingMode" type="primary" danger @click="composingMode = false">
           <template #icon>
             <RollbackOutlined />
           </template>
@@ -167,12 +177,24 @@ const createRTMPStream = () => {
           showArrow
           :filterOption="handleFilterOwnerName"
           mode="tags"
-          style="min-width: 96px"
+          style="min-width: 124px"
           placeholder="Owners"
           :loading="loading"
           v-model:value="owners"
           :options="result ? result.users.edges.map(e => ({ value: e.node.username, label: e.node.displayName || e.node.username })) : []"
-        ></a-select>
+        >
+          <template #dropdownRender="{ menuNode: menu }">
+            <v-nodes :vnodes="menu" />
+            <a-divider style="margin: 4px 0" />
+            <div
+              class="w-full cursor-pointer text-center"
+              @mousedown.prevent
+              @click.stop.prevent="owners = []"
+            >
+              <team-outlined />&nbsp;All players
+            </div>
+          </template>
+        </a-select>
         <a-select
           allowClear
           showArrow
@@ -207,8 +229,8 @@ const createRTMPStream = () => {
         ></a-select>
         <a-range-picker
           :placeholder="['Created from', 'to date']"
-          v-model:value="dates"
-          :ranges="ranges"
+          v-model:value="(dates as any)"
+          :ranges="(ranges as any)"
         />
         <a-button v-if="hasFilter" type="dashed" @click="clearFilters">
           <ClearOutlined />Clear Filters
