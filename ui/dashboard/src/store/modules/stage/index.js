@@ -81,7 +81,8 @@ export default {
         isLoadingScenes: false,
         showPlayerChat: false,
         lastSeenPrivateMessage: localStorage.getItem('lastSeenPrivateMessage') ?? 0,
-        runningStreams: []
+        runningStreams: [],
+        masquerading: false
     },
     getters: {
         ready(state) {
@@ -115,6 +116,12 @@ export default {
             const id = rootState.user.avatarId;
             return state.board.objects.find(o => o.id === id);
         },
+        activeMovable(state) {
+            if (state.masquerading) {
+                return null
+            }
+            return state.activeMovable
+        },
         stageSize(state, getters) {
             let width = state.viewport.width;
             let height = state.viewport.height;
@@ -135,7 +142,11 @@ export default {
             return { width, height, left, top };
         },
         canPlay(state) {
-            return state.model.permission && state.model.permission !== 'audience' && !state.replay.isReplaying
+            return state.model.permission
+                && state.model.permission !== 'audience'
+                && !state.replay.isReplaying
+                && !state.masquerading
+                && !state.replay.isReplaying
         },
         players(state) {
             return state.sessions.filter((s) => s.isPlayer)
@@ -243,7 +254,7 @@ export default {
                                 nextFrame = 0;
                             }
                             state.background.currentFrame = frames[nextFrame];
-                        }, 50 / speed);
+                        }, 100 / speed);
                     }
                 }
             }
@@ -521,6 +532,9 @@ export default {
                 default:
                     break;
             }
+        },
+        TOGGLE_MASQUERADING(state) {
+            state.masquerading = !state.masquerading
         }
     },
     actions: {
@@ -564,7 +578,7 @@ export default {
                 commit('SET_SUBSCRIBE_STATUS', true);
                 console.log("Subscribed to topics: ", res);
                 dispatch('sendStatistics')
-            })
+            }).catch(error => console.log(error))
         },
         async disconnect({ dispatch }) {
             await dispatch('leaveStage', true);
@@ -894,7 +908,7 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-            addDrawing({ commit, dispatch }, drawing) {
+        addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
             dispatch('placeObjectOnStage', drawing);
         },

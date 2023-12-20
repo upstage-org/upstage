@@ -9,7 +9,7 @@
       :style="{
         opacity,
         fontSize,
-        width: `calc(20% + ${fontSize} + ${fontSize})`,
+        width: `calc(20% + 3*${fontSize}`,
         height: `calc(100vh - ${stageSize.height}px - 64px)`,
         left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
       }"
@@ -17,7 +17,7 @@
       <div class="actions">
         <Reaction v-if="collapsed" />
         <button
-          class="chat-setting button is-rounded is-light"
+          class="chat-setting button is-rounded is-outlined"
           @click="collapsed = !collapsed"
           :data-tooltip="collapsed ? 'Maximise' : 'Minimise'"
           :key="collapsed"
@@ -28,7 +28,7 @@
           </span>
         </button>
         <button
-          class="chat-setting button is-rounded is-light"
+          class="chat-setting button is-rounded is-outlined"
           @click="openChatSetting"
           data-tooltip="Settings"
         >
@@ -150,6 +150,7 @@ export default {
         fontSize: `${incValue}px`,
       };
       store.commit("stage/SET_CHAT_PARAMETERS", parameters);
+      setTimeout(() => theContent.value.scrollTop = theContent.value.scrollHeight);
     };
 
     const decreaseFontSize = () => {
