@@ -24,7 +24,7 @@ export default {
     const backgroundOpacity = computed(
       () => store.state.stage.background?.opacity ?? 1
     );
-    const transitionDuration = computed(() => 10 / store.state.stage.background?.speed);
+    const transitionDuration = computed(() => 100 / store.state.stage.background?.speed);
 
     const frameAnimation = reactive({
       interval: null,

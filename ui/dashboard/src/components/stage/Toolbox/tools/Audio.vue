@@ -34,15 +34,10 @@
     </div>
     <div class="sliders">
       <div class="addon volume">
-        <div
-          class="icon"
-          :class="{ grayscale: !showVolumeSlider }"
-          @click="showVolumeSlider = !showVolumeSlider"
-        >
+        <div class="icon">
           <Icon size="24" src="voice-setting.svg" />
         </div>
         <input
-          v-if="showVolumeSlider"
           class="slider is-fullwidth is-dark my-0"
           step="0.01"
           min="0"
@@ -71,7 +66,7 @@
 <script>
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
-import { computed, ref } from "@vue/runtime-core";
+import { computed } from "@vue/runtime-core";
 import { useShortcut } from "../../composable";
 import { displayTimestamp } from "@/utils/common";
 import anime from "animejs";
@@ -118,7 +113,6 @@ export default {
         }
       }
     });
-    const showVolumeSlider = ref(false)
     const scrollToEnd = () => {
       const topbar = document.querySelector('#topbar')
       if (topbar) {
@@ -139,7 +133,6 @@ export default {
       audioPlayers,
       seek,
       displayTimestamp,
-      showVolumeSlider,
       scrollToEnd
     };
   },
@@ -147,6 +140,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
+@import "@/styles/bulma";
 .audio-name {
   font-weight: bold;
   font-size: 0.8rem;
@@ -191,13 +185,21 @@ export default {
       margin: 0 4px;
     }
     .volume {
+      .icon {
+        width: 12px;
+        margin-top: 4px;
+      }
       .slider {
         position: absolute;
         top: 8px;
-        left: 15px;
-        width: 100px;
-        transform: scale(0.5) rotate(270deg) translateX(-100%);
+        left: 6px;
+        width: 88px;
+        transform: scale(0.75) rotate(270deg) translateX(-100%);
         transform-origin: left top;
+      }
+      .slider::-webkit-slider-thumb {
+        background-color: $primary;
+        border-color: $dark;
       }
     }
   }

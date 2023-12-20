@@ -31,12 +31,12 @@ CREATOR = 16
 SUPER_ADMIN = 32
 
 ROLES = {
-    PLAYER:'Player access to on-stage tools',
-    MAKER:'Maker access to workshop, stages',
-    GUEST:'Can play a stage if granted player permission, cannot create or edit media',
-    ADMIN:'Admin access to edit media, players, content',
-    CREATOR:'Creator access',
-    SUPER_ADMIN:'Internal Upstage staff access to all',
+    PLAYER: 'Player',  # Player access to on-stage tools
+    MAKER: 'Maker',  # Maker access to workshop, stages
+    GUEST: 'Guest',  # Can play a stage if granted player permission, cannot create or edit media
+    ADMIN: 'Admin',  # Admin access to edit media, players, content
+    CREATOR: 'Creator',  # Creator access
+    SUPER_ADMIN: 'Super Admin',  # Internal Upstage staff access to all
 }
 
 def role_conv(roles_bitmask):
