@@ -37,8 +37,8 @@ class ParentStage(Base,db.Model):
     id = Column(BigInteger, primary_key=True)
     stage_id = Column(Integer, ForeignKey(Stage.id), nullable=False, default=0)
     child_asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
-    stage = relationship(Stage, foreign_keys=[stage_id])
-    child_asset = relationship(Asset, foreign_keys=[child_asset_id])
+    stage = relationship(Stage, foreign_keys=[stage_id], back_populates="assets")
+    child_asset = relationship(Asset, foreign_keys=[child_asset_id], back_populates="stages")
 
 class ParentAsset(Base,db.Model):
     '''

@@ -14,17 +14,13 @@
             <router-link
               to="/backstage/admin/player-management"
               exact-active-class="is-active"
-            >
-              Player Management
-            </router-link>
+            >Player Management</router-link>
           </li>
           <li>
             <router-link
               to="/backstage/admin/batch-user-creation"
               exact-active-class="is-active"
-            >
-              Batch User Creation
-            </router-link>
+            >Batch User Creation</router-link>
           </li>
         </ul>
         <p class="menu-label">System</p>
@@ -33,9 +29,13 @@
             <router-link
               to="/backstage/admin/system-configurations"
               exact-active-class="is-active"
-            >
-              System Configurations
-            </router-link>
+            >System Configurations</router-link>
+          </li>
+          <li>
+            <router-link
+              to="/backstage/admin/foyer-customisation"
+              exact-active-class="is-active"
+            >Foyer Customisation</router-link>
           </li>
         </ul>
       </aside>

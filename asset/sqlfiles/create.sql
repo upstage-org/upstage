@@ -16,6 +16,7 @@ CREATE TABLE "public"."asset" (
     "owner_id" integer NOT NULL,
     "description" TEXT default NULL,
     "file_location" TEXT NOT NULL,
+    "copyright_level" integer NOT NULL default 0,
     "created_on" timestamp DEFAULT (now() at time zone 'utc'),
     "updated_on" timestamp DEFAULT (now() at time zone 'utc'),
     "size" BIGINT NOT NULL DEFAULT 0,

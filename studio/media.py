@@ -1,5 +1,6 @@
 import hashlib
 import json
+from operator import itemgetter
 import os
 import sys
 import time
@@ -11,14 +12,14 @@ import graphene
 from asset.models import Asset as AssetModel, MediaTag, Stage as StageModel, Tag
 from asset.models import AssetType as AssetTypeModel
 from user.models import MAKER, PLAYER, User as UserModel
-from config.project_globals import ScopedSession, appdir
+from config.project_globals import DBSession, ScopedSession, appdir
 from config.settings import STREAM_EXPIRY_DAYS, STREAM_KEY
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_jwt_extended.view_decorators import verify_jwt_in_request
 from graphene_sqlalchemy import SQLAlchemyObjectType
 from graphene_sqlalchemy.fields import SQLAlchemyConnectionField
 from graphql_relay.node.node import from_global_id
-from licenses.models import AssetLicense
+from licenses.models import AssetLicense, AssetUsage as AssetUsageModel
 from performance_config.models import ParentStage
 from sqlalchemy.orm import joinedload
 from sqlalchemy.sql.expression import and_, or_
@@ -43,25 +44,40 @@ class AssignedStage(graphene.ObjectType):
     url = graphene.String()
 
 
+class AssetUsage(SQLAlchemyObjectType):
+    class Meta:
+        model = AssetUsageModel
+        interfaces = (graphene.relay.Node,)
+
+
+class Previlege(graphene.Enum):
+    NONE = 0
+    OWNER = 1
+    APPROVED = 2
+    PENDING_APPROVAL = 3
+    REQUIRE_APPROVAL = 4
+
+
 class Asset(SQLAlchemyObjectType):
     db_id = graphene.Int(description="Database ID")
     src = graphene.String(description="Logical path of the media")
     stages = graphene.List(
         AssignedStage, description="Stages that this media is assigned to")
-    copyright_level = graphene.Int(description="Copyright level")
-    playerAccess = graphene.String(
-        description="Users who can access and edit this media")
-    permission = graphene.String(
-        description="What permission the logged in user is granted to this media")
+    permissions = graphene.List(
+        AssetUsage, description="Users who had been granted or acknowledged to use this media")
+    privilege = Previlege(
+        description="Permission of the logged in user for this media")
     sign = graphene.String(
         description="Stream sign that is required to publish from broadcaster")
     tags = graphene.List(graphene.String, description="Media tags")
 
     class Meta:
         model = AssetModel
-        model.db_id = model.id
         interfaces = (graphene.relay.Node,)
         connection_class = CountableConnection
+
+    def resolve_db_id(self, info):
+        return self.id
 
     def resolve_src(self, info):
         timestamp = int(time.mktime(self.updated_on.timetuple()))
@@ -73,36 +89,30 @@ class Asset(SQLAlchemyObjectType):
     def resolve_tags(self, info):
         return [x.tag.name for x in self.tags.all()]
 
-    def resolve_copyright_level(self, info):
-        if self.asset_license:
-            return self.asset_license.level
-        return 0
+    def resolve_permissions(self, info):
+        return self.permissions.order_by(AssetUsageModel.created_on.desc()).all()
 
-    def resolve_playerAccess(self, info):
-        if self.asset_license and self.asset_license.permissions:
-            return self.asset_license.permissions
-        return "[]"
-
-    def resolve_permission(self, info):
+    def resolve_privilege(self, info):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         if not user_id:
-            return "none"
+            return Previlege.NONE
         if self.owner_id == user_id:
-            return 'owner'
-        if not self.asset_license or self.asset_license.level == 0:
-            return "editor"
-        if self.asset_license.level == 3:
-            return "none"
-        player_access = self.asset_license.permissions
-        if player_access:
-            accesses = json.loads(player_access)
-            if len(accesses) == 2:
-                if user_id in accesses[0]:
-                    return "readonly"
-                elif user_id in accesses[1]:
-                    return "editor"
-        return "none"
+            return Previlege.OWNER
+        if not self.copyright_level:  # no copyright
+            return Previlege.APPROVED
+        if self.copyright_level == 3:
+            # not shared, will not visisble to anyone either, this condidtion is just in case
+            return Previlege.NONE
+        usage = DBSession.query(AssetUsageModel).filter(
+            AssetUsageModel.asset_id == self.id).filter(AssetUsageModel.user_id == user_id).first()
+        if usage:
+            if not usage.approved and self.copyright_level == 2:
+                return Previlege.PENDING_APPROVAL
+            else:
+                return Previlege.APPROVED
+        else:
+            return Previlege.REQUIRE_APPROVAL
 
     def resolve_sign(self, info):
         result = verify_jwt_in_request(True)
@@ -122,8 +132,10 @@ class AssetType(SQLAlchemyObjectType):
 
     class Meta:
         model = AssetTypeModel
-        model.db_id = model.id
         interfaces = (graphene.relay.Node,)
+
+    def resolve_db_id(self, info):
+        return self.id
 
 
 class AssetConnectionField(SQLAlchemyConnectionField):
@@ -137,10 +149,8 @@ class AssetConnectionField(SQLAlchemyConnectionField):
         result = verify_jwt_in_request(True)
         user_id = get_jwt_identity()
         query = query.filter(or_(
-            AssetModel.asset_license == None,
-            AssetModel.asset_license.has(AssetLicense.level < 3),
-            and_(AssetModel.asset_license.has(AssetLicense.level == 3),
-                 AssetModel.owner_id == user_id)
+            AssetModel.copyright_level < 3,
+            AssetModel.copyright_level == 3 and AssetModel.owner_id == user_id
         ))
         for field, value in args.items():
             if field == 'id':
@@ -198,8 +208,6 @@ class CalcSizes(graphene.Mutation):
                     local_db_session.flush()
                 total += media.size
 
-            local_db_session.commit()
-            local_db_session.close()
             return CalcSizes(size=total)
 
 
@@ -234,29 +242,38 @@ class UploadFile(graphene.Mutation):
         return UploadFile(url=file_location)
 
 
+class SaveStageInput(graphene.InputObjectType):
+    """Arguments to update a stage."""
+    name = graphene.String(
+        required=True, description="Name of the media")
+    urls = graphene.List(
+        graphene.String, description="Uploaded url of files")
+    media_type = graphene.String(
+        description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
+    id = graphene.ID(description="ID of the media (for updating)")
+    copyright_level = graphene.Int(description="Copyright level")
+    user_ids = graphene.List(
+        graphene.Int, description="Users who can access and edit this media")
+    stage_ids = graphene.List(
+        graphene.Int, description="Id of stages to be assigned to")
+    tags = graphene.List(
+        graphene.String, description="Media tags")
+    w = graphene.Int(description="Width of the media")
+    h = graphene.Int(description="Height of the media")
+
+
 class SaveMedia(graphene.Mutation):
     """Mutation to upload a media."""
     asset = graphene.Field(
         lambda: Asset, description="Media saved by this mutation.")
 
     class Arguments:
-        name = graphene.String(
-            required=True, description="Name of the media")
-        urls = graphene.List(
-            graphene.String, description="Uploaded url of files")
-        media_type = graphene.String(
-            description="Avatar/prop/backdrop,... default to just a generic media", default_value='media')
-        id = graphene.ID(description="ID of the media (for updating)")
-        copyright_level = graphene.Int(description="Copyright level")
-        player_access = graphene.String(
-            description="Users who can access and edit this media")
-        stage_ids = graphene.List(
-            graphene.Int, description="Id of stages to be assigned to")
-        tags = graphene.List(
-            graphene.String, description="Media tags")
+        input = SaveStageInput(required=True)
 
     @jwt_required()
-    def mutate(self, info, name, urls, media_type='media', id=None, copyright_level=None, player_access=None, stage_ids=None, tags=None):
+    def mutate(self, info, input):
+        name, urls, media_type, copyright_level, user_ids, stage_ids, tags, w, h = itemgetter(
+            'name', 'urls', 'media_type', 'copyright_level', 'user_ids', 'stage_ids', 'tags', 'w', 'h')(input)
         current_user_id = get_jwt_identity()
         with ScopedSession() as local_db_session:
             asset_type = local_db_session.query(AssetTypeModel).filter(
@@ -267,8 +284,8 @@ class SaveMedia(graphene.Mutation):
                 local_db_session.add(asset_type)
                 local_db_session.flush()
 
-            if id:
-                id = from_global_id(id)[1]
+            if 'id' in input:
+                id = from_global_id(input['id'])[1]
                 asset = local_db_session.query(AssetModel).filter(
                     AssetModel.id == id).first()
             else:
@@ -279,21 +296,8 @@ class SaveMedia(graphene.Mutation):
                 asset.name = name
                 asset.asset_type = asset_type
                 asset.file_location = urls[0]
+                asset.copyright_level = copyright_level
                 asset.updated_on = datetime.utcnow()
-
-                if asset.asset_license:
-                    asset.asset_license.level = copyright_level
-                    asset.asset_license.permissions = player_access
-                else:
-                    if not asset.id:
-                        local_db_session.flush()
-
-                    asset_license = AssetLicense(
-                        asset_id=asset.id,
-                        level=copyright_level,
-                        permissions=player_access
-                    )
-                    local_db_session.add(asset_license)
                 local_db_session.flush()
 
             if urls:
@@ -315,6 +319,11 @@ class SaveMedia(graphene.Mutation):
 
                 if len(urls) > 1:
                     attributes['multi'] = True
+                else:
+                    attributes['multi'] = False
+                    attributes['frames'] = []
+                attributes['w'] = w
+                attributes['h'] = h
 
                 asset.description = json.dumps(attributes)
                 local_db_session.flush()
@@ -323,6 +332,22 @@ class SaveMedia(graphene.Mutation):
                 asset.stages.delete()
                 for id in stage_ids:
                     asset.stages.append(ParentStage(stage_id=id))
+
+            if user_ids != None:
+                granted_permissions = asset.permissions.all()
+                for permission in granted_permissions:
+                    if isinstance(permission, AssetUsageModel):
+                        if permission.user_id not in user_ids and permission.approved == True:
+                            asset.permissions.remove(permission)
+                            local_db_session.delete(permission)
+                for user_id in user_ids:
+                    permission = local_db_session.query(AssetUsageModel).filter(
+                        AssetUsageModel.asset_id == asset.id, AssetUsageModel.user_id == user_id).first()
+                    if not permission:
+                        permission = AssetUsageModel(user_id=user_id)
+                        asset.permissions.append(permission)
+                    permission.approved = True
+                local_db_session.flush()
 
             if tags:
                 asset.tags.delete()
@@ -340,3 +365,65 @@ class SaveMedia(graphene.Mutation):
             asset = local_db_session.query(AssetModel).filter(
                 AssetModel.id == asset.id).first()
             return SaveMedia(asset=asset)
+
+
+class ConfirmPermission(graphene.Mutation):
+    """Mutation to approve or reject a media usage request"""
+    success = graphene.Boolean(description="Success")
+    message = graphene.String(description="Reason for why the mutation failed")
+    permissions = graphene.List(
+        lambda: AssetUsage, description="Permissions that were updated")
+
+    class Arguments:
+        id = graphene.ID(description="ID of the media usage request")
+        approved = graphene.Boolean(
+            description="Whether the permission is approved. True for approving, False for rejecting")
+
+    @jwt_required()
+    def mutate(self, info, id, approved):
+        id = from_global_id(id)[1]
+        with ScopedSession() as local_db_session:
+            asset_usage = local_db_session.query(AssetUsageModel).get(id)
+            asset_id = asset_usage.asset_id
+            if asset_usage:
+                code, error, user, timezone = current_user()
+                if not user.role in (ADMIN, SUPER_ADMIN):
+                    if not user.id == asset_usage.asset.owner_id:
+                        return ConfirmPermission(success=False, message="Only media owner or admin can delete this media!")
+                if approved:
+                    asset_usage.approved = True
+                    asset_usage.seen = True
+                else:
+                    local_db_session.delete(asset_usage)
+                local_db_session.flush()
+        permissions = DBSession.query(AssetUsageModel).filter(
+            AssetUsageModel.asset_id == asset_id).all()
+        return ConfirmPermission(success=True, permissions=permissions)
+
+
+class RequestPermission(graphene.Mutation):
+    """Mutation to create an asset usage"""
+    success = graphene.Boolean(description="Success")
+
+    class Arguments:
+        asset_id = graphene.ID(description="ID of the media usage request")
+        note = graphene.String(
+            description="Note for the media usage request", required=False)
+
+    @jwt_required()
+    def mutate(self, info, asset_id, note=None):
+        asset_id = from_global_id(asset_id)[1]
+        with ScopedSession() as local_db_session:
+            asset = local_db_session.query(AssetModel).get(asset_id)
+            if asset:
+                code, error, user, timezone = current_user()
+                asset_usage = AssetUsageModel(
+                    user_id=user.id, asset_id=asset_id, note=note)
+                if asset.copyright_level == 2:
+                    asset_usage.approved = False
+                else:
+                    asset_usage.approved = True
+                local_db_session.add(asset_usage)
+                local_db_session.flush()
+                local_db_session.commit()
+        return ConfirmPermission(success=True)

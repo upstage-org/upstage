@@ -41,11 +41,13 @@ class Asset(Base, db.Model):
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     size = Column(BigInteger, nullable=False, default=0)
+    copyright_level = Column(Integer, nullable=False, default=0)
     asset_type = relationship(AssetType, foreign_keys=[asset_type_id])
     asset_license = relationship(AssetLicense, uselist=False, backref="asset")
     owner = relationship(User, foreign_keys=[owner_id])
-    stages = relationship('ParentStage', lazy='dynamic')
-    tags = relationship('MediaTag', lazy='dynamic')
+    stages = relationship('ParentStage', lazy='dynamic', back_populates='child_asset')
+    tags = relationship('MediaTag', lazy='dynamic', back_populates='asset')
+    permissions = relationship('AssetUsage', lazy='dynamic', back_populates='asset')
 
 
 class Stage(Base, db.Model):
@@ -61,8 +63,8 @@ class Stage(Base, db.Model):
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
     owner = relationship(User, foreign_keys=[owner_id])
-    attributes = relationship(lambda: StageAttribute, lazy='dynamic')
-    assets = relationship('ParentStage', lazy='dynamic')
+    attributes = relationship(lambda: StageAttribute, lazy='dynamic', back_populates='stage')
+    assets = relationship('ParentStage', lazy='dynamic', back_populates='stage')
 
 
 class AssetAttribute(Base, db.Model):
@@ -88,7 +90,7 @@ class StageAttribute(Base, db.Model):
     name = Column(String, nullable=False)
     description = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.utcnow)
-    stage = relationship(Stage, foreign_keys=[stage_id])
+    stage = relationship(Stage, foreign_keys=[stage_id], back_populates="attributes")
 
 
 class Tag(Base, db.Model):
@@ -104,5 +106,5 @@ class MediaTag(Base, db.Model):
     id = Column(BigInteger, primary_key=True)
     asset_id = Column(Integer, ForeignKey(Asset.id), nullable=False, default=0)
     tag_id = Column(Integer, ForeignKey(Tag.id), nullable=False, default=0)
-    asset = relationship(Asset, foreign_keys=[asset_id])
+    asset = relationship(Asset, foreign_keys=[asset_id], back_populates="tags")
     tag = relationship(Tag, foreign_keys=[tag_id])
