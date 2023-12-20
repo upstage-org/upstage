@@ -491,6 +491,7 @@ export default {
             if (payload) {
                 const snapshot = JSON.parse(payload)
                 snapshot.board.objects.forEach(deserializeObject)
+                snapshot.board.tracks = state.board.tracks
                 Object.keys(snapshot).forEach(key => {
                     state[key] = snapshot[key]
                 })
