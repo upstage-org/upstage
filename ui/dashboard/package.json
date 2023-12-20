@@ -38,6 +38,7 @@
     "moveable": "^0.24.5",
     "mqtt": "^4.2.6",
     "object-hash": "^2.1.1",
+    "playwright": "1.23.0",
     "qr-code-styling": "^1.6.0-rc.1",
     "register-service-worker": "^1.7.1",
     "vue": "^3.2.2",
@@ -47,7 +48,7 @@
     "vuex-persistedstate": "^4.0.0-beta.1"
   },
   "devDependencies": {
-    "@playwright/test": "^1.22.2",
+    "@playwright/test": "1.23.0",
     "@vue/cli-plugin-babel": "~4.5.13",
     "@vue/cli-plugin-eslint": "~4.5.13",
     "@vue/cli-plugin-pwa": "~4.5.13",

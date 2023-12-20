@@ -106,6 +106,13 @@ export default {
     }
   }
   `),
+  updateLastAccess: (stageId) => client.request(gql`
+  mutation {
+    updateLastAccess(stageId: "${stageId}" ) {
+      result
+    }
+  }
+  `),
   sweepStage: (variables) => client.request(gql`
     mutation SweepStage($id: ID!) {
       sweepStage(input: {id: $id}) {
@@ -115,12 +122,14 @@ export default {
     }
   `, variables),
   stageList: (variables) => client.request(gql`
-    query ListStage($id: ID, $nameLike: String, $fileLocation: String) {
-      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation) {
+    query ListStage($id: ID, $nameLike: String, $fileLocation: String, $createdOn: DateTime) {
+      stageList(id: $id, nameLike: $nameLike, fileLocation: $fileLocation, createdOn: $createdOn, sort:[CREATED_ON_DESC, ID_DESC]) {
         totalCount
         edges {
           node {
             ...stageFragment
+            createdOn
+            lastAccess
             activeRecording {
               id
               name
