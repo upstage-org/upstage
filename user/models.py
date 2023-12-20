@@ -24,18 +24,14 @@ from sqlalchemy.orm import relationship
 from config.project_globals import Base,DBSession,db,app
 
 PLAYER = 1
-MAKER = 2
 GUEST = 4
 ADMIN = 8
-CREATOR = 16
 SUPER_ADMIN = 32
 
 ROLES = {
     PLAYER: 'Player',  # Player access to on-stage tools
-    MAKER: 'Maker',  # Maker access to workshop, stages
     GUEST: 'Guest',  # Can play a stage if granted player permission, cannot create or edit media
     ADMIN: 'Admin',  # Admin access to edit media, players, content
-    CREATOR: 'Creator',  # Creator access
     SUPER_ADMIN: 'Super Admin',  # Internal Upstage staff access to all
 }
 
