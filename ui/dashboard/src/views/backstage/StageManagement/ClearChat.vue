@@ -33,6 +33,8 @@ export default {
           );
           mqttClient
             .sendMessage(topicChat, { clear: true }, true)
+          mqttClient
+            .sendMessage(topicChat, { clearPlayerChat: true }, true)
             .then(resolve);
         });
       });

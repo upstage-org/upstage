@@ -30,6 +30,7 @@
             <Icon src="prop.svg" size="20" />
           </span>
         </button>
+        <ClearChat option="player-chat"/>
       </div>
       <div class="card-content" ref="theContent">
         <Messages :messages="messages" :style="{ fontSize }" />
@@ -73,9 +74,10 @@ import ChatInput from "@/components/form/ChatInput";
 import Icon from "@/components/Icon";
 import Messages from "./Messages";
 import Moveable from "moveable";
+import ClearChat from "./ClearChat";
 
 export default {
-  components: { ChatInput, Icon, Messages },
+  components: { ChatInput, Icon, Messages, ClearChat},
   setup: () => {
     const theChatbox = ref();
     const theContent = ref();

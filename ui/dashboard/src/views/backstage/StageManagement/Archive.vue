@@ -1,7 +1,10 @@
 <template>
   <div class="has-text-right is-fullwidth pb-3">
-    <button class="button ml-2 is-light" @click="downloadChatLog()">
-      <span>{{ $t("download_all_chat") }}</span>
+    <button class="button ml-2 is-light" @click="downloadChatLog('public')">
+      <span>{{ $t("download_all_audience_chat") }}</span>
+    </button>
+    <button class="button ml-2 is-light" @click="downloadChatLog('player')">
+      <span>{{ $t("download_all_player_chat") }}</span>
     </button>
     <ClearChat />
     <SweepStage>{{ $t("archive_performance") }}</SweepStage>
@@ -16,11 +19,11 @@
       <small v-else class="has-text-dark">
         <span v-if="item.recording">{{ $t("recorded") }}</span>
         <span v-else>{{ $t("auto_recorded") }}</span>
-        <span v-if="item.chatless">on {{ date(item.createdOn) }}</span>
-        <span v-else>from {{ date(item.begin) }} to {{ date(item.end) }}</span>
+        <span v-if="item.chatless"> on {{ date(item.createdOn) }}</span>
+        <span v-else> from {{ date(item.begin) }} to {{ date(item.end) }}</span>
       </small>
     </template>
-    <template #chat="{ item }">
+    <template #public-chat="{ item }">
       <Modal>
         <template #trigger>
           <button class="button is-light">
@@ -28,16 +31,37 @@
           </button>
         </template>
         <template #header>
-          Chats from {{ date(item.begin) }}
+          Audience chats from {{ date(item.begin) }}
           <span
             v-if="item.begin !== item.end"
           >to {{ date(item.end) }}</span>
         </template>
         <template #content>
-          <Messages :messages="item.messages" />
+          <Messages :messages="item.publicMessages" from="archive"/>
         </template>
       </Modal>
-      <button class="button is-light" @click="downloadChatLog(item)">
+      <button class="button is-light" @click="downloadChatLog('public',item)">
+        <Icon src="download.svg" />
+      </button>
+    </template>
+    <template #private-chat="{ item }">
+      <Modal>
+        <template #trigger>
+          <button class="button is-light">
+            <Icon src="chat.svg" />
+          </button>
+        </template>
+        <template #header>
+          Player chats from {{ date(item.begin) }}
+          <span
+            v-if="item.begin !== item.end"
+          >to {{ date(item.end) }}</span>
+        </template>
+        <template #content>
+          <Messages :messages="item.privateMessages" from="archive"/>
+        </template>
+      </Modal>
+      <button class="button is-light" @click="downloadChatLog('private', item)">
         <Icon src="download.svg" />
       </button>
     </template>
@@ -127,8 +151,13 @@ export default {
         slot: "name",
       },
       {
-        title: "Chat",
-        slot: "chat",
+        title: "Audience Chat",
+        slot: "public-chat",
+        align: "center",
+      },
+      {
+        title: "Player Chat",
+        slot: "private-chat",
         align: "center",
       },
       {
@@ -155,7 +184,6 @@ export default {
         slot: "actions",
       },
     ];
-
     const sessions = computed(() => {
       const res = [];
       if (stage.value) {
@@ -179,6 +207,11 @@ export default {
           session.duration = 0;
         }
       });
+      res.forEach((session)=>{
+        session.privateMessages = session.messages.filter((m) => m.isPrivate||m.clearPlayerChat);
+        session.publicMessages = session.messages.filter((m) => !m.isPrivate&&!m.clearPlayerChat);
+
+      })
       return res;
     });
 
@@ -198,34 +231,71 @@ export default {
       // returns a URL you can use as a href
       return textFile;
     };
-
-    const downloadChatLog = (session) => {
+    const downloadChatLog = (option,session) => {
       const link = document.createElement("a");
       let content = [];
-
-      if (session) {
-        link.setAttribute(
-          "download",
-          `[Chat] ${stage.value.name} (${session.end ? date(session.end) : "Now"
-          }).txt`
-        );
-        content = session.messages.map((item) => {
-          let line = "";
-          if (item.clear) {
-            line = "---------------- Clear Chat ----------------";
-          } else {
-            line = `${item.user}: ${item.message}`;
-          }
-          return `${line}\r\n`;
-        });
-      } else {
-        link.setAttribute("download", `[Chat] ${stage.value.name}.txt`);
-        sessions.value.forEach((session) => {
-          content = content.concat(
-            session.messages.map((item) => `${item.user}: ${item.message}\r\n`)
+      if(option=="public"){
+        if(session){
+          link.setAttribute(
+            "download",
+            `${stage.value.name}-Audience-chat-${session.end ? timeStamp(session.end) : timeStamp(session.createdOn)
+            }.txt`
           );
-        });
-        link.href = makeTextFile(content);
+          content = session.publicMessages.map((item) => {
+            let line = "";
+            if (item.clear) {
+              line = "---------------- Clear Chat ----------------";
+            } else {
+              line = `${item.user}: ${item.message}`;
+            }
+            return `${line}\r\n`;
+          });
+        }else{
+          link.setAttribute("download", `${stage.value.name}-Audience-chat.txt`);
+          sessions.value.forEach((session) => {
+            content = content.concat(
+              session.publicMessages.map((item) =>{
+                if(item.clear){
+                    return `---------------- Clear Chat ----------------\r\n`
+                  }else{
+                    return `${item.user}: ${item.message}\r\n`
+                  } 
+              })
+            );
+          });
+        }
+      }else{
+        if(session){
+          link.setAttribute(
+            "download",
+            `${stage.value.name}-Player-chat-${session.end ? timeStamp(session.end) : timeStamp(session.createdOn)
+            }.txt`
+          );
+          content = session.privateMessages.map((item) => {
+            let line = "";
+            if (item.clearPlayerChat) {
+              line = "---------------- Clear Chat ----------------";
+            } else {
+              line = `${item.user}: ${item.message}`;
+            }
+            return `${line}\r\n`;
+          });
+        }else{
+          link.setAttribute("download", `${stage.value.name}-Player-chat.txt`);
+          sessions.value.forEach((session) => {
+            content = content.concat(
+              session.privateMessages.map(
+                (item) => {
+                  if(item.clearPlayerChat){
+                    return `---------------- Clear Chat ----------------\r\n`
+                  }else{
+                    return `${item.user}: ${item.message}\r\n`
+                  }  
+                }
+                )
+            );
+          });   
+        }
       }
       link.href = makeTextFile(content);
       document.body.appendChild(link);
@@ -237,6 +307,31 @@ export default {
         document.body.removeChild(link);
       });
     };
+
+    const padTo2Digits=(num)=>{
+      return num.toString().padStart(2, '0');
+    }
+
+    const formatDate=(date)=> {
+      return (
+        [
+          padTo2Digits(date.getHours()),
+          padTo2Digits(date.getMinutes()),
+        ].join('')+
+        '-' +
+        [
+          padTo2Digits(date.getDate()),
+          padTo2Digits(date.getMonth() + 1),
+          date.getFullYear(),
+        ].join('') 
+        
+      );
+    }
+
+    const timeStamp = (value) => {
+      const date = new Date(value);
+      return formatDate(date)
+    }
 
     const { loading: updating, save: updateMutation } = useMutation(
       stageGraph.updatePerformance
