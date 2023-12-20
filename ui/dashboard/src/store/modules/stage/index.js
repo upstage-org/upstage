@@ -686,6 +686,7 @@ export default {
                 opacity: 1,
                 moveSpeed: 2000,
                 voice: {},
+                volume: 100,
                 rotate: 0,
                 ...data,
                 id: uuidv4(),
@@ -694,7 +695,7 @@ export default {
                 object.hostId = state.session
             }
             commit('PUSH_OBJECT', serializeObject(object));
-            if (data.type === 'avatar') {
+            if (data.type === 'avatar' || data.type === 'stream') {
                 dispatch("user/setAvatarId", object.id, { root: true }).then(() => {
                     commit("SET_ACTIVE_MOVABLE", null)
                 });
@@ -893,7 +894,7 @@ export default {
             setting.isActive = true;
             commit('SET_SETTING_POPUP', setting)
         },
-        addDrawing({ commit, dispatch }, drawing) {
+            addDrawing({ commit, dispatch }, drawing) {
             commit('PUSH_DRAWING', drawing);
             dispatch('placeObjectOnStage', drawing);
         },
