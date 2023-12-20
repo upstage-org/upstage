@@ -22,7 +22,7 @@
     "less": "^4.1.2",
     "modern-copy": "^1.0.3",
     "moment": "^2.29.4",
-    "postcss": "^8.3.9",
+    "postcss": "^8.4.31",
     "qr-code-styling": "^1.6.0-rc.1",
     "tailwindcss": "^2.2.17",
     "unplugin-vue-components": "^0.15.6",
