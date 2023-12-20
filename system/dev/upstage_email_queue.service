@@ -1,0 +1,13 @@
+[Unit]
+Description=Upstage Email Queue Service
+After=syslog.target
+
+[Service]
+User=upstage
+Group=upstage
+Type=simple
+ExecStart=/bin/python3 /home/upstage/upstage/run_mail_queue.py
+StandardOutput=append:/var/log/uwsgi/upstage.log
+
+[Install]
+WantedBy=multi-user.target

@@ -14,7 +14,18 @@
               'has-icons-right': right,
             }"
           >
+            <textarea
+              v-if="type === 'textarea'"
+              class="textarea"
+              :class="{ 'is-danger': isTouched && (isRequired || error) }"
+              :placeholder="placeholder"
+              :value="modelValue"
+              @input="$emit('update:modelValue', $event.target.value)"
+              @blur="handleBlur"
+              v-bind="$attrs"
+            ></textarea>
             <input
+              v-else
               class="input"
               :class="{ 'is-danger': isTouched && (isRequired || error) }"
               :type="type"

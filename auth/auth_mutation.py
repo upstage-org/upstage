@@ -114,7 +114,7 @@ class RequestPasswordResetMutation(graphene.Mutation):
             local_db_session.flush()
             local_db_session.add(OneTimeTOTP(user_id=user.id, code=otp))
             local_db_session.flush()
-            send(email, f"Password reset for account {user.username}", password_reset(user, otp))
+            send([email], f"Password reset for account {user.username}", password_reset(user, otp))
 
         return RequestPasswordResetMutation(
             message=f"We've sent an email with a code to reset your password to {email}.",

@@ -154,9 +154,6 @@ emoji-picker {
   right: 0;
   top: 0;
   .button {
-    &.picker-only {
-      padding: 0 15px;
-    }
     .icon:first-child:last-child {
       margin: auto;
     }
