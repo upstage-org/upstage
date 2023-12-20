@@ -5,7 +5,7 @@
         <h1 class="title" v-if="stage.name">
           {{ stage.name }}
           <router-link
-            :to="`/live/${stage.fileLocation}`"
+            :to="`/${stage.fileLocation}`"
             class="button is-light"
           >
             <span>ENTER</span>

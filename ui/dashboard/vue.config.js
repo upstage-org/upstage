@@ -1,5 +1,5 @@
 module.exports = {
-    publicPath: process.env.VUE_APP_PUBLIC_PATH || '/',
+    publicPath: '/',
     chainWebpack: config => {
         config
             .plugin('html')
