@@ -410,10 +410,10 @@ ansi-styles@^4.1.0:
   dependencies:
     color-convert "^2.0.1"
 
-ant-design-vue@^3.0.0-alpha.4:
-  version "3.0.0-alpha.4"
-  resolved "https://registry.npmjs.org/ant-design-vue/-/ant-design-vue-3.0.0-alpha.4.tgz"
-  integrity sha512-U4i/gDmDlyOK6jMJmaHXbi9cJIV3WZvQ1e1HIebkOOLy2fuFEgao1SuPWNxhjLwWnQAqGmNda/goeaqoheV+4Q==
+ant-design-vue@^3.0.0-beta.6:
+  version "3.0.0-beta.9"
+  resolved "https://registry.yarnpkg.com/ant-design-vue/-/ant-design-vue-3.0.0-beta.9.tgz#2febf71e6d9aacbfc88ca3ea6f857419269b42e6"
+  integrity sha512-5wRfrnj6n5E4Xrqd4A8DsnThCNa4HD3jUPVV9cDb4aH2C2a1QcuxNCXB0kvPUDJRyOJ4+6Qr547n0fCN+CVOhg==
   dependencies:
     "@ant-design/colors" "^6.0.0"
     "@ant-design/icons-vue" "^6.0.0"
@@ -827,7 +827,7 @@ esbuild-android-arm64@0.13.6:
 
 esbuild-darwin-64@0.13.6:
   version "0.13.6"
-  resolved "https://registry.yarnpkg.com/esbuild-darwin-64/-/esbuild-darwin-64-0.13.6.tgz#1a00ef4d2b3b1fe9de28a5cf195df113d6461155"
+  resolved "https://registry.npmjs.org/esbuild-darwin-64/-/esbuild-darwin-64-0.13.6.tgz"
   integrity sha512-oJdWZn2QV5LTM24/vVWaUFlMVlRhpG9zZIA6Xd+xbCULOURwYnYRQWIzRpXNtTfuAr3+em9PqKUaGtYqvO/DYg==
 
 esbuild-darwin-arm64@0.13.6:
@@ -852,7 +852,7 @@ esbuild-linux-32@0.13.6:
 
 esbuild-linux-64@0.13.6:
   version "0.13.6"
-  resolved "https://registry.npmjs.org/esbuild-linux-64/-/esbuild-linux-64-0.13.6.tgz"
+  resolved "https://registry.yarnpkg.com/esbuild-linux-64/-/esbuild-linux-64-0.13.6.tgz#554d8edfe3f791f8b26978eb173b2e13643442c0"
   integrity sha512-bRQwsD+xJoajonfyeq5JpiNRogH4mYFYbYsGhwrtQ4pMGk93V/4KuKQiKEisRZO0hYhZL4MtxufwF195zKlCAw==
 
 esbuild-linux-arm64@0.13.6:
@@ -989,7 +989,7 @@ fs.realpath@^1.0.0:
 
 fsevents@~2.3.2:
   version "2.3.2"
-  resolved "https://registry.yarnpkg.com/fsevents/-/fsevents-2.3.2.tgz#8a526f78b8fdf4623b709e0b975c52c24c02fd1a"
+  resolved "https://registry.npmjs.org/fsevents/-/fsevents-2.3.2.tgz"
   integrity sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==
 
 function-bind@^1.1.1:

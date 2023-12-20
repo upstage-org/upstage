@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "1.15.0",
-  "versionAlias": "Golden Monkey",
+  "version": "1.16.0",
+  "versionAlias": "Augustiner",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode dev",

@@ -28,17 +28,24 @@ const attributes = computed<MediaAttributes>(() => {
       <source :src="absolutePath(props.media.src)" />Your browser does not support the video tag.
     </video>
   </template>
-  <a-carousel v-else-if="attributes.multi" arrows dots-class="slick-dots slick-thumb" class="w-48">
-    <template #customPaging="{ i }">
-      <a>
-        <img :src="absolutePath(attributes.frames[i])" class="max-h-8 object-contain" />
-      </a>
-    </template>
-    <div v-for="frame in attributes.frames" :key="frame">
-      <a-image :src="absolutePath(frame)" />
-    </div>
-  </a-carousel>
-  <a-image v-else :src="absolutePath(props.media.src)" class="w-24" />
+  <template v-else>
+    <a-image :src="absolutePath(props.media.src)" class="w-24 max-h-24 object-contain" />
+    <a-popover v-if="attributes.multi" placement="right">
+      <template #title>
+        <b>Multiframes</b>
+        <br />
+        <span>Total frames: {{ attributes.frames.length }}</span>
+      </template>
+      <template #content>
+        <div class="flex p-2 w-96">
+          <div v-for="frame in attributes.frames" :key="frame" class="m-1">
+            <a-image :src="absolutePath(frame)" />
+          </div>
+        </div>
+      </template>
+      <img src="../../assets/multi-frame.svg" alt="Multiframe" class="absolute left-4 bottom-4" />
+    </a-popover>
+  </template>
 </template>
 
 <style scoped>

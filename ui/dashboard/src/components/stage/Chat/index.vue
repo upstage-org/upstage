@@ -232,7 +232,29 @@ export default {
   }
 
   &.dark {
-    filter: invert(1) hue-rotate(180deg); /* This will flip the color back to its original value.*/
+    background-color: #303030;
+    color: #dddddd;
+
+    .card-footer {
+      border-top: 0.5px solid black;
+    }
+
+    :deep(.tag),
+    :deep(.button),
+    :deep(.textarea) {
+      background-color: #303030 !important;
+      border-color: #303030;
+      color: #dddddd;
+    }
+    :deep(.textarea::placeholder) {
+      color: #8c939a;
+    }
+    :deep(img) {
+      filter: invert(100%) hue-rotate(180deg);
+    }
+    :deep(.guest .tag) {
+      color: #8c939a;
+    }
   }
 
   &.collapsed {

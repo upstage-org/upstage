@@ -2,13 +2,13 @@
   <a v-if="link" class="navbar-item" :href="link" target="_blank">
     <img src="@/assets/upstage.png" />
   </a>
-  <router-link v-else class="navbar-item" to="/">
+  <router-link v-else class="navbar-item" :to="to ?? '/'">
     <img src="@/assets/upstage.png" />
   </router-link>
 </template>
 
 <script>
 export default {
-  props: ["link"],
+  props: ["link", "to"],
 };
 </script>
