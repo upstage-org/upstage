@@ -24,13 +24,7 @@
           </li>
         </ul>
         <p class="menu-label">System</p>
-        <ul class="menu-list">
-          <li>
-            <router-link
-              to="/backstage/admin/system-configurations"
-              exact-active-class="is-active"
-            >System Configurations</router-link>
-          </li>
+        <ul class="menu-list">         
           <li>
             <router-link
               to="/backstage/admin/foyer-customisation"
@@ -42,6 +36,12 @@
               to="/backstage/admin/email-notification"
               exact-active-class="is-active"
             >Email Notification</router-link>
+          </li>
+          <li>
+            <router-link
+              to="/backstage/admin/system-configuration"
+              exact-active-class="is-active"
+            >System Configuration</router-link>
           </li>
         </ul>
       </aside>

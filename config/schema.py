@@ -14,6 +14,7 @@ from user.user_utils import current_user
 
 TERMS_OF_SERVICE = 'TERMS_OF_SERVICE'
 MANUAL = 'MANUAL'
+EMAIL_SUBJECT_PREFIX = 'EMAIL_SUBJECT_PREFIX'
 
 
 class NginxConfig(graphene.ObjectType):
@@ -44,6 +45,7 @@ def get_config(name):
 class SystemConfig(graphene.ObjectType):
     termsOfService = graphene.String()
     manual = graphene.String()
+    esp = graphene.String()
 
     def resolve_termsOfService(self, info):
         return get_config(TERMS_OF_SERVICE)
@@ -51,6 +53,8 @@ class SystemConfig(graphene.ObjectType):
     def resolve_manual(self, info):
         return get_config(MANUAL)
 
+    def resolve_esp(self, info):
+        return get_config(EMAIL_SUBJECT_PREFIX)
 
 class FoyerConfig(graphene.ObjectType):
     title = graphene.String()

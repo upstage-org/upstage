@@ -83,8 +83,8 @@ export default {
     }
   },
   updateStage: (variables) => client.request(gql`
-    mutation UpdateStage($id: ID!, $name: String, $description: String, $fileLocation: String, $status: String, $cover: String, $playerAccess: String) {
-      updateStage(input: {id: $id, name: $name, description: $description, fileLocation: $fileLocation, status: $status, cover: $cover, playerAccess: $playerAccess}) {
+    mutation UpdateStage($id: ID!, $name: String, $description: String, $fileLocation: String, $status: String, $visibility: Boolean, $cover: String, $playerAccess: String) {
+      updateStage(input: {id: $id, name: $name, description: $description, fileLocation: $fileLocation, status: $status, visibility: $visibility, cover: $cover, playerAccess: $playerAccess}) {
         stage {
           ...stageFragment
         }

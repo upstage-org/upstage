@@ -19,7 +19,7 @@ export default {
         if (live) {
             Object.keys(live).forEach(key => {
                 const { publisher } = live[key]
-                if (publisher) {
+                if (publisher && publisher.video) {
                     const { width, height } = publisher.video
                     const stream = {
                         name: key,
@@ -27,8 +27,11 @@ export default {
                         isRTMP: true,
                         autoDetect: true,
                         url: key,
-                        w: 100 * width / height,
-                        h: 100,
+                    }
+                    if (width > 0 && height > 0) {
+                        stream.w = 100 * width / height;
+                        stream.h = 100;
+                        stream.ready = true;
                     }
                     streams.push(stream)
                 }
