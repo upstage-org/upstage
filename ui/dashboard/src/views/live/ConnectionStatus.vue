@@ -1,7 +1,5 @@
 <template>
   <div id="connection-status">
-    <FirefoxWarning />
-
     <span
       class="tag is-light is-small"
       :class="{
@@ -53,10 +51,9 @@ import anime from "animejs";
 import { ref, computed, onMounted, inject } from "vue";
 import Popover from "@/components/Popover";
 import Session from "./Session";
-import FirefoxWarning from "./FirefoxWarning";
 
 export default {
-  components: { Popover, Session, FirefoxWarning },
+  components: { Popover, Session },
   setup: () => {
     const store = useStore();
     const dot = ref();

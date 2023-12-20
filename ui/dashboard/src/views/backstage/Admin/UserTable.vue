@@ -13,7 +13,7 @@
     placeholder="Player name or email"
   />
   <Loading v-if="loading" />
-  <DataTable v-else :data="users" :headers="headers" numbered :wrapper="false">
+  <DataTable v-show="!firstLoad" :data="users" :headers="headers" numbered :wrapper="false">
     <template #status="{ item }">
       <registration-approval :user="item" />
     </template>
@@ -25,17 +25,9 @@
     </template>
     <template #actions="{ item }">
       <div class="actions">
-        <profile-management
-          :item="item"
-          :display-name="displayName(item)"
-          :refresh="refresh"
-        />
+        <profile-management :item="item" :display-name="displayName(item)" :refresh="refresh" />
         <reset-password :user="item" :display-name="displayName(item)" />
-        <delete-user
-          :item="item"
-          :display-name="displayName(item)"
-          :refresh="refresh"
-        />
+        <delete-user :item="item" :display-name="displayName(item)" :refresh="refresh" />
       </div>
     </template>
   </DataTable>
@@ -54,11 +46,10 @@ import ProfileManagement from "./ProfileManagement";
 import DeleteUser from "./DeleteUser";
 import Field from "@/components/form/Field.vue";
 import Dropdown from "@/components/form/Dropdown.vue";
-import { reactive } from "@vue/reactivity";
+import { reactive, ref, watch, computed } from "vue";
 import { includesIgnoreCase, titleCase } from "@/utils/common";
 import { ROLES } from "@/utils/constants";
 import { useQuery } from "@/services/graphql/composable";
-import { computed } from "@vue/runtime-core";
 
 export default {
   components: {
@@ -157,7 +148,14 @@ export default {
       return res;
     });
 
-    return { headers, users, refresh, displayName, filter, roles, loading };
+    const firstLoad = ref(true);
+    watch(loading, value => {
+      if (!value) {
+        firstLoad.value = false;
+      }
+    });
+
+    return { headers, users, refresh, displayName, filter, roles, loading, firstLoad };
   },
 };
 </script>

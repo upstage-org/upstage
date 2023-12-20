@@ -8,6 +8,7 @@
   <div
     v-for="background in backgrounds"
     :key="background"
+    :title="background.name"
     :class="{
       active: background.id === currentBackground.id,
       flex: !(background.multi && background.id === currentBackground.id),
