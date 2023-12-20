@@ -27,6 +27,11 @@ body.waiting * {
 .is-fullwidth {
   width: 100%;
 }
+@media screen and (max-width: 768px) {
+  .is-fullwidth-mobile {
+    width: 100%;
+  }
+}
 .is-fullheight {
   height: 100%;
 }

@@ -2,7 +2,7 @@
   <div id="live-logo">
     <Logo :to="loggedIn ? '/backstage' : '/'" />
   </div>
-  <div id="main-content">
+  <Shell id="main-content">
     <Preloader />
     <template v-if="ready">
       <Board />
@@ -15,7 +15,7 @@
       <LoginPrompt />
       <SettingPopup />
     </template>
-  </div>
+  </Shell>
 </template>
 
 <script>
@@ -26,6 +26,7 @@ import PlayerChat from "@/components/stage/Chat/PlayerChat";
 import Toolbox from "@/components/stage/Toolbox";
 import Board from "@/components/stage/Board";
 import AudioPlayer from "@/components/stage/AudioPlayer";
+import Shell from "@/components/objects/Meeting/Shell.vue";
 import Preloader from "./Preloader";
 import LoginPrompt from "./LoginPrompt";
 import ConnectionStatus from "./ConnectionStatus";
@@ -48,7 +49,8 @@ export default {
     AudioPlayer,
     ConnectionStatus,
     MasqueradingStatus,
-  },
+    Shell
+},
   setup: () => {
     const store = useStore();
     const ready = computed(() => store.getters["stage/ready"]);

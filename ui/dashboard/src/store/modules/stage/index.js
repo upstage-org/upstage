@@ -38,7 +38,8 @@ export default {
             objects: [],
             drawings: [],
             texts: [],
-            whiteboard: []
+            whiteboard: [],
+            tracks: []
         },
         tools: {
             avatars: [],
@@ -165,6 +166,9 @@ export default {
         },
         whiteboard(state) {
             return state.board.whiteboard
+        },
+        jitsiTracks(state) {
+            return state.board.tracks
         }
     },
     mutations: {
@@ -570,6 +574,9 @@ export default {
         SET_PURCHASE_POPUP(state, purchase) {
             state.purchasePopup = purchase;
         },
+        ADD_TRACK(state, track) {
+            state.board.tracks = [...state.board.tracks, track]
+        }
     },
     actions: {
         connect({ commit, dispatch }) {
@@ -926,6 +933,7 @@ export default {
                                 objects: [],
                                 drawings: [],
                                 texts: [],
+                                tracks: [],
                             },
                             audioPlayers: [],
                         }),
@@ -1175,5 +1183,8 @@ export default {
             setting.isActive = true;
             commit('SET_PURCHASE_POPUP', setting)
         },
+        addTrack({ commit }, track) {
+            commit('ADD_TRACK', track)
+        }
     },
 };

@@ -1,5 +1,5 @@
 <template>
-  <nav class="breadcrumb mb-4" aria-label="breadcrumbs">
+  <nav class="breadcrumb mb-4 is-hidden-mobile" aria-label="breadcrumbs">
     <ul>
       <li v-for="route in $route.matched" :key="route">
         <router-link :to="route.path" aria-current="page">

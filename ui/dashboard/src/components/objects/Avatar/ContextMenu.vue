@@ -21,58 +21,11 @@
         </span>
         <span>{{ $t("remove_from_avatar") }}</span>
       </a>
-      <a
-        v-else-if="currentAvatar && object.type !== 'stream'"
-        class="panel-block"
-        @click="wearCostume"
-      >
+      <a v-else-if="currentAvatar && object.type !== 'stream'" class="panel-block" @click="wearCostume">
         <span class="panel-icon">
           <Icon src="prop.svg" />
         </span>
         <span>{{ $t("add_to_avatar") }}</span>
-      </a>
-    </template>
-    <template v-if="object.type === 'stream'">
-      <div class="field has-addons menu-group">
-        <p class="control menu-group-item">
-          <button class="button is-light" @click="clip(null)">
-            <div class="icon">
-              <i class="fas fa-square"></i>
-            </div>
-          </button>
-        </p>
-        <p class="control menu-group-item" @click="clip('circle')">
-          <button class="button is-light">
-            <div class="icon">
-              <i class="fas fa-circle"></i>
-            </div>
-          </button>
-        </p>
-      </div>
-      <a v-if="stream.isPlaying" class="panel-block has-text-info" @click="pauseStream(slotProps)">
-        <span class="panel-icon">
-          <i class="fas fa-pause"></i>
-        </span>
-        <span>{{ $t("pause") }}</span>
-      </a>
-      <a v-else class="panel-block has-text-info" @click="playStream(slotProps)">
-        <span class="panel-icon">
-          <i class="fas fa-play"></i>
-        </span>
-        <span>{{ $t("play") }}</span>
-      </a>
-      <a v-if="object.type === 'stream'" class="panel-block has-text-info" @click="restartStream">
-        <span class="panel-icon">
-          <i class="fas fa-sync"></i>
-        </span>
-        <span>{{ $t("restart") }}</span>
-      </a>
-
-      <a class="panel-block" @click="openVolumePopup(slotProps)">
-        <span class="panel-icon">
-          <Icon src="voice-setting.svg" />
-        </span>
-        <span>{{ $t("volumn_setting") }}</span>
       </a>
     </template>
     <a class="panel-block" @click="bringToFront">
@@ -107,42 +60,27 @@
         <span>{{ $t("slider") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': sliderMode === 'opacity',
-          }"
-          @click="changeSliderMode('opacity')"
-          data-tooltip="Opacity slider"
-        >
+        <button class="button is-light" :class="{
+          'has-background-primary-light': sliderMode === 'opacity',
+        }" @click="changeSliderMode('opacity')" data-tooltip="Opacity slider">
           <span class="mt-1">
             <Icon src="opacity-slider.svg" />
           </span>
         </button>
       </p>
       <p v-if="object.multi" class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-warning-light': sliderMode === 'animation',
-          }"
-          @click="changeSliderMode('animation')"
-          data-tooltip="Animation speed"
-        >
+        <button class="button is-light" :class="{
+          'has-background-warning-light': sliderMode === 'animation',
+        }" @click="changeSliderMode('animation')" data-tooltip="Animation speed">
           <span class="mt-1">
             <Icon src="animation-slider.svg" />
           </span>
         </button>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-danger-light': sliderMode === 'speed',
-          }"
-          @click="changeSliderMode('speed')"
-          data-tooltip="Move speed"
-        >
+        <button class="button is-light" :class="{
+          'has-background-danger-light': sliderMode === 'speed',
+        }" @click="changeSliderMode('speed')" data-tooltip="Move speed">
           <span class="mt-1">
             <Icon src="movement-slider.svg" />
           </span>
@@ -158,26 +96,16 @@
         <span>{{ $t("flip") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': object.scaleX === -1,
-          }"
-          @click="flipHorizontal"
-          data-tooltip="Flip Horizontal"
-        >
+        <button class="button is-light" :class="{
+          'has-background-primary-light': object.scaleX === -1,
+        }" @click="flipHorizontal" data-tooltip="Flip Horizontal">
           <span class="mt-1">{{ $t("horizontal") }}</span>
         </button>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': object.scaleY === -1,
-          }"
-          @click="flipVertical"
-          data-tooltip="Flip Vertical"
-        >
+        <button class="button is-light" :class="{
+          'has-background-primary-light': object.scaleY === -1,
+        }" @click="flipVertical" data-tooltip="Flip Vertical">
           <span class="mt-1">{{ $t("vertical") }}</span>
         </button>
       </p>
@@ -197,11 +125,7 @@
       </span>
       <span>{{ $t("remove") }}</span>
     </a>
-    <a
-      v-if="object.drawingId || object.textId"
-      class="panel-block has-text-danger"
-      @click="deletePermanently"
-    >
+    <a v-if="object.drawingId || object.textId" class="panel-block has-text-danger" @click="deletePermanently">
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
@@ -213,12 +137,7 @@
           <Icon :src="object.autoplayFrames > 0 ? 'pause.svg' : 'play.svg'" />
         </button>
       </p>
-      <p
-        v-for="frame in object.frames"
-        :key="frame"
-        @click="switchFrame(frame)"
-        class="control menu-group-item"
-      >
+      <p v-for="frame in object.frames" :key="frame" @click="switchFrame(frame)" class="control menu-group-item">
         <button class="button is-light">
           <img :src="frame" style="height: 100%" />
         </button>
@@ -229,15 +148,12 @@
 
 <script>
 import { useStore } from "vuex";
-import { computed, inject, ref, reactive } from "vue";
+import { computed, inject, ref } from "vue";
 import Icon from "@/components/Icon";
-import { getSubsribeLink } from "@/utils/streaming";
-import flvjs from "flv.js";
 
 export default {
   props: [
     "object",
-    "stream",
     "closeMenu",
     "active",
     "sliderMode",
@@ -248,8 +164,6 @@ export default {
   components: { Icon },
   setup: (props, { emit }) => {
     const store = useStore();
-    const loading = ref(true);
-    const stream = reactive({ ...props.object, isPlaying: true, src: loading });
 
     const holdAvatar = () => {
       store.dispatch("user/setAvatarId", props.object.id).then(props.closeMenu);
@@ -370,61 +284,6 @@ export default {
       }
     };
 
-    const pauseStream = () => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: false,
-        })
-        .then(props.closeMenu);
-    };
-
-    const restartStream = () => {
-      store.dispatch("stage/getRunningStreams")
-      let video = document.getElementById('video' + props.stream.id);
-      if (stream.isPlaying && video) {
-        const fullUrl = computed(() => getSubsribeLink('your_stream_key'));
-
-        if (flvjs.isSupported()) {
-          const flvPlayer = flvjs.createPlayer({
-            type: "flv",
-            url: fullUrl.value + "?" + new Date(),
-          });
-          flvPlayer.attachMediaElement(video);
-          flvPlayer.load();
-          flvPlayer.play();
-        }
-
-        video.play()
-      } else {
-        video.pause()
-      }
-    }
-
-    const playStream = () => {
-      store
-        .dispatch("stage/shapeObject", {
-          ...stream,
-          isPlaying: true,
-        })
-        .then(props.closeMenu);
-    };
-
-    const clip = (shape) => {
-      store.dispatch("stage/shapeObject", {
-        ...stream,
-        shape,
-      });
-    };
-
-    const openVolumePopup = () => {
-      store
-        .dispatch("stage/openSettingPopup", {
-          type: "VolumeParameters",
-        })
-        .then(props.closeMenu);
-    };
-
     const hasLink = computed(() => props.object.link && props.object.link.url)
     const openLink = () => {
       const { url, blank } = props.object.link
@@ -453,11 +312,6 @@ export default {
       flipVertical,
       hasLink,
       openLink,
-      pauseStream,
-      playStream,
-      clip,
-      openVolumePopup,
-      restartStream
     };
   },
 };
@@ -471,6 +325,7 @@ export default {
   * {
     font-size: 14px;
   }
+
   .panel-block {
     &:hover {
       z-index: 100;
@@ -478,23 +333,28 @@ export default {
       font-size: 14px;
     }
   }
+
   .menu-group {
     width: 100%;
     display: flex;
     margin-bottom: 0;
+
     .menu-group-title {
       flex: none;
       padding: 6px 12px;
       width: 100px;
       white-space: nowrap;
-      > button {
+
+      >button {
         justify-content: start;
         padding-left: 12px;
       }
     }
+
     .menu-group-item {
       flex: auto;
     }
+
     button {
       width: 100%;
     }
