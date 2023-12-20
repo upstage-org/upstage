@@ -12,7 +12,9 @@
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
+    <script type="text/javascript" src="<%= BASE_URL %>js/tinymce/tinymce.min.js"></script>
     <script type="text/javascript" src="<%= BASE_URL %>js/mespeak/mespeak.js"></script>
+    <script type="text/javascript" src="<%= VUE_APP_JITSI_ENDPOINT %>external_api.js"></script>
     <!-- built files will be auto injected -->
   </body>
 </html>

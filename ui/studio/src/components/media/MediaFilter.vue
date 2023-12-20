@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-import { ref, watch, watchEffect, inject, computed } from 'vue';
+import { ref, watch, watchEffect, inject, computed, Ref } from 'vue';
 import Notifications from './Notifications.vue';
 import { useQuery } from '@vue/apollo-composable';
 import { useDebounceFn } from '@vueuse/core'
 import gql from 'graphql-tag';
-import { StudioGraph } from '../../models/studio';
+import { StudioGraph, UploadFile } from '../../models/studio';
 import { inquiryVar } from '../../apollo';
 import moment, { Moment } from 'moment';
 import configs from '../../config';
@@ -116,9 +116,24 @@ const handleFilterStageName = (keyword: string, option: any) => {
   return option.label.toLowerCase().includes(keyword.toLowerCase())
 }
 
+const files = inject<Ref<UploadFile[]>>("files")
 const visibleDropzone = inject('visibleDropzone')
 const composingMode = inject('composingMode')
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
+const createRTMPStream = () => {
+  if (files) {
+    files.value = [{
+      id: 0,
+      preview: '',
+      url: '',
+      status: 'virtual',
+      file: {
+        name: result.value ? `${result.value.whoami.displayName || result.value.whoami.username}'s stream` : 'Stream name',
+        type: 'video'
+      } as File
+    }]
+  }
+}
 </script>
 
 <template>
@@ -133,12 +148,19 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
           </template>
           Back to editing
         </a-button>
-        <a-button v-else type="primary" @click="visibleDropzone = true">
-          <template #icon>
-            <PlusOutlined />
+        <a-dropdown-button type="primary" v-else @click="visibleDropzone = true">
+          <PlusOutlined />New
+          <template #overlay>
+            <a-menu>
+              <a-menu-item key="rtmp" @click="createRTMPStream">
+                <template #icon>
+                  <video-camera-add-outlined />
+                </template>
+                RTMP Stream
+              </a-menu-item>
+            </a-menu>
           </template>
-          New
-        </a-button>
+        </a-dropdown-button>
         <a-input-search allowClear class="w-48" placeholder="Search media" v-model:value="name" />
         <a-select
           allowClear
@@ -211,9 +233,11 @@ const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`
           <template #overlay>
             <a-menu>
               <a :href="to('backstage')">
-                <a-menu-item>Back to Backstage</a-menu-item>
+                <a-menu-item>Backstage</a-menu-item>
               </a>
-              <a-menu-item>Logout</a-menu-item>
+              <a :href="to('')">
+                <a-menu-item>Foyer</a-menu-item>
+              </a>
             </a-menu>
           </template>
         </a-dropdown>

@@ -83,7 +83,7 @@ export const useMutation = (...params) => {
         try {
             const response = await mutation(...params)
             if (typeof success === 'function') {
-                success()
+                success(response)
             } else {
                 notification.success(success);
             }
