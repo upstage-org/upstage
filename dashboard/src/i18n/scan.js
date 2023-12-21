@@ -39,7 +39,7 @@ const processFile = (path) => {
 let fileChanged = 0;
 let lineChanged = 0;
 const map = {};
-scanFolder("./src");
+scanFolder("./dashboard/src");
 console.log(`📄 ${fileChanged} files changed`);
 console.log(`📝 ${lineChanged} lines changed`);
 console.log(`📦 Results:`);
