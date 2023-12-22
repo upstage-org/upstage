@@ -33,7 +33,6 @@ export default {
         LayoutSider,
         {
           theme: "light",
-          collapsible: true,
           collapsed: true,
           class: "select-none",
           width: 240,
@@ -135,9 +134,9 @@ export default {
                     ]
                   : []),
                 {
-                  key: "/legacy/https://docs.upstage.live/",
                   icon: ReadOutlined,
                   label: "Manual",
+                  onClick: () => open("https://docs.upstage.live/", "_blank"),
                 },
               ].map((item) =>
                 item.children
@@ -146,6 +145,7 @@ export default {
                       MenuItem,
                       {
                         key: item.key,
+                        onClick: item.onClick,
                         style: {
                           background:
                             item.key === router.currentRoute.value.path
