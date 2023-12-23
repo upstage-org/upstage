@@ -65,7 +65,7 @@ export default {
       name,
       useDebounceFn(() => {
         updateInquiry({ name: name.value });
-      }, 500),
+      }, 500)
     );
     watch(dates, (dates) => {
       updateInquiry({
@@ -93,7 +93,7 @@ export default {
           drawerVisible.value = false;
         },
       }),
-      h(Header, {}, [
+      h(Header, {}, () => [
         h(
           Space,
           {
@@ -109,7 +109,7 @@ export default {
                   drawerVisible.value = true;
                 },
               },
-              [t("new_object", [t("player", 2)])],
+              [t("new_object", [t("player", 2)])]
             ),
             h(InputSearch, {
               allowClear: true,
@@ -140,9 +140,9 @@ export default {
                     type: "close-circle",
                   }),
                   "Clear Filters",
-                ],
+                ]
               ),
-          ],
+          ]
         ),
       ]),
     ];

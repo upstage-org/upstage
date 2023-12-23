@@ -3,39 +3,45 @@ import { User } from "models/studio";
 import { computed, ref } from "vue";
 import { useUpdateUser } from "./mutations";
 import { message } from "ant-design-vue";
-import graphqlClient from "services/graphql";
+import { studioClient } from "services/graphql";
+import { useAsyncState } from "@vueuse/core";
 
-const currentUserState = ref(
-  await graphqlClient.query({
+const { state } = useAsyncState(
+  studioClient.query({
     whoami: {
       __scalar: true,
     },
   }),
+  {
+    whoami: null,
+  }
 );
 
-const whoami = computed(() => currentUserState.value.whoami);
+const whoami = computed(() => state.value.whoami);
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    whoami.value?.role ?? 0,
-  ),
+    whoami.value?.role ?? 0
+  )
 );
 
 const { mutate: updateUser, loading: savingUser } = useUpdateUser();
 
-const save = async (player: User) => {
-  const res = await updateUser({
-    ...player,
-  });
-  message.success(`Successfully update your profile!`);
-};
-
-export async function useWhoAmI() {
+export function useWhoAmI() {
   return { whoami, isAdmin };
 }
 
 export async function useUpdateProfile() {
-  return { whoami, save };
+  return {
+    whoami,
+    updateProfile: async (player: User) => {
+      const res = await updateUser({
+        ...player,
+      });
+      message.success(`Successfully update your profile!`);
+      return res;
+    },
+  };
 }
 
 export function useLogout() {

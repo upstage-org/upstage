@@ -89,14 +89,14 @@ export default {
                 onClick: () => {
                   for (const player of players) {
                     const duplicatedPlayer = players.find(
-                      (p) => p !== player && p.username === player.username,
+                      (p) => p !== player && p.username === player.username
                     );
                     if (duplicatedPlayer) {
                       message.error(`Duplicated username: ${player.username}!`);
                       return;
                     }
                     const duplicatedEmail = players.find(
-                      (p) => p !== player && p.email === player.email,
+                      (p) => p !== player && p.email === player.email
                     );
                     if (duplicatedEmail) {
                       message.error(`Duplicated email: ${player.email}!`);
@@ -110,7 +110,7 @@ export default {
                   });
                 },
               },
-              t("save"),
+              t("save")
             ),
           ]),
           visible: props.visible,
@@ -119,11 +119,11 @@ export default {
             if (
               players.length &&
               players.some(
-                (player) => player.username || player.password || player.email,
+                (player) => player.username || player.password || player.email
               )
             ) {
               confirmed = confirm(
-                "Are you sure you want to discard the changes?",
+                "Are you sure you want to discard the changes?"
               );
             }
             if (confirmed) {
@@ -132,65 +132,66 @@ export default {
           },
           width: 720,
         },
-        h(Space, { class: "w-full", direction: "vertical" }, [
-          players.map((player) =>
-            h(Space, { class: "w-full" }, [
-              h(Input, {
-                placeholder: t("username"),
-                value: player.username,
-                onChange: (e) => {
-                  player.username = e.target.value!;
-                },
-              }),
-              h(Input, {
-                type: "email",
-                placeholder: t("email"),
-                value: player.email,
-                onChange: (e) => {
-                  player.email = e.target.value!;
-                },
-                status:
-                  !player.email || player.email.includes("@")
-                    ? undefined
-                    : "warning",
-              }),
-              h(Input, {
-                type: "password",
-                placeholder: t("password"),
-                value: player.password,
-                onChange: (e) => {
-                  player.password = e.target.value!;
-                },
-              }),
-              h(
-                Button,
-                {
-                  icon: h(DeleteOutlined),
-                  danger: true,
-                  onClick: () => {
-                    players.splice(players.indexOf(player), 1);
+        () =>
+          h(Space, { class: "w-full", direction: "vertical" }, () => [
+            players.map((player) =>
+              h(Space, { class: "w-full" }, () => [
+                h(Input, {
+                  placeholder: t("username"),
+                  value: player.username,
+                  onChange: (e) => {
+                    player.username = e.target.value!;
                   },
-                },
-                t("remove"),
-              ),
-            ]),
-          ),
-          h(
-            Button,
-            {
-              class: "w-full",
-              icon: h(PlusOutlined),
-              type: "dashed",
-              onClick: () =>
-                players.push({
-                  username: "",
-                  email: "",
-                  password: "",
                 }),
-            },
-            t("new"),
-          ),
-        ]),
+                h(Input, {
+                  type: "email",
+                  placeholder: t("email"),
+                  value: player.email,
+                  onChange: (e) => {
+                    player.email = e.target.value!;
+                  },
+                  status:
+                    !player.email || player.email.includes("@")
+                      ? undefined
+                      : "warning",
+                }),
+                h(Input, {
+                  type: "password",
+                  placeholder: t("password"),
+                  value: player.password,
+                  onChange: (e) => {
+                    player.password = e.target.value!;
+                  },
+                }),
+                h(
+                  Button,
+                  {
+                    icon: h(DeleteOutlined),
+                    danger: true,
+                    onClick: () => {
+                      players.splice(players.indexOf(player), 1);
+                    },
+                  },
+                  t("remove")
+                ),
+              ])
+            ),
+            h(
+              Button,
+              {
+                class: "w-full",
+                icon: h(PlusOutlined),
+                type: "dashed",
+                onClick: () =>
+                  players.push({
+                    username: "",
+                    email: "",
+                    password: "",
+                  }),
+              },
+              t("new")
+            ),
+          ])
       );
   },
 };

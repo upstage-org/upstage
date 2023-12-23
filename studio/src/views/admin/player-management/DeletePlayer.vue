@@ -48,18 +48,19 @@ export default {
               await props.onDone?.(props.player);
             } catch (error) {
               message.error(
-                error instanceof Error ? error.message : (error as string),
+                error instanceof Error ? error.message : (error as string)
               );
             }
           },
         },
-        h(
-          Button,
-          { danger: true },
-          {
-            icon: () => h(DeleteOutlined),
-          },
-        ),
+        () =>
+          h(
+            Button,
+            { danger: true },
+            {
+              icon: () => h(DeleteOutlined),
+            }
+          )
       );
   },
 };

@@ -47,7 +47,7 @@ export default {
         {
           title: t("change_password"),
         },
-        [
+        () => [
           h(
             Button,
             {
@@ -55,7 +55,7 @@ export default {
             },
             {
               icon: () => h(KeyOutlined),
-            },
+            }
           ),
           h(
             Modal,
@@ -79,7 +79,7 @@ export default {
                 loading: props.saving.value,
               },
             },
-            [
+            () => [
               h(
                 Form,
                 {
@@ -99,13 +99,13 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.password = value),
                       }),
-                    ],
+                    ]
                   ),
-                ],
+                ]
               ),
-            ],
+            ]
           ),
-        ],
+        ]
       );
   },
 };
