@@ -6,13 +6,13 @@ import { Affix, Space } from "ant-design-vue";
 export default {
   setup(_, { slots }) {
     return () =>
-      h(Affix, { offsetTop: 0 }, [
+      h(Affix, { offsetTop: 0 }, () => [
         h(
           Space,
           {
             class: "shadow rounded-xl px-4 py-2 bg-white flex justify-between",
           },
-          [slots.default?.(), h(Navbar)],
+          () => [slots.default?.(), h(Navbar)],
         ),
       ]);
   },

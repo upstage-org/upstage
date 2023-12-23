@@ -132,65 +132,66 @@ export default {
           },
           width: 720,
         },
-        h(Space, { class: "w-full", direction: "vertical" }, [
-          players.map((player) =>
-            h(Space, { class: "w-full" }, [
-              h(Input, {
-                placeholder: t("username"),
-                value: player.username,
-                onChange: (e) => {
-                  player.username = e.target.value!;
-                },
-              }),
-              h(Input, {
-                type: "email",
-                placeholder: t("email"),
-                value: player.email,
-                onChange: (e) => {
-                  player.email = e.target.value!;
-                },
-                status:
-                  !player.email || player.email.includes("@")
-                    ? undefined
-                    : "warning",
-              }),
-              h(Input, {
-                type: "password",
-                placeholder: t("password"),
-                value: player.password,
-                onChange: (e) => {
-                  player.password = e.target.value!;
-                },
-              }),
-              h(
-                Button,
-                {
-                  icon: h(DeleteOutlined),
-                  danger: true,
-                  onClick: () => {
-                    players.splice(players.indexOf(player), 1);
+        () =>
+          h(Space, { class: "w-full", direction: "vertical" }, () => [
+            players.map((player) =>
+              h(Space, { class: "w-full" }, () => [
+                h(Input, {
+                  placeholder: t("username"),
+                  value: player.username,
+                  onChange: (e) => {
+                    player.username = e.target.value!;
                   },
-                },
-                t("remove"),
-              ),
-            ]),
-          ),
-          h(
-            Button,
-            {
-              class: "w-full",
-              icon: h(PlusOutlined),
-              type: "dashed",
-              onClick: () =>
-                players.push({
-                  username: "",
-                  email: "",
-                  password: "",
                 }),
-            },
-            t("new"),
-          ),
-        ]),
+                h(Input, {
+                  type: "email",
+                  placeholder: t("email"),
+                  value: player.email,
+                  onChange: (e) => {
+                    player.email = e.target.value!;
+                  },
+                  status:
+                    !player.email || player.email.includes("@")
+                      ? undefined
+                      : "warning",
+                }),
+                h(Input, {
+                  type: "password",
+                  placeholder: t("password"),
+                  value: player.password,
+                  onChange: (e) => {
+                    player.password = e.target.value!;
+                  },
+                }),
+                h(
+                  Button,
+                  {
+                    icon: h(DeleteOutlined),
+                    danger: true,
+                    onClick: () => {
+                      players.splice(players.indexOf(player), 1);
+                    },
+                  },
+                  t("remove"),
+                ),
+              ]),
+            ),
+            h(
+              Button,
+              {
+                class: "w-full",
+                icon: h(PlusOutlined),
+                type: "dashed",
+                onClick: () =>
+                  players.push({
+                    username: "",
+                    email: "",
+                    password: "",
+                  }),
+              },
+              t("new"),
+            ),
+          ]),
       );
   },
 };

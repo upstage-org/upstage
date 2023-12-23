@@ -2,11 +2,11 @@
 
 name: DEVAPP1 CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or approved pull request on R1-2021 branch
   push:
-    branches: [ RedHorse-2.0.6 ]
+    branches: [RedHorse-2.0.6]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

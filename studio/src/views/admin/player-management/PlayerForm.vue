@@ -19,7 +19,7 @@ import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { humanFileSize } from "utils/common";
-import { User } from "models/studio";
+import { User } from "genql/studio";
 
 export default {
   props: {
@@ -29,7 +29,7 @@ export default {
     },
     onSave: {
       type: Function as PropType<(player: User) => Promise<void>>,
-      required: true,
+      required: false,
     },
     saving: Boolean,
     noUploadLimit: Boolean,
@@ -83,7 +83,7 @@ export default {
             loading: props.saving,
           },
         },
-        [
+        () => [
           h(
             Form,
             {
@@ -91,15 +91,15 @@ export default {
               labelCol: { span: 6 },
               wrapperCol: { span: 18 },
             },
-            [
+            () => [
               h(
                 Form.Item,
                 {
                   label: t("first_name"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.firstName,
+                    value: values.firstName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.firstName = value),
                   }),
@@ -110,9 +110,9 @@ export default {
                 {
                   label: t("last_name"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.lastName,
+                    value: values.lastName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.lastName = value),
                   }),
@@ -124,9 +124,9 @@ export default {
                   label: t("display_name"),
                   help: "In stage chat nickname",
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.displayName,
+                    value: values.displayName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.displayName = value),
                   }),
@@ -137,9 +137,9 @@ export default {
                 {
                   label: t("email"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.email,
+                    value: values.email ?? "",
                     "onUpdate:value": (value: string) => (values.email = value),
                   }),
                 ],
@@ -149,7 +149,7 @@ export default {
                 {
                   label: t("introduction"),
                 },
-                [
+                () => [
                   h(Textarea, {
                     disabled: props.disabledIntroduction,
                     autoSize: true,
@@ -164,7 +164,7 @@ export default {
                   {
                     label: t("upload_limit"),
                   },
-                  [
+                  () => [
                     h(Select, {
                       class: "w-full",
                       dropdownMatchSelectWidth: false,
@@ -209,7 +209,7 @@ export default {
                   {
                     label: t("status"),
                   },
-                  [
+                  () => [
                     h(Switch, {
                       checked: values.active,
                       "onUpdate:checked": (value) =>
@@ -228,7 +228,7 @@ export default {
             {
               title: t("profile_title", { name: props.player.username }),
             },
-            [
+            () => [
               h(
                 Button,
                 {

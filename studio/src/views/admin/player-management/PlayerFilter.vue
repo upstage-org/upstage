@@ -93,7 +93,7 @@ export default {
           drawerVisible.value = false;
         },
       }),
-      h(Header, {}, [
+      h(Header, {}, () => [
         h(
           Space,
           {

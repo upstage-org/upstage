@@ -1,12 +1,9 @@
-import {
-  createRouter,
-  createWebHashHistory,
-  createWebHistory,
-} from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import StagesManagement from "views/stages/index.vue";
 import MediaManagement from "views/media/index.vue";
 import AdminSection from "views/admin/index.vue";
 import PlayerManagement from "views/admin/player-management/index.vue";
+import Configuration from "views/admin/configuration/index.vue";
 import LegacyPage from "views/legacy.vue";
 
 export const router = createRouter({
@@ -38,7 +35,10 @@ export const router = createRouter({
       meta: {
         background: "#E6F2FF",
       },
-      children: [{ path: "player", component: PlayerManagement }],
+      children: [
+        { path: "player", component: PlayerManagement },
+        { path: "configuration/:section?", component: Configuration },
+      ],
     },
     {
       path: "/legacy/:path(.+)",

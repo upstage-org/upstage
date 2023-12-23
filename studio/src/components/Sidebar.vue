@@ -2,7 +2,7 @@
 import { LayoutSider, Menu, MenuItem, Spin, SubMenu } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
-import { useUpdateProfile } from "hooks/auth";
+import { useUpdateProfile } from "state/auth";
 import { h } from "vue";
 import {
   PictureOutlined,
@@ -13,12 +13,18 @@ import {
 } from "@ant-design/icons-vue";
 import { computed } from "vue";
 import configs from "config";
+import { useLoading } from "hooks/mutations";
+import { settings } from "state/settings";
 
 export default {
-  setup(_, { slots }) {
+  async setup(_, { slots }) {
     const router = useRouter();
 
-    const { whoami, loading, save } = useUpdateProfile();
+    const { whoami, updateProfile } = await useUpdateProfile();
+    const { loading: saving, proceed: save } = useLoading(updateProfile, {
+      loading: "Saving your profile...",
+      success: () => "Your profile information saved successfully!",
+    });
 
     const isAdmin = computed(
       () =>
@@ -37,20 +43,16 @@ export default {
           class: "select-none",
           width: 240,
         },
-        [
+        () => [
           h(
-            Spin,
+            Menu,
             {
-              spinning: loading.value,
+              selectedKeys: [router.currentRoute.value.path],
+              onSelect: (e) => router.push(e.key.toString()),
+              mode: "inline",
+              class: "upstage-menu",
             },
-            h(
-              Menu,
-              {
-                selectedKeys: [router.currentRoute.value.path],
-                onSelect: (e) => router.push(e.key.toString()),
-                mode: "inline",
-                class: "upstage-menu",
-              },
+            () =>
               [
                 { key: "/media", icon: PictureOutlined, label: "Media" },
                 { key: "/stages", icon: CommentOutlined, label: "Stages" },
@@ -60,8 +62,8 @@ export default {
                         PlayerForm,
                         {
                           player: whoami.value,
-                          saving: loading.value,
-                          onSave: save,
+                          saving: saving.value,
+                          onSave: save as any,
                           noUploadLimit: true,
                           noStatusToggle: true,
                         },
@@ -72,7 +74,7 @@ export default {
                               {
                                 onClick,
                               },
-                              [h(UserOutlined), h("span", "Profile")],
+                              () => [h(UserOutlined), h("span", "Profile")],
                             ),
                         },
                       )
@@ -104,28 +106,21 @@ export default {
                                 {
                                   key: "/admin/player",
                                 },
-                                "Player Management",
-                              ),
-                              h(
-                                MenuItem,
-                                {
-                                  key: "/legacy/backstage/admin/foyer-customisation",
-                                },
-                                "Foyer Customisation",
+                                () => "Player Management",
                               ),
                               h(
                                 MenuItem,
                                 {
                                   key: "/legacy/backstage/admin/email-notification",
                                 },
-                                "Email Notification",
+                                () => "Email Notification",
                               ),
                               h(
                                 MenuItem,
                                 {
-                                  key: "/legacy/backstage/admin/system-configuration",
+                                  key: "/admin/configuration",
                                 },
-                                "System Configuration",
+                                () => "Configuration",
                               ),
                             ],
                           },
@@ -136,7 +131,13 @@ export default {
                 {
                   icon: ReadOutlined,
                   label: "Manual",
-                  onClick: () => open("https://docs.upstage.live/", "_blank"),
+                  disabled: !settings.isReady.value,
+                  onClick: () =>
+                    open(
+                      settings.state.value.system?.manual ??
+                        "https://docs.upstage.live/",
+                      "_blank",
+                    ),
                 },
               ].map((item) =>
                 item.children
@@ -146,6 +147,7 @@ export default {
                       {
                         key: item.key,
                         onClick: item.onClick,
+                        disabled: item.disabled,
                         style: {
                           background:
                             item.key === router.currentRoute.value.path
@@ -153,10 +155,9 @@ export default {
                               : undefined,
                         },
                       },
-                      [h(item.icon), h("span", item.label)],
+                      () => [h(item.icon), h("span", item.label)],
                     ),
               ),
-            ),
           ),
         ],
       ),
@@ -176,3 +177,4 @@ export default {
   padding-inline: calc(50% - 10px) !important;
 }
 </style>
+state/auth

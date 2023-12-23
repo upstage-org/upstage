@@ -6,7 +6,7 @@ import { DeleteOutlined } from "@ant-design/icons-vue";
 import { PropType } from "vue";
 import gql from "graphql-tag";
 import { useMutation } from "@vue/apollo-composable";
-import { User } from "models/studio";
+import { User } from "genql/studio";
 
 export default {
   props: {
@@ -53,13 +53,14 @@ export default {
             }
           },
         },
-        h(
-          Button,
-          { danger: true },
-          {
-            icon: () => h(DeleteOutlined),
-          },
-        ),
+        () =>
+          h(
+            Button,
+            { danger: true },
+            {
+              icon: () => h(DeleteOutlined),
+            },
+          ),
       );
   },
 };

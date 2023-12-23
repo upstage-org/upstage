@@ -1,6 +1,7 @@
 import configs from "config";
 import { SharedAuth, SharedConfigs } from "models/config";
-import { User } from "models/studio";
+import { User as LegacyUser } from "models/studio";
+import { User } from "genql/studio";
 
 export function absolutePath(path: string) {
   return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
@@ -79,7 +80,7 @@ export function titleCase(str: string) {
   return splitStr.join(" ");
 }
 
-export function displayName(user: User) {
+export function displayName(user: User | LegacyUser) {
   if (user.displayName?.trim()) return user.displayName;
   if (user.firstName || user.lastName)
     return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
