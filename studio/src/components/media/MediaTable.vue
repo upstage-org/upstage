@@ -311,7 +311,7 @@ const filterTag = (tag: string) => {
   });
 };
 
-const { whoami, isAdmin } = await useWhoAmI();
+const { whoami, isAdmin } = useWhoAmI();
 </script>
 
 <template>

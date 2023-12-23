@@ -1,7 +1,7 @@
 {
   "name": "dashboard",
-  "version": "2.0.5",
-  "versionAlias": "Newcastle-2.0.5",
+  "version": "2.0.6",
+  "versionAlias": "RedHorse-2.0.6",
   "license": "GPL-3.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,7 @@
     "@tinymce/tinymce-vue": "^4",
     "@yeger/vue-masonry-wall": "^3.0.29",
     "animejs": "^3.2.1",
-    "axios": "^0.21.4",
+    "axios": "^1.6.0",
     "bulma": "^0.9.4",
     "bulma-slider": "^2.0.5",
     "bulma-switch": "^2.0.4",
@@ -43,6 +43,7 @@
     "vue": "^3.2.2",
     "vue-i18n": "9",
     "vue-router": "^4.0.0-0",
+    "vue-turnstile": "^1.0.5",
     "vuex": "^4.0.0-0",
     "vuex-persistedstate": "^4.0.0-beta.1"
   },

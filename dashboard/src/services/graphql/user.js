@@ -31,6 +31,7 @@ export default {
           $firstName: String
           $lastName: String
           $intro: String
+          $token: String
         ) {
           createUser(
             inbound: {
@@ -40,6 +41,7 @@ export default {
               firstName: $firstName
               lastName: $lastName
               intro: $intro
+              token: $token
             }
           ) {
             user {
