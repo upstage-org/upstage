@@ -1,14 +1,11 @@
 <script lang="ts">
-import { useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref } from "vue";
-import type { Media, Stage } from "models/studio";
+import { reactive, watch, provide } from "vue";
+import type { Media } from "models/studio";
 import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { Layout, Select, Space, Switch, Table, message } from "ant-design-vue";
-import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
 import PlayerForm from "./PlayerForm.vue";
@@ -19,7 +16,10 @@ import Confirm from "components/Confirm.vue";
 import { useUpdateUser } from "hooks/mutations";
 import { useAsyncState } from "@vueuse/core";
 import { studioClient } from "services/graphql";
-import { User } from "genql/studio";
+import { AdminPlayerSortEnum, User } from "genql/studio";
+import { computed } from "vue";
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
 
 interface Pagination {
   current: number;
@@ -33,9 +33,9 @@ export default {
   setup() {
     const { t } = useI18n();
     const tableParams = reactive({
-      limit: 10,
-      cursor: undefined,
-      sort: ["CREATED_ON_ASC"],
+      first: 10,
+      after: undefined,
+      sort: ["CREATED_ON_ASC"] as AdminPlayerSortEnum[],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -47,7 +47,7 @@ export default {
       ...inquiryResult.value.inquiry,
     }));
     watch(inquiryResult, () => {
-      tableParams.cursor = undefined;
+      tableParams.after = undefined;
     });
 
     const {
@@ -55,11 +55,13 @@ export default {
       isReady,
       execute: fetchMore,
     } = useAsyncState(
-      () =>
-        studioClient.query({
+      () => {
+        return studioClient.query({
           adminPlayers: {
             __args: {
-              ...params.value,
+              ...tableParams,
+              usernameLike: params.value.name,
+              createdBetween: params.value.createdBetween,
             },
             totalCount: true,
             edges: {
@@ -69,7 +71,8 @@ export default {
               },
             },
           },
-        }),
+        });
+      },
       {
         adminPlayers: null,
       },
@@ -274,19 +277,17 @@ export default {
           `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
         );
       Object.assign(tableParams, {
-        cursor:
+        after:
           current > 1
             ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`)
             : undefined,
-        limit: pageSize,
+        first: pageSize,
         sort,
       });
     };
 
     const refresh = () => {
-      fetchMore({
-        ...params.value,
-      });
+      fetchMore();
     };
     provide("refresh", refresh);
 
