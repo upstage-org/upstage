@@ -19,7 +19,7 @@ import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { humanFileSize } from "utils/common";
-import { User } from "models/studio";
+import { User } from "genql";
 
 export default {
   props: {
@@ -99,7 +99,7 @@ export default {
                 },
                 [
                   h(Input, {
-                    value: values.firstName,
+                    value: values.firstName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.firstName = value),
                   }),
