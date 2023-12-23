@@ -10,6 +10,7 @@ const props = defineProps<{
   defaultValue: string | boolean;
   multiline?: boolean;
   help?: VNode;
+  refresh?: () => Promise<void>;
 }>();
 
 const editing = ref(false);
@@ -29,12 +30,15 @@ const { loading, proceed } = useLoading(
   {
     loading: "Saving config...",
     success: () => "Config saved successfully!",
-  }
+  },
 );
 
 const save = async () => {
   editing.value = false;
   await proceed();
+  if (props.refresh) {
+    await props.refresh();
+  }
 };
 </script>
 

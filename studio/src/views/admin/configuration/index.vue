@@ -7,6 +7,7 @@ import { h } from "vue";
 import { useAsyncState } from "@vueuse/core";
 import { configClient } from "services/graphql";
 import { Skeleton } from "ant-design-vue";
+import { settings } from "state/settings";
 
 const route = useRoute();
 const activeKey = ref((route.params.section as string) || "foyer");
@@ -18,13 +19,13 @@ const { state } = useAsyncState(
       __scalar: true,
     },
     system: {
-      enableDonate: true,
+      __scalar: true,
     },
   }),
   {
     foyer: null,
     system: null,
-  }
+  },
 );
 
 const foyerConfigs = () =>
@@ -59,12 +60,36 @@ About
         h(Entry, {
           label: t("registration_button"),
           name: "SHOW_REGISTRATION",
-          defaultValue: state.value.foyer?.showRegistration ?? false,
+          defaultValue: state.value.foyer.showRegistration ?? false,
         }),
         h(Entry, {
           label: t("enable_upstage_donate"),
           name: "ENABLE_DONATE",
-          defaultValue: state.value.system?.enableDonate ?? false,
+          defaultValue: state.value.system.enableDonate ?? false,
+        }),
+      ]
+    : [h(Skeleton)];
+
+const systemConfigs = () =>
+  state.value.system
+    ? [
+        h(Entry, {
+          label: t("tos.terms_of_service"),
+          name: "TERMS_OF_SERVICE",
+          defaultValue: state.value.system.termsOfService ?? "",
+        }),
+        h(Entry, {
+          label: t("manual"),
+          name: "MANUAL",
+          defaultValue: state.value.system.manual ?? "",
+          async refresh() {
+            await settings.execute();
+          },
+        }),
+        h(Entry, {
+          label: t("email_subject_prefix"),
+          name: "EMAIL_SUBJECT_PREFIX",
+          defaultValue: state.value.system.esp ?? "",
         }),
       ]
     : [h(Skeleton)];
@@ -72,13 +97,18 @@ About
 
 <template>
   <a-layout class="w-full shadow rounded-xl bg-white px-4 overflow-hidden">
-    <a-tabs v-model:activeKey="activeKey">
+    <a-tabs v-model:activeKey="activeKey" type="card">
+      <template #leftExtra>
+        <a-tag color="#007011">
+          <SettingOutlined /> UpStage Configurations
+        </a-tag>
+      </template>
       <a-tab-pane key="foyer" :tab="t('foyer_customisation')">
         <foyerConfigs />
       </a-tab-pane>
-      <a-tab-pane key="system" :tab="t('system_configuration')"
-        >Content of Tab Pane 2</a-tab-pane
-      >
+      <a-tab-pane key="system" :tab="t('system_configuration')">
+        <systemConfigs />
+      </a-tab-pane>
     </a-tabs>
   </a-layout>
 </template>

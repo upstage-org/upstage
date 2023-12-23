@@ -1,8 +1,8 @@
 <script lang="ts">
-import { useMutation, useQuery } from "@vue/apollo-composable";
+import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject } from "vue";
-import type { Media, Stage, StudioGraph, User } from "models/studio";
+import { computed, reactive, watch, provide, ref } from "vue";
+import type { Media, Stage } from "models/studio";
 import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
@@ -17,6 +17,9 @@ import DeletePlayer from "./DeletePlayer.vue";
 import type { DefaultOptionType } from "ant-design-vue/lib/select";
 import Confirm from "components/Confirm.vue";
 import { useUpdateUser } from "hooks/mutations";
+import { useAsyncState } from "@vueuse/core";
+import { studioClient } from "services/graphql";
+import { User } from "genql/studio";
 
 interface Pagination {
   current: number;
@@ -26,19 +29,9 @@ interface Pagination {
   total: number;
 }
 
-interface Sorter {
-  column: any;
-  columnKey: string;
-  field: string;
-  order: "ascend" | "descend";
-}
-
 export default {
-  setup(props, ctx) {
+  setup() {
     const { t } = useI18n();
-    const enterStage = (stage: Stage) => {
-      window.open(`/${stage.fileLocation}`, "_blank");
-    };
     const tableParams = reactive({
       limit: 10,
       cursor: undefined,
@@ -57,77 +50,34 @@ export default {
       tableParams.cursor = undefined;
     });
 
-    const { mutate, loading: saving } = useMutation<
-      { authUser: { accessToken: string; refreshToken: string } },
-      {}
-    >(gql`
-      mutation Login($username: String, $password: String) {
-        authUser(username: $username, password: $password) {
-          accessToken
-          refreshToken
-        }
-      }
-    `);
-
-    const { result, loading, fetchMore } = useQuery<
-      StudioGraph,
-      { cursor?: string; limit: number; sort?: string[] }
-    >(
-      gql`
-        query AdminPlayerTable(
-          $cursor: String
-          $limit: Int
-          $sort: [AdminPlayerSortEnum]
-          $name: String
-          $createdBetween: [Date]
-        ) {
-          adminPlayers(
-            after: $cursor
-            first: $limit
-            sort: $sort
-            usernameLike: $name
-            createdBetween: $createdBetween
-          ) {
-            totalCount
-            edges {
-              cursor
-              node {
-                id
-                active
-                username
-                email
-                binName
-                role
-                roleName
-                firstName
-                lastName
-                displayName
-                lastLogin
-                createdOn
-                uploadLimit
-                intro
-                dbId
-              }
-            }
-          }
-        }
-      `,
-      params.value,
-      { notifyOnNetworkStatusChange: true }
+    const {
+      state: result,
+      isReady,
+      execute: fetchMore,
+    } = useAsyncState(
+      () =>
+        studioClient.query({
+          adminPlayers: {
+            __args: {
+              ...params.value,
+            },
+            totalCount: true,
+            edges: {
+              cursor: true,
+              node: {
+                __scalar: true,
+              },
+            },
+          },
+        }),
+      {
+        adminPlayers: null,
+      },
     );
-
-    const updateQuery = (
-      previousResult: StudioGraph,
-      { fetchMoreResult }: any
-    ) => {
-      return fetchMoreResult ?? previousResult;
-    };
 
     watch(params, () => {
       refresh();
     });
-
-    const customLimit = ref("");
 
     const SWITCHABLE_ROLES = {
       GUEST: 4,
@@ -150,11 +100,11 @@ export default {
             Confirm,
             {
               title: `Are you sure you want to change ${displayName(
-                opt.record
+                opt.record,
               )}'s role?`,
               onConfirm: async ([value, selectedOption]: [
                 number,
-                DefaultOptionType
+                DefaultOptionType,
               ]) => {
                 await updateUser({
                   ...opt.record,
@@ -163,7 +113,7 @@ export default {
                 message.success(
                   `Successfully switch ${displayName(opt.record)}'s role to ${
                     (selectedOption as DefaultOptionType).label
-                  }!`
+                  }!`,
                 );
               },
             },
@@ -176,14 +126,14 @@ export default {
                     ([key, id]) => ({
                       value: id,
                       label: titleCase(key),
-                    })
+                    }),
                   ),
                   value: opt.text,
                   onChange: (value, selectedOption) => {
                     slotProps.confirm([value as number, selectedOption]);
                   },
                 }),
-            }
+            },
           );
         },
       },
@@ -257,7 +207,7 @@ export default {
               message.success(
                 `Account ${displayName(opt.record)} ${
                   value ? "activated" : "deactivated"
-                } successfully!`
+                } successfully!`,
               );
             },
           });
@@ -278,7 +228,7 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully update ${displayName(player)}'s profile!`
+                  `Successfully update ${displayName(player)}'s profile!`,
                 );
               },
               disabledIntroduction: true,
@@ -291,7 +241,7 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully reset ${displayName(player)}'s password!`
+                  `Successfully reset ${displayName(player)}'s password!`,
                 );
               },
             }),
@@ -300,7 +250,7 @@ export default {
               onDone: async (player: User) => {
                 refresh();
                 message.success(
-                  `Successfully delete ${displayName(player)}'s account!`
+                  `Successfully delete ${displayName(player)}'s account!`,
                 );
               },
             }),
@@ -312,16 +262,16 @@ export default {
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
       _: any,
-      sorter: SorterResult<Media> | SorterResult<Media>[]
+      sorter: SorterResult<Media> | SorterResult<Media>[],
     ) => {
       const sort = (Array.isArray(sorter) ? sorter : [sorter])
         .sort(
           (a, b) =>
             (a.column?.sorter as any).multiple -
-            (b.column?.sorter as any).multiple
+            (b.column?.sorter as any).multiple,
         )
         .map(({ columnKey, order }) =>
-          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
         );
       Object.assign(tableParams, {
         cursor:
@@ -332,36 +282,22 @@ export default {
         sort,
       });
     };
-    const dataSource = computed(() =>
-      result.value
-        ? result.value.adminPlayers.edges.map((edge) => edge.node)
-        : []
-    );
 
     const refresh = () => {
       fetchMore({
-        variables: params.value,
-        updateQuery,
+        ...params.value,
       });
     };
     provide("refresh", refresh);
 
-    const {
-      mutate: updateUser,
-      loading: savingUser,
-      onDone: onUserUpdated,
-      onError: onUserUpdateError,
-    } = useUpdateUser();
-
-    const handleUpdate = (result: FetchResult) => {
-      if (result.errors) {
-        message.error("You don't have permission to perform this action!");
-      } else {
+    const { proceed: updateUser, loading: savingUser } = useUpdateUser({
+      loading: "Saving player information...",
+      success: () => {
         refresh();
-      }
-    };
-
-    onUserUpdated(handleUpdate);
+        return "Player information saved successfully!";
+      },
+      error: () => "You don't have permission to perform this action!",
+    });
 
     return () =>
       h(
@@ -374,16 +310,18 @@ export default {
             class: "w-full overflow-auto",
             rowKey: "id",
             columns,
-            dataSource: dataSource.value,
-            loading: loading.value,
+            dataSource: result.value.adminPlayers?.edges.map((e) => e?.node),
+            loading: !isReady.value,
             onChange: handleTableChange,
             pagination: {
               showQuickJumper: true,
               showSizeChanger: true,
-              total: result.value ? result.value.adminPlayers.totalCount : 0,
+              total: result.value.adminPlayers
+                ? result.value.adminPlayers.totalCount
+                : 0,
             } as Pagination,
           }),
-        ]
+        ],
       );
   },
 };

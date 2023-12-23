@@ -30,7 +30,7 @@ import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import QuickStageAssignment from "./QuickStageAssignment.vue";
 import { useI18n } from "vue-i18n";
-import { useWhoAmI } from "hooks/auth";
+import { useWhoAmI } from "state/auth";
 
 const { t } = useI18n();
 const files = inject<Ref<UploadFile[]>>("files");
@@ -463,3 +463,4 @@ const { whoami, isAdmin } = useWhoAmI();
     <slot></slot>
   </a-layout>
 </template>
+state/auth

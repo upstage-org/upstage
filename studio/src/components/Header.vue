@@ -12,7 +12,7 @@ export default {
           {
             class: "shadow rounded-xl px-4 py-2 bg-white flex justify-between",
           },
-          () => [slots.default?.(), h(Navbar)]
+          () => [slots.default?.(), h(Navbar)],
         ),
       ]);
   },

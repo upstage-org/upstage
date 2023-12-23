@@ -1,10 +1,10 @@
 import configs from "config";
-import { User } from "models/studio";
-import { computed, ref } from "vue";
-import { useUpdateUser } from "./mutations";
+import { computed } from "vue";
+import { useUpdateUser } from "../hooks/mutations";
 import { message } from "ant-design-vue";
 import { studioClient } from "services/graphql";
 import { useAsyncState } from "@vueuse/core";
+import { User } from "genql/studio";
 
 const { state } = useAsyncState(
   studioClient.query({
@@ -14,28 +14,27 @@ const { state } = useAsyncState(
   }),
   {
     whoami: null,
-  }
+  },
 );
 
 const whoami = computed(() => state.value.whoami);
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    whoami.value?.role ?? 0
-  )
+    whoami.value?.role ?? 0,
+  ),
 );
-
-const { mutate: updateUser, loading: savingUser } = useUpdateUser();
 
 export function useWhoAmI() {
   return { whoami, isAdmin };
 }
 
 export async function useUpdateProfile() {
+  const { proceed } = useUpdateUser();
   return {
     whoami,
     updateProfile: async (player: User) => {
-      const res = await updateUser({
+      const res = await proceed({
         ...player,
       });
       message.success(`Successfully update your profile!`);

@@ -143,10 +143,6 @@ class SaveConfig(graphene.Mutation):
                 .first()
             )
 
-            if name == TERMS_OF_SERVICE:
-                # Use UpdateTermsOfService mutation instead.
-                return SaveConfig(success=False)
-
             if config:
                 config.value = value
             else:

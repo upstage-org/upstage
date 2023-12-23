@@ -89,14 +89,14 @@ export default {
                 onClick: () => {
                   for (const player of players) {
                     const duplicatedPlayer = players.find(
-                      (p) => p !== player && p.username === player.username
+                      (p) => p !== player && p.username === player.username,
                     );
                     if (duplicatedPlayer) {
                       message.error(`Duplicated username: ${player.username}!`);
                       return;
                     }
                     const duplicatedEmail = players.find(
-                      (p) => p !== player && p.email === player.email
+                      (p) => p !== player && p.email === player.email,
                     );
                     if (duplicatedEmail) {
                       message.error(`Duplicated email: ${player.email}!`);
@@ -110,7 +110,7 @@ export default {
                   });
                 },
               },
-              t("save")
+              t("save"),
             ),
           ]),
           visible: props.visible,
@@ -119,11 +119,11 @@ export default {
             if (
               players.length &&
               players.some(
-                (player) => player.username || player.password || player.email
+                (player) => player.username || player.password || player.email,
               )
             ) {
               confirmed = confirm(
-                "Are you sure you want to discard the changes?"
+                "Are you sure you want to discard the changes?",
               );
             }
             if (confirmed) {
@@ -172,9 +172,9 @@ export default {
                       players.splice(players.indexOf(player), 1);
                     },
                   },
-                  t("remove")
+                  t("remove"),
                 ),
-              ])
+              ]),
             ),
             h(
               Button,
@@ -189,9 +189,9 @@ export default {
                     password: "",
                   }),
               },
-              t("new")
+              t("new"),
             ),
-          ])
+          ]),
       );
   },
 };

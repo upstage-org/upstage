@@ -59,7 +59,7 @@ export const genqlFetch = async (...params: Parameters<typeof fetch>) => {
           return fetch(...params);
         } catch (error) {
           message.error(
-            `Token expired, could not refresh your access token. Please login again!`
+            `Token expired, could not refresh your access token. Please login again!`,
           );
           return;
         }

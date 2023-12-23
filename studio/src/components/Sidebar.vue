@@ -2,7 +2,7 @@
 import { LayoutSider, Menu, MenuItem, Spin, SubMenu } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
-import { useUpdateProfile } from "hooks/auth";
+import { useUpdateProfile } from "state/auth";
 import { h } from "vue";
 import {
   PictureOutlined,
@@ -14,6 +14,7 @@ import {
 import { computed } from "vue";
 import configs from "config";
 import { useLoading } from "hooks/mutations";
+import { settings } from "state/settings";
 
 export default {
   async setup(_, { slots }) {
@@ -29,8 +30,8 @@ export default {
       () =>
         whoami.value &&
         [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-          whoami.value.role
-        )
+          whoami.value.role,
+        ),
     );
 
     return () => [
@@ -62,7 +63,7 @@ export default {
                         {
                           player: whoami.value,
                           saving: saving.value,
-                          onSave: save,
+                          onSave: save as any,
                           noUploadLimit: true,
                           noStatusToggle: true,
                         },
@@ -73,9 +74,9 @@ export default {
                               {
                                 onClick,
                               },
-                              () => [h(UserOutlined), h("span", "Profile")]
+                              () => [h(UserOutlined), h("span", "Profile")],
                             ),
-                        }
+                        },
                       )
                     : h("span"),
                 },
@@ -90,7 +91,7 @@ export default {
                               margin: 4,
                               background:
                                 router.currentRoute.value.path.startsWith(
-                                  "/admin"
+                                  "/admin",
                                 )
                                   ? router.currentRoute.value.meta.background
                                   : undefined,
@@ -105,24 +106,24 @@ export default {
                                 {
                                   key: "/admin/player",
                                 },
-                                () => "Player Management"
+                                () => "Player Management",
                               ),
                               h(
                                 MenuItem,
                                 {
                                   key: "/legacy/backstage/admin/email-notification",
                                 },
-                                () => "Email Notification"
+                                () => "Email Notification",
                               ),
                               h(
                                 MenuItem,
                                 {
                                   key: "/admin/configuration",
                                 },
-                                () => "Configuration"
+                                () => "Configuration",
                               ),
                             ],
-                          }
+                          },
                         ),
                       },
                     ]
@@ -130,7 +131,13 @@ export default {
                 {
                   icon: ReadOutlined,
                   label: "Manual",
-                  onClick: () => open("https://docs.upstage.live/", "_blank"),
+                  disabled: !settings.isReady.value,
+                  onClick: () =>
+                    open(
+                      settings.state.value.system?.manual ??
+                        "https://docs.upstage.live/",
+                      "_blank",
+                    ),
                 },
               ].map((item) =>
                 item.children
@@ -140,6 +147,7 @@ export default {
                       {
                         key: item.key,
                         onClick: item.onClick,
+                        disabled: item.disabled,
                         style: {
                           background:
                             item.key === router.currentRoute.value.path
@@ -147,11 +155,11 @@ export default {
                               : undefined,
                         },
                       },
-                      () => [h(item.icon), h("span", item.label)]
-                    )
-              )
+                      () => [h(item.icon), h("span", item.label)],
+                    ),
+              ),
           ),
-        ]
+        ],
       ),
       slots.default?.(),
     ];
@@ -169,3 +177,4 @@ export default {
   padding-inline: calc(50% - 10px) !important;
 }
 </style>
+state/auth

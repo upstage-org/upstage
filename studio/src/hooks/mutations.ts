@@ -1,8 +1,6 @@
-import { useMutation } from "@vue/apollo-composable";
 import { message } from "ant-design-vue";
-import gql from "graphql-tag";
-import { adminPlayerFragment } from "models/fragment";
-import { User } from "models/studio";
+import { User } from "genql/studio";
+import { studioClient } from "services/graphql";
 import { ref } from "vue";
 
 export function useLoading<T extends unknown[], U>(
@@ -12,7 +10,7 @@ export function useLoading<T extends unknown[], U>(
     success: (result: U) => string;
     error?: (exception: unknown) => string;
     seconds?: number;
-  }
+  },
 ) {
   const key = +new Date();
   const loading = ref(false);
@@ -51,56 +49,21 @@ export function useLoading<T extends unknown[], U>(
   };
 }
 
-export function useUpdateUser() {
-  return useMutation<
-    {
-      updateUser: {
-        user: User;
-      };
-    },
-    {
-      id: string;
-      displayName?: string;
-      firstName?: string;
-      lastName?: string;
-      email?: string;
-      password?: string;
-      active?: boolean;
-      role?: number;
-      uploadLimit?: number;
-    }
-  >(gql`
-    mutation UpdateUser(
-      $id: ID!
-      $displayName: String
-      $firstName: String
-      $lastName: String
-      $email: String
-      $password: String
-      $active: Boolean
-      $role: Int
-      $uploadLimit: Int
-      $intro: String
-    ) {
-      updateUser(
-        inbound: {
-          id: $id
-          displayName: $displayName
-          firstName: $firstName
-          lastName: $lastName
-          email: $email
-          password: $password
-          active: $active
-          role: $role
-          uploadLimit: $uploadLimit
-          intro: $intro
-        }
-      ) {
-        user {
-          ...adminPlayerFragment
-        }
-      }
-    }
-    ${adminPlayerFragment}
-  `);
+export function useUpdateUser(messages?: Parameters<typeof useLoading>[1]) {
+  return useLoading(
+    (user: User) =>
+      studioClient.mutation({
+        updateUser: {
+          __args: {
+            inbound: {
+              ...user,
+            },
+          },
+          user: {
+            __scalar: true,
+          },
+        },
+      }),
+    messages,
+  );
 }

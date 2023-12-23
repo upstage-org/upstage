@@ -8,7 +8,7 @@ import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { KeyOutlined } from "@ant-design/icons-vue";
-import { User } from "models/studio";
+import { User } from "genql/studio";
 
 export default {
   props: {
@@ -55,7 +55,7 @@ export default {
             },
             {
               icon: () => h(KeyOutlined),
-            }
+            },
           ),
           h(
             Modal,
@@ -99,13 +99,13 @@ export default {
                         "onUpdate:value": (value: string) =>
                           (values.password = value),
                       }),
-                    ]
+                    ],
                   ),
-                ]
+                ],
               ),
-            ]
+            ],
           ),
-        ]
+        ],
       );
   },
 };
