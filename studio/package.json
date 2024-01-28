@@ -13,6 +13,7 @@
     "genql": "genql --endpoint https://dev-app1.upstage.live/api/studio_graphql/ --output ./src/genql/studio && genql --endpoint https://dev-app1.upstage.live/api/config_graphql/ --output ./src/genql/config"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "@apollo/client": "^3.8.8",
     "@tiptap/extension-image": "^2.1.13",
     "@tiptap/extension-link": "^2.1.13",

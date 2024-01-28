@@ -4,7 +4,7 @@ import RichTextEditor from "components/editor/RichTextEditor.vue";
 import { ref } from "vue";
 
 const content = ref(
-  `<h1>Notification Title</h1><p>Dear UpStage Users,</p><p>Thank you and best regards,</p><p><img src="	https://upstage.live/img/upstage.00bba63e.png" alt="@upstage-org">`
+  `<h1>Notification Title</h1><p>Dear UpStage Users,</p><p>Thank you and best regards,</p><p><img src="	https://upstage.live/img/upstage.00bba63e.png" alt="@upstage-org">`,
 );
 </script>
 

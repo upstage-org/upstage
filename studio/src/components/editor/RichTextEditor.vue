@@ -65,7 +65,7 @@ export default defineComponent({
           h(EditorContent, {
             editor: editor.value,
           }),
-        ]
+        ],
       );
   },
 });

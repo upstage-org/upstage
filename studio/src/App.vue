@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { apolloClient } from "apollo";
-import { provide } from "@vue/runtime-core";
+import { provide } from "vue";
 import Authorized from "components/Authorized.vue";
 import Sidebar from "components/Sidebar.vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";

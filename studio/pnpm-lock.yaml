@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@ant-design/icons-vue':
+    specifier: ^7.0.1
+    version: 7.0.1(vue@3.3.13)
   '@apollo/client':
     specifier: ^3.8.8
     version: 3.8.8(graphql@15.8.0)

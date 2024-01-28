@@ -1,5 +1,5 @@
 import { message } from "ant-design-vue";
-import { User } from "genql/studio";
+import { UpdateUserInput, User } from "genql/studio";
 import { studioClient } from "services/graphql";
 import { ref } from "vue";
 
@@ -50,20 +50,44 @@ export function useLoading<T extends unknown[], U>(
 }
 
 export function useUpdateUser(messages?: Parameters<typeof useLoading>[1]) {
-  return useLoading(
-    (user: User) =>
-      studioClient.mutation({
-        updateUser: {
-          __args: {
-            inbound: {
-              ...user,
-            },
-          },
-          user: {
-            __scalar: true,
-          },
+  return useLoading((user: User) => {
+    const {
+      username,
+      password,
+      email,
+      binName,
+      role,
+      firstName,
+      lastName,
+      displayName,
+      active,
+      uploadLimit,
+      intro,
+      id,
+    } = user;
+    const inbound: UpdateUserInput = {
+      username,
+      password,
+      email,
+      binName,
+      role,
+      firstName,
+      lastName,
+      displayName,
+      active,
+      uploadLimit,
+      intro,
+      id,
+    };
+    return studioClient.mutation({
+      updateUser: {
+        __args: {
+          inbound,
         },
-      }),
-    messages,
-  );
+        user: {
+          __scalar: true,
+        },
+      },
+    });
+  }, messages);
 }
