@@ -64,7 +64,7 @@ provide(IsAdmin, isAdmin);
           <user-outlined />
           <span>Profile</span>
         </a-menu-item>
-        <a-sub-menu key="admin">
+        <a-sub-menu key="admin" v-if="isAdmin">
           <template #icon>
             <key-outlined />
           </template>
