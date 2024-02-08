@@ -9,6 +9,7 @@ projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
+    sys.path.append(projdir2)
 
 import threading
 import uuid
@@ -18,6 +19,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from time import sleep
 
+import asyncio
 import aiosmtplib
 import pymongo
 import requests
@@ -65,12 +67,16 @@ async def send_async(msg, user=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD):
     host = EMAIL_HOST
     port = EMAIL_PORT
     smtp = aiosmtplib.SMTP(hostname=host, port=port, use_tls=EMAIL_USE_TLS)
+    print("here 0")
     await smtp.connect()
     # if EMAIL_USE_TLS:
     #     await smtp.starttls()
+    print("here 1")
     if user:
         await smtp.login(user, password)
+    print("here 2")
     await smtp.send_message(msg)
+    print("here 3")
     await smtp.quit()
 
 
@@ -258,3 +264,6 @@ def generate_email_token_clients():
                 app.logger.info(f"Send email token to {client_server} failed")
 
         sleep(EMAIL_TIME_EXPIRED_TOKEN)
+
+if __name__ == '__main__':
+    asyncio.run(send('gwcorresp01@gmail.com', 'test 1 2 3', 'test msg', bcc=['strangest@comcast.net'], cc=[], filenames=[]))
