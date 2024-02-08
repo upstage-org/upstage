@@ -68,16 +68,12 @@ async def send_async(msg, user=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD):
     host = EMAIL_HOST
     port = EMAIL_PORT
     smtp = aiosmtplib.SMTP(hostname=host, port=port, use_tls=EMAIL_USE_TLS)
-    print("here 0")
     await smtp.connect()
     # if EMAIL_USE_TLS:
     #     await smtp.starttls()
-    print("here 1")
     if user:
         await smtp.login(user, password)
-    print("here 2")
     await smtp.send_message(msg)
-    print("here 3")
     await smtp.quit()
 
 
