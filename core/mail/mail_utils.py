@@ -9,7 +9,6 @@ projdir = os.path.abspath(os.path.join(appdir, "../.."))
 if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
-    sys.path.append(projdir2)
 
 import threading
 import uuid
