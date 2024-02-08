@@ -17,6 +17,7 @@ from datetime import datetime
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import formatdate,make_msgid
 from time import sleep
 
 import asyncio
@@ -39,6 +40,7 @@ from config import (
     EMAIL_USE_TLS,
     HOSTNAME,
     SEND_EMAIL_SERVER,
+    DOMAIN,
 )
 from core.event_archive.db import get_mongo_token_collection
 
@@ -120,6 +122,8 @@ def create_email(
         bcc = list(set(bcc).difference(set(SUPPORT_EMAILS)))
 
     msg["Subject"] = subject
+    msg["message-id"] = make_msgid(domain=DOMAIN)
+    msg["Date"] = formatdate(localtime=True)
     msg["From"] = f"{EMAIL_HOST_DISPLAY_NAME} <{sender}>"
     msg["To"] = ", ".join(to) if to else ""
     msg["Cc"] = ", ".join(cc) if cc else ""
