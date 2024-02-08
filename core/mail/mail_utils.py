@@ -17,9 +17,9 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.utils import formatdate,make_msgid
-
 from time import sleep
 
+import asyncio
 import aiosmtplib
 import pymongo
 import requests
@@ -116,9 +116,9 @@ def create_email(
     if bcc and SUPPORT_EMAILS:
         bcc = list(set(bcc).difference(set(SUPPORT_EMAILS)))
 
+    msg["Subject"] = subject
     msg["message-id"] = make_msgid(domain=DOMAIN)
     msg["Date"] = formatdate(localtime=True)
-    msg["Subject"] = subject
     msg["From"] = f"{EMAIL_HOST_DISPLAY_NAME} <{sender}>"
     msg["To"] = ", ".join(to) if to else ""
     msg["Cc"] = ", ".join(cc) if cc else ""
@@ -263,3 +263,6 @@ def generate_email_token_clients():
                 app.logger.info(f"Send email token to {client_server} failed")
 
         sleep(EMAIL_TIME_EXPIRED_TOKEN)
+
+if __name__ == '__main__':
+    asyncio.run(send('gwcorresp01@gmail.com', 'test 1 2 3', 'test msg', bcc=['strangest@comcast.net'], cc=[], filenames=[]))
