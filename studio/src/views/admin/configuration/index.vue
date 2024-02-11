@@ -83,7 +83,7 @@ const systemConfigs = () =>
           name: "MANUAL",
           defaultValue: state.value.system.manual ?? "",
           async refresh() {
-            await settings.execute();
+            await settings.execute(0);
           },
         }),
         h(Entry, {

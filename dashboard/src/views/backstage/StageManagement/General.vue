@@ -59,10 +59,10 @@
             validatingURL
               ? 'fas fa-circle-notch fa-spin'
               : urlValid === true
-              ? 'fas fa-check'
-              : urlValid === false
-              ? 'fas fa-times'
-              : 'fas'
+                ? 'fas fa-check'
+                : urlValid === false
+                  ? 'fas fa-times'
+                  : 'fas'
           "
           :help="
             !form.fileLocation &&

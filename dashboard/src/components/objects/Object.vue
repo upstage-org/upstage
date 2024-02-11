@@ -53,8 +53,8 @@
               cursor: controlable
                 ? 'grab'
                 : object.link && object.link.url
-                ? 'pointer'
-                : 'normal',
+                  ? 'pointer'
+                  : 'normal',
             }"
             @dragstart.prevent
           >

@@ -3,7 +3,7 @@ import { LayoutSider, Menu, MenuItem, Spin, SubMenu } from "ant-design-vue";
 import { useRouter } from "vue-router";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 import { useUpdateProfile } from "state/auth";
-import { h } from "vue";
+import { h, computed } from "vue";
 import {
   PictureOutlined,
   CommentOutlined,
@@ -11,7 +11,6 @@ import {
   UserOutlined,
   SettingOutlined,
 } from "@ant-design/icons-vue";
-import { computed } from "vue";
 import configs from "config";
 import { useLoading } from "hooks/mutations";
 import { settings } from "state/settings";

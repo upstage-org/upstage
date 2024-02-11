@@ -287,7 +287,7 @@ export default {
     };
 
     const refresh = () => {
-      fetchMore();
+      fetchMore(0);
     };
     provide("refresh", refresh);
 
