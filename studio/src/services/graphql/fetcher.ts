@@ -59,7 +59,7 @@ export const genqlFetch = async (...params: Parameters<typeof fetch>) => {
           return fetch(...params);
         } catch (error) {
           message.error(
-            `Token expired, could not refresh your access token. Please login again!`,
+            `Token expired, could not refresh your access token. Please login again!`
           );
           return;
         }
@@ -71,6 +71,13 @@ export const genqlFetch = async (...params: Parameters<typeof fetch>) => {
       throw errorMessage;
     }
   } catch (error) {
-    message.error(`[Network error]: ${error}`);
+    if (typeof error === "string") {
+      throw error;
+    } else {
+      message.error(
+        "Unknown error! Please check the console log for more information."
+      );
+      console.error(error);
+    }
   }
 };

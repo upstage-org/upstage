@@ -19,8 +19,11 @@ export default {
   async setup(_, { slots }) {
     const router = useRouter();
 
-    const { whoami, updateProfile } = await useUpdateProfile();
-    const { loading: saving, proceed: save } = useLoading(updateProfile, {
+    const {
+      whoami,
+      updateProfile: save,
+      loading: saving,
+    } = await useUpdateProfile({
       loading: "Saving your profile...",
       success: () => "Your profile information saved successfully!",
     });
@@ -29,8 +32,8 @@ export default {
       () =>
         whoami.value &&
         [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-          whoami.value.role,
-        ),
+          whoami.value.role
+        )
     );
 
     return () => [
@@ -73,9 +76,9 @@ export default {
                               {
                                 onClick,
                               },
-                              () => [h(UserOutlined), h("span", "Profile")],
+                              () => [h(UserOutlined), h("span", "Profile")]
                             ),
-                        },
+                        }
                       )
                     : h("span"),
                 },
@@ -90,7 +93,7 @@ export default {
                               margin: 4,
                               background:
                                 router.currentRoute.value.path.startsWith(
-                                  "/admin",
+                                  "/admin"
                                 )
                                   ? router.currentRoute.value.meta.background
                                   : undefined,
@@ -105,24 +108,24 @@ export default {
                                 {
                                   key: "/admin/player",
                                 },
-                                () => "Player Management",
+                                () => "Player Management"
                               ),
                               h(
                                 MenuItem,
                                 {
-                                  key: "/legacy/backstage/admin/email-notification",
+                                  key: "/admin/email-notification",
                                 },
-                                () => "Email Notification",
+                                () => "Email Notification"
                               ),
                               h(
                                 MenuItem,
                                 {
                                   key: "/admin/configuration",
                                 },
-                                () => "Configuration",
+                                () => "Configuration"
                               ),
                             ],
-                          },
+                          }
                         ),
                       },
                     ]
@@ -135,7 +138,7 @@ export default {
                     open(
                       settings.state.value.system?.manual ??
                         "https://docs.upstage.live/",
-                      "_blank",
+                      "_blank"
                     ),
                 },
               ].map((item) =>
@@ -154,11 +157,11 @@ export default {
                               : undefined,
                         },
                       },
-                      () => [h(item.icon), h("span", item.label)],
-                    ),
-              ),
+                      () => [h(item.icon), h("span", item.label)]
+                    )
+              )
           ),
-        ],
+        ]
       ),
       slots.default?.(),
     ];
