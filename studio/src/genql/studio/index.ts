@@ -23,11 +23,11 @@ const typeMap = linkTypeMap(types as any);
 
 export interface Client {
   query<R extends QueryGenqlSelection>(
-    request: R & { __name?: string }
+    request: R & { __name?: string },
   ): Promise<FieldsSelection<Query, R>>;
 
   mutation<R extends MutationGenqlSelection>(
-    request: R & { __name?: string }
+    request: R & { __name?: string },
   ): Promise<FieldsSelection<Mutation, R>>;
 }
 
@@ -51,7 +51,7 @@ export type QueryResult<fields extends QueryGenqlSelection> = FieldsSelection<
   fields
 >;
 export const generateQueryOp: (
-  fields: QueryGenqlSelection & { __name?: string }
+  fields: QueryGenqlSelection & { __name?: string },
 ) => GraphqlOperation = function (fields) {
   return generateGraphqlOperation("query", typeMap.Query!, fields as any);
 };
@@ -59,7 +59,7 @@ export const generateQueryOp: (
 export type MutationResult<fields extends MutationGenqlSelection> =
   FieldsSelection<Mutation, fields>;
 export const generateMutationOp: (
-  fields: MutationGenqlSelection & { __name?: string }
+  fields: MutationGenqlSelection & { __name?: string },
 ) => GraphqlOperation = function (fields) {
   return generateGraphqlOperation("mutation", typeMap.Mutation!, fields as any);
 };

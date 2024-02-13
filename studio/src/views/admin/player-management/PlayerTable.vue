@@ -75,7 +75,7 @@ export default {
       },
       {
         adminPlayers: null,
-      }
+      },
     );
 
     watch(params, () => {
@@ -103,11 +103,11 @@ export default {
             Confirm,
             {
               title: `Are you sure you want to change ${displayName(
-                opt.record
+                opt.record,
               )}'s role?`,
               onConfirm: async ([value, selectedOption]: [
                 number,
-                DefaultOptionType
+                DefaultOptionType,
               ]) => {
                 await updateUser({
                   ...opt.record,
@@ -116,7 +116,7 @@ export default {
                 message.success(
                   `Successfully switch ${displayName(opt.record)}'s role to ${
                     (selectedOption as DefaultOptionType).label
-                  }!`
+                  }!`,
                 );
               },
             },
@@ -129,14 +129,14 @@ export default {
                     ([key, id]) => ({
                       value: id,
                       label: titleCase(key),
-                    })
+                    }),
                   ),
                   value: opt.text,
                   onChange: (value, selectedOption) => {
                     slotProps.confirm([value as number, selectedOption]);
                   },
                 }),
-            }
+            },
           );
         },
       },
@@ -210,7 +210,7 @@ export default {
               message.success(
                 `Account ${displayName(opt.record)} ${
                   value ? "activated" : "deactivated"
-                } successfully!`
+                } successfully!`,
               );
             },
           });
@@ -241,7 +241,7 @@ export default {
                   ...player,
                 });
                 message.success(
-                  `Successfully reset ${displayName(player)}'s password!`
+                  `Successfully reset ${displayName(player)}'s password!`,
                 );
               },
             }),
@@ -250,7 +250,7 @@ export default {
               onDone: async (player: User) => {
                 refresh();
                 message.success(
-                  `Successfully delete ${displayName(player)}'s account!`
+                  `Successfully delete ${displayName(player)}'s account!`,
                 );
               },
             }),
@@ -262,16 +262,16 @@ export default {
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
       _: any,
-      sorter: SorterResult<Media> | SorterResult<Media>[]
+      sorter: SorterResult<Media> | SorterResult<Media>[],
     ) => {
       const sort = (Array.isArray(sorter) ? sorter : [sorter])
         .sort(
           (a, b) =>
             (a.column?.sorter as any).multiple -
-            (b.column?.sorter as any).multiple
+            (b.column?.sorter as any).multiple,
         )
         .map(({ columnKey, order }) =>
-          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase()
+          `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
         );
       Object.assign(tableParams, {
         after:
@@ -318,7 +318,7 @@ export default {
                 : 0,
             } as Pagination,
           }),
-        ]
+        ],
       );
   },
 };

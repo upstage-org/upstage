@@ -14,15 +14,15 @@ const { state } = useAsyncState(
   }),
   {
     whoami: null,
-  }
+  },
 );
 
 const whoami = computed(() => state.value.whoami);
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
-    whoami.value?.role ?? 0
-  )
+    whoami.value?.role ?? 0,
+  ),
 );
 
 export function useWhoAmI() {
@@ -30,7 +30,7 @@ export function useWhoAmI() {
 }
 
 export async function useUpdateProfile(
-  messages?: Parameters<typeof useLoading>[1]
+  messages?: Parameters<typeof useLoading>[1],
 ) {
   const { proceed, loading } = useUpdateUser(messages);
   return {

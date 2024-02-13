@@ -26,7 +26,7 @@ export function useLoading<T extends unknown[], U>(
      * The response toast (not the loading toast) will auto dismiss after this amount of second. Pass `0` will make it permanent, leave it or pass in `undefined` will use the default value of 1.5 seconds.
      */
     seconds?: number;
-  }
+  },
 ) {
   const key = +new Date();
   const loading = ref(false);

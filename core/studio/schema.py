@@ -100,6 +100,7 @@ class Query(graphene.ObjectType):
         id=graphene.ID(),
         username_like=graphene.String(),
         created_between=graphene.List(graphene.Date),
+        role=graphene.Int(),
     )
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)
