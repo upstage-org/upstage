@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import Loading from "@/components/Loading";
 import { absolutePath } from "@/utils/common";

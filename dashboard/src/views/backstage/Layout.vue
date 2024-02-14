@@ -1,72 +1,4 @@
 <template>
-  <nav
-    v-if="notInIframe"
-    class="navbar"
-    role="navigation"
-    aria-label="main navigation"
-  >
-    <div :class="{ 'navbar-menu': true, 'is-active': expanded }">
-      <div class="navbar-start">
-        &nbsp;
-        <router-link class="navbar-item" to="/backstage/stages">
-          <span>
-            <i class="fas fa-person-booth"></i>
-            Stages
-          </span>
-        </router-link>
-        <template v-if="!isGuest">
-          <div class="vertical-divider" />
-          <a class="navbar-item" :href="configs.STUDIO_ENDPOINT">
-            <span>
-              <i class="fas fa-magic has-text-info"></i>
-              Studio
-            </span>
-          </a>
-        </template>
-        <div class="vertical-divider" />
-        <router-link class="navbar-item" to="/backstage/profile/">
-          <span>
-            <i class="fas fa-user"></i>
-            Profile
-          </span>
-        </router-link>
-        <template v-if="isAdmin">
-          <div class="vertical-divider" />
-          <router-link class="navbar-item" to="/backstage/admin/">
-            <span>
-              <i class="fas fa-shield-alt has-text-warning"></i>
-              Admin
-            </span>
-          </router-link>
-        </template>
-        <template v-if="manual">
-          <div class="vertical-divider" />
-          <a class="navbar-item" :href="manual" target="_blank">
-            <span>
-              <i class="fas fa-book has-text-success"></i>
-              Manual
-            </span>
-          </a>
-        </template>
-      </div>
-    </div>
-
-    <div class="navbar-brand">
-      <LanguageSelector />
-      <Logo />
-      <a
-        role="button"
-        class="navbar-burger"
-        aria-label="menu"
-        aria-expanded="false"
-        @click="toggleExpanded"
-      >
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
-    </div>
-  </nav>
   <div id="main-content">
     <router-view />
   </div>
@@ -75,14 +7,12 @@
 
 <script>
 import Footer from "@/components/Footer";
-import Logo from "@/components/Logo";
-import LanguageSelector from "@/components/LanguageSelector";
 import { useStore } from "vuex";
 import { computed, ref } from "vue";
 import configs from "@/config";
 
 export default {
-  components: { Footer, Logo, LanguageSelector },
+  components: { Footer },
   setup: () => {
     const store = useStore();
 
@@ -92,7 +22,6 @@ export default {
     const toggleExpanded = () => (expanded.value = !expanded.value);
 
     const manual = computed(() => store.getters["config/manual"] ?? "alo");
-    const notInIframe = computed(() => window.self === window.top);
 
     return {
       isAdmin,
@@ -101,7 +30,6 @@ export default {
       toggleExpanded,
       configs,
       manual,
-      notInIframe,
     };
   },
 };

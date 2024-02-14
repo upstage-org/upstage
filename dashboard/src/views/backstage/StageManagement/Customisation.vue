@@ -159,13 +159,13 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 import Selectable from "@/components/Selectable";
 import SaveButton from "@/components/form/SaveButton";
 import { useAttribute, useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";
-import { capitalize, inject } from "@vue/runtime-core";
+import { capitalize, inject } from "vue";
 import HorizontalField from "@/components/form/HorizontalField";
 import Dropdown from "@/components/form/Dropdown";
 import Switch from "@/components/form/Switch";

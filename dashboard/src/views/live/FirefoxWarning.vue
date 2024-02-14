@@ -63,7 +63,7 @@
 </template>
 
 <script>
-import { computed, onUnmounted, ref } from "@vue/runtime-core";
+import { computed, onUnmounted, ref } from "vue";
 import { useStore } from "vuex";
 import Icon from "@/components/Icon.vue";
 import Modal from "@/components/Modal.vue";

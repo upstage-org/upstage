@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { useDrawing } from "./Toolbox/tools/Draw/composable";
 import { useStore } from "vuex";
 export default {

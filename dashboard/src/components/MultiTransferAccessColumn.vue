@@ -55,8 +55,8 @@
 </template>
 
 <script>
-import { reactive } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { reactive } from "vue";
+import { watch } from "vue";
 import { includesIgnoreCase } from "@/utils/common";
 export default {
   props: {

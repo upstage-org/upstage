@@ -9,8 +9,8 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-import { watchEffect } from "@vue/runtime-core";
+import { ref } from "vue";
+import { watchEffect } from "vue";
 import Dropdown from "./Dropdown";
 import { titleCase } from "@/utils/common";
 

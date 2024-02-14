@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import moment from "moment";
 import { useStore } from "vuex";
 export default {

@@ -75,7 +75,7 @@
 import Icon from "@/components/Icon";
 import ColorPicker from "@/components/form/ColorPicker";
 import { useStore } from "vuex";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { notification } from "@/utils/notification";
 export default {
   components: { Icon, ColorPicker },

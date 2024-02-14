@@ -30,8 +30,8 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-import { computed, onMounted, onUnmounted, watch } from "@vue/runtime-core";
+import { ref } from "vue";
+import { computed, onMounted, onUnmounted, watch } from "vue";
 import Moveable from "moveable";
 import { useStore } from "vuex";
 import anime from "animejs";

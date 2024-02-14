@@ -86,7 +86,7 @@ import DataTable from "@/components/DataTable/index";
 import PlayerAudienceCounter from "./PlayerAudienceCounter";
 import RecordActions from "./RecordActions";
 import { displayName } from "@/utils/auth";
-import { computed, inject } from "@vue/runtime-core";
+import { computed, inject } from "vue";
 import { useStore } from "vuex";
 import Switch from "@/components/form/Switch.vue";
 import { stageGraph } from "@/services/graphql";

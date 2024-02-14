@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import anime from "animejs";
 import { useStore } from "vuex";
 export default {

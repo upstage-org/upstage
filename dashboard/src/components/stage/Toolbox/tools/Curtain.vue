@@ -26,7 +26,7 @@
 import { useStore } from "vuex";
 import Image from "@/components/Image";
 import Icon from "@/components/Icon";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import Skeleton from "../Skeleton.vue";
 
 export default {

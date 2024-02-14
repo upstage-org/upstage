@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, ref } from "@vue/runtime-core";
+import { defineEmits, ref } from "vue";
 import { imageExtensions } from "@/utils/constants";
 
 const emit = defineEmits(["change"]);

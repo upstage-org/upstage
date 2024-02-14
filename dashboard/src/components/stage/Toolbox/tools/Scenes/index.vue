@@ -16,7 +16,7 @@
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
 import Loading from "@/components/Loading";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import Scene from "./Scene";
 import BlankScene from "./BlankScene";
 

@@ -13,8 +13,8 @@
 </template>
 
 <script>
-import { computed, reactive } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { computed, reactive } from "vue";
+import { watch } from "vue";
 import { useStore } from "vuex";
 import Image from "../Image.vue";
 

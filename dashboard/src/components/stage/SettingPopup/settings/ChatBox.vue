@@ -10,7 +10,7 @@
 
 <script>
 import ChatInput from "@/components/form/ChatInput";
-import { ref } from "@vue/reactivity";
+import { ref } from "vue";
 import { useStore } from "vuex";
 export default {
   components: { ChatInput },

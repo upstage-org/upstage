@@ -53,7 +53,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import { notification } from "@/utils/notification";
 
