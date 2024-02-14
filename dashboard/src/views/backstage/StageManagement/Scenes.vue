@@ -24,7 +24,7 @@
 import DataTable from "@/components/DataTable";
 import Confirm from "@/components/Confirm";
 import Icon from "@/components/Icon";
-import { inject, ref } from "@vue/runtime-core";
+import { inject, ref } from "vue";
 import { displayName } from "@/utils/auth";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";

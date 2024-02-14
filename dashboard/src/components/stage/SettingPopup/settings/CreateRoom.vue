@@ -25,7 +25,7 @@
 import Field from "@/components/form/Field";
 import SaveButton from "@/components/form/SaveButton";
 import { useStore } from "vuex";
-import { reactive, computed } from "@vue/reactivity";
+import { reactive, computed } from "vue";
 import HorizontalField from "@/components/form/HorizontalField.vue";
 export default {
   components: { Field, SaveButton, HorizontalField },

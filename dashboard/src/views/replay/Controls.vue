@@ -103,7 +103,7 @@
 import Dropdown from "@/components/form/Dropdown";
 import Icon from "@/components/Icon";
 import Modal from "@/components/Modal";
-import { computed, ref } from "@vue/runtime-core";
+import { computed, ref } from "vue";
 import { useStore } from "vuex";
 import EventIndicator from "./EventIndicator.vue";
 import { useShortcut } from "@/components/stage/composable";

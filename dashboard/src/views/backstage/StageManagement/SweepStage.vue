@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { inject, ref } from "@vue/runtime-core";
+import { inject, ref } from "vue";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { notification } from "@/utils/notification";

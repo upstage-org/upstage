@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import Dropdown from "@/components/form/Dropdown";
 export default {
   props: {

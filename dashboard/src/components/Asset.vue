@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { absolutePath } from "@/utils/common";
 import LarixQRCode from "@/components/LarixQRCode";
 

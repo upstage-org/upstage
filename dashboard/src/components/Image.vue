@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import { computed, ref } from "@vue/reactivity";
-import { watch } from "@vue/runtime-core";
+import { computed, ref } from "vue";
+import { watch } from "vue";
 export default {
   props: {
     src: {

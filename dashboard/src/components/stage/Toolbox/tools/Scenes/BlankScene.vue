@@ -10,7 +10,7 @@
 <script>
 import Icon from "@/components/Icon";
 import { useStore } from "vuex";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 export default {
   components: { Icon },
   setup: () => {

@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { useStore } from "vuex";
 import Skeleton from "../Skeleton";
 import Icon from "@/components/Icon";

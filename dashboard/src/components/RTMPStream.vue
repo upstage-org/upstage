@@ -4,7 +4,7 @@
 </template>
 
 <script>
-import { computed, ref, onMounted } from "@vue/runtime-core";
+import { computed, ref, onMounted } from "vue";
 import { getSubsribeLink } from "@/utils/streaming";
 import { useFlv } from "./objects/Streamer/composable";
 export default {

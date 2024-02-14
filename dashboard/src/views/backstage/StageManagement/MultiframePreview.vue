@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import Image from "@/components/Image";
 import Icon from "@/components/Icon";
 import { absolutePath } from "@/utils/common";

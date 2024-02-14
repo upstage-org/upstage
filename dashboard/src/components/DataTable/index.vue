@@ -86,7 +86,7 @@
 <script>
 import { useQuery } from "@/services/graphql/composable";
 import Loading from "@/components/Loading";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import moment from "moment";
 import Pagination from "./Pagination.vue";
 

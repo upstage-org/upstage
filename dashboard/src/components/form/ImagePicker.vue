@@ -14,11 +14,6 @@
       $t("choose_an_existing_image_or_upload_new")
     }}</template>
     <template #content="{ closeModal }">
-      <div class="columns is-multiline">
-        <div class="colum px-3 pt-1">
-          <MediaUpload />
-        </div>
-      </div>
       <Loading v-if="loading" />
       <div v-else class="columns is-multiline">
         <div class="column is-12">
@@ -88,14 +83,13 @@ import Loading from "@/components/Loading";
 import Asset from "@/components/Asset";
 import { stageGraph } from "@/services/graphql";
 import { useQuery } from "@/services/graphql/composable";
-import MediaUpload from "@/views/backstage/Media/MediaUpload";
-import { computed, provide, reactive } from "@vue/runtime-core";
+import { computed, provide, reactive } from "vue";
 import Dropdown from "./Dropdown";
 import { displayName } from "@/utils/auth";
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue"],
-  components: { Modal, Loading, Asset, MediaUpload, Dropdown },
+  components: { Modal, Loading, Asset, Dropdown },
   setup: (props, { emit }) => {
     const {
       loading,

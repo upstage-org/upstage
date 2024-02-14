@@ -14,7 +14,7 @@ import NavBar from "@/components/NavBar";
 import OneTimePurchase from "@/components/payment/OneTimePurchase";
 import PurchasePopup from "@/components/payment/PurchasePopup";
 import { useStore } from "vuex";
-import { ref, watchEffect } from "@vue/runtime-core";
+import { ref, watchEffect } from "vue";
 export default {
   components: { NavBar, Footer, OneTimePurchase, PurchasePopup },
   setup: () => {

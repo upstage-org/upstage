@@ -88,11 +88,11 @@
 import Confirm from "@/components/Confirm.vue";
 import Loading from "@/components/Loading.vue";
 import Field from "@/components/form/Field.vue";
-import { reactive, ref } from "@vue/reactivity";
+import { reactive, ref } from "vue";
 import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import Icon from "@/components/Icon.vue";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import humanizeDuration from "humanize-duration";
 import moment from "moment";
 import { useStore } from "vuex";
@@ -139,6 +139,7 @@ export default {
         );
         return `${name} - ${duration}`;
       }
+      return "";
     });
 
     const { loading: deleting, save: deleteMutation } = useMutation(

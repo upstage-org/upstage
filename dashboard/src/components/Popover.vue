@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { ref } from "vue";
 import anime from "animejs";
 export default {
   setup: () => {

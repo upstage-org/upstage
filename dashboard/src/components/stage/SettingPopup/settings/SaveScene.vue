@@ -18,7 +18,7 @@ import { useMutation } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import { takeSnapshotFromStage } from "@/store/modules/stage/reusable";
 import { useStore } from "vuex";
-import { reactive } from "@vue/reactivity";
+import { reactive } from "vue";
 import { notification } from "@/utils/notification";
 export default {
   components: { Field, SaveButton },

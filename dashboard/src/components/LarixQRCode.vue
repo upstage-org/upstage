@@ -1,6 +1,6 @@
 <script setup>
 import { getLarixLink } from "@/utils/streaming";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 import QRCode from "./QRCode.vue";
 import { defineProps } from "vue";
 

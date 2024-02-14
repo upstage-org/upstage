@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { useDrawing } from "./composable";
 export default {
   props: ["drawing"],
