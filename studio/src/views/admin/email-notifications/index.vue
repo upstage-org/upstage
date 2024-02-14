@@ -96,7 +96,10 @@ const reset = () => {
   receiverEmails.value = [];
   subject.value = "";
   body.value = INITIAL_BODY_CONTENT;
+  successMessage.value = "";
 };
+
+const successMessage = ref("");
 
 const { proceed, loading } = useLoading(
   async () => {
@@ -129,24 +132,34 @@ const { proceed, loading } = useLoading(
         success: true,
       },
     });
-    setTimeout(() => {
-      reset();
-    }, 0);
+    successMessage.value = `Email has been successfully sent to ${receiverEmails.value
+      .map((email) =>
+        bccEmails.value.includes(email) ? `${email} (BCC)` : email,
+      )
+      .join(", ")}!`;
   },
   {
-    loading: "Sending email...",
-    success: () =>
-      `Email has been successfully sent to ${receiverEmails.value
-        .map((email) =>
-          bccEmails.value.includes(email) ? `${email} (BCC)` : email,
-        )
-        .join(", ")}!`,
+    loading: "Email sending...",
+    success: () => `Email sent! ✈️`,
   },
 );
 </script>
 
 <template>
-  <Layout class="bg-white rounded-lg overflow-y-auto">
+  <Layout
+    v-if="successMessage"
+    class="bg-white rounded-lg overflow-y-auto justify-center"
+  >
+    <AResult
+      status="success"
+      title="Email notification sent"
+      class="text-center"
+      :sub-title="successMessage"
+    >
+      <AButton class="m-auto" @click="reset()">Send another email</AButton>
+    </AResult>
+  </Layout>
+  <Layout v-else class="bg-white rounded-lg overflow-y-auto">
     <div
       class="bg-white shadow rounded-tl rounded-tr p-2 px-4 sticky top-0 z-50 mb-6 flex justify-between items-center"
     >
