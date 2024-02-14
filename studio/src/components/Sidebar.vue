@@ -19,8 +19,11 @@ export default {
   async setup(_, { slots }) {
     const router = useRouter();
 
-    const { whoami, updateProfile } = await useUpdateProfile();
-    const { loading: saving, proceed: save } = useLoading(updateProfile, {
+    const {
+      whoami,
+      updateProfile: save,
+      loading: saving,
+    } = await useUpdateProfile({
       loading: "Saving your profile...",
       success: () => "Your profile information saved successfully!",
     });
@@ -110,7 +113,7 @@ export default {
                               h(
                                 MenuItem,
                                 {
-                                  key: "/legacy/backstage/admin/email-notification",
+                                  key: "/admin/email-notification",
                                 },
                                 () => "Email Notification",
                               ),

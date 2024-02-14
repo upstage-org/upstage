@@ -8,7 +8,7 @@ type Query {
   users(active: Boolean, sort: [UserSortEnum], before: String, after: String, first: Int, last: Int): UserConnection
   media(id: ID, nameLike: String, createdBetween: [Date], fileLocation: String, mediaTypes: [String], owners: [String], stages: [Int], tags: [String], sort: [AssetSortEnum], before: String, after: String, first: Int, last: Int): AssetConnection
   stages(id: ID, nameLike: String, createdBetween: [Date], fileLocation: String, owners: [String], sort: [StageSortEnum], before: String, after: String, first: Int, last: Int): StageConnection
-  adminPlayers(id: ID, usernameLike: String, createdBetween: [Date], sort: [AdminPlayerSortEnum], before: String, after: String, first: Int, last: Int): AdminPlayerConnection
+  adminPlayers(id: ID, usernameLike: String, createdBetween: [Date], role: Int, sort: [AdminPlayerSortEnum], before: String, after: String, first: Int, last: Int): AdminPlayerConnection
 
   """Logged in user info"""
   whoami: User
@@ -595,6 +595,21 @@ type Mutation {
 
   """Mutation to create a user."""
   batchUserCreation(stageIds: [Int], users: [BatchUserInput]!): BatchUserCreation
+
+  """Mutation to customise foyer."""
+  sendEmail(
+    """The bcc recipients of the email. Comma separated."""
+    bcc: String
+
+    """The body of the email. HTML is allowed."""
+    body: String!
+
+    """The recipients of the email. Comma separated."""
+    recipients: String!
+
+    """The subject of the email."""
+    subject: String!
+  ): SendEmail
 }
 
 """Mutation to assign stages to a media."""
@@ -847,4 +862,10 @@ input BatchUserInput {
   username: String!
   email: String!
   password: String!
+}
+
+"""Mutation to customise foyer."""
+type SendEmail {
+  """True if the config was saved."""
+  success: Boolean
 }

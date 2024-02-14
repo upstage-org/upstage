@@ -1,6 +1,6 @@
 import configs from "config";
 import { computed } from "vue";
-import { useUpdateUser } from "../hooks/mutations";
+import { useLoading, useUpdateUser } from "../hooks/mutations";
 import { message } from "ant-design-vue";
 import { studioClient } from "services/graphql";
 import { useAsyncState } from "@vueuse/core";
@@ -29,17 +29,19 @@ export function useWhoAmI() {
   return { whoami, isAdmin };
 }
 
-export async function useUpdateProfile() {
-  const { proceed } = useUpdateUser();
+export async function useUpdateProfile(
+  messages?: Parameters<typeof useLoading>[1],
+) {
+  const { proceed, loading } = useUpdateUser(messages);
   return {
     whoami,
     updateProfile: async (player: User) => {
       const res = await proceed({
         ...player,
       });
-      message.success(`Successfully update your profile!`);
       return res;
     },
+    loading,
   };
 }
 

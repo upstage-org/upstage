@@ -184,7 +184,7 @@ export default defineComponent({
             ]),
             h("div", { class: "whitespace-pre" }, [
               h(PictureOutlined),
-              ` To insert an image, follow these steps:\n1. Copy the content link of the image to the clipboard.\n2. Press Ctrl+V to embed the image at the cursor caret.`,
+              ` To insert an image, follow these steps:\n1. Copy the content of the image (not the link of it) to the clipboard.\n2. Press Ctrl+V to embed the image at the cursor caret.`,
             ]),
           ]),
       ),

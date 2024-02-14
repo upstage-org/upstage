@@ -14,6 +14,7 @@ declare module "vue" {
     AButton: (typeof import("ant-design-vue/es"))["Button"];
     ACol: (typeof import("ant-design-vue/es"))["Col"];
     AConfigProvider: (typeof import("ant-design-vue/es"))["ConfigProvider"];
+    AddOutlined: (typeof import("@ant-design/icons-vue"))["AddOutlined"];
     ADivider: (typeof import("ant-design-vue/es"))["Divider"];
     ADrawer: (typeof import("ant-design-vue/es"))["Drawer"];
     ADropdown: (typeof import("ant-design-vue/es"))["Dropdown"];
@@ -24,6 +25,7 @@ declare module "vue" {
     AInputGroup: (typeof import("ant-design-vue/es"))["InputGroup"];
     AInputSearch: (typeof import("ant-design-vue/es"))["InputSearch"];
     ALayout: (typeof import("ant-design-vue/es"))["Layout"];
+    ALayoutHeader: (typeof import("ant-design-vue/es"))["LayoutHeader"];
     AList: (typeof import("ant-design-vue/es"))["List"];
     AListItem: (typeof import("ant-design-vue/es"))["ListItem"];
     AListItemMeta: (typeof import("ant-design-vue/es"))["ListItemMeta"];
@@ -38,6 +40,7 @@ declare module "vue" {
     ARow: (typeof import("ant-design-vue/es"))["Row"];
     ASelect: (typeof import("ant-design-vue/es"))["Select"];
     ASelectOption: (typeof import("ant-design-vue/es"))["SelectOption"];
+    ASkeleton: (typeof import("ant-design-vue/es"))["Skeleton"];
     ASlider: (typeof import("ant-design-vue/es"))["Slider"];
     ASpace: (typeof import("ant-design-vue/es"))["Space"];
     ASpin: (typeof import("ant-design-vue/es"))["Spin"];

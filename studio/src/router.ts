@@ -39,7 +39,7 @@ export const router = createRouter({
       children: [
         { path: "player", component: PlayerManagement },
         { path: "configuration/:section?", component: Configuration },
-        { path: "email-notifications", component: EmailNotifications },
+        { path: "email-notification", component: EmailNotifications },
       ],
     },
     {
