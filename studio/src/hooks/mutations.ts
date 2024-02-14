@@ -36,7 +36,7 @@ export function useLoading<T extends unknown[], U>(
     proceed: async (...params: Parameters<typeof operation>) => {
       loading.value = true;
       if (messages) {
-        message.loading({ content: messages.loading, key });
+        message.loading({ content: messages.loading, key, duration: 0 });
       }
       try {
         const result = await operation(...params);

@@ -162,11 +162,11 @@ export default defineComponent({
                     size: "small",
                     type: item.isActive?.() ? "primary" : "default",
                   },
-                  () => item.icon
-                )
-              )
-          )
-        )
+                  () => item.icon,
+                ),
+              ),
+          ),
+        ),
       ),
       h(
         Modal,
@@ -186,7 +186,7 @@ export default defineComponent({
               h(PictureOutlined),
               ` To insert an image, follow these steps:\n1. Copy the content of the image (not the link of it) to the clipboard.\n2. Press Ctrl+V to embed the image at the cursor caret.`,
             ]),
-          ])
+          ]),
       ),
     ];
   },

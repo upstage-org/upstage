@@ -84,7 +84,7 @@ export function displayName(
   user: Pick<
     User | LegacyUser,
     "displayName" | "firstName" | "lastName" | "username"
-  >
+  >,
 ) {
   if (user.displayName?.trim()) return user.displayName;
   if (user.firstName || user.lastName)

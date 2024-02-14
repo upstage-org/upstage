@@ -20,6 +20,7 @@ import { AdminPlayerSortEnum, User } from "genql/studio";
 import { computed } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
+import configs from "config";
 
 interface Pagination {
   current: number;
@@ -82,13 +83,6 @@ export default {
       refresh();
     });
 
-    const SWITCHABLE_ROLES = {
-      GUEST: 4,
-      PLAYER: 1,
-      ADMIN: 8,
-      SUPER_ADMIN: 32,
-    };
-
     const columns: ColumnType<User>[] = [
       {
         title: t("role"),
@@ -125,12 +119,10 @@ export default {
                 confirm: (payload: [number, DefaultOptionType]) => void;
               }) =>
                 h(Select, {
-                  options: Object.entries(SWITCHABLE_ROLES).map(
-                    ([key, id]) => ({
-                      value: id,
-                      label: titleCase(key),
-                    }),
-                  ),
+                  options: Object.entries(configs.ROLES).map(([key, id]) => ({
+                    value: id,
+                    label: titleCase(key),
+                  })),
                   value: opt.text,
                   onChange: (value, selectedOption) => {
                     slotProps.confirm([value as number, selectedOption]);

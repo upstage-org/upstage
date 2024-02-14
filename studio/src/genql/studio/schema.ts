@@ -527,6 +527,8 @@ export interface Mutation {
   deleteUser: DeleteUser | null;
   /** Mutation to create a user. */
   batchUserCreation: BatchUserCreation | null;
+  /** Mutation to customise foyer. */
+  sendEmail: SendEmail | null;
   __typename: "Mutation";
 }
 
@@ -628,6 +630,13 @@ export interface BatchUserCreation {
   __typename: "BatchUserCreation";
 }
 
+/** Mutation to customise foyer. */
+export interface SendEmail {
+  /** True if the config was saved. */
+  success: Scalars["Boolean"] | null;
+  __typename: "SendEmail";
+}
+
 export interface QueryGenqlSelection {
   node?: NodeGenqlSelection & {
     __args: {
@@ -699,6 +708,7 @@ export interface QueryGenqlSelection {
       id?: Scalars["ID"] | null;
       usernameLike?: Scalars["String"] | null;
       createdBetween?: (Scalars["Date"] | null)[] | null;
+      role?: Scalars["Int"] | null;
       sort?: (AdminPlayerSortEnum | null)[] | null;
       before?: Scalars["String"] | null;
       after?: Scalars["String"] | null;
@@ -1154,6 +1164,19 @@ export interface MutationGenqlSelection {
       users: (BatchUserInput | null)[];
     };
   };
+  /** Mutation to customise foyer. */
+  sendEmail?: SendEmailGenqlSelection & {
+    __args: {
+      /** The bcc recipients of the email. Comma separated. */
+      bcc?: Scalars["String"] | null;
+      /** The body of the email. HTML is allowed. */
+      body: Scalars["String"];
+      /** The recipients of the email. Comma separated. */
+      recipients: Scalars["String"];
+      /** The subject of the email. */
+      subject: Scalars["String"];
+    };
+  };
   __typename?: boolean | number;
   __scalar?: boolean | number;
 }
@@ -1388,6 +1411,14 @@ export interface BatchUserInput {
   username: Scalars["String"];
   email: Scalars["String"];
   password: Scalars["String"];
+}
+
+/** Mutation to customise foyer. */
+export interface SendEmailGenqlSelection {
+  /** True if the config was saved. */
+  success?: boolean | number;
+  __typename?: boolean | number;
+  __scalar?: boolean | number;
 }
 
 const Query_possibleTypes: string[] = ["Query"];
@@ -1756,6 +1787,15 @@ export const isBatchUserCreation = (
   if (!obj?.__typename)
     throw new Error('__typename is missing in "isBatchUserCreation"');
   return BatchUserCreation_possibleTypes.includes(obj.__typename);
+};
+
+const SendEmail_possibleTypes: string[] = ["SendEmail"];
+export const isSendEmail = (
+  obj?: { __typename?: any } | null,
+): obj is SendEmail => {
+  if (!obj?.__typename)
+    throw new Error('__typename is missing in "isSendEmail"');
+  return SendEmail_possibleTypes.includes(obj.__typename);
 };
 
 export const enumAssetTypeSortEnum = {

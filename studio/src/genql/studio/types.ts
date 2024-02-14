@@ -78,6 +78,7 @@ export default {
           id: [2],
           usernameLike: [6],
           createdBetween: [27, "[Date]"],
+          role: [10],
           sort: [37, "[AdminPlayerSortEnum]"],
           before: [6],
           after: [6],
@@ -422,6 +423,15 @@ export default {
           users: [62, "[BatchUserInput]!"],
         },
       ],
+      sendEmail: [
+        63,
+        {
+          bcc: [6],
+          body: [6, "String!"],
+          recipients: [6, "String!"],
+          subject: [6, "String!"],
+        },
+      ],
       __typename: [6],
     },
     CalcSizes: {
@@ -552,6 +562,10 @@ export default {
       username: [6],
       email: [6],
       password: [6],
+      __typename: [6],
+    },
+    SendEmail: {
+      success: [5],
       __typename: [6],
     },
   },
