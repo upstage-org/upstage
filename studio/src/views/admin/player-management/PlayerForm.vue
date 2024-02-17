@@ -28,7 +28,7 @@ export default {
       required: true,
     },
     onSave: {
-      type: Function as PropType<(player: User) => Promise<void>>,
+      type: Function as PropType<(player: User) => unknown>,
       required: false,
     },
     saving: Boolean,
@@ -140,7 +140,8 @@ export default {
                 () => [
                   h(Input, {
                     value: values.email ?? "",
-                    "onUpdate:value": (value: string) => (values.email = value),
+                    "onUpdate:value": (value: string) =>
+                      (values.email = value.trim()),
                   }),
                 ],
               ),
