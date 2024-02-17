@@ -19,14 +19,7 @@ export default {
   async setup(_, { slots }) {
     const router = useRouter();
 
-    const {
-      whoami,
-      updateProfile: save,
-      loading: saving,
-    } = await useUpdateProfile({
-      loading: "Saving your profile...",
-      success: () => "Your profile information saved successfully!",
-    });
+    const { whoami, updateProfile: save, loading: saving } = useUpdateProfile();
 
     const isAdmin = computed(
       () =>

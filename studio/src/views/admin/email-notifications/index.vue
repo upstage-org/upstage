@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { CloseCircleFilled, MailOutlined } from "@ant-design/icons-vue";
 import { useAsyncState } from "@vueuse/core";
 import { Layout, message } from "ant-design-vue";
 import { TransferItem } from "ant-design-vue/lib/transfer";
@@ -109,14 +110,15 @@ const { proceed, loading } = useLoading(
     if (!body.value) {
       throw "Please provide a body for your email";
     }
-    if (!receiverEmails.value.length) {
-      throw "Please select at least one recipient";
-    }
-    receiverEmails.value = receiverEmails.value.filter((email) =>
+    const visibleReceivers = receiverEmails.value.filter((email) =>
       receivers.value.adminPlayers?.edges.some(
         (edge) => edge?.node?.email === email,
       ),
     );
+    if (!visibleReceivers.length) {
+      throw "Please select at least one recipient";
+    }
+    receiverEmails.value = visibleReceivers;
     await studioClient.mutation({
       sendEmail: {
         __args: {
@@ -163,101 +165,113 @@ const { proceed, loading } = useLoading(
     <div
       class="bg-white shadow rounded-tl rounded-tr p-2 px-4 sticky top-0 z-50 mb-6 flex justify-between items-center"
     >
-      <h3 class="mb-0">Email Notification</h3>
+      <a-tag color="#007011"> <MailOutlined /> Email Notification </a-tag>
       <a-button type="primary" @click="proceed" :loading="loading">
         <send-outlined />
         Send
       </a-button>
     </div>
-    <a-form-item
-      :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
-      :colon="false"
-    >
-      <template #label>
-        <a-space direction="vertical">
-          {{ t("to") }}
-          <a-select
-            allow-clear
-            placeholder="Filter by role"
-            :options="
-              Object.entries(configs.ROLES).map(([key, id]) => ({
-                value: id,
-                label: titleCase(key),
-              }))
+    <div class="px-4">
+      From the list on the left, select the player or players that you want to
+      email and click the arrow to move them to the recipient list.<br />
+      If you want to email a specific group, e.g. all Admins, use the dropdown
+      menu on the left to filter the player list by role. To send to multiple
+      role groups, use the dropdown again to select the next role, and transfer
+      the desired players to the recipient list. Then clear the filter by
+      hovering over the arrow in the dropdown, which will change to an
+      <CloseCircleFilled />. Once the filter is cleared, all the players you
+      have selected will show in the recipient list.
+      <ADivider />
+      <a-form-item
+        :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
+        :colon="false"
+      >
+        <template #label>
+          <a-space direction="vertical">
+            {{ t("to") }}
+            <a-select
+              allow-clear
+              placeholder="Filter by role"
+              :options="
+                Object.entries(configs.ROLES).map(([key, id]) => ({
+                  value: id,
+                  label: titleCase(key),
+                }))
+              "
+              v-model:value="filterRole"
+            />
+            <a-button type="dashed" @click="addCustomRecipient">
+              <plus-circle-outlined />
+              Custom recipient
+            </a-button>
+          </a-space>
+        </template>
+        <a-spin :spinning="!isReady">
+          <a-transfer
+            :locale="{
+              itemUnit: 'recipient',
+              itemsUnit: 'recipients',
+              notFoundContent: '',
+              searchPlaceholder: 'Search by email or name',
+            }"
+            :list-style="{
+              flex: '1',
+              height: '300px',
+            }"
+            :titles="[' available', ' selected']"
+            v-model:target-keys="receiverEmails"
+            :data-source="dataSource"
+            show-search
+            :filter-option="
+              (keyword, option) =>
+                option.title?.toLowerCase().includes(keyword.toLowerCase()) ??
+                false
             "
-            v-model:value="filterRole"
-          />
-          <a-button type="dashed" @click="addCustomRecipient">
-            <plus-circle-outlined />
-            Custom recipient
-          </a-button>
-        </a-space>
-      </template>
-      <a-spin :spinning="!isReady">
-        <a-transfer
-          :locale="{
-            itemUnit: 'recipient',
-            itemsUnit: 'recipients',
-            notFoundContent: '',
-            searchPlaceholder: 'Search by email or name',
-          }"
-          :list-style="{
-            flex: '1',
-            height: '300px',
-          }"
-          :titles="[' available', ' selected']"
-          v-model:target-keys="receiverEmails"
-          :data-source="dataSource"
-          show-search
-          :filter-option="
-            (keyword, option) =>
-              option.title?.toLowerCase().includes(keyword.toLowerCase()) ??
-              false
-          "
-        >
-          <template #render="{ key, title }">
-            <a-space class="flex justify-between">
-              <span>
-                {{ title }}
-                <a-tag v-if="!title?.includes('<')">Custom recipient</a-tag>
-              </span>
-              <a-switch
-                size="small"
-                :checked="bccEmails.includes(key as string)"
-                @change="
-                  (checked, e) => {
-                    bccEmails = bccEmails
-                      .filter((email) => email !== key)
-                      .concat(checked ? (key as string) : []);
-                    e.stopPropagation();
-                  }
-                "
-              >
-                <template #checkedChildren>
-                  <span class="text-[8px] leading-none">BCC</span>
-                </template>
-                <template #unCheckedChildren>
-                  <span class="text-[8px] leading-none">BCC</span>
-                </template>
-              </a-switch>
-            </a-space>
-          </template>
-        </a-transfer>
-      </a-spin>
-    </a-form-item>
-    <a-form-item
-      label="Subject"
-      :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
-      :colon="false"
-    >
-      <a-input v-model:value="subject" />
-    </a-form-item>
-    <a-form-item
-      label="Body"
-      :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
-      :colon="false"
-    >
-      <RichTextEditor v-model="body" @click="console.log(body)" />
-    </a-form-item>
+          >
+            <template #render="{ key, title }">
+              <a-space class="flex justify-between">
+                <span>
+                  {{ title }}
+                  <a-tag v-if="!title?.includes('<')">Custom recipient</a-tag>
+                </span>
+                <a-switch
+                  size="small"
+                  :checked="bccEmails.includes(key as string)"
+                  @change="
+                    (checked, e) => {
+                      bccEmails = bccEmails
+                        .filter((email) => email !== key)
+                        .concat(checked ? (key as string) : []);
+                      e.stopPropagation();
+                    }
+                  "
+                >
+                  <template #checkedChildren>
+                    <span class="text-[8px] leading-none">BCC</span>
+                  </template>
+                  <template #unCheckedChildren>
+                    <span class="text-[8px] leading-none">BCC</span>
+                  </template>
+                </a-switch>
+              </a-space>
+            </template>
+          </a-transfer>
+        </a-spin>
+      </a-form-item>
+      <a-form-item
+        label="Subject"
+        :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
+        :colon="false"
+      >
+        <a-input v-model:value="subject" />
+      </a-form-item>
+      <a-form-item
+        label="Body"
+        :label-col="{ xl: { span: 4 }, xxl: { span: 3 } }"
+        :colon="false"
+      >
+        <RichTextEditor v-model="body" @click="console.log(body)" />
+      </a-form-item>
+    </div>
   </Layout>
 </template>

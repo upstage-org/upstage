@@ -1,23 +1,27 @@
 import configs from "config";
 import { computed } from "vue";
-import { useLoading, useUpdateUser } from "../hooks/mutations";
-import { message } from "ant-design-vue";
+import { useUpdateUser } from "../hooks/mutations";
 import { studioClient } from "services/graphql";
 import { useAsyncState } from "@vueuse/core";
 import { User } from "genql/studio";
 
-const { state } = useAsyncState(
-  studioClient.query({
-    whoami: {
-      __scalar: true,
-    },
-  }),
+const { state, execute } = useAsyncState(
+  () =>
+    studioClient.query({
+      whoami: {
+        __scalar: true,
+      },
+    }),
   {
     whoami: null,
   },
+  {
+    resetOnExecute: false,
+  },
 );
 
-const whoami = computed(() => state.value.whoami);
+export const whoami = computed(() => state.value.whoami);
+export const refreshWhoami = () => execute(0);
 
 const isAdmin = computed(() =>
   [configs.ROLES.ADMIN, configs.ROLES.SUPER_ADMIN].includes(
@@ -29,10 +33,14 @@ export function useWhoAmI() {
   return { whoami, isAdmin };
 }
 
-export async function useUpdateProfile(
-  messages?: Parameters<typeof useLoading>[1],
-) {
-  const { proceed, loading } = useUpdateUser(messages);
+export function useUpdateProfile() {
+  const { proceed, loading } = useUpdateUser({
+    loading: "Saving your profile...",
+    success: () => {
+      refreshWhoami();
+      return "Your profile information saved successfully!";
+    },
+  });
   return {
     whoami,
     updateProfile: async (player: User) => {
