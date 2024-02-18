@@ -23,7 +23,7 @@ const INITIAL_BODY_CONTENT = `<h1>Title</h1><p>Dear UpStage Users,</p><p>Thank y
 const body = ref(INITIAL_BODY_CONTENT);
 
 const receiverEmails = ref<string[]>([]);
-const bccEmails = ref<string[]>([]);
+const directToEmails = ref<string[]>([]);
 
 const customRecipients = ref<string[]>([]);
 
@@ -125,10 +125,10 @@ const { proceed, loading } = useLoading(
           subject: subject.value,
           body: body.value,
           recipients: receiverEmails.value
-            .filter((email) => !bccEmails.value.includes(email))
+            .filter((email) => directToEmails.value.includes(email))
             .join(","),
           bcc: receiverEmails.value
-            .filter((email) => bccEmails.value.includes(email))
+            .filter((email) => !directToEmails.value.includes(email))
             .join(","),
         },
         success: true,
@@ -136,7 +136,7 @@ const { proceed, loading } = useLoading(
     });
     successMessage.value = `Email has been successfully sent to ${receiverEmails.value
       .map((email) =>
-        bccEmails.value.includes(email) ? `${email} (BCC)` : email,
+        directToEmails.value.includes(email) ? email : `${email} (BCC)`,
       )
       .join(", ")}!`;
   },
@@ -236,12 +236,12 @@ const { proceed, loading } = useLoading(
                 </span>
                 <a-switch
                   size="small"
-                  :checked="bccEmails.includes(key as string)"
+                  :checked="!directToEmails.includes(key as string)"
                   @change="
                     (checked, e) => {
-                      bccEmails = bccEmails
+                      directToEmails = directToEmails
                         .filter((email) => email !== key)
-                        .concat(checked ? (key as string) : []);
+                        .concat(checked ? [] : (key as string));
                       e.stopPropagation();
                     }
                   "
