@@ -64,7 +64,7 @@ export function useLoading<T extends unknown[], U>(
 }
 
 export function useUpdateUser(messages?: Parameters<typeof useLoading>[1]) {
-  return useLoading((user: User) => {
+  return useLoading((user: User, includingPassword?: boolean) => {
     const {
       username,
       password,
@@ -81,7 +81,6 @@ export function useUpdateUser(messages?: Parameters<typeof useLoading>[1]) {
     } = user;
     const inbound: UpdateUserInput = {
       username,
-      password,
       email,
       binName,
       role,
@@ -93,6 +92,9 @@ export function useUpdateUser(messages?: Parameters<typeof useLoading>[1]) {
       intro,
       id,
     };
+    if (includingPassword) {
+      inbound.password = password;
+    }
     return studioClient.mutation({
       updateUser: {
         __args: {

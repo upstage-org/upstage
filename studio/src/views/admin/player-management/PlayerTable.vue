@@ -224,14 +224,18 @@ export default {
                 });
               },
               disabledIntroduction: true,
+              noPasswordChange: true,
             }),
             h(ChangePassword, {
               player: opt.record,
               saving: savingUser,
               onSave: async (player: User) => {
-                await updateUser({
-                  ...player,
-                });
+                await updateUser(
+                  {
+                    ...player,
+                  },
+                  true,
+                );
                 message.success(
                   `Successfully reset ${displayName(player)}'s password!`,
                 );

@@ -131,10 +131,11 @@ class UpdateUser(graphene.Mutation):
                     .filter(UserModel.id == data["id"])
                     .first()
                 )
-                if data["password"]:
-                    data["password"] = encrypt(data["password"])
-                else:
-                    del data["password"]
+                if "password" in data:
+                    if data["password"]:
+                        data["password"] = encrypt(data["password"])
+                    else:
+                        del data["password"]
                 for key, value in data.items():
                     if key == "active":
                         if value and not user.active and not user.deactivated_on:
@@ -156,7 +157,7 @@ class UpdateUser(graphene.Mutation):
                     )
                 app.logger.error(e)
                 raise Exception(
-                    f"There was an error updating this user information. Please check the logs and try again later.!"
+                    f"There was an error updating this user information. Please check the logs and try again later!"
                 )
 
         user = DBSession.query(UserModel).filter(UserModel.id == data["id"]).first()
@@ -165,7 +166,6 @@ class UpdateUser(graphene.Mutation):
 
 class ChangePasswordInput(
     graphene.InputObjectType,
-    UserAttribute,
 ):
     """Arguments to update a user."""
 

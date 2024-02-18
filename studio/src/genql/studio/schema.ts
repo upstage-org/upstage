@@ -529,6 +529,7 @@ export interface Mutation {
   batchUserCreation: BatchUserCreation | null;
   /** Mutation to customise foyer. */
   sendEmail: SendEmail | null;
+  changePassword: ChangePassword | null;
   __typename: "Mutation";
 }
 
@@ -635,6 +636,12 @@ export interface SendEmail {
   /** True if the config was saved. */
   success: Scalars["Boolean"] | null;
   __typename: "SendEmail";
+}
+
+export interface ChangePassword {
+  /** Password changed successful or not */
+  success: Scalars["Boolean"] | null;
+  __typename: "ChangePassword";
 }
 
 export interface QueryGenqlSelection {
@@ -1177,6 +1184,9 @@ export interface MutationGenqlSelection {
       subject: Scalars["String"];
     };
   };
+  changePassword?: ChangePasswordGenqlSelection & {
+    __args: { inbound: ChangePasswordInput };
+  };
   __typename?: boolean | number;
   __scalar?: boolean | number;
 }
@@ -1419,6 +1429,21 @@ export interface SendEmailGenqlSelection {
   success?: boolean | number;
   __typename?: boolean | number;
   __scalar?: boolean | number;
+}
+
+export interface ChangePasswordGenqlSelection {
+  /** Password changed successful or not */
+  success?: boolean | number;
+  __typename?: boolean | number;
+  __scalar?: boolean | number;
+}
+
+/** Arguments to update a user. */
+export interface ChangePasswordInput {
+  /** Global Id of the user. */
+  id: Scalars["ID"];
+  oldPassword: Scalars["String"];
+  newPassword: Scalars["String"];
 }
 
 const Query_possibleTypes: string[] = ["Query"];
@@ -1796,6 +1821,15 @@ export const isSendEmail = (
   if (!obj?.__typename)
     throw new Error('__typename is missing in "isSendEmail"');
   return SendEmail_possibleTypes.includes(obj.__typename);
+};
+
+const ChangePassword_possibleTypes: string[] = ["ChangePassword"];
+export const isChangePassword = (
+  obj?: { __typename?: any } | null,
+): obj is ChangePassword => {
+  if (!obj?.__typename)
+    throw new Error('__typename is missing in "isChangePassword"');
+  return ChangePassword_possibleTypes.includes(obj.__typename);
 };
 
 export const enumAssetTypeSortEnum = {

@@ -432,6 +432,12 @@ export default {
           subject: [6, "String!"],
         },
       ],
+      changePassword: [
+        64,
+        {
+          inbound: [65, "ChangePasswordInput!"],
+        },
+      ],
       __typename: [6],
     },
     CalcSizes: {
@@ -566,6 +572,16 @@ export default {
     },
     SendEmail: {
       success: [5],
+      __typename: [6],
+    },
+    ChangePassword: {
+      success: [5],
+      __typename: [6],
+    },
+    ChangePasswordInput: {
+      id: [2],
+      oldPassword: [6],
+      newPassword: [6],
       __typename: [6],
     },
   },
