@@ -1440,30 +1440,6 @@ export interface ChangePasswordGenqlSelection {
 
 /** Arguments to update a user. */
 export interface ChangePasswordInput {
-  /** Username */
-  username?: Scalars["String"] | null;
-  /** Password */
-  password?: Scalars["String"] | null;
-  /** Email Address */
-  email?: Scalars["String"] | null;
-  /** bin_name */
-  binName?: Scalars["String"] | null;
-  /** User Role */
-  role?: Scalars["Int"] | null;
-  /** First Name */
-  firstName?: Scalars["String"] | null;
-  /** Last Name */
-  lastName?: Scalars["String"] | null;
-  /** Display Name */
-  displayName?: Scalars["String"] | null;
-  /** Active record or not */
-  active?: Scalars["Boolean"] | null;
-  /** firebase_pushnot_id */
-  firebasePushnotId?: Scalars["String"] | null;
-  /** Maximum file upload size limit, in bytes */
-  uploadLimit?: Scalars["Int"] | null;
-  /** Introduction */
-  intro?: Scalars["String"] | null;
   /** Global Id of the user. */
   id: Scalars["ID"];
   oldPassword: Scalars["String"];
