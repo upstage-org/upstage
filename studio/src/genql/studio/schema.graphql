@@ -610,6 +610,7 @@ type Mutation {
     """The subject of the email."""
     subject: String!
   ): SendEmail
+  changePassword(inbound: ChangePasswordInput!): ChangePassword
 }
 
 """Mutation to assign stages to a media."""
@@ -868,4 +869,53 @@ input BatchUserInput {
 type SendEmail {
   """True if the config was saved."""
   success: Boolean
+}
+
+type ChangePassword {
+  """Password changed successful or not"""
+  success: Boolean
+}
+
+"""Arguments to update a user."""
+input ChangePasswordInput {
+  """Username"""
+  username: String
+
+  """Password"""
+  password: String
+
+  """Email Address"""
+  email: String
+
+  """bin_name"""
+  binName: String
+
+  """User Role"""
+  role: Int
+
+  """First Name"""
+  firstName: String
+
+  """Last Name"""
+  lastName: String
+
+  """Display Name"""
+  displayName: String
+
+  """Active record or not"""
+  active: Boolean
+
+  """firebase_pushnot_id"""
+  firebasePushnotId: String
+
+  """Maximum file upload size limit, in bytes"""
+  uploadLimit: Int
+
+  """Introduction"""
+  intro: String
+
+  """Global Id of the user."""
+  id: ID!
+  oldPassword: String!
+  newPassword: String!
 }

@@ -40,6 +40,7 @@ from core.studio.stage import StageConnectionField, Stage
 from core.studio.notification import Notification, resolve_notifications
 from core.studio.user import (
     BatchUserCreation,
+    ChangePassword,
     DeleteUser,
     UpdateUser,
     UserConnectionField,
@@ -157,6 +158,7 @@ class Mutation(graphene.ObjectType):
     deleteUser = DeleteUser.Field()
     batchUserCreation = BatchUserCreation.Field()
     sendEmail = SendEmail.Field()
+    changePassword = ChangePassword.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
