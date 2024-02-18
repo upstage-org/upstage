@@ -4,7 +4,7 @@
   </span>
   <slot name="render" :open="openModal" />
   <teleport to="body">
-    <div v-if="isActive" class="modal is-active">
+    <div v-if="isActive" class="modal is-active" :id="id">
       <div class="modal-background" @click="closeModal"></div>
       <div class="modal-card" :style="{ width, height }">
         <slot>
@@ -34,6 +34,7 @@
 import { provide, ref, watchEffect } from "vue";
 export default {
   props: {
+    id: String,
     modelValue: Boolean,
     width: {
       type: String,
