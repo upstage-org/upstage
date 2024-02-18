@@ -59,7 +59,7 @@ export default {
   fill: "remplir",
   none: "aucun",
   avatar: "avatar",
-  upload: "télécharger",  
+  upload: "télécharger",
   username: "Nom d’utilisateur",
   password: "Mot de passe",
   new: "Nouveau",
@@ -93,7 +93,8 @@ export default {
   esc: "ESC",
   warning: "Avertissement",
   under_construction: "En construction",
-  enter_username_and_password_to_login: "Entrer le nom d’utilisateur et le mot de passe pour se connecter",
+  enter_username_and_password_to_login:
+    "Entrer le nom d’utilisateur et le mot de passe pour se connecter",
   reset_your_password: "Réinitialiser votre mot de passe",
   change_password: "Changer de mot de passe",
   full_name: "Nom complet",
@@ -101,7 +102,8 @@ export default {
   last_name: "Nom de famille",
   this_is_page_is_under_construction: "Cette page est en cours de construction",
   no_content: "Pas de contenu",
-  drag_files_here_or_click_to_upload: "Glisser les fichiers ici ou cliquer pour télécharger",
+  drag_files_here_or_click_to_upload:
+    "Glisser les fichiers ici ou cliquer pour télécharger",
   choose_an_image: "Choisissez une image",
   choose_an_existing_image_or_upload_new:
     "Choisissez une image existante ou téléchargez une nouvelle",
@@ -178,7 +180,8 @@ export default {
   stage_management: "Gérer le Plateau",
   create_new_stage: "Créer un nouveau Plateau",
   general_information: "Informations générales",
-  click_anywhere_to_enter_the_stage: "Cliquez où vous voulez pour entrer dans le Plateau",
+  click_anywhere_to_enter_the_stage:
+    "Cliquez où vous voulez pour entrer dans le Plateau",
   enter_as_audience: "Entrer en tant qu’audience",
   player_login: "Connexion du joueur",
   approve: "Approuver",
