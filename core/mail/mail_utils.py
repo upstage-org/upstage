@@ -264,7 +264,6 @@ def generate_email_token_clients():
 
         sleep(EMAIL_TIME_EXPIRED_TOKEN)
 
-
 if __name__ == "__main__":
     asyncio.run(
         send(
@@ -276,3 +275,4 @@ if __name__ == "__main__":
             filenames=[],
         )
     )
+
