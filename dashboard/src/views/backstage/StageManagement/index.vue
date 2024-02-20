@@ -54,11 +54,6 @@
                   $t("archive")
                 }}</router-link>
               </li>
-              <li>
-                <router-link to="scenes" exact-active-class="is-active">{{
-                  $t("scenes")
-                }}</router-link>
-              </li>
             </template>
           </ul>
         </aside>
