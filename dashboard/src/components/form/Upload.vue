@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
-import { computed, watch } from "@vue/runtime-core";
+import { ref } from "vue";
+import { computed, watch } from "vue";
 import { humanFileSize } from "@/utils/common";
 import { useStore } from "vuex";
 import {

@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch } from "@vue/runtime-core";
+import { onMounted, ref, watch } from "vue";
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue", "ref", "submit"],

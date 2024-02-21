@@ -1,14 +1,11 @@
 <script lang="ts">
-import { useMutation, useQuery } from "@vue/apollo-composable";
-import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject } from "vue";
-import type { Media, Stage, StudioGraph, User } from "models/studio";
+import { reactive, watch, provide } from "vue";
+import type { Media } from "models/studio";
 import { displayName, titleCase } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
 import { SorterResult } from "ant-design-vue/lib/table/interface";
 import { useI18n } from "vue-i18n";
 import { Layout, Select, Space, Switch, Table, message } from "ant-design-vue";
-import { FetchResult } from "@apollo/client/core";
 import { h } from "vue";
 import DDate from "components/display/DDate.vue";
 import PlayerForm from "./PlayerForm.vue";
@@ -17,6 +14,13 @@ import DeletePlayer from "./DeletePlayer.vue";
 import type { DefaultOptionType } from "ant-design-vue/lib/select";
 import Confirm from "components/Confirm.vue";
 import { useUpdateUser } from "hooks/mutations";
+import { useAsyncState } from "@vueuse/core";
+import { studioClient } from "services/graphql";
+import { AdminPlayerSortEnum, User } from "genql/studio";
+import { computed } from "vue";
+import { useQuery } from "@vue/apollo-composable";
+import gql from "graphql-tag";
+import configs from "config";
 
 interface Pagination {
   current: number;
@@ -26,23 +30,13 @@ interface Pagination {
   total: number;
 }
 
-interface Sorter {
-  column: any;
-  columnKey: string;
-  field: string;
-  order: "ascend" | "descend";
-}
-
 export default {
-  setup(props, ctx) {
+  setup() {
     const { t } = useI18n();
-    const enterStage = (stage: Stage) => {
-      window.open(`/${stage.fileLocation}`, "_blank");
-    };
     const tableParams = reactive({
-      limit: 10,
-      cursor: undefined,
-      sort: ["CREATED_ON_ASC"],
+      first: 10,
+      after: undefined,
+      sort: ["CREATED_ON_ASC"] as AdminPlayerSortEnum[],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -54,87 +48,40 @@ export default {
       ...inquiryResult.value.inquiry,
     }));
     watch(inquiryResult, () => {
-      tableParams.cursor = undefined;
+      tableParams.after = undefined;
     });
 
-    const { mutate, loading: saving } = useMutation<
-      { authUser: { accessToken: string; refreshToken: string } },
-      {}
-    >(gql`
-      mutation Login($username: String, $password: String) {
-        authUser(username: $username, password: $password) {
-          accessToken
-          refreshToken
-        }
-      }
-    `);
-
-    const { result, loading, fetchMore } = useQuery<
-      StudioGraph,
-      { cursor?: string; limit: number; sort?: string[] }
-    >(
-      gql`
-        query AdminPlayerTable(
-          $cursor: String
-          $limit: Int
-          $sort: [AdminPlayerSortEnum]
-          $name: String
-          $createdBetween: [Date]
-        ) {
-          adminPlayers(
-            after: $cursor
-            first: $limit
-            sort: $sort
-            usernameLike: $name
-            createdBetween: $createdBetween
-          ) {
-            totalCount
-            edges {
-              cursor
-              node {
-                id
-                active
-                username
-                email
-                binName
-                role
-                roleName
-                firstName
-                lastName
-                displayName
-                lastLogin
-                createdOn
-                uploadLimit
-                intro
-                dbId
-              }
-            }
-          }
-        }
-      `,
-      params.value,
-      { notifyOnNetworkStatusChange: true },
+    const {
+      state: result,
+      isReady,
+      execute: fetchMore,
+    } = useAsyncState(
+      () => {
+        return studioClient.query({
+          adminPlayers: {
+            __args: {
+              ...tableParams,
+              usernameLike: params.value.name,
+              createdBetween: params.value.createdBetween,
+            },
+            totalCount: true,
+            edges: {
+              cursor: true,
+              node: {
+                __scalar: true,
+              },
+            },
+          },
+        });
+      },
+      {
+        adminPlayers: null,
+      },
     );
-
-    const updateQuery = (
-      previousResult: StudioGraph,
-      { fetchMoreResult }: any,
-    ) => {
-      return fetchMoreResult ?? previousResult;
-    };
 
     watch(params, () => {
       refresh();
     });
-
-    const customLimit = ref("");
-
-    const SWITCHABLE_ROLES = {
-      GUEST: 4,
-      PLAYER: 1,
-      ADMIN: 8,
-      SUPER_ADMIN: 32,
-    };
 
     const columns: ColumnType<User>[] = [
       {
@@ -172,12 +119,10 @@ export default {
                 confirm: (payload: [number, DefaultOptionType]) => void;
               }) =>
                 h(Select, {
-                  options: Object.entries(SWITCHABLE_ROLES).map(
-                    ([key, id]) => ({
-                      value: id,
-                      label: titleCase(key),
-                    }),
-                  ),
+                  options: Object.entries(configs.ROLES).map(([key, id]) => ({
+                    value: id,
+                    label: titleCase(key),
+                  })),
                   value: opt.text,
                   onChange: (value, selectedOption) => {
                     slotProps.confirm([value as number, selectedOption]);
@@ -269,7 +214,7 @@ export default {
         fixed: "right",
         key: "actions",
         customRender(opt) {
-          return h(Space, [
+          return h(Space, () => [
             h(PlayerForm, {
               player: opt.record,
               saving: savingUser.value,
@@ -277,19 +222,20 @@ export default {
                 await updateUser({
                   ...player,
                 });
-                message.success(
-                  `Successfully update ${displayName(player)}'s profile!`,
-                );
               },
               disabledIntroduction: true,
+              noPasswordChange: true,
             }),
             h(ChangePassword, {
               player: opt.record,
               saving: savingUser,
               onSave: async (player: User) => {
-                await updateUser({
-                  ...player,
-                });
+                await updateUser(
+                  {
+                    ...player,
+                  },
+                  true,
+                );
                 message.success(
                   `Successfully reset ${displayName(player)}'s password!`,
                 );
@@ -324,44 +270,27 @@ export default {
           `${columnKey}_${order === "ascend" ? "ASC" : "DESC"}`.toUpperCase(),
         );
       Object.assign(tableParams, {
-        cursor:
+        after:
           current > 1
             ? window.btoa(`arrayconnection:${(current - 1) * pageSize}`)
             : undefined,
-        limit: pageSize,
+        first: pageSize,
         sort,
       });
     };
-    const dataSource = computed(() =>
-      result.value
-        ? result.value.adminPlayers.edges.map((edge) => edge.node)
-        : [],
-    );
 
     const refresh = () => {
-      fetchMore({
-        variables: params.value,
-        updateQuery,
-      });
+      fetchMore(0);
     };
     provide("refresh", refresh);
 
-    const {
-      mutate: updateUser,
-      loading: savingUser,
-      onDone: onUserUpdated,
-      onError: onUserUpdateError,
-    } = useUpdateUser();
-
-    const handleUpdate = (result: FetchResult) => {
-      if (result.errors) {
-        message.error("You don't have permission to perform this action!");
-      } else {
+    const { proceed: updateUser, loading: savingUser } = useUpdateUser({
+      loading: "Saving player information...",
+      success: () => {
         refresh();
-      }
-    };
-
-    onUserUpdated(handleUpdate);
+        return "Player information saved successfully!";
+      },
+    });
 
     return () =>
       h(
@@ -369,18 +298,20 @@ export default {
         {
           class: "w-full shadow rounded-xl bg-white overflow-hidden",
         },
-        [
+        () => [
           h(Table, {
             class: "w-full overflow-auto",
             rowKey: "id",
             columns,
-            dataSource: dataSource.value,
-            loading: loading.value,
+            dataSource: result.value.adminPlayers?.edges.map((e) => e?.node),
+            loading: !isReady.value,
             onChange: handleTableChange,
             pagination: {
               showQuickJumper: true,
               showSizeChanger: true,
-              total: result.value ? result.value.adminPlayers.totalCount : 0,
+              total: result.value.adminPlayers
+                ? result.value.adminPlayers.totalCount
+                : 0,
             } as Pagination,
           }),
         ],

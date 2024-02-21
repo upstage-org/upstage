@@ -21,11 +21,16 @@ const flags = {
   en: "🇬🇧",
   de: "🇩🇪",
   vn: "🇻🇳",
+  fr: "🇫🇷",
+  se: "🇸🇪",
 };
+
 const labels = {
   en: "English",
   de: "Deutsch",
   vn: "Tiếng Việt",
+  fr: "Français",
+  se: "Svenska",
 };
 const persistLocale = (locale) => {
   localStorage.setItem("locale", locale);

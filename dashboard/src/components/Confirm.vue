@@ -33,7 +33,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/reactivity";
+import { ref } from "vue";
 import Modal from "@/components/Modal";
 import SaveButton from "@/components/form/SaveButton";
 export default {

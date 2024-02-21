@@ -59,7 +59,7 @@ export default {
   fill: "fyll i",
   none: "inga",
   avatar: "avatar",
-  upload: "ladda upp",  
+  upload: "ladda upp",
   username: "Användarnamn",
   password: "Lösenord",
   new: "Ny",

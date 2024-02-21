@@ -55,7 +55,6 @@ export interface User {
   uploadLimit: number;
   intro: string | null;
   dbId: number;
-  permission: null;
 }
 
 export interface Stage {

@@ -4,12 +4,12 @@ import LanguageSelector from "components/LanguageSelector.vue";
 import configs from "config";
 import logo from "assets/upstage.png";
 import StudioVersion from "./StudioVersion.vue";
-import { useUpdateProfile, useLogout } from "hooks/auth";
+import { useUpdateProfile, useLogout } from "state/auth";
 import PlayerForm from "views/admin/player-management/PlayerForm.vue";
 
 const to = (path: string) => `${configs.UPSTAGE_URL}/${path}`;
 
-const { whoami, loading, save } = useUpdateProfile();
+const { whoami, updateProfile, loading } = useUpdateProfile();
 
 const logout = useLogout();
 </script>
@@ -19,7 +19,7 @@ const logout = useLogout();
     <PlayerForm
       v-if="whoami"
       :player="whoami"
-      :onSave="save"
+      :onSave="updateProfile"
       :saving="loading"
       noUploadLimit
       noStatusToggle

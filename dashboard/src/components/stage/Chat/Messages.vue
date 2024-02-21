@@ -120,7 +120,7 @@ import Divider from "@/components/Divider";
 import ContextMenu from "@/components/ContextMenu";
 import Icon from "@/components/Icon.vue";
 import { useStore } from "vuex";
-import { computed } from "@vue/reactivity";
+import { computed } from "vue";
 
 export default {
   props: ["messages", "style"],

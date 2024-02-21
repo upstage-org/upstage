@@ -76,7 +76,7 @@
 <script>
 import { useStore } from "vuex";
 import Icon from "@/components/Icon";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 import { useShortcut } from "../../composable";
 import { displayTimestamp } from "@/utils/common";
 import anime from "animejs";

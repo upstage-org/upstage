@@ -16,7 +16,7 @@ from datetime import datetime
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from email.utils import formatdate,make_msgid
+from email.utils import formatdate, make_msgid
 from time import sleep
 
 import asyncio
@@ -264,5 +264,15 @@ def generate_email_token_clients():
 
         sleep(EMAIL_TIME_EXPIRED_TOKEN)
 
-if __name__ == '__main__':
-    asyncio.run(send('gwcorresp01@gmail.com', 'test 1 2 3', 'test msg', bcc=['strangest@comcast.net'], cc=[], filenames=[]))
+if __name__ == "__main__":
+    asyncio.run(
+        send(
+            "gwcorresp01@gmail.com",
+            "test 1 2 3",
+            "test msg",
+            bcc=["strangest@comcast.net"],
+            cc=[],
+            filenames=[],
+        )
+    )
+

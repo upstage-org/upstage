@@ -11,15 +11,17 @@ import {
   Tooltip,
   message,
 } from "ant-design-vue";
-import { h, watch } from "vue";
-import { EditOutlined } from "@ant-design/icons-vue";
+import { Fragment, h, watch } from "vue";
+import { EditOutlined, KeyOutlined } from "@ant-design/icons-vue";
 import { PropType } from "vue";
 import { ref } from "vue";
 import useForm from "ant-design-vue/lib/form/useForm";
 import { reactive } from "vue";
 import { toRaw } from "vue";
 import { humanFileSize } from "utils/common";
-import { User } from "models/studio";
+import { ChangePasswordInput, User } from "genql/studio";
+import { useLoading } from "hooks/mutations";
+import { studioClient } from "services/graphql";
 
 export default {
   props: {
@@ -28,12 +30,13 @@ export default {
       required: true,
     },
     onSave: {
-      type: Function as PropType<(player: User) => Promise<void>>,
-      required: true,
+      type: Function as PropType<(player: User) => unknown>,
+      required: false,
     },
     saving: Boolean,
     noUploadLimit: Boolean,
     noStatusToggle: Boolean,
+    noPasswordChange: Boolean,
     disabledIntroduction: Boolean,
   },
   setup(props, { slots }) {
@@ -44,6 +47,32 @@ export default {
     const values = reactive({ ...props.player });
 
     const { validate, resetFields } = useForm(values, {});
+
+    const changingPassword = ref(false);
+    const passwords = reactive({
+      old: "",
+      new: "",
+      confirm: "",
+    });
+
+    const { proceed: changePassword, loading: savingNewPassword } = useLoading(
+      (inbound: ChangePasswordInput) =>
+        studioClient.mutation({
+          changePassword: {
+            __args: {
+              inbound,
+            },
+            success: true,
+          },
+        }),
+      {
+        loading: "Saving your password...",
+        success: () => {
+          changingPassword.value = false;
+          return "New password saved successfully!";
+        },
+      },
+    );
 
     watch(
       () => props.player,
@@ -83,7 +112,7 @@ export default {
             loading: props.saving,
           },
         },
-        [
+        () => [
           h(
             Form,
             {
@@ -91,15 +120,15 @@ export default {
               labelCol: { span: 6 },
               wrapperCol: { span: 18 },
             },
-            [
+            () => [
               h(
                 Form.Item,
                 {
                   label: t("first_name"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.firstName,
+                    value: values.firstName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.firstName = value),
                   }),
@@ -110,9 +139,9 @@ export default {
                 {
                   label: t("last_name"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.lastName,
+                    value: values.lastName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.lastName = value),
                   }),
@@ -124,9 +153,9 @@ export default {
                   label: t("display_name"),
                   help: "In stage chat nickname",
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.displayName,
+                    value: values.displayName ?? "",
                     "onUpdate:value": (value: string) =>
                       (values.displayName = value),
                   }),
@@ -137,10 +166,11 @@ export default {
                 {
                   label: t("email"),
                 },
-                [
+                () => [
                   h(Input, {
-                    value: values.email,
-                    "onUpdate:value": (value: string) => (values.email = value),
+                    value: values.email ?? "",
+                    "onUpdate:value": (value: string) =>
+                      (values.email = value.trim()),
                   }),
                 ],
               ),
@@ -149,7 +179,7 @@ export default {
                 {
                   label: t("introduction"),
                 },
-                [
+                () => [
                   h(Textarea, {
                     disabled: props.disabledIntroduction,
                     autoSize: true,
@@ -158,13 +188,113 @@ export default {
                   }),
                 ],
               ),
+              !props.noPasswordChange &&
+                h(Fragment, [
+                  h(
+                    Form.Item,
+                    {
+                      label: t("password"),
+                    },
+                    () => [
+                      h(
+                        Button,
+                        {
+                          onClick: () => {
+                            visible.value = false;
+                            changingPassword.value = true;
+                          },
+                        },
+                        [h(KeyOutlined), t("change_password")],
+                      ),
+                    ],
+                  ),
+                  h(
+                    Modal,
+                    {
+                      title: t("change_password"),
+                      visible: changingPassword.value,
+                      "onUpdate:visible": (value) =>
+                        (changingPassword.value = value),
+                      onOk: () => {
+                        changePassword({
+                          id: props.player.id,
+                          newPassword: passwords.new,
+                          oldPassword: passwords.old,
+                        });
+                      },
+                      okButtonProps: {
+                        loading: savingNewPassword.value,
+                        disabled:
+                          !passwords.old.length ||
+                          !passwords.new.length ||
+                          !passwords.confirm.length ||
+                          passwords.new !== passwords.confirm,
+                      },
+                    },
+                    [
+                      h(
+                        Form.Item,
+                        {
+                          label: "Old password",
+                          labelCol: { span: 8 },
+                          wrapperCol: { span: 16 },
+                        },
+                        () =>
+                          h(Input, {
+                            type: "password",
+                            value: passwords.old,
+                            "onUpdate:value": (value) =>
+                              (passwords.old = value),
+                          }),
+                      ),
+                      h(
+                        Form.Item,
+                        {
+                          label: "New password",
+                          labelCol: { span: 8 },
+                          wrapperCol: { span: 16 },
+                        },
+                        () =>
+                          h(Input, {
+                            type: "password",
+                            value: passwords.new,
+                            "onUpdate:value": (value) =>
+                              (passwords.new = value),
+                          }),
+                      ),
+                      h(
+                        Form.Item,
+                        {
+                          label: "Confirm password",
+                          labelCol: { span: 8 },
+                          wrapperCol: { span: 16 },
+                          validateStatus:
+                            passwords.new !== passwords.confirm
+                              ? "error"
+                              : undefined,
+                          help:
+                            passwords.new !== passwords.confirm
+                              ? "Confirm password does not match"
+                              : "",
+                        },
+                        () =>
+                          h(Input, {
+                            type: "password",
+                            value: passwords.confirm,
+                            "onUpdate:value": (value) =>
+                              (passwords.confirm = value),
+                          }),
+                      ),
+                    ],
+                  ),
+                ]),
               !props.noUploadLimit &&
                 h(
                   Form.Item,
                   {
                     label: t("upload_limit"),
                   },
-                  [
+                  () => [
                     h(Select, {
                       class: "w-full",
                       dropdownMatchSelectWidth: false,
@@ -209,7 +339,7 @@ export default {
                   {
                     label: t("status"),
                   },
-                  [
+                  () => [
                     h(Switch, {
                       checked: values.active,
                       "onUpdate:checked": (value) =>
@@ -228,7 +358,7 @@ export default {
             {
               title: t("profile_title", { name: props.player.username }),
             },
-            [
+            () => [
               h(
                 Button,
                 {

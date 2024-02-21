@@ -93,12 +93,12 @@ import {
   useOwners,
   useQuery,
 } from "@/services/graphql/composable";
-import { reactive, ref } from "@vue/reactivity";
-import { computed, inject, watch, watchEffect } from "@vue/runtime-core";
+import { reactive, ref } from "vue";
+import { computed, inject, watch, watchEffect } from "vue";
 import { displayName } from "@/utils/auth";
 import { includesIgnoreCase } from "@/utils/common";
 import { useStore } from "vuex";
-import MultiframePreview from "../Media/MultiframePreview";
+import MultiframePreview from "./MultiframePreview";
 import Reorder from "./Reorder.vue";
 
 export default {

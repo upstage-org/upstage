@@ -59,7 +59,7 @@ export default {
   fill: "remplir",
   none: "aucun",
   avatar: "avatar",
-  upload: "télécharger",  
+  upload: "télécharger",
   username: "Nom d’utilisateur",
   password: "Mot de passe",
   new: "Nouveau",

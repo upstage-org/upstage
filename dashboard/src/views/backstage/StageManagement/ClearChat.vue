@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import { inject, ref } from "@vue/runtime-core";
+import { inject, ref } from "vue";
 import { notification } from "@/utils/notification";
 import buildClient from "@/services/mqtt";
 import { TOPICS } from "@/utils/constants";

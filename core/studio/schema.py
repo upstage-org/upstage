@@ -21,9 +21,7 @@ from graphene_sqlalchemy import SQLAlchemyConnectionField, SQLAlchemyObjectType
 from graphql.execution.executors.asyncio import AsyncioExecutor
 from core.stage.asset import DeleteMedia
 from core.stage.schema import UpdateAttributeStatus, UpdateAttributeVisibility
-from core.user.models import ROLES
-from core.user.models import User as UserModel
-from core.user.models import role_conv
+from core.user.models import User as UserModel, ADMIN, SUPER_ADMIN, role_conv
 from core.user.user_utils import current_user
 from core.studio.media import (
     Asset,
@@ -42,11 +40,13 @@ from core.studio.stage import StageConnectionField, Stage
 from core.studio.notification import Notification, resolve_notifications
 from core.studio.user import (
     BatchUserCreation,
+    ChangePassword,
     DeleteUser,
     UpdateUser,
     UserConnectionField,
     AdminPlayer,
 )
+from core.mail.mail_utils import send
 
 
 class Tag(SQLAlchemyObjectType):
@@ -100,6 +100,7 @@ class Query(graphene.ObjectType):
         id=graphene.ID(),
         username_like=graphene.String(),
         created_between=graphene.List(graphene.Date),
+        role=graphene.Int(),
     )
     whoami = graphene.Field(User, description="Logged in user info")
     notifications = graphene.List(Notification, resolver=resolve_notifications)
@@ -109,6 +110,36 @@ class Query(graphene.ObjectType):
     def resolve_whoami(self, info):
         code, error, user, timezone = current_user()
         return user
+
+
+class SendEmail(graphene.Mutation):
+    """Mutation to customise foyer."""
+
+    success = graphene.Boolean(description="True if the config was saved.")
+
+    class Arguments:
+        subject = graphene.String(
+            required=True, description="The subject of the email."
+        )
+        body = graphene.String(
+            required=True, description="The body of the email. HTML is allowed."
+        )
+        recipients = graphene.String(
+            required=True, description="The recipients of the email. Comma separated."
+        )
+        bcc = graphene.String(
+            required=False,
+            description="The bcc recipients of the email. Comma separated.",
+        )
+
+    @jwt_required()
+    async def mutate(self, info, subject, body, recipients, bcc):
+        code, error, user, timezone = current_user()
+        if not user.role in (ADMIN, SUPER_ADMIN) and not user.can_send_email:
+            raise Exception("Only Admin can send notification emails!")
+
+        await send(recipients.split(","), subject, body, bcc.split(","))
+        return SendEmail(success=True)
 
 
 class Mutation(graphene.ObjectType):
@@ -126,6 +157,8 @@ class Mutation(graphene.ObjectType):
     updateUser = UpdateUser.Field()
     deleteUser = DeleteUser.Field()
     batchUserCreation = BatchUserCreation.Field()
+    sendEmail = SendEmail.Field()
+    changePassword = ChangePassword.Field()
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import { ref } from "@vue/runtime-core";
+import { ref } from "vue";
 import { notification } from "@/utils/notification";
 import Icon from "@/components/Icon";
 import buildClient from "@/services/mqtt";

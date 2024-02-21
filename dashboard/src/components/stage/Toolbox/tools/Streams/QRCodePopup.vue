@@ -1,5 +1,4 @@
 <script setup>
-import OBSInstruction from "@/views/backstage/Media/OBSInstruction";
 import LarixQRCode from "@/components/LarixQRCode";
 import QRCode from "@/components/QRCode";
 import Modal from "@/components/Modal";
@@ -9,6 +8,7 @@ import { useQuery } from "@/services/graphql/composable";
 import { stageGraph } from "@/services/graphql";
 import modernCopy from "modern-copy";
 import { notification } from "@/utils/notification";
+import OBSInstruction from "./OBSInstruction";
 
 const props = defineProps({
   stream: Object,

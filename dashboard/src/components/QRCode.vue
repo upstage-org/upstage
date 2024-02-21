@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, watchEffect } from "@vue/runtime-core";
+import { onMounted, ref, watchEffect } from "vue";
 import QRCodeStyling from "qr-code-styling";
 import { defineProps } from "vue";
 import upstage from "@/assets/upstage.png";

@@ -48,7 +48,12 @@ const handleQuickLogin = async () => {
 </script>
 
 <template>
-  <slot v-if="auth && (auth.token || auth.refresh_token)"></slot>
+  <suspense v-if="auth && (auth.token || auth.refresh_token)">
+    <template #fallback>
+      <a-spin />
+    </template>
+    <slot></slot>
+  </suspense>
   <a-result
     v-else
     status="403"

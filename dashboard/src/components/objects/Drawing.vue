@@ -18,7 +18,7 @@ import Object from "./Object.vue";
 import MenuContent from "./Avatar/ContextMenu";
 import { useStore } from "vuex";
 import { useDrawing } from "@/components/stage/Toolbox/tools/Draw/composable";
-import { computed } from "@vue/runtime-core";
+import { computed } from "vue";
 
 export default {
   props: ["object"],
