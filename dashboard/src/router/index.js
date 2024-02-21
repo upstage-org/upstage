@@ -72,12 +72,6 @@ const routes = [
             component: () =>
               import("../views/backstage/StageManagement/Archive.vue"),
           },
-          {
-            name: "Scenes",
-            path: "scenes",
-            component: () =>
-              import("../views/backstage/StageManagement/Scenes.vue"),
-          },
         ],
       },
     ],
