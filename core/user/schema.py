@@ -158,7 +158,7 @@ class CreateUser(graphene.Mutation):
         # No, don't send this to every admin.
         # admin_emails = [admin.email for admin in DBSession.query(UserModel).filter(UserModel.role.in_([SUPER_ADMIN,ADMIN])).all()]
         admin_emails = SUPPORT_EMAILS
-        approval_url = f"{request.url_root}backstage/admin/player-management"
+        approval_url = f"{request.url_root}studio/admin/player?sortByCreated=true"
         await send(
             admin_emails,
             f"Approval required for {user.username}'s registration",

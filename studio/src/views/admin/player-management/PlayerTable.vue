@@ -21,6 +21,7 @@ import { computed } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import configs from "config";
+import { useRouter } from "vue-router";
 
 interface Pagination {
   current: number;
@@ -29,14 +30,20 @@ interface Pagination {
   showSizeChanger: boolean;
   total: number;
 }
+interface SortQueryParams {
+  sortByCreated?: boolean;
+}
 
 export default {
   setup() {
     const { t } = useI18n();
+    const router = useRouter();
+    const query: SortQueryParams = router.currentRoute.value.query;
+
     const tableParams = reactive({
       first: 10,
       after: undefined,
-      sort: ["CREATED_ON_ASC"] as AdminPlayerSortEnum[],
+      sort: [query.sortByCreated ? "CREATED_ON_DESC" : "CREATED_ON_ASC"] as AdminPlayerSortEnum[],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -166,8 +173,8 @@ export default {
         customRender(opt) {
           return opt.text
             ? h(DDate, {
-                value: opt.text,
-              })
+              value: opt.text,
+            })
             : "";
         },
       },
@@ -183,7 +190,7 @@ export default {
             value: opt.text,
           });
         },
-        defaultSortOrder: "ascend",
+        defaultSortOrder: query.sortByCreated ? "descend" : "ascend",
       },
       {
         title: t("status"),
