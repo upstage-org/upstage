@@ -228,20 +228,20 @@ const { proceed, loading } = useLoading(
                 false
             "
           >
-            <template #render="{ key, title }">
+            <template #render="item">
               <a-space class="flex justify-between">
                 <span>
-                  {{ title }}
-                  <a-tag v-if="!title?.includes('<')">Custom recipient</a-tag>
+                  {{ item?.title }}
+                  <a-tag v-if="!item?.title?.includes('<')">Custom recipient</a-tag>
                 </span>
                 <a-switch
                   size="small"
-                  :checked="!directToEmails.includes(key as string)"
+                  :checked="!directToEmails.includes(item?.key as string)"
                   @change="
                     (checked, e) => {
                       directToEmails = directToEmails
-                        .filter((email) => email !== key)
-                        .concat(checked ? [] : (key as string));
+                        .filter((email) => email !== item?.key)
+                        .concat(checked ? [] : (item?.key as string));
                       e.stopPropagation();
                     }
                   "
