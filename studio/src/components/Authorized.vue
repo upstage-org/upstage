@@ -5,7 +5,6 @@ import gql from "graphql-tag";
 import { Auth } from "models/config";
 import { getSharedAuth, setSharedAuth } from "utils/common";
 import { ref } from "vue";
-import { refreshWhoami } from "state/auth";
 
 const auth = ref<{ refresh_token: string; token: string }>();
 
@@ -13,7 +12,7 @@ const sharedState = getSharedAuth();
 auth.value = sharedState;
 
 const isDev = import.meta.env.DEV;
-refreshWhoami();
+
 const { mutate, loading } = useMutation<
   { authUser: { accessToken: string; refreshToken: string } },
   Auth
