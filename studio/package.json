@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "license": "GPL-3.0",
   "scripts": {
-    "serve": "vite --port=8080",
+    "serve": "vite --port=3000",
     "build": "vue-tsc --noEmit --skipLibCheck && vite build",
     "build:dev": "vue-tsc --noEmit --skipLibCheck && vite build --mode development",
     "format": "npx prettier --write \"./*.{js,ts,vue,json}\" \"./src/**/*.{js,ts,vue,json}\"",
