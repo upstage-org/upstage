@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import { computed, reactive, watch, provide, onMounted } from "vue";
 import type { Media, Stage, StudioGraph } from "models/studio";
 import { absolutePath } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
@@ -34,7 +34,7 @@ watch(inquiryResult, () => {
   tableParams.cursor = undefined;
 });
 
-const { result, loading, fetchMore } = useQuery<
+const { result, loading, fetchMore, refetch } = useQuery<
   StudioGraph,
   { cursor?: string; limit: number; sort?: string[] }
 >(
@@ -85,6 +85,10 @@ const { result, loading, fetchMore } = useQuery<
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
   return fetchMoreResult ?? previousResult;
 };
+
+onMounted(() => {
+  refetch();
+});
 
 watch(params, () => {
   fetchMore({
