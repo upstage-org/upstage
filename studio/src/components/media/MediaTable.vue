@@ -388,11 +388,30 @@ const { whoami, isAdmin } = useWhoAmI();
           <d-date :value="text" />
         </template>
         <template v-if="column.key === 'actions'">
-          <a-space v-if="composingMode">
-            <a-button
-              type="primary"
-              @click="addFrameToEditingMedia(record as Media)"
-            >
+          <a-space v-if="isAdmin || record.owner.username === whoami?.username">
+            <a-button type="primary" @click="editMedia(record as Media)">
+              <EditOutlined />
+              Edit
+            </a-button>
+            <a :href="absolutePath(record.src)" :download="record.name">
+              <a-button>
+                <template #icon>
+                  <DownloadOutlined />
+                </template>
+              </a-button>
+            </a>
+            <a-popconfirm title="Are you sure delete this media?" ok-text="Yes" cancel-text="No"
+              @confirm="deleteMedia(record)" placement="left" :ok-button-props="{ danger: true }" loading="deleting">
+              <a-button type="dashed" danger>
+
+                <template #icon>
+                  <DeleteOutlined />
+                </template>
+              </a-button>
+            </a-popconfirm>
+          </a-space>
+          <a-space v-else-if="composingMode">
+            <a-button type="primary" @click="addFrameToEditingMedia(record as Media)">
               <DoubleRightOutlined />
               Append frames
             </a-button>
@@ -422,39 +441,7 @@ const { whoami, isAdmin } = useWhoAmI();
               <small>Please wait for the media owner's approval</small>
             </a-space>
             <a-space v-else>
-              <template
-                v-if="isAdmin || record.owner.username === whoami?.username"
-              >
-                <a-button type="primary" @click="editMedia(record as Media)">
-                  <EditOutlined />
-                  Edit
-                </a-button>
-                <a :href="absolutePath(record.src)" :download="record.name">
-                  <a-button>
-                    <template #icon>
-                      <DownloadOutlined />
-                    </template>
-                  </a-button>
-                </a>
-                <a-popconfirm
-                  title="Are you sure delete this media?"
-                  ok-text="Yes"
-                  cancel-text="No"
-                  @confirm="deleteMedia(record)"
-                  placement="left"
-                  :ok-button-props="{ danger: true }"
-                  loading="deleting"
-                >
-                  <a-button type="dashed" danger>
-                    <template #icon>
-                      <DeleteOutlined />
-                    </template>
-                  </a-button>
-                </a-popconfirm>
-              </template>
-              <template v-else>
-                <QuickStageAssignment :media="record as Media" />
-              </template>
+              <QuickStageAssignment :media="record as Media" />
             </a-space>
           </template>
         </template>
