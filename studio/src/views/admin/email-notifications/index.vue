@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { CloseCircleFilled, MailOutlined } from "@ant-design/icons-vue";
 import { useAsyncState } from "@vueuse/core";
-import { Layout, message } from "ant-design-vue";
+import { Layout, message, Space } from "ant-design-vue";
 import { TransferItem } from "ant-design-vue/lib/transfer";
 import RichTextEditor from "components/editor/RichTextEditor.vue";
 import configs from "config";
@@ -14,6 +14,8 @@ import { computed } from "vue";
 import { watch } from "vue";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
+import Header from "components/Header.vue";
+
 const { t } = useI18n();
 
 const subject = ref("");
@@ -148,6 +150,7 @@ const { proceed, loading } = useLoading(
 </script>
 
 <template>
+  <Header><Space/></Header>
   <Layout
     v-if="successMessage"
     class="bg-white rounded-lg overflow-y-auto justify-center"
@@ -228,20 +231,20 @@ const { proceed, loading } = useLoading(
                 false
             "
           >
-            <template #render="{ key, title }">
+            <template #render="item">
               <a-space class="flex justify-between">
                 <span>
-                  {{ title }}
-                  <a-tag v-if="!title?.includes('<')">Custom recipient</a-tag>
+                  {{ item?.title }}
+                  <a-tag v-if="!item?.title?.includes('<')">Custom recipient</a-tag>
                 </span>
                 <a-switch
                   size="small"
-                  :checked="!directToEmails.includes(key as string)"
+                  :checked="!directToEmails.includes(item?.key as string)"
                   @change="
                     (checked, e) => {
                       directToEmails = directToEmails
-                        .filter((email) => email !== key)
-                        .concat(checked ? [] : (key as string));
+                        .filter((email) => email !== item?.key)
+                        .concat(checked ? [] : (item?.key as string));
                       e.stopPropagation();
                     }
                   "
