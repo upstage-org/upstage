@@ -210,7 +210,7 @@ export default {
     const createStage = async () => {
       try {
         const stage = await mutation();
-        message.success("Stage created successfully! ID: " + stage.id);
+        message.success("Stage created successfully!");
         store.dispatch("cache/fetchStages");
         router.push(`/stages/stage-management/${stage.id}/`);
       } catch (error) {
