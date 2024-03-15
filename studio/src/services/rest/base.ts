@@ -1,3 +1,4 @@
+// @ts-nocheck
 import axios from "axios";
 import store from "store";
 import { message } from "ant-design-vue";

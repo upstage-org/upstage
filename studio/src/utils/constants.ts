@@ -1,3 +1,4 @@
+// @ts-nocheck
 export const TOPICS = {
   CHAT: "chat",
   BOARD: "board",

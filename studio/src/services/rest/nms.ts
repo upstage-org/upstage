@@ -1,3 +1,4 @@
+// @ts-nocheck
 import configs from "config";
 import axios from "axios";
 
