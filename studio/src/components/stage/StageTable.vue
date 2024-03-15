@@ -335,7 +335,7 @@ onVisibilityUpdated(handleUpdate);
         <template v-if="column.key === 'actions'">
           <a-space>
             <router-link
-              :to="`/legacy/backstage/stage-management/${record.id}/`"
+              :to="`/stages/stage-management/${record.id}/`"
             >
               <a-button>
                 <setting-outlined />

@@ -18,10 +18,55 @@ export const router = createRouter({
     },
     {
       path: "/stages",
-      component: StagesManagement,
       meta: {
         background: "#C7DCA7",
       },
+      children: [
+        { path: "", component: StagesManagement },
+        {
+          path: "new-stage",
+          component: () =>
+            import("views/stages/StageManagement/index.vue"),
+          children: [
+            {
+              path: "", component: () =>
+                import("views/stages/StageManagement/General.vue")
+            }
+          ],
+        },
+        {
+          path: "stage-management/:id",
+          component: () =>
+            import("views/stages/StageManagement/index.vue"),
+          props: (route) => ({ id: route.params.id }),
+          children: [
+            {
+              path: "",
+              name: "Stage Management",
+              component: () =>
+                import("views/stages/StageManagement/General.vue")
+            },
+            {
+              name: "Stage Customisation",
+              path: "customisation",
+              component: () =>
+                import("views/stages/StageManagement/Customisation.vue"),
+            },
+            {
+              name: "Stage Media",
+              path: "media",
+              component: () =>
+                import("views/stages/StageManagement/Media.vue"),
+            },
+            {
+              name: "Archive",
+              path: "archive",
+              component: () =>
+                import("views/stages/StageManagement/Archive.vue"),
+            },
+          ],
+        },
+      ],
     },
     {
       path: "/media",

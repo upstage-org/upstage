@@ -86,8 +86,126 @@ export function displayName(
     "displayName" | "firstName" | "lastName" | "username"
   >,
 ) {
+  if (!user) return "";
   if (user.displayName?.trim()) return user.displayName;
   if (user.firstName || user.lastName)
     return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();
   return user.username;
+}
+
+export function debounce(callback: TimerHandler, delay: number) {
+  let timeout: number;
+  return () => {
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+    timeout = setTimeout(callback, delay);
+  };
+}
+
+export function includesIgnoreCase(value: string, keyword: string) {
+  return value.toLowerCase().includes(keyword.toLowerCase());
+}
+
+export const isJson = (d: any) => {
+  try {
+    JSON.parse(d);
+  } catch (e) {
+    return false;
+  }
+  return true;
+};
+
+export const displayTimestamp = (t: number) => {
+  let s: any = Math.round(t);
+  let m: any = Math.floor(s / 60);
+  s = String(s % 60).padStart(2, "0");
+  if (m < 60) {
+    return `${m}:${s}`;
+  }
+  let h = Math.floor(m / 60);
+  m = String(m % 60).padStart(2, "0");
+  return `${h}:${m}:${s}`;
+};
+
+export function cloneDeep(object: any) {
+  return JSON.parse(JSON.stringify(object));
+}
+
+export const randomColor = () => {
+  var letters = "0123456789ABCDEF";
+  var color = "#";
+  for (var i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+};
+
+export const padZero = (str: string, len = 2) => {
+  len = len || 2;
+  var zeros = new Array(len).join("0");
+  return (zeros + str).slice(-len);
+};
+
+export const invertColor = (hex: string, bw: boolean) => {
+  if (hex.indexOf("#") === 0) {
+    hex = hex.slice(1);
+  }
+  // convert 3-digit hex to 6-digits.
+  if (hex.length === 3) {
+    hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+  }
+  if (hex.length !== 6) {
+    throw new Error("Invalid HEX color.");
+  }
+  var r: any = parseInt(hex.slice(0, 2), 16),
+    g: any = parseInt(hex.slice(2, 4), 16),
+    b: any = parseInt(hex.slice(4, 6), 16);
+  if (bw) {
+    // http://stackoverflow.com/a/3943023/112731
+    return r * 0.299 + g * 0.587 + b * 0.114 > 186 ? "#000000" : "#FFFFFF";
+  }
+  // invert color components
+  r = (255 - r).toString(16);
+  g = (255 - g).toString(16);
+  b = (255 - b).toString(16);
+  // pad each with zeros and return
+  return "#" + padZero(r) + padZero(g) + padZero(b);
+};
+
+export const randomMessageColor = () => {
+  const bg = randomColor();
+  const text = invertColor(bg, true);
+  return { text, bg };
+};
+
+export const randomRange = (min: number, max: number) =>
+  Math.floor(Math.random() * (max - min + 1) + min);
+
+export function linkify(inputText: string) {
+  var replacedText, replacePattern1, replacePattern2, replacePattern3;
+
+  //URLs starting with http://, https://, or ftp://
+  replacePattern1 =
+    /(\b(https?|ftp):\/\/[-A-Z0-9+&@#/%?=~_|!:,.;]*[-A-Z0-9+&@#/%=~_|])/gim;
+  replacedText = inputText.replace(
+    replacePattern1,
+    '<a href="$1" target="_blank">$1</a>',
+  );
+
+  //URLs starting with "www." (without // before it, or it'd re-link the ones done above).
+  replacePattern2 = /(^|[^/])(www\.[\S]+(\b|$))/gim;
+  replacedText = replacedText.replace(
+    replacePattern2,
+    '$1<a href="http://$2" target="_blank">$2</a>',
+  );
+
+  //Change email addresses to mailto:: links.
+  replacePattern3 = /(([a-zA-Z0-9\-_.])+@[a-zA-Z_]+?(\.[a-zA-Z]{2,6})+)/gim;
+  replacedText = replacedText.replace(
+    replacePattern3,
+    '<a href="mailto:$1">$1</a>',
+  );
+
+  return replacedText;
 }

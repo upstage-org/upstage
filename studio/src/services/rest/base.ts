@@ -1,12 +1,12 @@
 import axios from "axios";
-import store from "@/store/index";
-import { notification } from "@/utils/notification";
-import config from "@/config";
+import store from "store";
+import { message } from "ant-design-vue";
+import config from "config";
 
-const baseURL = new URL(config.API_ENDPOINT).toString();
+const baseURL = new URL(config.SHARED?.API_ENDPOINT).toString();
 
 axios.defaults.baseURL = baseURL;
-axios.defaults.timeout = config.AXIOS_TIMEOUT;
+axios.defaults.timeout = config.SHARED?.AXIOS_TIMEOUT;
 axios.defaults.headers.common = {
   Accept: "application/json",
   "Content-Type": "application/json",
@@ -46,7 +46,7 @@ const responseInterceptor = axios.interceptors.response.use(
       if (!level) {
         level = "error";
       }
-      notification[level](message);
+      message[level](message);
     }
     const token = store.getters["auth/getToken"] || "";
 
