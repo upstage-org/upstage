@@ -20,13 +20,13 @@
 <script>
 import { computed, ref } from "vue";
 import { useStore } from "vuex";
-import ChatBox from "./settings/ChatBox";
-import ChatParameters from "./settings/ChatParameters";
-import VoiceParameters from "./settings/VoiceParameters";
-import SaveScene from "./settings/SaveScene";
+import ChatBox from "./settings/ChatBox.vue";
+import ChatParameters from "./settings/ChatParameters.vue";
+import VoiceParameters from "./settings/VoiceParameters.vue";
+import SaveScene from "./settings/SaveScene.vue";
 import Icon from "components/Icon.vue";
-import VolumeParameters from "./settings/VolumeParameters";
-import CreateRoom from "./settings/CreateRoom";
+import VolumeParameters from "./settings/VolumeParameters.vue";
+import CreateRoom from "./settings/CreateRoom.vue";
 
 export default {
   components: {

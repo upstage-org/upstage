@@ -1,4 +1,4 @@
-<script>
+<script lang="jsx">
 import Skeleton from "components/stage/Toolbox/Skeleton.vue";
 import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
@@ -45,7 +45,7 @@ export default {
         });
     });
 
-    watch(joined, () => (data.participantId = jitsi.room.myUserId()), {
+    watch(joined, () => (data.participantId = jitsi.room?.myUserId()), {
       immediate: true,
     });
 

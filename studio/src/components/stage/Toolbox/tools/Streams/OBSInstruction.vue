@@ -66,15 +66,14 @@ import Icon from "components/Icon.vue";
 import Modal from "components/Modal.vue";
 import Copy from "components/Copy.vue";
 import configs from "config";
-import { publicPath } from "@/../vue.config";
 
 export default {
   components: { Icon, Modal, Copy },
   props: ["url", "sign"],
   setup: (props) => {
-    const publishUrl = configs.SHARED?.STREAMING.publish;
+    const publishUrl = configs.STREAMING.publish;
     const streamKey = `${props.url}?sign=${props.sign}`;
-    return { publishUrl, streamKey, publicPath };
+    return { publishUrl, streamKey, publicPath: "/" };
   },
 };
 </script>

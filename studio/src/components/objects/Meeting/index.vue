@@ -66,7 +66,7 @@ export default {
 
 .frame {
   border: 2px solid black;
-  border-top: $green-bar;
+  border-top: 10px solid #007011;
   border-radius: 8px;
   box-sizing: border-box;
   overflow: hidden;

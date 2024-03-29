@@ -25,9 +25,9 @@
 
 <script>
 import { computed, provide, ref } from "vue";
-import TopBar from "./TopBar";
-import PanelItem from "./PanelItem";
-import PlayerChat from "./PlayerChat";
+import TopBar from "./TopBar.vue";
+import PanelItem from "./PanelItem.vue";
+import PlayerChat from "./PlayerChat.vue";
 import { useStore } from "vuex";
 
 export default {

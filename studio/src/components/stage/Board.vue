@@ -44,15 +44,15 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Avatar from "components/objects/Avatar/index";
-import Drawing from "components/objects/Drawing";
-import Stream from "components/objects/Streamer/index";
-import Meeting from "components/objects/Meeting/index";
-import Jitsi from "components/objects/Meeting/Jitsi";
-import Text from "components/objects/Text";
-import Curtain from "components/stage/Curtain";
-import Whiteboard from "components/stage/Whiteboard";
-import Image from "../Image";
+import Avatar from "components/objects/Avatar/index.vue";
+import Drawing from "components/objects/Drawing.vue";
+import Stream from "components/objects/Streamer/index.vue";
+import Meeting from "components/objects/Meeting/index.vue";
+import Jitsi from "components/objects/Meeting/Jitsi.vue";
+import Text from "components/objects/Text.vue";
+import Curtain from "components/stage/Curtain.vue";
+import Whiteboard from "components/stage/Whiteboard.vue";
+import Image from "../Image.vue";
 import anime from "animejs";
 import Backdrop from "./Backdrop.vue";
 

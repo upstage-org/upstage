@@ -11,7 +11,7 @@ export const createClient = (namespace: any) => ({
       headers: {},
     };
     const client = new GraphQLClient(
-      `${config.SHARED?.GRAPHQL_ENDPOINT}${namespace}/`,
+      `${config.GRAPHQL_ENDPOINT}${namespace}/`,
       options,
     );
     const token = store.getters["auth/getToken"];

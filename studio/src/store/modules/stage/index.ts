@@ -26,6 +26,8 @@ import {
   getDefaultStageSettings,
 } from "./reusable";
 import { getViewport } from "./reactiveViewport";
+import { stageGraph } from "services/graphql";
+import { useAttribute } from "services/graphql/composable";
 import { avatarSpeak, stopSpeaking } from "services/speech";
 import { nmsService } from "services/rest";
 import anime from "animejs";
@@ -232,6 +234,13 @@ export default {
         } else {
           state.preloading = false;
         }
+        const config = useAttribute({ value: model }, "config", true).value;
+        if (config) {
+          Object.assign(state.config, config);
+          state.config.ratio = config.ratio.width / config.ratio.height;
+        }
+        const cover = useAttribute({ value: model }, "cover", false).value;
+        state.model.cover = cover && absolutePath(cover);
       }
     },
     CLEAN_STAGE(state, cleanModel) {
@@ -1113,66 +1122,66 @@ export default {
       mqtt.sendMessage(TOPICS.REACTION, reaction);
     },
     async loadStage({ commit, dispatch }, { url, recordId }) {
-      // commit("CLEAN_STAGE", true);
-      // commit("SET_PRELOADING_STATUS", true);
-      // const { stage } = await stageGraph.loadStage(url, recordId);
-      // if (stage) {
-      //   commit("SET_MODEL", stage);
-      //   const { events } = stage;
-      //   if (recordId) {
-      //     commit("SET_REPLAY", {
-      //       timestamp: {
-      //         begin: events[0].mqttTimestamp,
-      //         current: events[0].mqttTimestamp,
-      //         end: events[events.length - 1].mqttTimestamp,
-      //       },
-      //     });
-      //   } else {
-      //     events.forEach((event) => dispatch("replayEvent", event));
-      //   }
-      // } else {
-      //   commit("SET_PRELOADING_STATUS", false);
-      // }
+      commit("CLEAN_STAGE", true);
+      commit("SET_PRELOADING_STATUS", true);
+      const { stage } = await stageGraph.loadStage(url, recordId);
+      if (stage) {
+        commit("SET_MODEL", stage);
+        const { events } = stage;
+        if (recordId) {
+          commit("SET_REPLAY", {
+            timestamp: {
+              begin: events[0].mqttTimestamp,
+              current: events[0].mqttTimestamp,
+              end: events[events.length - 1].mqttTimestamp,
+            },
+          });
+        } else {
+          events.forEach((event) => dispatch("replayEvent", event));
+        }
+      } else {
+        commit("SET_PRELOADING_STATUS", false);
+      }
     },
     async reloadPermission({ state }) {
-      // const permission = await stageGraph.loadPermission(
-      //   state.model.fileLocation,
-      // );
-      // if (permission) {
-      //   state.model.permission = permission;
-      // }
+      const permission = await stageGraph.loadPermission(
+        state.model.fileLocation,
+      );
+      if (permission) {
+        state.model.permission = permission;
+      }
     },
     async loadPermission({ state, commit }) {
-      // const permission = await stageGraph.loadPermission(
-      //   state.model.fileLocation,
-      // );
-      // if (permission == "owner" || permission == "editor") {
-      //   commit("SET_SHOW_CLEAR_CHAT_SETTINGS", true);
-      //   commit("SET_SHOW_DOWNLOAD_CHAT_SETTINGS", true);
-      // } else {
-      //   commit("SET_SHOW_CLEAR_CHAT_SETTINGS", false);
-      //   commit("SET_SHOW_DOWNLOAD_CHAT_SETTINGS", false);
-      // }
+      const permission = await stageGraph.loadPermission(
+        state.model.fileLocation,
+      );
+      if (permission == "owner" || permission == "editor") {
+        commit("SET_SHOW_CLEAR_CHAT_SETTINGS", true);
+        commit("SET_SHOW_DOWNLOAD_CHAT_SETTINGS", true);
+      } else {
+        commit("SET_SHOW_CLEAR_CHAT_SETTINGS", false);
+        commit("SET_SHOW_DOWNLOAD_CHAT_SETTINGS", false);
+      }
     },
     async reloadScenes({ state }) {
-      // state.isLoadingScenes = true;
-      // const scenes = await stageGraph.loadScenes(state.model.fileLocation);
-      // if (scenes) {
-      //   state.model.scenes = scenes;
-      // }
-      // state.isLoadingScenes = false;
+      state.isLoadingScenes = true;
+      const scenes = await stageGraph.loadScenes(state.model.fileLocation);
+      if (scenes) {
+        state.model.scenes = scenes;
+      }
+      state.isLoadingScenes = false;
     },
     async reloadMissingEvents({ state, dispatch }) {
-      // const lastEventId =
-      //   state.model.events[state.model.events.length - 1]?.id ?? 0;
-      // const events = await stageGraph.loadEvents(
-      //   state.model.fileLocation,
-      //   lastEventId,
-      // );
-      // if (events) {
-      //   events.forEach((event) => dispatch("replicateEvent", event));
-      //   state.model.events = state.model.events.concat(events);
-      // }
+      const lastEventId =
+        state.model.events[state.model.events.length - 1]?.id ?? 0;
+      const events = await stageGraph.loadEvents(
+        state.model.fileLocation,
+        lastEventId,
+      );
+      if (events) {
+        events.forEach((event) => dispatch("replicateEvent", event));
+        state.model.events = state.model.events.concat(events);
+      }
     },
     replaceScene({ state, commit, dispatch }, sceneId) {
       anime({

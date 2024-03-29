@@ -1,4 +1,4 @@
-<script>
+<script lang="jsx">
 import { provide } from "vue";
 import { useJitsi } from "./composable";
 
@@ -8,7 +8,7 @@ export default {
     provide("jitsi", jitsi);
     provide("joined", joined);
 
-    return () => <div>{() => slots.default()}</div>;
+    return () => slots.default();
   },
 };
 </script>

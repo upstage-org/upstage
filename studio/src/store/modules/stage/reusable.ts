@@ -46,13 +46,13 @@ export function deserializeObject(object) {
 
 export function namespaceTopic(topicName, stageUrl) {
   const url = stageUrl ?? store.getters["stage/url"];
-  const namespace = configs.SHARED?.MQTT_NAMESPACE;
+  const namespace = configs.MQTT_NAMESPACE;
   return `${namespace}/${url}/${topicName}`;
 }
 
 export function unnamespaceTopic(topicName) {
   const url = store.getters["stage/url"];
-  const namespace = configs.SHARED?.MQTT_NAMESPACE;
+  const namespace = configs.MQTT_NAMESPACE;
   return topicName.substring(namespace.length + url.length + 2);
 }
 

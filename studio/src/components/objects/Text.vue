@@ -25,7 +25,7 @@
 
 <script>
 import Object from "./Object.vue";
-import MenuContent from "./Avatar/ContextMenu"; // Text should inherit all of avatar behavior
+import MenuContent from "./Avatar/ContextMenu.vue"; // Text should inherit all of avatar behavior
 import { useStore } from "vuex";
 import { computed, onMounted, ref, watch } from "vue";
 

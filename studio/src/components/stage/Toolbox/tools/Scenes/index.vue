@@ -17,8 +17,8 @@ import { useStore } from "vuex";
 import Icon from "components/Icon.vue";
 import Loading from "components/Loading.vue";
 import { computed } from "vue";
-import Scene from "./Scene";
-import BlankScene from "./BlankScene";
+import Scene from "./Scene.vue";
+import BlankScene from "./BlankScene.vue";
 
 export default {
   components: { Icon, Loading, BlankScene, Scene },
@@ -40,7 +40,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-@import "styles/mixins.scss";
+@mixin gradientText($from, $to) {
+    background: linear-gradient(to top, $from, $to);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
 .fas.fa-plus {
   @include gradientText(#30ac45, #6fb1fc);
 }

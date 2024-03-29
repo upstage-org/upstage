@@ -14,19 +14,19 @@
 
 <script>
 import { onUnmounted, ref } from "vue";
-import Avatars from "./tools/Avatars";
-import Backdrops from "./tools/Backdrops";
-import Props from "./tools/Props";
-import Audio from "./tools/Audio";
-import Draw from "./tools/Draw/index";
-import Whiteboard from "./tools/Whiteboard";
-import Streams from "./tools/Streams/index";
-import Meeting from "./tools/Meeting/index";
-import Text from "./tools/Text";
-import Settings from "./tools/Settings";
-import Depth from "./tools/Depth";
-import Curtain from "./tools/Curtain";
-import Scenes from "./tools/Scenes";
+import Avatars from "./tools/Avatars.vue";
+import Backdrops from "./tools/Backdrops.vue";
+import Props from "./tools/Props.vue";
+import Audio from "./tools/Audio.vue";
+import Draw from "./tools/Draw/index.vue";
+import Whiteboard from "./tools/Whiteboard.vue";
+import Streams from "./tools/Streams/index.vue";
+import Meeting from "./tools/Meeting/index.vue";
+import Text from "./tools/Text.vue";
+import Settings from "./tools/Settings.vue";
+import Depth from "./tools/Depth.vue";
+import Curtain from "./tools/Curtain.vue";
+import Scenes from "./tools/Scenes/index.vue";
 
 export default {
   props: ["tool"],
@@ -111,7 +111,7 @@ export default {
       position: relative;
       width: 100px;
       height: 88px;
-      background: $light;
+      background: #F5F5F5;
       display: flex;
       flex-direction: column;
       justify-content: center;

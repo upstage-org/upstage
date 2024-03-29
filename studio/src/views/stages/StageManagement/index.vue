@@ -62,7 +62,6 @@ import { provide, watch } from "vue";
 import { useFirst, useRequest } from "services/graphql/composable";
 import { stageGraph } from "services/graphql";
 import Loading from "components/Loading.vue";
-import "styles/bulma.css";
 
 export default {
   props: ["id"],

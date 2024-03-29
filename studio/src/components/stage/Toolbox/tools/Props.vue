@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import Skeleton from "../Skeleton";
+import Skeleton from "../Skeleton.vue";
 import { useStore } from "vuex";
 
 export default {

@@ -1,5 +1,5 @@
 <template>
-  <div class="locale-changer">
+  <div class="locale-changer m-3">
     <a-select
       v-model:value="$i18n.locale"
       @update:value="persistLocale"

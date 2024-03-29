@@ -9,21 +9,19 @@
         :slash="showPassword"
         @click="() => (showPassword = !showPassword)"
       />
+      <a className="icon is-small is-right clickable" @click="() => (showPassword = !showPassword)">
+        <i :class="`fas fa-${showPassword ? 'eye-slash' : 'eye'}`"></i>
+      </a>
     </template>
   </Field>
 </template>
 
-<script>
+<script lang="jsx">
 import { ref } from "vue";
-import Field from "./Field";
+import Field from "./Field.vue";
 export default {
   components: {
-    Field,
-    Eye: (props) => (
-      <a className="icon is-small is-right clickable" onClick={props.onClick}>
-        <i className={`fas fa-${props.slash ? "eye-slash" : "eye"}`}></i>
-      </a>
-    ),
+    Field
   },
   setup: () => {
     const showPassword = ref(false);

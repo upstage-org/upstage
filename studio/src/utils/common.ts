@@ -1,28 +1,11 @@
+// @ts-nocheck
 import configs from "config";
 import { SharedAuth, SharedConfigs } from "models/config";
 import { User as LegacyUser } from "models/studio";
 import { User } from "genql/studio";
 
 export function absolutePath(path: string) {
-  return `${configs.SHARED?.STATIC_ASSETS_ENDPOINT}${path}`;
-}
-
-export function getSharedConfig(): SharedConfigs {
-  try {
-    const sharedConfig = JSON.parse(localStorage.getItem("configs") ?? "");
-    return sharedConfig;
-  } catch (error) {
-    if (import.meta.env.PROD) {
-      localStorage.clear(); // Remove shared auth so that it will ask you to visit Dashboard for login
-    }
-    return {
-      GRAPHQL_ENDPOINT: import.meta.env.VITE_GRAPHQL_ENDPOINT,
-      MQTT_CONNECTION: {},
-      STREAMING: {
-        auth: {},
-      },
-    } as SharedConfigs;
-  }
+  return `${configs.STATIC_ASSETS_ENDPOINT}${path}`;
 }
 
 export function getSharedAuth(): SharedAuth | undefined {
@@ -208,4 +191,37 @@ export function linkify(inputText: string) {
   );
 
   return replacedText;
+}
+
+export function outOfViewportPosition(el) {
+  const rect = el.getBoundingClientRect();
+  if (rect.top < 0) {
+    return "top";
+  }
+  if (rect.left < 0) {
+    return "left";
+  }
+  if (
+    rect.bottom > (window.innerHeight || document.documentElement.clientHeight)
+  ) {
+    return "bottom";
+  }
+  if (
+    rect.right > (window.innerWidth || document.documentElement.clientWidth)
+  ) {
+    return "right";
+  }
+  return false;
+}
+export function throttle(callback, limit) {
+  let wait = false;
+  return function (...args) {
+    if (!wait) {
+      callback.call(this, ...args);
+      wait = true;
+      setTimeout(function () {
+        wait = false;
+      }, limit);
+    }
+  };
 }

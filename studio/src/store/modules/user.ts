@@ -1,6 +1,9 @@
 // @ts-nocheck
-import { displayName } from "utils/common";
+import { router } from "../../router";
+import { userGraph } from "services/graphql";
+import { displayName, logout } from "utils/auth";
 import { ROLES } from "utils/constants";
+import { message } from "ant-design-vue";
 
 export default {
   namespaced: true,
@@ -27,7 +30,28 @@ export default {
   actions: {
     async fetchCurrent({ commit }) {
       commit("SET_LOADING_USER", true);
-      
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        commit("SET_USER_DATA", currentUser);
+        return currentUser;
+      } catch (error) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
+          logout();
+
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            message.warning("You have been logged out of this session!");
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
     async saveNickname({ commit, dispatch, getters }, { nickname }) {
       const avatar = getters.avatar;
@@ -52,57 +76,57 @@ export default {
     },
     async checkIsAdmin({ commit }) {
       commit("SET_LOADING_USER", true);
-      // try {
-      //   const { currentUser } = await userGraph.currentUser();
-      //   return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(currentUser?.role);
-      // } catch (error) {
-      //   if (
-      //     [
-      //       "Missing X-Access-Token Header",
-      //       "Signature verification failed",
-      //       "Signature has expired",
-      //     ].some((message) => error.message?.includes(message))
-      //   ) {
-      //     //logout();
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        return [ROLES.ADMIN, ROLES.SUPER_ADMIN].includes(currentUser?.role);
+      } catch (error) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
+          logout();
 
-      //     // if (router.currentRoute.value.meta.requireAuth) {
-      //     //   router.push("/login");
-      //     //   notification.warning("You have been logged out of this session!");
-      //     // }
-      //   }
-      // } finally {
-      //   commit("SET_LOADING_USER", false);
-      // }
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            message.warning("You have been logged out of this session!");
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
     async checkIsGuest({ commit }) {
       commit("SET_LOADING_USER", true);
-      // try {
-      //   const { currentUser } = await userGraph.currentUser();
-      //   if (!currentUser) {
-      //     return true;
-      //   }
-      //   if (currentUser.role === ROLES.GUEST) {
-      //     return true;
-      //   }
-      //   return false;
-      // } catch (error) {
-      //   if (
-      //     [
-      //       "Missing X-Access-Token Header",
-      //       "Signature verification failed",
-      //       "Signature has expired",
-      //     ].some((message) => error.message?.includes(message))
-      //   ) {
-      //     logout();
+      try {
+        const { currentUser } = await userGraph.currentUser();
+        if (!currentUser) {
+          return true;
+        }
+        if (currentUser.role === ROLES.GUEST) {
+          return true;
+        }
+        return false;
+      } catch (error) {
+        if (
+          [
+            "Missing X-Access-Token Header",
+            "Signature verification failed",
+            "Signature has expired",
+          ].some((message) => error.message?.includes(message))
+        ) {
+          logout();
 
-      //     // if (router.currentRoute.value.meta.requireAuth) {
-      //     //   router.push("/login");
-      //     //   notification.warning("You have been logged out of this session!");
-      //     // }
-      //   }
-      // } finally {
-      //   commit("SET_LOADING_USER", false);
-      // }
+          if (router.currentRoute.value.meta.requireAuth) {
+            router.push("/login");
+            message.warning("You have been logged out of this session!");
+          }
+        }
+      } finally {
+        commit("SET_LOADING_USER", false);
+      }
     },
   },
   getters: {

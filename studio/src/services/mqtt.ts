@@ -12,7 +12,7 @@ export default function buildClient() {
   return {
     client: null,
     connect() {
-      const { url, ...options } = config.SHARED?.MQTT_CONNECTION;
+      const { url, ...options } = config.MQTT_CONNECTION;
       const connectUrl = url;
       const clientId = uuidv4();
       this.client = connect(connectUrl, {

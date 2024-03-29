@@ -8,8 +8,7 @@
 
 <script setup>
 import { defineProps } from "vue";
-import config from "/../vue.config";
-import PlayerAudienceCounter from "components/stage/PlayerAudienceCounter";
+import PlayerAudienceCounter from "components/stage/PlayerAudienceCounter.vue";
 import { absolutePath } from "utils/common";
 
 const props = defineProps({
@@ -23,26 +22,26 @@ const props = defineProps({
 });
 console.log(
   props.fallbackCover,
-  `${config.publicPath || "/"}img/${props.fallbackCover}`,
+  `/img/${props.fallbackCover}`,
 );
 const coverImage = (src) =>
-  src ? absolutePath(src) : `${config.publicPath || "/"}img/${props.fallbackCover}`;
+  src ? absolutePath(src) : `/img/${props.fallbackCover}`;
 </script>
 
 <style lang="scss" scoped>
-
 .stage {
-  @include textShadow;
+  color: black;
+  text-shadow: -3px 0 #007011;
   position: relative;
   font-weight: bold;
   font-size: 25px;
-  border: 1px solid $black;
-  border-top: 10px solid $primary;
+  border: 1px solid black;
+  border-top: 10px solid #007011;
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
-  box-shadow: 10px 5px 0 0 $black;
+  box-shadow: 10px 5px 0 0 black;
   color: white;
   border-radius: 12px;
   overflow: hidden;

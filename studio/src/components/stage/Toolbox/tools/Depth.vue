@@ -19,7 +19,7 @@
 <script>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import Skeleton from "../Skeleton";
+import Skeleton from "../Skeleton.vue";
 import Icon from "components/Icon.vue";
 
 export default {

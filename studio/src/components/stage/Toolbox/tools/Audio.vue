@@ -211,7 +211,7 @@ export default {
         transform-origin: left top;
       }
       .slider::-webkit-slider-thumb {
-        background-color: $primary;
+        background-color: #007011;
         border-color: #F5F5F5;
       }
     }

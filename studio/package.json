@@ -1,6 +1,7 @@
 {
   "name": "studio",
-  "version": "0.0.0",
+  "version": "2.0.7",
+  "versionAlias": "Sapporo-2.0.7",
   "license": "GPL-3.0",
   "scripts": {
     "serve": "vite --port=3000",
@@ -24,6 +25,7 @@
     "@tiptap/vue-3": "^2.1.13",
     "@vue/apollo-composable": "^4.0.0-beta.12",
     "@vueuse/core": "^6.7.3",
+    "@yeger/vue-masonry-wall": "^3.0.29",
     "animejs": "^3.2.1",
     "ant-design-vue": "^4.0.3",
     "autoprefixer": "^10.3.7",
@@ -34,6 +36,8 @@
     "bulma-toast": "^2.4.1",
     "bulma-tooltip": "^3.0.2",
     "core-js": "^3.6.5",
+    "emoji-picker-element": "^1.4.0",
+    "flv.js": "^1.5.0",
     "graphql": "^15.6.1",
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.12.5",
@@ -55,6 +59,7 @@
     "vue-i18n": "^9.5.0",
     "vue-router": "4",
     "vue-slicksort": "^2.0.0-alpha.5",
+    "vue-turnstile": "^1.0.5",
     "vuex": "^4.0.0-0",
     "vuex-persistedstate": "^4.0.0-beta.1"
   },

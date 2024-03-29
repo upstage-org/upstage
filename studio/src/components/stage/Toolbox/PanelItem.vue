@@ -4,7 +4,7 @@
       changeTool(name);
       $emit('click');
     "
-    :class="{ 'is-active': tool.value === name }"
+    :class="{ 'is-active': tool?.value === name }"
     class="panel-block button has-tooltip-right"
     :data-tooltip="label ?? name"
   >
