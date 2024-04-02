@@ -63,7 +63,7 @@ import {
   useQuery,
 } from "services/graphql/composable";
 import { reactive, ref } from "vue";
-import { computed, inject, watch, watchEffect } from "vue";
+import { computed, inject, watch, onMounted } from "vue";
 import { includesIgnoreCase, displayName } from "utils/common";
 import { useStore } from "vuex";
 import MultiframePreview from "./MultiframePreview.vue";
@@ -86,6 +86,7 @@ export default {
     const { whoami } = useUpdateProfile();
     const stage = inject("stage");
     const selectedMedia = ref([]);
+    const medias = ref(stage);
     const totalSize = ref(0);
     const { loading, data } = useQuery(stageGraph.assignableMedia);
     const { loading: saving, save } = useMutation(stageGraph.saveStageMedia);
@@ -107,7 +108,7 @@ export default {
       return mediaList;
     });
 
-    watchEffect(() => {
+    const mapData = () => {
       if (!stage.value || !mediaList.value) return;
       selectedMedia.value = (stage.value.media || []).map((m) =>
         mediaList.value.find((media) => media.dbId === m.id),
@@ -118,6 +119,14 @@ export default {
           0,
         );
       }
+    }
+
+    onMounted(()=>{
+      mapData();
+    });
+
+    watch([mediaList, medias], () => {
+      mapData();
     });
 
     const saveMedia = async () => {
