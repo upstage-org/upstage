@@ -1,4 +1,6 @@
-
+// @ts-nocheck
+import { stageGraph } from "services/graphql";
+import { useRequest } from "services/graphql/composable";
 
 export default {
   namespaced: true,
@@ -40,21 +42,21 @@ export default {
   },
   actions: {
     async fetchStages({ commit }) {
-      // try {
-      //   // commit('SET_STAGE_LIST', null)
-      //   const { nodes, refresh } = useRequest(stageGraph.stageList);
-      //   await refresh();
-      //   if (nodes.value) {
-      //     nodes.value.forEach((node) => {
-      //       node.attributes.forEach(
-      //         (attr) => (node[attr.name] = attr.description),
-      //       );
-      //     });
-      //   }
-      //   commit("SET_STAGE_LIST", nodes);
-      // } catch {
-      //   commit("SET_STAGE_LIST", []);
-      // }
+      try {
+        // commit('SET_STAGE_LIST', null)
+        const { nodes, refresh } = useRequest(stageGraph.stageList);
+        await refresh();
+        if (nodes.value) {
+          nodes.value.forEach((node) => {
+            node.attributes.forEach(
+              (attr) => (node[attr.name] = attr.description),
+            );
+          });
+        }
+        commit("SET_STAGE_LIST", nodes);
+      } catch {
+        commit("SET_STAGE_LIST", []);
+      }
     },
   },
 };
