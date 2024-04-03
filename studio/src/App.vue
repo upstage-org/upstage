@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { apolloClient } from "apollo";
-import { provide } from "vue";
+import { provide, onMounted } from "vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import "styles/bulma.css";
 import "styles/custom.less";
@@ -12,6 +12,12 @@ provide(DefaultApolloClient, apolloClient);
 const store = useStore();
 store.dispatch("user/fetchCurrent");
 store.dispatch("config/fetchConfig");
+onMounted(() => {
+  caches.keys().then((keyList) => {
+    console.log("===keyList", keyList)
+    Promise.all(keyList.map((key) => caches.delete(key)))
+  })
+});
 
 </script>
 
