@@ -14,7 +14,6 @@ store.dispatch("user/fetchCurrent");
 store.dispatch("config/fetchConfig");
 onMounted(() => {
   caches.keys().then((keyList) => {
-    console.log("===keyList", keyList)
     Promise.all(keyList.map((key) => caches.delete(key)))
   })
 });

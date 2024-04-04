@@ -140,7 +140,7 @@ router.beforeEach(async (to, from, next) => {
     next("/login");
   }
 
-  if ((to.name === "Home" || to.name === "Login" || to.name === "Register") && loggedIn) {
+  if ((to.name === "Login" || to.name === "Register") && loggedIn) {
     next("/stages");
   }
 
