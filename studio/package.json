@@ -10,7 +10,7 @@
     "format": "npx prettier --write \"./*.{js,ts,vue,json}\" \"./src/**/*.{js,ts,vue,json}\"",
     "serve:localhost": "vite --mode localhost --port=3000",
     "start": "vite preview",
-    "i18n": "node ../dashboard/src/i18n/scan.js",
+    "i18n": "node ./src/i18n/scan.js",
     "genql": "genql --endpoint https://upstage.live/api/studio_graphql/ --output ./src/genql/studio && genql --endpoint https://upstage.live/api/config_graphql/ --output ./src/genql/config"
   },
   "dependencies": {
