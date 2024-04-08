@@ -6,7 +6,7 @@
           :disabled="!urlValid">
           {{ $t("save_stage") }}
         </button>
-        <ClearChat />
+        <ClearChatInStage />
         <SweepStage />
         <DuplicateStage :stage="stage">
           <button class="button ml-2 is-primary">{{ $t("duplicate") }}</button>
@@ -136,7 +136,7 @@ import ImagePicker from "components/form/ImagePicker.vue";
 import MultiTransferAccessColumn from "components/MultiTransferAccessColumn.vue";
 import { useRouter } from "vue-router";
 import { displayName, debounce } from "utils/common";
-import ClearChat from "./ClearChat.vue";
+import ClearChatInStage from "./ClearChat.vue";
 import SweepStage from "./SweepStage.vue";
 import DuplicateStage from "components/stage/DuplicateStage.vue";
 import DeleteStage from "components/stage/DeleteStage.vue";
@@ -148,7 +148,7 @@ import { message } from "ant-design-vue";
 export default {
   components: {
     Field,
-    ClearChat,
+    ClearChatInStage,
     SweepStage,
     MultiTransferAccessColumn,
     ImagePicker,
