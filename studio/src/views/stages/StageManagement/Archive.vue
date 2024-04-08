@@ -72,7 +72,7 @@
       </router-link>
     </template>
     <template #actions="{ item }">
-      <Confirm
+      <CustomConfirm
         @confirm="(complete) => updatePerformance(item, complete)"
         :loading="updating"
         :only-yes="true"
@@ -93,8 +93,8 @@
             <Icon src="edit.svg" />
           </button>
         </template>
-      </Confirm>
-      <Confirm
+      </CustomConfirm>
+      <CustomConfirm
         @confirm="(complete) => deletePerformance(item, complete)"
         :loading="deleting"
       >
@@ -108,10 +108,10 @@
           <span class="has-text-danger">{{
             $t("all_of_its_replay_and_chat")
           }}</span
-          >. This cannot be undo!
+          >. This cannot be undone!
           <strong>Are you sure you want to continue?</strong>
         </div>
-      </Confirm>
+      </CustomConfirm>
     </template>
   </DataTable>
 </template>
@@ -121,7 +121,7 @@ import Messages from "components/stage/Chat/Messages.vue";
 import DataTable from "components/DataTable/index.vue";
 import Modal from "components/Modal.vue";
 import Icon from "components/Icon.vue";
-import Confirm from "components/CustomConfirm.vue";
+import CustomConfirm from "components/CustomConfirm.vue";
 import Field from "components/form/Field.vue";
 import ClearChat from "./ClearChat.vue";
 import SweepStage from "./SweepStage.vue";
@@ -139,7 +139,7 @@ export default {
     SweepStage,
     Modal,
     Icon,
-    Confirm,
+    CustomConfirm,
     Field,
   },
   setup: () => {

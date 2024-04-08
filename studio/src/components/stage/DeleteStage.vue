@@ -1,6 +1,6 @@
 <script setup>
 import { defineProps } from "vue";
-import Confirm from "components/CustomConfirm.vue";
+import CustomConfirm from "components/CustomConfirm.vue";
 import { stageGraph } from "services/graphql";
 import { useMutation } from "services/graphql/composable";
 
@@ -20,7 +20,7 @@ const deleteStage = async (complete) => {
 </script>
 
 <template>
-  <Confirm @confirm="(complete) => deleteStage(complete)" :loading="loading">
+  <CustomConfirm @confirm="(complete) => deleteStage(complete)" :loading="loading">
     <p>
       Deleting
       <b>{{ stage.name }}</b> will also remove all records and chat that ever
@@ -43,5 +43,5 @@ const deleteStage = async (complete) => {
     <template #trigger>
       <slot></slot>
     </template>
-  </Confirm>
+  </CustomConfirm>
 </template>

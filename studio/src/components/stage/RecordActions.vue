@@ -25,7 +25,7 @@
       </button>
     </p>
     <p class="control">
-      <Confirm
+      <CustomConfirm
         @confirm="(complete) => deleteRecording(complete)"
         :loading="deleting"
       >
@@ -39,11 +39,11 @@
         <div class="has-text-centered">
           Are you sure you want to delete this recording without saving?
         </div>
-      </Confirm>
+      </CustomConfirm>
     </p>
   </div>
   <template v-else>
-    <Confirm
+    <CustomConfirm
       @confirm="(complete) => startRecording(complete)"
       :loading="loading"
     >
@@ -71,7 +71,7 @@
           <i class="fas fa-video has-text-primary"></i>
         </button>
       </template>
-    </Confirm>
+    </CustomConfirm>
     <router-link
       :to="`/stage-management/${stage.id}/archive`"
       class="button is-small is-light is-success"
@@ -85,7 +85,7 @@
 </template>
 
 <script>
-import Confirm from "components/CustomConfirm.vue";
+import CustomConfirm from "components/CustomConfirm.vue";
 import Loading from "components/Loading.vue";
 import Field from "components/form/Field.vue";
 import { reactive, ref } from "vue";

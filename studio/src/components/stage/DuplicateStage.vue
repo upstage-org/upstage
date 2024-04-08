@@ -1,5 +1,5 @@
 <template>
-  <Confirm @confirm="(complete) => duplicateStage(complete)" :loading="loading">
+  <CustomConfirm @confirm="(complete) => duplicateStage(complete)" :loading="loading">
     <Field v-model="name" label="Enter new stage name" :placeholder="defaultName" />
     <template #trigger>
       <slot></slot>
@@ -17,12 +17,12 @@
       </span>
       <span>{{ $t("duplicate") }}</span>
     </template>
-  </Confirm>
+  </CustomConfirm>
 </template>
 
 <script setup>
 import { defineProps, computed, inject, ref } from "vue";
-import Confirm from "components/CustomConfirm.vue";
+import CustomConfirm from "components/CustomConfirm.vue";
 import Field from "components/form/Field.vue";
 import { useMutation } from "services/graphql/composable";
 import { stageGraph } from "services/graphql";
