@@ -55,7 +55,7 @@
         <div class="field">
           <div class="control">
             <textarea class="textarea"
-              placeholder="enter a description (previously only for the splash screen that displays while loading - do we need 2 description fields now, one for the foyer display & one for the splash screen?)"
+              placeholder="enter a description that will appear on the screen while your Stage is loading."
               v-model="form.description"></textarea>
           </div>
         </div>
