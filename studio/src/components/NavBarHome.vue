@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <Logo link="https://www.upstage.org.nz" />
+      <Logo link="https://www.upstage.org.nz" target="_blank"/>
       <LanguageSelector class="is-hidden-desktop" />
       <a
         role="button"

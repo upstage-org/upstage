@@ -1,5 +1,5 @@
 <template>
-  <a v-if="link" class="navbar-item" :href="link">
+  <a v-if="link" class="navbar-item" :href="link" :target="target || '_self'">
     <img src="assets/upstage.png" />
   </a>
   <router-link v-else class="navbar-item" :to="to ?? '/'">
@@ -9,6 +9,6 @@
 
 <script>
 export default {
-  props: ["link", "to"],
+  props: ["link", "to", "target"],
 };
 </script>
