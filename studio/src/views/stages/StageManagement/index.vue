@@ -1,22 +1,24 @@
 <template>
-  <a-layout class="w-full shadow rounded-xl bg-white stage_container">
-    <section class="hero is-small is-primary is-bold">
-      <div class="hero-body">
-        <template v-if="id">
-          <h1 class="title" v-if="stage.name">
+  <Header>
+    <template v-if="id">
+      <a-space class="flex-wrap">
+        <div class="mr-4">
+          <h3 class="stage_title mb-0" v-if="stage.name">
             {{ stage.name }}
-            <router-link :to="`/${stage.fileLocation}`" target="_blank" class="button is-light">
-              <span>{{ $t("enter") }}</span>
-              <span class="icon">
-                <i class="fas fa-chevron-right"></i>
-              </span>
-            </router-link>
-          </h1>
-          <p class="subtitle">{{ $t("stage_management") }}</p>
-        </template>
-        <h1 v-else class="title">{{ $t("create_new_stage") }}</h1>
-      </div>
-    </section>
+          </h3>
+          <p class="mb-0">{{ $t("stage_management") }}</p>
+        </div>
+        <router-link :to="`/${stage.fileLocation}`" target="_blank" class="button is-primary">
+          <span>{{ $t("enter") }}</span>
+          <span class="icon">
+            <i class="fas fa-chevron-right"></i>
+          </span>
+        </router-link>
+      </a-space>
+    </template>
+    <h3 v-else class="stage_title mb-0">{{ $t("create_new_stage") }}</h3>
+  </Header>
+  <a-layout class="w-full shadow rounded-xl bg-white stage_container">
     <div class="container-fluid">
       <div class="columns">
         <div class="column is-3 is-2-fullhd">
@@ -24,9 +26,9 @@
             <ul class="menu-list">
               <li>
                 <router-link :to="id
-          ? `/stages/stage-management/${id}/`
-          : '/stages/new-stage'
-          " exact-active-class="is-active">{{ $t("general_information") }}</router-link>
+      ? `/stages/stage-management/${id}/`
+      : '/stages/new-stage'
+      " exact-active-class="is-active">{{ $t("general_information") }}</router-link>
               </li>
               <template v-if="id">
                 <li>
@@ -34,12 +36,12 @@
                 </li>
                 <li id="media-menu">
                   <router-link to="media" exact-active-class="is-active">{{
-          $t("media")
-        }}</router-link>
+      $t("media")
+    }}</router-link>
                 </li>
                 <li>
                   <router-link to="archive" exact-active-class="is-active">{{
-            $t("archive")
+        $t("archive")
                     }}</router-link>
                 </li>
               </template>
@@ -62,6 +64,7 @@ import { provide, watch } from "vue";
 import { useFirst, useRequest } from "services/graphql/composable";
 import { stageGraph } from "services/graphql";
 import Loading from "components/Loading.vue";
+import Header from "components/Header.vue";
 
 export default {
   props: ["id"],
@@ -94,5 +97,10 @@ export default {
 .stage_container {
   overflow-y: auto;
   overflow-x: hidden;
+}
+
+.stage_title {
+  font-size: 22px;
+  font-weight: bold;
 }
 </style>

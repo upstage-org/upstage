@@ -8,7 +8,6 @@
 </template>
 
 <script>
-import Authorized from "components/Authorized.vue";
 import Sidebar from "components/Sidebar.vue";
 import Footer from "components/Footer.vue";
 import OneTimePurchase from "components/payment/OneTimePurchase.vue";

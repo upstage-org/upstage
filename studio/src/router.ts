@@ -160,17 +160,6 @@ router.beforeEach(async (to, from, next) => {
     });
   }
 
-  // if (
-  //   (to.fullPath.includes("backstage") || to.fullPath.includes("studio")) &&
-  //   loggedIn
-  // ) {
-  //   await store.dispatch("user/checkIsGuest").then((isGuest) => {
-  //     if (isGuest) {
-  //       next("/");
-  //     }
-  //   });
-  // }
-
   next();
   document.title = `UpStage ${to.name ? ("- " + to.name) : ""}`;
 });
