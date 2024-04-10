@@ -52,6 +52,7 @@ export const router = createRouter({
       path: "/",
       component: () => import("layout/Authorized.vue"),
       meta: { requireAuth: true },
+      name: "Dashboard",
       children: [
         {
           path: "/stages",
@@ -155,6 +156,14 @@ router.beforeEach(async (to, from, next) => {
   if (to.fullPath.includes("admin") && loggedIn) {
     await store.dispatch("user/checkIsAdmin").then((isAdmin) => {
       if (!isAdmin) {
+        next("/");
+      }
+    });
+  }
+
+  if (to.meta.requireAuth && loggedIn) {
+    await store.dispatch("user/checkIsGuest").then((isGuest) => {
+      if (isGuest) {
         next("/");
       }
     });
