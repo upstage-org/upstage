@@ -124,7 +124,7 @@ export default {
       if (!form.username || !form.password || !form.email) return;
       if (confirmPasswordError.value) return;
       if (!agreed.value) {
-        message.error("Please aggree to the Terms of Service!");
+        message.error("Please agree to the Terms & Conditions");
         return;
       }
       try {
