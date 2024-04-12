@@ -378,7 +378,7 @@ const { whoami, isAdmin } = useWhoAmI();
                 </template>
               </a-button>
             </a>
-            <a-popconfirm title="Are you sure delete this media?" ok-text="Yes" cancel-text="No"
+            <a-popconfirm title="Are you sure you want to delete this media?" ok-text="Yes" cancel-text="No"
               @confirm="deleteMedia(record)" placement="left" :ok-button-props="{ danger: true }" loading="deleting">
               <a-button type="dashed" danger>
 
