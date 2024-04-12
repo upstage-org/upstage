@@ -48,13 +48,14 @@ const handleQuickLogin = async () => {
 </script>
 
 <template>
-  <suspense v-if="auth && (auth.token || auth.refresh_token)">
+  <!-- <suspense v-if="auth && (auth.token || auth.refresh_token)"> -->
+  <suspense>
     <template #fallback>
       <a-spin />
     </template>
     <slot></slot>
   </suspense>
-  <a-result
+  <!-- <a-result
     v-else
     status="403"
     title="UpStage Player Required"
@@ -70,5 +71,5 @@ const handleQuickLogin = async () => {
         >
       </a-tooltip>
     </template>
-  </a-result>
+  </a-result> -->
 </template>
