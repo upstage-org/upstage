@@ -19,7 +19,7 @@ def password_reset(user, otp):
 Hi <b>{display_user(user)}</b>,
 <br>
 <br>
-We received a request to reset your forgotten password. Please use the following code to proceed your password reset:
+We received a request to reset your forgotten password. Please use the following code for your password reset:
 <b style="color: #007011">{otp}</b>
 <br>
 The code will expire in 30 minutes.
@@ -113,7 +113,7 @@ def waiting_request_media_approve(user, media):
 Hi <b>{display_user(user)}</b>,
 <br>
 <br>
-Your permission request for media <b>{media.name}</b> has been sent to the owner, please wait to approve.
+Your permission request to use media <b>{media.name}</b> has been sent to the owner. Please wait for a response.
 <br>
 <br>
 {footer}
@@ -126,7 +126,7 @@ def request_permission_acknowledgement(user, media, note):
 Hi <b>{display_user(media.owner)}</b>,
 <br>
 <br>
-{display_user(user)} has indicated that they wish to use your media <b>{media.name}</b> and will acknoweldege it as you have specified.
+{display_user(user)} has been granted permission to use your media <b>{media.name}</b>.
 <br>
 <br>
 Additional notes: {note}

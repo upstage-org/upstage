@@ -625,14 +625,14 @@ class RequestPermission(graphene.Mutation):
                     )
                     await send(
                         user.email,
-                        f"Waiting permission request for media {asset.name} approve",
+                        f"Waiting permission request approval/denial for media {asset.name}",
                         waiting_request_media_approve(user, asset),
                     )
                 else:
                     asset_usage.approved = True
                     await send(
                         user.email,
-                        f"{display_user(user)} want to use yout media {asset.name} acknowledge media",
+                        f"{display_user(user)} was approved to use media: {asset.name}",
                         request_permission_acknowledgement(user, asset, note),
                     )
                 local_db_session.add(asset_usage)
