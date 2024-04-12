@@ -120,13 +120,16 @@ Your permission request for media <b>{media.name}</b> has been sent to the owner
 """
 
 
-def request_permission_acknowledgement(user, media):
+def request_permission_acknowledgement(user, media, note):
     return f"""
 <p>
 Hi <b>{display_user(media.owner)}</b>,
 <br>
 <br>
 {display_user(user)} has indicated that they wish to use your media <b>{media.name}</b> and will acknoweldege it as you have specified.
+<br>
+<br>
+Additional notes: {note}
 <br>
 <br>
 {footer}    
