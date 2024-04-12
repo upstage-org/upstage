@@ -44,7 +44,7 @@
             :colspan="headers.length + numbered"
           >
             <i class="fas fa-frown fa-4x"></i>
-            <div>Sorry, no record match your criteria!</div>
+            <div>No replay recordings have been saved for this stage yet.</div>
           </td>
         </tr>
       </tfoot>
