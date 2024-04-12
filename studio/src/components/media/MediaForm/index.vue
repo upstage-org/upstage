@@ -112,7 +112,7 @@ const whoami = inject<ComputedRef<User>>("whoami");
 if (whoami) {
   watch(whoami, () => {
     if (whoami.value) {
-      owner.value = whoami.value.username;
+      owner.value = whoami?.value.username;
     }
   });
 }

@@ -130,7 +130,7 @@ watch(params, () => {
   });
 });
 
-const columns: ColumnType<Media>[] = [
+const columns: ComputedRef<ColumnType<Media>[]> = computed((): ColumnType<Media>[] => [
   {
     title: t("preview"),
     align: "center",
@@ -201,7 +201,7 @@ const columns: ColumnType<Media>[] = [
     fixed: "right",
     key: "actions",
   },
-];
+]);
 
 interface Pagination {
   current: number;
@@ -316,21 +316,13 @@ const { whoami, isAdmin } = useWhoAmI();
 
 <template>
   <a-layout class="w-full shadow rounded-xl bg-white overflow-hidden">
-    <a-table
-      class="w-full overflow-auto"
-      :columns="columns"
-      :data-source="dataSource"
-      rowKey="id"
-      :loading="loading"
-      @change="handleTableChange"
-      :pagination="
-        {
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: result ? result.media.totalCount : 0,
-        } as Pagination
-      "
-    >
+    <a-table class="w-full overflow-auto" :columns="columns as ColumnType<Media>[]" :data-source="dataSource"
+      rowKey="id" :loading="loading" @change="handleTableChange" :pagination="{
+      showQuickJumper: true,
+      showSizeChanger: true,
+      total: result ? result.media.totalCount : 0,
+    } as Pagination
+      ">
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'preview'">
           <MediaPreview :media="record as Media" />
@@ -349,40 +341,26 @@ const { whoami, isAdmin } = useWhoAmI();
           </span>
         </template>
         <template v-if="column.key === 'stages'">
-          <a
-            v-for="(stage, i) in text"
-            :key="i"
-            :href="`${configs.UPSTAGE_URL}/${stage.url}`"
-            target="_blank"
-          >
+          <a v-for="(stage, i) in text" :key="i" :href="`${configs.UPSTAGE_URL}/${stage.url}`" target="_blank">
             <a-tag color="#007011">{{ stage.name }}</a-tag>
           </a>
         </template>
         <template v-if="column.key === 'tags'">
-          <a-tag
-            v-for="(tag, i) in text"
-            :key="i"
-            :color="tag"
-            @click="filterTag(tag)"
-            class="cursor-pointer"
-            >{{ tag }}
+          <a-tag v-for="(tag, i) in text" :key="i" :color="tag" @click="filterTag(tag)" class="cursor-pointer">{{ tag }}
           </a-tag>
         </template>
         <template v-if="column.key === 'size'">
-          <a-tag
-            v-if="text"
-            :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'"
-          >
+          <a-tag v-if="text" :color="text < 100000 ? 'green' : text < 500000 ? 'gold' : 'red'">
             <d-size :value="text" />
           </a-tag>
           <a-tag v-else>{{ $t("no_size") }}</a-tag>
         </template>
         <template v-if="column.key === 'copyrightLevel'">
           <span class="leading-4">{{
-            configs.MEDIA_COPYRIGHT_LEVELS.find(
-              (l) => l.value === record.copyrightLevel,
-            )?.name
-          }}</span>
+      configs.MEDIA_COPYRIGHT_LEVELS.find(
+        (l) => l.value === record.copyrightLevel,
+      )?.name
+    }}</span>
         </template>
         <template v-if="column.key === 'created_on'">
           <d-date :value="text" />
@@ -400,7 +378,7 @@ const { whoami, isAdmin } = useWhoAmI();
                 </template>
               </a-button>
             </a>
-            <a-popconfirm title="Are you sure delete this media?" ok-text="Yes" cancel-text="No"
+            <a-popconfirm title="Are you sure you want to delete this media?" ok-text="Yes" cancel-text="No"
               @confirm="deleteMedia(record)" placement="left" :ok-button-props="{ danger: true }" loading="deleting">
               <a-button type="dashed" danger>
 
@@ -419,24 +397,16 @@ const { whoami, isAdmin } = useWhoAmI();
           <template v-else>
             <a-space v-if="record.privilege === 'NONE'">
               <a-tooltip>
-                <template #title
-                  >You don't have permission to access this media
+                <template #title>You don't have permission to access this media
                 </template>
                 🙅‍♀️🙅‍♂️
               </a-tooltip>
             </a-space>
             <a-space v-else-if="record.privilege === 'REQUIRE_APPROVAL'">
-              <RequestPermission
-                v-if="record.copyrightLevel === 2"
-                :media="record as Media"
-              />
+              <RequestPermission v-if="record.copyrightLevel === 2" :media="record as Media" />
               <RequestAcknowledge v-else :media="record as Media" />
             </a-space>
-            <a-space
-              v-else-if="record.privilege === 'PENDING_APPROVAL'"
-              direction="vertical"
-              class="leading-4"
-            >
+            <a-space v-else-if="record.privilege === 'PENDING_APPROVAL'" direction="vertical" class="leading-4">
               <b>✅ Request sent!</b>
               <small>Please wait for the media owner's approval</small>
             </a-space>

@@ -17,7 +17,7 @@ import { useUpdateUser } from "hooks/mutations";
 import { useAsyncState } from "@vueuse/core";
 import { studioClient } from "services/graphql";
 import { AdminPlayerSortEnum, User } from "genql/studio";
-import { computed } from "vue";
+import { computed, ComputedRef } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import configs from "config";
@@ -90,7 +90,7 @@ export default {
       refresh();
     });
 
-    const columns: ColumnType<User>[] = [
+    const columns: ComputedRef<ColumnType<User>[]> = computed((): ColumnType<User>[] => [
       {
         title: t("role"),
         dataIndex: "role",
@@ -115,8 +115,7 @@ export default {
                   role: value,
                 });
                 message.success(
-                  `Successfully switch ${displayName(opt.record)}'s role to ${
-                    (selectedOption as DefaultOptionType).label
+                  `Successfully switch ${displayName(opt.record)}'s role to ${(selectedOption as DefaultOptionType).label
                   }!`,
                 );
               },
@@ -207,8 +206,7 @@ export default {
                 active: !!value,
               });
               message.success(
-                `Account ${displayName(opt.record)} ${
-                  value ? "activated" : "deactivated"
+                `Account ${displayName(opt.record)} ${value ? "activated" : "deactivated"
                 } successfully!`,
               );
             },
@@ -260,7 +258,7 @@ export default {
           ]);
         },
       },
-    ];
+    ]);
 
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
@@ -309,7 +307,7 @@ export default {
           h(Table, {
             class: "w-full overflow-auto",
             rowKey: "id",
-            columns,
+            columns: columns.value,
             dataSource: result.value.adminPlayers?.edges.map((e) => e?.node),
             loading: !isReady.value,
             onChange: handleTableChange,

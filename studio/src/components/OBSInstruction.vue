@@ -76,7 +76,7 @@ const props = defineProps({
   },
 });
 
-const publishUrl = configs.SHARED.STREAMING.publish;
+const publishUrl = configs.STREAMING.publish;
 const streamKey = computed(() => {
   let key = props.url;
   if (key.includes("?")) {
