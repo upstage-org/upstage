@@ -227,6 +227,8 @@ class StageConnectionField(SQLAlchemyConnectionField):
                 query = query.filter(getattr(model, field) == _id)
             elif field == "asset_type":
                 query = query.filter(getattr(model, field).has(name=value))
+            elif field == "permissions":
+                return model.resolve_permission(info)
             elif len(field) > 5 and field[-4:] == "like":
                 query = query.filter(getattr(model, field[:-5]).ilike(f"%{value}%"))
             elif field not in cls.RELAY_ARGS and hasattr(model, field):
@@ -656,15 +658,26 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
+    code, error, user, timezone = current_user()
     node = relay.Node.Field()
     foyerStageList = FoyerStageConnectionField(Stage.connection)
-    stageList = StageConnectionField(
-        Stage.connection,
-        id=graphene.ID(),
-        name_like=graphene.String(),
-        file_location=graphene.String(),
-        created_on=graphene.DateTime(),
-    )
+    if user.role in (ADMIN, SUPER_ADMIN):
+        stageList = StageConnectionField(
+            Stage.connection,
+            id=graphene.ID(),
+            name_like=graphene.String(),
+            file_location=graphene.String(),
+            created_on=graphene.DateTime(),
+        )
+    else:
+        stageList = StageConnectionField(
+            Stage.connection,
+            id=graphene.ID(),
+            name_like=graphene.String(),
+            file_location=graphene.String(),
+            created_on=graphene.DateTime(),
+            permissions in ('owner','player','editor'),
+        )
     assetList = AssetConnectionField(
         Asset.connection,
         id=graphene.ID(),
