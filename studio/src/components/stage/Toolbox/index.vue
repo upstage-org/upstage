@@ -18,7 +18,7 @@
       <PanelItem name="Scenes" icon="animation-slider.svg" />
       <hr />
       <PanelItem name="Settings" icon="configurations.svg" />
-      <PlayerChat />
+      <PlayerChatTool />
     </div>
   </nav>
 </template>
@@ -27,11 +27,11 @@
 import { computed, provide, ref } from "vue";
 import TopBar from "./TopBar.vue";
 import PanelItem from "./PanelItem.vue";
-import PlayerChat from "./PlayerChat.vue";
+import PlayerChatTool from "./PlayerChat.vue";
 import { useStore } from "vuex";
 
 export default {
-  components: { TopBar, PanelItem, PlayerChat },
+  components: { TopBar, PanelItem, PlayerChatTool },
   setup: () => {
     const tool = ref();
     const store = useStore();

@@ -1,17 +1,15 @@
 <template>
-  <a
-    @click="togglePlayerChat"
-    :class="{ 'is-active': showPlayerChat }"
-    class="panel-block button has-tooltip-right"
-    data-tooltip="Player Chat"
-  >
-    <span class="panel-icon">
-      <Icon src="chat.svg" />
-      <span v-if="unread" class="unread tag is-danger is-small">{{
-        unread
-      }}</span>
-    </span>
-  </a>
+  <a-tooltip placement="rightBottom">
+    <template #title>Player Chat</template>
+    <a @click="togglePlayerChat" :class="{ 'is-active': showPlayerChat }" class="panel-block button">
+      <span class="panel-icon">
+        <Icon src="chat.svg" />
+        <span v-if="unread" class="unread tag is-danger is-small">{{
+      unread
+    }}</span>
+      </span>
+    </a>
+  </a-tooltip>
 </template>
 
 <script>

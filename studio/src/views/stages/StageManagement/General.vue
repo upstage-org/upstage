@@ -68,8 +68,11 @@
       </div>
       <div class="field-body">
         <div class="field is-narrow">
-          <Switch :data-tooltip="form.status === 'live' ? 'Live' : 'Rehearsal'" :model-value="form.status === 'live'"
-            @update:model-value="form.status = $event ? 'live' : 'rehearsal'" />
+          <a-tooltip placement="bottom">
+            <template #title>{{ form.status === 'live' ? 'Live' : 'Rehearsal' }}</template>
+            <Switch :model-value="form.status === 'live'"
+              @update:model-value="form.status = $event ? 'live' : 'rehearsal'" />
+          </a-tooltip>
         </div>
         <p class="help">
           The public can only enter your stage when its status is Live. With
@@ -84,7 +87,10 @@
       </div>
       <div class="field-body">
         <div class="field is-narrow">
-          <Switch :data-tooltip="form.visibility ? 'On' : 'Off'" v-model="form.visibility" />
+          <a-tooltip placement="bottom">
+            <template #title>{{ form.visibility ? 'On' : 'Off' }}</template>
+            <Switch v-model="form.visibility" />
+          </a-tooltip>
         </div>
         <p class="help">
           Select whether this Stage is visible in the Foyer or not.
@@ -184,22 +190,22 @@ export default {
     const users = computed(() =>
       nodes.value
         ? nodes.value.filter((u) => {
-            if (stage.value && stage.value.owner) {
-              return u.username !== stage.value.owner.username;
-            }
-            return u.username !== whoami?.value.username;
-          })
+          if (stage.value && stage.value.owner) {
+            return u.username !== stage.value.owner.username;
+          }
+          return u.username !== whoami?.value.username;
+        })
         : [],
     );
 
     const owner = computed(() =>
       nodes.value
         ? nodes.value.find((u) => {
-            if (stage.value && stage.value.owner) {
-              return u.username === stage.value.owner.username;
-            }
-            return u.username === whoami?.value.username;
-          })
+          if (stage.value && stage.value.owner) {
+            return u.username === stage.value.owner.username;
+          }
+          return u.username === whoami?.value.username;
+        })
         : [],
     );
 
