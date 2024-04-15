@@ -572,7 +572,7 @@ class ConfirmPermission(graphene.Mutation):
                 else:
                     local_db_session.delete(asset_usage)
                 local_db_session.flush()
-                studio_url = f"{request.url_root}studio"
+                studio_url = f"{request.url_root}stages"
                 await send(
                     [asset_usage.user.email],
                     f"Permission approved for media {asset_usage.asset.name}"
@@ -617,7 +617,7 @@ class RequestPermission(graphene.Mutation):
                 )
                 if asset.copyright_level == 2:
                     asset_usage.approved = False
-                    studio_url = f"{request.url_root}studio"
+                    studio_url = f"{request.url_root}stages"
                     await send(
                         [asset.owner.email],
                         f"Pending permission request for media {asset.name}",
