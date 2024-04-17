@@ -1,4 +1,4 @@
-<script lang="jsx">
+<script>
 import Skeleton from "components/stage/Toolbox/Skeleton.vue";
 import { computed, inject, onMounted, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
@@ -59,25 +59,25 @@ export default {
 
     const store = useStore();
     const nickname = computed(() => store.getters["user/nickname"]);
-
-    return () =>
-      blocked.value ? (
-        <></>
-      ) : (
-        <Skeleton data={data} class="p-2" onDragstart={join}>
-          <video
-            style={{ cursor: joined.value ? "pointer" : "not-allowed" }}
-            onClick={join}
-            autoplay
-            ref={el}
-          ></video>
-          <span class="tag">{nickname.value}</span>
-        </Skeleton>
-      );
+    return {
+      blocked,
+      data,
+      join,
+      joined,
+      el,
+      nickname
+    }
   },
 };
 </script>
-
+<template>
+  <div v-if="!blocked">
+    <Skeleton :data="data" class="p-2" :onDragstart="join">
+      <video :style="{ cursor: joined.value ? 'pointer' : 'not-allowed' }" :onClick="join" autoplay :ref="el"></video>
+      <span class="tag">{{ nickname }}</span>
+    </Skeleton>
+  </div>
+</template>
 <style scoped>
 video {
   width: 100px;
