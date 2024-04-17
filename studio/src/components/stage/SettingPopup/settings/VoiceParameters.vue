@@ -3,70 +3,34 @@
     <span class="card-header-title">{{ $t("voice_setting") }}</span>
   </div>
   <div class="card-content voice-parameters">
-    <HorizontalField title="Voice">
-      <Dropdown
-        v-model="parameters.voice"
-        :data="voices"
-        :render-label="(voice) => voice.name"
-        :render-value="(voice) => voice.id"
-        style="width: 100%"
-        fixed
-      />
-    </HorizontalField>
+    <a-form-item label="Voice" :labelCol="{ span: 4 }" class="mb-2">
+      <a-select v-model:value="parameters.voice" placeholder="No voice" :options="voices" />
+    </a-form-item>
 
     <template v-if="parameters.voice">
-      <HorizontalField title="Variant">
-        <Dropdown
-          v-model="parameters.variant"
-          :data="variants"
-          :render-label="(variant) => variant.name"
-          :render-value="(variant) => variant.id"
-          style="width: 100%"
-          fixed
-        />
-      </HorizontalField>
+      <a-form-item label="Variant" :labelCol="{ span: 4 }" class="mb-2">
+        <a-select v-model:value="parameters.variant" :options="variants" />
+      </a-form-item>
 
-      <HorizontalField title="Pitch">
-        <input
-          class="slider is-fullwidth is-primary m-0"
-          v-model="parameters.pitch"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-        />
-      </HorizontalField>
-      <HorizontalField title="Rate">
-        <input
-          class="slider is-fullwidth is-primary m-0"
-          v-model="parameters.speed"
-          type="range"
-          min="0"
-          max="350"
-          step="1"
-        />
-      </HorizontalField>
+      <a-form-item label="Pitch" :labelCol="{ span: 4 }" class="mb-2">
+        <a-slider v-model:value="parameters.pitch" />
+      </a-form-item>
 
-      <HorizontalField title="Volume">
-        <input
-          class="slider is-fullwidth is-primary m-0"
-          v-model="parameters.amplitude"
-          type="range"
-          min="0"
-          max="100"
-          step="1"
-        />
-      </HorizontalField>
+      <a-form-item label="Rate" :labelCol="{ span: 4 }" class="mb-2">
+        <a-slider v-model:value="parameters.speed" />
+      </a-form-item>
+      <a-form-item label="Volume" :labelCol="{ span: 4 }" class="mb-2">
+        <a-slider v-model:value="parameters.amplitude" />
+      </a-form-item>
 
-      <HorizontalField title="Test voice">
-        <InputButtonPostfix v-model="test" @ok="testVoice">
-          <template #icon>
-            <span class="icon">
-              <Icon src="voice-setting-invert.svg" />
-            </span>
+      <a-form-item label="Test voice" :labelCol="{ span: 4 }" class="mb-2">
+        <a-input-search :placeholder="defaultTestMessage" v-model:value="test" @search="testVoice">
+          <template #enterButton>
+            <sound-outlined />
           </template>
-        </InputButtonPostfix>
-      </HorizontalField>
+        </a-input-search>
+      </a-form-item>
+
     </template>
     <SaveButton v-if="!modelValue" @click="save" />
   </div>
@@ -75,10 +39,6 @@
 <script>
 import { computed, reactive, ref } from "vue";
 import SaveButton from "components/form/SaveButton.vue";
-import Dropdown from "components/form/Dropdown.vue";
-import HorizontalField from "components/form/HorizontalField.vue";
-import InputButtonPostfix from "components/form/InputButtonPostfix.vue";
-import Icon from "components/Icon.vue";
 import { useStore } from "vuex";
 import { avatarSpeak } from "services/speech";
 import {
@@ -90,17 +50,13 @@ import {
 export default {
   components: {
     SaveButton,
-    Dropdown,
-    HorizontalField,
-    InputButtonPostfix,
-    Icon,
   },
   props: ["modelValue"],
   emits: ["close", "update:modelValue"],
   setup: (props, { emit }) => {
     const store = useStore();
     const currentAvatar = computed(() => store.getters["stage/currentAvatar"]);
-    const voices = [{ id: undefined, name: "No voice" }].concat(getVoiceList());
+    const voices = getVoiceList();
     const variants = getVariantList();
     const parameters = reactive(
       props.modelValue ? props.modelValue : currentAvatar.value?.voice,
@@ -131,12 +87,18 @@ export default {
 .card-footer-item {
   cursor: pointer;
 }
+
 .voice-parameters {
+
   .dropdown,
   .dropdown-trigger,
-  .dropdown-trigger > button,
+  .dropdown-trigger>button,
   .dropdown-menu {
     width: 100%;
   }
+}
+
+.ant-select-dropdown {
+  z-index: 5000 !important;
 }
 </style>
