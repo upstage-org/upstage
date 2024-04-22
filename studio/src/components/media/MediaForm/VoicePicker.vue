@@ -65,7 +65,7 @@ const dataSource = computed(() => {
 
 const test = ref(defaultTestMessage);
 const tryVoice = (voice: AvatarVoice) => {
-  avatarSpeak(voice, test.value || defaultTestMessage);
+  avatarSpeak({ voice }, test.value || defaultTestMessage);
 };
 const select = ({ __typename, ...voice }: any) => {
   emits("change", voice);
@@ -77,29 +77,13 @@ const select = ({ __typename, ...voice }: any) => {
   <a-button class="ml-2" type="primary" @click="showDrawer">
     <copy-outlined />Replicate voice
   </a-button>
-  <a-drawer
-    v-model:visible="visible"
-    class="custom-class"
-    style="color: red"
-    title="Available Voices"
-    placement="right"
-    width="500"
-    @after-visible-change="afterVisibleChange"
-  >
+  <a-drawer v-model:visible="visible" class="custom-class" style="color: red" title="Available Voices" placement="right"
+    width="500" @after-visible-change="afterVisibleChange">
     <div class="flex">
-      <a-input-search
-        class="mr-2"
-        placeholder="Search for avatar"
-        v-model:value="keyword"
-      ></a-input-search>
+      <a-input-search class="mr-2" placeholder="Search for avatar" v-model:value="keyword"></a-input-search>
       <a-input placeholder="Test voice" v-model:value="test"></a-input>
     </div>
-    <a-list
-      class="demo-loadmore-list"
-      :loading="loading"
-      item-layout="horizontal"
-      :data-source="dataSource"
-    >
+    <a-list class="demo-loadmore-list" :loading="loading" item-layout="horizontal" :data-source="dataSource">
       <template #renderItem="{ item }">
         <a-list-item>
           <template #actions>
@@ -118,12 +102,10 @@ const select = ({ __typename, ...voice }: any) => {
             <template #title>
               <a-button type="text" class="p-0">
                 {{ item.avatar.name }}
-                <span class="text-xs text-gray-400"
-                  >&nbsp;- created by
+                <span class="text-xs text-gray-400">&nbsp;- created by
                   {{
-                    item.avatar.owner.displayName || item.avatar.owner.username
-                  }}</span
-                >
+    item.avatar.owner.displayName || item.avatar.owner.username
+  }}</span>
               </a-button>
             </template>
             <template #avatar>

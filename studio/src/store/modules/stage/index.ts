@@ -380,7 +380,7 @@ export default {
         if (model.speak?.hash !== speak.hash) {
           model.speak = speak;
           if (!mute && (state.status === "LIVE" || state.replay.isReplaying)) {
-            avatarSpeak(model);
+            avatarSpeak(model, speak.message);
           }
           setTimeout(
             () => {

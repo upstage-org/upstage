@@ -18,7 +18,7 @@ const props = defineProps({
 
 const test = ref("");
 const testVoice = () => {
-  avatarSpeak(props.voice, test.value || defaultTestMessage);
+  avatarSpeak({ voice: props.voice }, test.value || defaultTestMessage);
 };
 
 const handleVoicePicked = (voice: AvatarVoice) => {
@@ -29,39 +29,25 @@ const handleVoicePicked = (voice: AvatarVoice) => {
 <template>
   <a-form-item label="Voice" :labelCol="{ span: 3 }" class="mb-2">
     <div class="flex">
-      <a-select
-        v-model:value="props.voice.voice"
-        placeholder="No voice"
-        :options="getVoiceList()"
-      />
+      <a-select v-model:value="props.voice.voice" placeholder="No voice" :options="getVoiceList()" />
       <VoicePicker @change="handleVoicePicked" />
     </div>
   </a-form-item>
   <template v-if="props.voice.voice">
     <a-form-item label="Variant" :labelCol="{ span: 3 }" class="mb-2">
-      <a-select
-        v-model:value="props.voice.variant"
-        :options="getVariantList()"
-      />
+      <a-select v-model:value="props.voice.variant" :options="getVariantList()" />
     </a-form-item>
     <a-form-item label="Pitch" :labelCol="{ span: 3 }" class="mb-2">
       <a-slider v-model:value="props.voice.pitch" />
     </a-form-item>
     <a-form-item label="Rate" :labelCol="{ span: 3 }" class="mb-2">
-      <a-slider
-        :value="props.voice.speed / 3.5"
-        @change="props.voice.speed = Number($event) * 3.5"
-      />
+      <a-slider :value="props.voice.speed / 3.5" @change="props.voice.speed = Number($event) * 3.5" />
     </a-form-item>
     <a-form-item label="Volume" :labelCol="{ span: 3 }" class="mb-2">
       <a-slider v-model:value="props.voice.amplitude" />
     </a-form-item>
     <a-form-item label="Test voice" :labelCol="{ span: 3 }" class="mb-2">
-      <a-input-search
-        :placeholder="defaultTestMessage"
-        v-model:value="test"
-        @search="testVoice"
-      >
+      <a-input-search :placeholder="defaultTestMessage" v-model:value="test" @search="testVoice">
         <template #enterButton>
           <sound-outlined />
         </template>

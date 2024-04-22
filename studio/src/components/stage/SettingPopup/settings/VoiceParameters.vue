@@ -13,11 +13,11 @@
       </a-form-item>
 
       <a-form-item label="Pitch" :labelCol="{ span: 4 }" class="mb-2">
-        <a-slider v-model:value="parameters.pitch" :max="50"/>
+        <a-slider v-model:value="parameters.pitch" :max="50" />
       </a-form-item>
 
       <a-form-item label="Rate" :labelCol="{ span: 4 }" class="mb-2">
-        <a-slider v-model:value="parameters.speed" :max="175"/>
+        <a-slider v-model:value="parameters.speed" :max="175" />
       </a-form-item>
       <a-form-item label="Volume" :labelCol="{ span: 4 }" class="mb-2">
         <a-slider v-model:value="parameters.amplitude" />
@@ -66,7 +66,7 @@ export default {
     }
     const test = ref("Welcome to UpStage!");
     const testVoice = () => {
-      avatarSpeak(parameters, test.value);
+      avatarSpeak({ voice: parameters }, test.value);
     };
 
     const save = () => {
