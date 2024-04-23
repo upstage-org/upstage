@@ -72,8 +72,8 @@ export default {
 </script>
 <template>
   <div v-if="!blocked">
-    <Skeleton :data="data" class="p-2" :onDragstart="join">
-      <video :style="{ cursor: joined.value ? 'pointer' : 'not-allowed' }" :onClick="join" autoplay :ref="el"></video>
+    <Skeleton :data="data" class="p-2" :onDragstart="join" style="flex-direction: column;">
+      <video :style="{ cursor: joined.value ? 'pointer' : 'not-allowed' }" :onClick="join" autoplay ref="el"></video>
       <span class="tag">{{ nickname }}</span>
     </Skeleton>
   </div>
