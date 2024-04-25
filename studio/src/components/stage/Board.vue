@@ -84,7 +84,7 @@ export default {
       );
       if (isReal) {
         if (
-          confirm("Are you sure you want to take this object out of the stage?")
+          confirm("Are you sure you want to take this object off the stage?")
         ) {
           store.dispatch("stage/deleteObject", object);
         }
