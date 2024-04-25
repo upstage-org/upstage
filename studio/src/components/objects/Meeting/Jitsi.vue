@@ -39,7 +39,7 @@
           </button>
         </p>
       </div>
-      <ContextMenu :object="object" v-bind="slotProps" />
+      <AvatarContextMenu :object="object" v-bind="slotProps" />
     </template>
   </Object>
 </template>
@@ -49,10 +49,10 @@ import Object from "../Object.vue";
 import Loading from "components/Loading.vue";
 import { computed, inject, onMounted, ref, watch } from "vue";
 import { useStore } from "vuex";
-import ContextMenu from "../Avatar/ContextMenu.vue";
+import AvatarContextMenu from "../Avatar/ContextMenu.vue";
 
 export default {
-  components: { Object, Loading, ContextMenu },
+  components: { Object, Loading, AvatarContextMenu },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
