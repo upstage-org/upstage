@@ -1,53 +1,37 @@
 <template>
   <transition :css="false" @enter="enter" @leave="leave">
-    <div
-      id="chatbox"
-      :key="chatPosition"
-      v-show="chatVisibility"
-      class="card is-light"
-      :class="{ collapsed, dark: chatDarkMode }"
-      :style="{
-        opacity,
-        fontSize,
-        width: `calc(20% + 3*${fontSize}`,
-        height: `calc(100vh - ${stageSize.height}px - 64px)`,
-        left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
-      }"
-    >
+    <div id="chatbox" :key="chatPosition" v-show="chatVisibility" class="card is-light"
+      :class="{ collapsed, dark: chatDarkMode }" :style="{
+    opacity,
+    fontSize,
+    width: `calc(20% + 3*${fontSize}`,
+    height: `calc(100vh - ${stageSize.height}px - 64px)`,
+    left: chatPosition === 'left' ? (canPlay ? '48px' : '16px') : 'unset',
+  }">
       <transition @enter="bounceUnread">
-        <span
-          v-if="collapsed && unreadMessages"
-          :key="unreadMessages"
-          :data-tooltip="`${unreadMessages} new message${
-            unreadMessages > 1 ? 's' : ''
-          }`"
-          class="unread clickable tag is-danger is-small"
-          @click="collapsed = false"
-          >{{ unreadMessages }}</span
-        >
+        <a-tooltip :title="`${unreadMessages} new message${unreadMessages > 1 ? 's' : ''
+    }`">
+          <span v-if="collapsed && unreadMessages" :key="unreadMessages" class="unread clickable tag is-danger is-small"
+            @click="collapsed = false">{{ unreadMessages }}</span>
+        </a-tooltip>
       </transition>
       <div class="actions">
         <Reaction v-if="collapsed" />
-        <button
-          class="chat-setting button is-rounded is-outlined"
-          @click="collapsed = !collapsed"
-          :data-tooltip="collapsed ? 'Maximise' : 'Minimise'"
-          :key="collapsed"
-        >
-          <span class="icon">
-            <Icon v-if="collapsed" src="maximise.svg" size="20" />
-            <Icon v-else src="minimise.svg" size="24" class="mt-4" />
-          </span>
-        </button>
-        <button
-          class="chat-setting button is-rounded is-outlined"
-          @click="openChatSetting"
-          data-tooltip="Settings"
-        >
-          <span class="icon">
-            <Icon src="setting.svg" size="32" />
-          </span>
-        </button>
+        <a-tooltip :title="collapsed ? 'Maximise' : 'Minimise'">
+          <button class="chat-setting button is-rounded is-outlined" @click="collapsed = !collapsed" :key="collapsed">
+            <span class="icon">
+              <Icon v-if="collapsed" src="maximise.svg" size="20" />
+              <Icon v-else src="minimise.svg" size="24" class="mt-4" />
+            </span>
+          </button>
+        </a-tooltip>
+        <a-tooltip title="Settings">
+          <button class="chat-setting button is-rounded is-outlined" @click="openChatSetting">
+            <span class="icon">
+              <Icon src="setting.svg" size="32" />
+            </span>
+          </button>
+        </a-tooltip>
         <ClearChat option="public-chat" />
       </div>
       <div class="card-content" ref="theContent">
@@ -58,29 +42,20 @@
           <div v-if="!collapsed" class="is-fullwidth my-1 reaction-bar">
             <Reaction :custom-emoji="true" />
             <div class="font-size-controls">
-              <button
-                class="button is-small is-rounded mx-1"
-                data-tooltip="Increase font size"
-                @click="increateFontSize()"
-              >
-                ➕
-              </button>
-              <button
-                data-tooltip="Decrease font size"
-                class="button is-small is-rounded mx-1"
-                @click="decreaseFontSize()"
-              >
-                ➖
-              </button>
+              <a-tooltip title="Increase font size">
+                <button class="button is-small is-rounded mx-1" @click="increateFontSize()">
+                  ➕
+                </button>
+              </a-tooltip>
+              <a-tooltip title="Decrease font size">
+                <button class="button is-small is-rounded mx-1" @click="decreaseFontSize()">
+                  ➖
+                </button>
+              </a-tooltip>
             </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
-            <ChatInput
-              v-model="message"
-              placeholder="Type message"
-              :loading="loadingUser"
-              @submit="sendChat"
-            />
+            <ChatInput v-model="message" placeholder="Type message" :loading="loadingUser" @submit="sendChat" />
           </div>
         </div>
       </footer>
@@ -249,16 +224,20 @@ export default {
   right: 16px;
   overflow: visible;
   z-index: 3;
+
   @media only screen and (orientation: landscape) {
     height: calc(100% - 135px) !important;
   }
+
   @media only screen and (orientation: portrait) {
     width: calc(100vw - 32px) !important;
+
     .actions,
     .card-content,
     .card-footer {
       zoom: 3;
     }
+
     .actions {
       button:first-child {
         display: none;
@@ -272,6 +251,7 @@ export default {
     overflow-x: hidden;
     padding-top: 36px;
   }
+
   .card-footer-item {
     flex-wrap: wrap;
     padding-top: 0;
@@ -292,12 +272,15 @@ export default {
       border-color: #303030;
       color: #dddddd;
     }
+
     :deep(.textarea::placeholder) {
       color: #8c939a;
     }
+
     :deep(img) {
       filter: invert(100%) hue-rotate(180deg);
     }
+
     :deep(.guest .tag) {
       color: #8c939a;
     }
@@ -309,16 +292,20 @@ export default {
 
   &.collapsed {
     height: 108px !important;
+
     .card-content {
       padding: 0;
       height: 0;
-      > div {
+
+      >div {
         display: none;
       }
     }
+
     .card-footer-item {
       padding-top: 6px;
     }
+
     .actions {
       top: 5px;
     }
@@ -329,6 +316,7 @@ export default {
     right: 24px;
     top: 10px;
     z-index: 1;
+
     button {
       width: 26px;
       height: 26px;
@@ -336,6 +324,7 @@ export default {
       margin-left: 6px;
     }
   }
+
   .control.has-icons-right .input {
     padding-right: 50px !important;
   }
@@ -346,13 +335,16 @@ export default {
     top: 6px;
   }
 }
+
 .reaction-bar {
   height: 30px;
   position: relative;
+
   .font-size-controls {
     position: absolute;
     top: 0;
     right: 0;
+
     .button.is-rounded {
       width: 16px;
     }

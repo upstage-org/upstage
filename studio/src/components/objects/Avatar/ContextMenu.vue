@@ -21,11 +21,7 @@
         </span>
         <span>{{ $t("remove_from_avatar") }}</span>
       </a>
-      <a
-        v-else-if="currentAvatar && object.type !== 'stream'"
-        class="panel-block"
-        @click="wearCostume"
-      >
+      <a v-else-if="currentAvatar && object.type !== 'stream'" class="panel-block" @click="wearCostume">
         <span class="panel-icon">
           <Icon src="prop.svg" />
         </span>
@@ -64,46 +60,37 @@
         <span>{{ $t("slider") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': sliderMode === 'opacity',
-          }"
-          @click="changeSliderMode('opacity')"
-          data-tooltip="Opacity slider"
-        >
-          <span class="mt-1">
-            <Icon src="opacity-slider.svg" />
-          </span>
-        </button>
+        <a-tooltip title="Opacity slider">
+          <button class="button is-light" :class="{
+      'has-background-primary-light': sliderMode === 'opacity',
+    }" @click="changeSliderMode('opacity')">
+            <span class="mt-1">
+              <Icon src="opacity-slider.svg" />
+            </span>
+          </button>
+        </a-tooltip>
       </p>
       <p v-if="object.multi" class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-warning-light': sliderMode === 'animation',
-          }"
-          @click="changeSliderMode('animation')"
-          data-tooltip="Animation speed"
-        >
-          <span class="mt-1">
-            <Icon src="animation-slider.svg" />
-          </span>
-        </button>
+        <a-tooltip title="Animation speed">
+          <button class="button is-light" :class="{
+      'has-background-warning-light': sliderMode === 'animation',
+    }" @click="changeSliderMode('animation')">
+            <span class="mt-1">
+              <Icon src="animation-slider.svg" />
+            </span>
+          </button>
+        </a-tooltip>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-danger-light': sliderMode === 'speed',
-          }"
-          @click="changeSliderMode('speed')"
-          data-tooltip="Move speed"
-        >
-          <span class="mt-1">
-            <Icon src="movement-slider.svg" />
-          </span>
-        </button>
+        <a-tooltip title="Move speed">
+          <button class="button is-light" :class="{
+      'has-background-danger-light': sliderMode === 'speed',
+    }" @click="changeSliderMode('speed')">
+            <span class="mt-1">
+              <Icon src="movement-slider.svg" />
+            </span>
+          </button>
+        </a-tooltip>
       </p>
     </div>
 
@@ -115,37 +102,33 @@
         <span>{{ $t("flip") }}</span>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': object.scaleX === -1,
-          }"
-          @click="flipHorizontal"
-          data-tooltip="Flip Horizontal"
-        >
-          <span class="mt-1">{{ $t("horizontal") }}</span>
-        </button>
+        <a-tooltip title="Flip Horizontal">
+          <button class="button is-light" :class="{
+      'has-background-primary-light': object.scaleX === -1,
+    }" @click="flipHorizontal">
+            <span class="mt-1">{{ $t("horizontal") }}</span>
+          </button>
+        </a-tooltip>
       </p>
       <p class="control menu-group-item">
-        <button
-          class="button is-light"
-          :class="{
-            'has-background-primary-light': object.scaleY === -1,
-          }"
-          @click="flipVertical"
-          data-tooltip="Flip Vertical"
-        >
-          <span class="mt-1">{{ $t("vertical") }}</span>
-        </button>
+        <a-tooltip title="Flip Vertical">
+          <button class="button is-light" :class="{
+      'has-background-primary-light': object.scaleY === -1,
+    }" @click="flipVertical">
+            <span class="mt-1">{{ $t("vertical") }}</span>
+          </button>
+        </a-tooltip>
       </p>
     </div>
     <template v-if="hasLink">
-      <a class="panel-block" @click="openLink" :data-tooltip="object.link.url">
-        <span class="panel-icon">
-          <i class="fas fa-link"></i>
-        </span>
-        <span>{{ $t("open_link") }}</span>
-      </a>
+      <a-tooltip :title="object.link.url">
+        <a class="panel-block" @click="openLink">
+          <span class="panel-icon">
+            <i class="fas fa-link"></i>
+          </span>
+          <span>{{ $t("open_link") }}</span>
+        </a>
+      </a-tooltip>
     </template>
 
     <a class="panel-block has-text-danger" @click="deleteObject">
@@ -154,11 +137,7 @@
       </span>
       <span>{{ $t("remove") }}</span>
     </a>
-    <a
-      v-if="object.drawingId || object.textId"
-      class="panel-block has-text-danger"
-      @click="deletePermanently"
-    >
+    <a v-if="object.drawingId || object.textId" class="panel-block has-text-danger" @click="deletePermanently">
       <span class="panel-icon">
         <Icon src="remove.svg" />
       </span>
@@ -170,12 +149,7 @@
           <Icon :src="object.autoplayFrames > 0 ? 'pause.svg' : 'play.svg'" />
         </button>
       </p>
-      <p
-        v-for="frame in object.frames"
-        :key="frame"
-        @click="switchFrame(frame)"
-        class="control menu-group-item"
-      >
+      <p v-for="frame in object.frames" :key="frame" @click="switchFrame(frame)" class="control menu-group-item">
         <button class="button is-light">
           <img :src="frame" style="height: 100%" />
         </button>
@@ -360,7 +334,6 @@ export default {
 </script>
 
 <style scoped lang="scss">
-
 .avatar-context-menu {
   * {
     font-size: 14px;
@@ -385,7 +358,7 @@ export default {
       width: 100px;
       white-space: nowrap;
 
-      > button {
+      >button {
         justify-content: start;
         padding-left: 12px;
       }

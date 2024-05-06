@@ -2,23 +2,14 @@
   <header class="card-header">
     <div class="tabs card-header-title p-0">
       <ul>
-        <li
-          :class="{ 'is-active': currentTab === 'nickname' }"
-          @click="currentTab = 'nickname'"
-        >
+        <li :class="{ 'is-active': currentTab === 'nickname' }" @click="currentTab = 'nickname'">
           <a>{{ $t("change_your_nickname") }}</a>
         </li>
-        <li
-          :class="{ 'is-active': currentTab === 'params' }"
-          @click="currentTab = 'params'"
-        >
+        <li :class="{ 'is-active': currentTab === 'params' }" @click="currentTab = 'params'">
           <a>{{ $t("parameters") }}</a>
         </li>
-        <li
-          v-if="downloadChatVisibility"
-          :class="{ 'is-active': currentTab === 'download' }"
-          @click="currentTab = 'download'"
-        >
+        <li v-if="downloadChatVisibility" :class="{ 'is-active': currentTab === 'download' }"
+          @click="currentTab = 'download'">
           <a>{{ $t("download_chat") }}</a>
         </li>
       </ul>
@@ -27,33 +18,17 @@
   <div class="card-content">
     <div class="content" v-if="currentTab === 'nickname'">
       <HorizontalField title="Nickname">
-        <input
-          class="input"
-          type="text"
-          :placeholder="nickname"
-          v-model="form.nickname"
-          @keyup.enter="saveNickname"
-        />
+        <input class="input" type="text" :placeholder="nickname" v-model="form.nickname" @keyup.enter="saveNickname" />
       </HorizontalField>
       <SaveButton @click="saveNickname" :loading="loading" />
     </div>
     <div class="content" v-else-if="currentTab === 'params'">
       <HorizontalField title="Chat transparency">
-        <input
-          v-model="parameters.opacity"
-          type="range"
-          class="slider is-fullwidth is-primary"
-          step="0.01"
-          min="0.2"
-          max="1"
-        />
+        <input v-model="parameters.opacity" type="range" class="slider is-fullwidth is-primary" step="0.01" min="0.2"
+          max="1" />
       </HorizontalField>
       <HorizontalField title="Size (px)">
-        <Field
-          :modelValue="parameters.fontSize?.slice(0, -2)"
-          @update:modelValue="changeFontSize"
-          type="number"
-        />
+        <Field :modelValue="parameters.fontSize?.slice(0, -2)" @update:modelValue="changeFontSize" type="number" />
       </HorizontalField>
 
       <save-button @click="saveParameters" />
@@ -66,10 +41,9 @@
         </div>
         <div class="field-body">
           <div class="field is-narrow">
-            <Switch
-              :data-tooltip="downloadOptions.audienceChat ? 'On' : 'Off'"
-              v-model="downloadOptions.audienceChat"
-            />
+            <a-tooltip :title="downloadOptions.audienceChat ? 'On' : 'Off'">
+              <Switch v-model="downloadOptions.audienceChat" />
+            </a-tooltip>
           </div>
         </div>
       </div>
@@ -79,18 +53,14 @@
         </div>
         <div class="field-body">
           <div class="field is-narrow">
-            <Switch
-              :data-tooltip="downloadOptions.playerChat ? 'On' : 'Off'"
-              v-model="downloadOptions.playerChat"
-            />
+            <a-tooltip :title="downloadOptions.playerChat ? 'On' : 'Off'">
+              <Switch v-model="downloadOptions.playerChat" />
+            </a-tooltip>
           </div>
         </div>
       </div>
 
-      <DownloadButton
-        @click="downloadChatLog"
-        v-if="downloadOptions.audienceChat || downloadOptions.playerChat"
-      />
+      <DownloadButton @click="downloadChatLog" v-if="downloadOptions.audienceChat || downloadOptions.playerChat" />
       <DownloadButton disabled v-else />
     </div>
   </div>

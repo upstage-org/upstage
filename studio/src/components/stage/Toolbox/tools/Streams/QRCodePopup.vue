@@ -37,12 +37,9 @@ const copyLink = () => {
       <span class="tag is-light is-block">{{ stream.name }}</span>
     </template>
     <template #content>
-      <LarixQRCode
-        :stream="stream"
-        @click="copyLink"
-        class="has-tooltip-bottom"
-        data-tooltip="Click to copy link"
-      />
+      <a-tooltip title="Click to copy link">
+        <LarixQRCode :stream="stream" @click="copyLink" class="has-tooltip-bottom" />
+      </a-tooltip>
       <p class="has-text-centered">
         Scan the above QR Code to start streaming with Larix, or follow this
         instruction if you're using OBS Studio:

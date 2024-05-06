@@ -1,17 +1,11 @@
 <template>
-  <div
-    v-if="meta.multi"
-    data-tooltip="This is a multiframe media"
-    class="has-tooltip-bottom"
-  >
-    <Icon src="multi-frame.svg" />
-    <Image
-      v-for="frame in meta.frames"
-      :key="frame"
-      :src="absolutePath(frame)"
-      :style="{ width: 'unset', height: '20px' }"
-    />
-  </div>
+  <a-tooltip title="This is a multiframe media">
+    <div v-if="meta.multi" class="has-tooltip-bottom">
+      <Icon src="multi-frame.svg" />
+      <Image v-for="frame in meta.frames" :key="frame" :src="absolutePath(frame)"
+        :style="{ width: 'unset', height: '20px' }" />
+    </div>
+  </a-tooltip>
 </template>
 
 <script>

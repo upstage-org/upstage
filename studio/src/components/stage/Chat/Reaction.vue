@@ -1,40 +1,30 @@
 <template>
   <template v-if="reactionVisibility">
-    <button
-      class="button is-small is-rounded reaction mx-1"
-      v-for="react in reactions"
-      :key="react"
-      @click="sendReaction(react)"
-    >
+    <button class="button is-small is-rounded reaction mx-1" v-for="react in reactions" :key="react"
+      @click="sendReaction(react)">
       {{ react }}
     </button>
     <span v-if="customEmoji" style="position: absolute; margin-left: 28px">
-      <ChatInput
-        :picker-only="true"
-        :style="{ height: '30px' }"
-        className="is-white"
-        @update:model-value="sendCustomReaction"
-      >
+      <ChatInput :picker-only="true" :style="{ height: '30px' }" className="is-white"
+        @update:model-value="sendCustomReaction">
         <template #icon>
-          <span class="icon" data-tooltip="Custom Reactions">
-            <Icon src="new.svg" />
-          </span>
+          <a-tooltip title="Custom Reactions">
+            <span class="icon">
+              <Icon src="new.svg" />
+            </span>
+          </a-tooltip>
         </template>
       </ChatInput>
     </span>
     <teleport to="body">
       <div class="flying-reactions">
         <transition-group :css="false" @enter="flyin" @leave="flyout">
-          <div
-            v-for="react in flyingReactions"
-            :key="react"
-            :style="{
-              position: 'fixed',
-              left: react.x + 'px',
-              top: react.y + 'px',
-              fontSize: '42px',
-            }"
-          >
+          <div v-for="react in flyingReactions" :key="react" :style="{
+    position: 'fixed',
+    left: react.x + 'px',
+    top: react.y + 'px',
+    fontSize: '42px',
+  }">
             {{ react.reaction }}
           </div>
         </transition-group>
@@ -124,6 +114,7 @@ export default {
 .flying-reactions {
   position: fixed;
 }
+
 .button.is-rounded {
   width: 16px;
 }

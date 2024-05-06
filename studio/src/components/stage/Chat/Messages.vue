@@ -21,36 +21,20 @@
                 <b v-if="item.isPlayer">{{ item.user }}:</b>
                 <span v-else>{{ item.user }}:</span>
               </small>
-              <span
-                class="tag message"
-                :style="{
-                  'font-size': '1em',
-                }"
-                :class="
-                  messageClass[item.highlighted ? 'highlighted' : item.behavior]
-                "
-                :title="time(item.at)"
-              >
-                <span
-                  v-if="item.highlighted"
-                  :data-tooltip="
-                    canPlay
-                      ? 'Click to remove highlight'
-                      : 'This is a highlight message'
-                  "
-                  class="highlight-star has-tooltip-left"
-                  @click="highlightChat(item)"
-                >
-                  <i class="far fa-star has-text-warning"></i>
-                </span>
+              <span class="tag message" :style="{
+    'font-size': '1em',
+  }" :class="messageClass[item.highlighted ? 'highlighted' : item.behavior]
+    " :title="time(item.at)">
+                <a-tooltip :title="canPlay ? 'Click to remove highlight' : 'This is a highlight message'">
+                  <span v-if="item.highlighted" class="highlight-star has-tooltip-left" @click="highlightChat(item)">
+                    <i class="far fa-star has-text-warning"></i>
+                  </span>
+                </a-tooltip>
                 <Linkify>{{ item.message }}</Linkify>
               </span>
             </div>
           </template>
-          <template
-            v-if="canPlay || session === item.session"
-            #context="{ closeMenu }"
-          >
+          <template v-if="canPlay || session === item.session" #context="{ closeMenu }">
             <div class="panel-block">
               <span>
                 <Linkify>{{ item.message }}</Linkify>
@@ -65,31 +49,20 @@
               </span>
             </div>
             <template v-if="item.id">
-              <a
-                class="panel-block has-text-danger"
-                @click="removeChat(item, closeMenu)"
-              >
+              <a class="panel-block has-text-danger" @click="removeChat(item, closeMenu)">
                 <span class="panel-icon">
                   <Icon src="remove.svg" />
                 </span>
                 <span>{{ $t("remove") }}</span>
               </a>
               <template v-if="canPlay">
-                <a
-                  v-if="item.highlighted"
-                  class="panel-block"
-                  @click="highlightChat(item, closeMenu)"
-                >
+                <a v-if="item.highlighted" class="panel-block" @click="highlightChat(item, closeMenu)">
                   <span class="panel-icon">
                     <Icon src="object-drawing.svg" />
                   </span>
                   <span>{{ $t("unhighlight") }}</span>
                 </a>
-                <a
-                  v-else
-                  class="panel-block has-text-primary"
-                  @click="highlightChat(item, closeMenu)"
-                >
+                <a v-else class="panel-block has-text-primary" @click="highlightChat(item, closeMenu)">
                   <span class="panel-icon">
                     <Icon src="object-drawing.svg" />
                   </span>
@@ -101,10 +74,8 @@
               <span class="panel-icon">
                 <Icon src="clear.svg" />
               </span>
-              <small
-                >Sorry but no actions can be performed against these legacy
-                messages!</small
-              >
+              <small>Sorry but no actions can be performed against these legacy
+                messages!</small>
             </div>
           </template>
         </ContextMenu>
@@ -158,11 +129,13 @@ export default {
 .tag.message {
   white-space: break-spaces;
   height: unset;
+
   .highlight-star {
     position: absolute;
     right: -16px;
   }
 }
+
 .guest {
   opacity: 0.5;
 }

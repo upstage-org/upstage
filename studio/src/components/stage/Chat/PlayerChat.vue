@@ -1,31 +1,19 @@
 <template>
   <transition :css="false" @enter="enter" @leave="leave">
-    <div
-      id="player-chatbox"
-      ref="theChatbox"
-      v-show="playerChatVisibility"
-      class="card is-light"
-      :class="{ collapsed, 'is-movingable': isMovingable }"
-      :style="{
-        opacity,
-        fontSize,
-      }"
-    >
+    <div id="player-chatbox" ref="theChatbox" v-show="playerChatVisibility" class="card is-light"
+      :class="{ collapsed, 'is-movingable': isMovingable }" :style="{
+    opacity,
+    fontSize,
+  }">
       <div class="actions">
-        <button
-          class="chat-setting button is-rounded is-outlined"
-          @click="minimiseToToolbox"
-        >
+        <button class="chat-setting button is-rounded is-outlined" @click="minimiseToToolbox">
           <span class="icon">
             <Icon v-if="collapsed" src="maximise.svg" size="20" />
             <Icon v-else src="minimise.svg" size="24" class="mt-4" />
           </span>
         </button>
-        <button
-          class="chat-setting button is-rounded is-outlined"
-          :class="{ 'has-background-primary-light': isMovingable }"
-          @click="toggleMoveable"
-        >
+        <button class="chat-setting button is-rounded is-outlined"
+          :class="{ 'has-background-primary-light': isMovingable }" @click="toggleMoveable">
           <span class="icon">
             <Icon src="prop.svg" size="20" />
           </span>
@@ -39,30 +27,21 @@
         <div class="card-footer-item">
           <div class="is-fullwidth my-1 reaction-bar">
             <div class="font-size-controls">
-              <button
-                class="button is-small is-rounded mx-1"
-                data-tooltip="Increase font size"
-                @click="increateFontSize()"
-              >
-                ➕
-              </button>
-              <button
-                data-tooltip="Decrease font size"
-                class="button is-small is-rounded"
-                @click="decreaseFontSize()"
-              >
-                ➖
-              </button>
+              <a-tooltip title="Increase font size">
+                <button class="button is-small is-rounded mx-1" @click="increateFontSize()">
+                  ➕
+                </button>
+              </a-tooltip>
+              <a-tooltip title="Decrease font size">
+                <button class="button is-small is-rounded" @click="decreaseFontSize()">
+                  ➖
+                </button>
+              </a-tooltip>
             </div>
           </div>
           <div class="control has-icons-right is-fullwidth">
-            <ChatInput
-              v-model="chat.privateMessage"
-              placeholder="Type message"
-              :loading="loadingUser"
-              :disabled="isMovingable"
-              @submit="sendChat"
-            />
+            <ChatInput v-model="chat.privateMessage" placeholder="Type message" :loading="loadingUser"
+              :disabled="isMovingable" @submit="sendChat" />
           </div>
         </div>
       </footer>
@@ -246,6 +225,7 @@ export default {
     overflow-x: hidden;
     padding-top: 36px;
   }
+
   .card-footer-item {
     flex-wrap: wrap;
     padding-top: 0px;
@@ -257,6 +237,7 @@ export default {
     right: 24px;
     top: 10px;
     z-index: 1;
+
     button {
       width: 26px;
       height: 26px;
@@ -264,16 +245,20 @@ export default {
       margin-left: 6px;
     }
   }
+
   .control.has-icons-right .input {
     padding-right: 50px !important;
   }
+
   .reaction-bar {
     height: 30px;
     position: relative;
+
     .font-size-controls {
       position: absolute;
       top: 0;
       right: 0;
+
       .button.is-rounded {
         width: 16px;
       }

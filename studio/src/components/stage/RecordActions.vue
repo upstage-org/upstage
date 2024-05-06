@@ -1,9 +1,6 @@
 <template>
   <div v-if="saved">
-    <router-link
-      :to="`/replay/${stage.fileLocation}/${saved.id}`"
-      class="button is-small is-light is-success"
-    >
+    <router-link :to="`/replay/${stage.fileLocation}/${saved.id}`" class="button is-small is-light is-success">
       <span class="icon is-small">
         <i class="fas fa-play"></i>
       </span>
@@ -12,23 +9,18 @@
   </div>
   <div v-else-if="stage.activeRecording" class="field has-addons">
     <p class="control">
-      <button
-        @click="saveRecording"
-        class="button is-small is-light is-danger"
-        data-tooltip="Stop recording"
-      >
-        <Loading v-if="saving" height="24px" />
-        <span v-else class="icon is-small">
-          <i class="fas fa-stop"></i>
-        </span>
-        <span>{{ label }}</span>
-      </button>
+      <a-tooltip title="Stop recording">
+        <button @click="saveRecording" class="button is-small is-light is-danger">
+          <Loading v-if="saving" height="24px" />
+          <span v-else class="icon is-small">
+            <i class="fas fa-stop"></i>
+          </span>
+          <span>{{ label }}</span>
+        </button>
+      </a-tooltip>
     </p>
     <p class="control">
-      <CustomConfirm
-        @confirm="(complete) => deleteRecording(complete)"
-        :loading="deleting"
-      >
+      <CustomConfirm @confirm="(complete) => deleteRecording(complete)" :loading="deleting">
         <template #trigger>
           <button class="button is-small is-light is-dark">
             <span class="icon is-small">
@@ -43,16 +35,8 @@
     </p>
   </div>
   <template v-else>
-    <CustomConfirm
-      @confirm="(complete) => startRecording(complete)"
-      :loading="loading"
-    >
-      <Field
-        v-model="form.name"
-        label="Name"
-        placeholder="Give your recording a name"
-        required
-      />
+    <CustomConfirm @confirm="(complete) => startRecording(complete)" :loading="loading">
+      <Field v-model="form.name" label="Name" placeholder="Give your recording a name" required />
       <p>
         <i class="fas fa-exclamation-triangle has-text-warning"></i>
         By starting a recording, you acknowledge that the stage
@@ -67,20 +51,20 @@
         <span>{{ $t("start_recording") }}</span>
       </template>
       <template #trigger>
-        <button class="button is-light is-small" data-tooltip="Start recording">
-          <i class="fas fa-video has-text-primary"></i>
-        </button>
+        <a-tooltip title="Start recording">
+          <button class="button is-light is-small">
+            <i class="fas fa-video has-text-primary"></i>
+          </button>
+        </a-tooltip>
       </template>
     </CustomConfirm>
-    <router-link
-      :to="`/stage-management/${stage.id}/archive`"
-      class="button is-small is-light is-success"
-      data-tooltip="View recordings"
-    >
-      <span class="icon is-small">
-        <i class="fas fa-list"></i>
-      </span>
-    </router-link>
+    <a-tooltip title="View recordings">
+      <router-link :to="`/stage-management/${stage.id}/archive`" class="button is-small is-light is-success">
+        <span class="icon is-small">
+          <i class="fas fa-list"></i>
+        </span>
+      </router-link>
+    </a-tooltip>
   </template>
 </template>
 

@@ -1,33 +1,18 @@
 <template>
   <teleport to="body">
-    <div
-      class="avatar-topping"
-      :style="{
-        left: stageSize.left + object.x + object.w / 2 + 'px',
-        top:
-          stageSize.top + object.y - (object.holder && canPlay ? 30 : 0) + 'px',
-      }"
-      @click="openChatBox"
-    >
-      <span
-        v-if="object.holder && canPlay"
-        class="icon marker"
-        :class="{ inactive: !isHolding }"
-        :data-tooltip="`${object.name ? object.name + ' held by' : 'Held by'} ${
-          object.holder.nickname
-        }`"
-      >
-        <Icon src="my-avatar.svg" />
-      </span>
+    <div class="avatar-topping" :style="{
+      left: stageSize.left + object.x + object.w / 2 + 'px',
+      top:
+        stageSize.top + object.y - (object.holder && canPlay ? 30 : 0) + 'px',
+    }" @click="openChatBox"><a-tooltip :title="`${object.name ? object.name + ' held by' : 'Held by'} ${object.holder?.nickname
+      }`">
+        <span v-if="object.holder && canPlay" class="icon marker" :class="{ inactive: !isHolding }">
+          <Icon src="my-avatar.svg" />
+        </span>
+      </a-tooltip>
       <transition @enter="enter" @leave="leave" :css="false" appear>
-        <blockquote
-          v-if="object.speak"
-          class="bubble"
-          tabindex="-1"
-          :key="object.speak"
-          :class="object.speak.behavior ?? 'speak'"
-          :style="bubbleStyle"
-        >
+        <blockquote v-if="object.speak" class="bubble" tabindex="-1" :key="object.speak"
+          :class="object.speak.behavior ?? 'speak'" :style="bubbleStyle">
           <div class="py-2 px-4">
             <Linkify>{{ object.speak.message }}</Linkify>
           </div>
@@ -191,10 +176,12 @@ export default {
   position: fixed;
   z-index: 3000;
 }
+
 .marker {
   position: absolute;
   left: -12px;
 }
+
 .inactive {
   filter: grayscale(1);
 }

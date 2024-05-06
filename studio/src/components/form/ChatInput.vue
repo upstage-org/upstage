@@ -1,54 +1,32 @@
 <template>
-  <div
-    style="position: relative"
-    class="has-tooltip-left"
-    :data-tooltip="dynamicTooltip"
-  >
-    <ElasticInput
-      v-if="!pickerOnly"
-      v-bind="$attrs"
-      :model-value="modelValue"
-      @update:model-value="$emit('update:modelValue', $event)"
-      @ref="(el) => (input = el)"
-      @submit="$emit('submit')"
-      :style="{
-        'border-top-right-radius': '20px',
-        'border-bottom-right-radius': '20px',
-        'padding-right': '40px',
-      }"
-      :class="dynamicClass"
-    />
-    <div
-      v-click-outside="() => (isPicking = false)"
-      class="emoji-picker-wrapper"
-    >
-      <button
-        type="button"
-        class="button is-right clickable is-rounded"
-        :class="{
-          'is-loading': loading,
-          'is-primary': !className,
-          [className]: true,
-          'picker-only': pickerOnly,
-        }"
-        :disabled="loading"
-        :style="style"
-        @click="isPicking = !isPicking"
-      >
-        <slot name="icon">
-          <span class="icon" v-if="!loading">
-            <Icon size="48" src="emoji.svg" />
-          </span>
-        </slot>
-      </button>
-      <transition :css="false" @enter="pickerEnter" @leave="pickerLeave">
-        <emoji-picker
-          v-show="isPicking"
-          :class="{ dark: chatDarkMode, light: !chatDarkMode }"
-        />
-      </transition>
+  <a-tooltip :title="dynamicTooltip">
+    <div style="position: relative" class="has-tooltip-left">
+      <ElasticInput v-if="!pickerOnly" v-bind="$attrs" :model-value="modelValue"
+        @update:model-value="$emit('update:modelValue', $event)" @ref="(el) => (input = el)" @submit="$emit('submit')"
+        :style="{
+    'border-top-right-radius': '20px',
+    'border-bottom-right-radius': '20px',
+    'padding-right': '40px',
+  }" :class="dynamicClass" />
+      <div v-click-outside="() => (isPicking = false)" class="emoji-picker-wrapper">
+        <button type="button" class="button is-right clickable is-rounded" :class="{
+    'is-loading': loading,
+    'is-primary': !className,
+    [className]: true,
+    'picker-only': pickerOnly,
+  }" :disabled="loading" :style="style" @click="isPicking = !isPicking">
+          <slot name="icon">
+            <span class="icon" v-if="!loading">
+              <Icon size="48" src="emoji.svg" />
+            </span>
+          </slot>
+        </button>
+        <transition :css="false" @enter="pickerEnter" @leave="pickerLeave">
+          <emoji-picker v-show="isPicking" :class="{ dark: chatDarkMode, light: !chatDarkMode }" />
+        </transition>
+      </div>
     </div>
-  </div>
+  </a-tooltip>
 </template>
 
 <script>
@@ -171,10 +149,12 @@ emoji-picker {
     0 0px 0 1px rgba(10, 10, 10, 0.02);
   transform-origin: bottom right;
 }
+
 .emoji-picker-wrapper {
   position: absolute;
   right: 0;
   top: 0;
+
   .button {
     .icon:first-child:last-child {
       margin: auto;

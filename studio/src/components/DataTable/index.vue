@@ -5,31 +5,19 @@
       <thead>
         <tr>
           <th align="right" v-if="numbered">#</th>
-          <th
-            v-for="header in headers"
-            :key="header"
-            align="left"
-            :style="{ 'text-align': header.align }"
-            class="clickable"
-            @click="sort(header)"
-          >
-            <abbr class="has-tooltip-bottom" :data-tooltip="header.description">
-              {{ header.title }}
-            </abbr>
+          <th v-for="header in headers" :key="header" align="left" :style="{ 'text-align': header.align }"
+            class="clickable" @click="sort(header)">
+            <a-tooltip :title="header.description">
+              <abbr class="has-tooltip-bottom">
+                {{ header.title }}
+              </abbr>
+            </a-tooltip>
             &nbsp;
             <template v-if="sortBy?.title === header.title">
-              <i
-                v-if="header.type === 'date'"
-                :class="`fas ${
-                  sortOrder ? 'fa-sort-amount-down' : 'fa-sort-amount-down-alt'
-                }`"
-              />
-              <i
-                v-else
-                :class="`fas ${
-                  sortOrder ? 'fa-sort-alpha-down' : 'fa-sort-alpha-down-alt'
-                }`"
-              />
+              <i v-if="header.type === 'date'" :class="`fas ${sortOrder ? 'fa-sort-amount-down' : 'fa-sort-amount-down-alt'
+    }`" />
+              <i v-else :class="`fas ${sortOrder ? 'fa-sort-alpha-down' : 'fa-sort-alpha-down-alt'
+    }`" />
             </template>
             <template v-else-if="header.sortable">
               <i class="fas fa-sort" />
@@ -39,10 +27,7 @@
       </thead>
       <tfoot v-if="!nodes.length">
         <tr>
-          <td
-            class="has-text-centered has-text-dark"
-            :colspan="headers.length + numbered"
-          >
+          <td class="has-text-centered has-text-dark" :colspan="headers.length + numbered">
             <i class="fas fa-frown fa-4x"></i>
             <div>No replay recordings have been saved for this stage yet.</div>
           </td>
@@ -52,18 +37,8 @@
         <transition-group :css="false">
           <tr v-for="(item, index) in rows" :key="item">
             <td align="right" v-if="numbered">{{ offset + index + 1 }}</td>
-            <td
-              v-for="header in headers"
-              :key="header"
-              :style="{ 'text-align': header.align }"
-              :class="header.slot"
-            >
-              <slot
-                :name="header.slot"
-                :item="item"
-                :header="header"
-                :refresh="refresh ?? (() => {})"
-              >
+            <td v-for="header in headers" :key="header" :style="{ 'text-align': header.align }" :class="header.slot">
+              <slot :name="header.slot" :item="item" :header="header" :refresh="refresh ?? (() => { })">
                 <template v-if="header.render">
                   {{ header.render(item) }}
                 </template>
@@ -218,11 +193,13 @@ export default {
 i.fas {
   cursor: pointer;
 }
+
 .table-wrapper {
   overflow-x: auto;
   overflow-y: hidden;
   padding-right: 24px;
 }
+
 table {
   width: 100%;
 }

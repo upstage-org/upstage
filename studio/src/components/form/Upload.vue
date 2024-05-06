@@ -1,28 +1,23 @@
 <template>
   <div class="file">
-    <label class="file-label has-tooltip-right" :data-tooltip="tooltip">
-      <input
-        :id="id"
-        class="file-input"
-        type="file"
-        name="resume"
-        :accept="accept"
-        @input="handleInputFile"
-      />
-      <span class="file-cta">
-        <slot>
-          <span class="file-icon">
-            <i class="fas fa-file"></i>
-          </span>
-          <span class="file-label">Choose a file…</span>
-        </slot>
-      </span>
-      <div v-if="!valid" class="mt-2 mx-2 has-text-danger">
-        <span>Maximum file size: {{ humanFileSize(mediaLimit) }}&nbsp;</span>
-        <i class="fas fa-times"></i>
-        (current size: {{ humanFileSize(file.size) }})
-      </div>
-    </label>
+    <a-tooltip :title="tooltip">
+      <label class="file-label has-tooltip-right">
+        <input :id="id" class="file-input" type="file" name="resume" :accept="accept" @input="handleInputFile" />
+        <span class="file-cta">
+          <slot>
+            <span class="file-icon">
+              <i class="fas fa-file"></i>
+            </span>
+            <span class="file-label">Choose a file…</span>
+          </slot>
+        </span>
+        <div v-if="!valid" class="mt-2 mx-2 has-text-danger">
+          <span>Maximum file size: {{ humanFileSize(mediaLimit) }}&nbsp;</span>
+          <i class="fas fa-times"></i>
+          (current size: {{ humanFileSize(file.size) }})
+        </div>
+      </label>
+    </a-tooltip>
   </div>
 
   <template v-if="preview && file">
@@ -135,8 +130,7 @@ export default {
     const isImage = computed(() => file.value?.type?.startsWith("image"));
     const tooltip = computed(
       () =>
-        `Permitted file formats are ${
-          accept.value
+        `Permitted file formats are ${accept.value
         }. Maximum file size is ${humanFileSize(mediaLimit.value)}`,
     );
 

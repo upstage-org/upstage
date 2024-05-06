@@ -3,6 +3,7 @@ import { apolloClient } from "apollo";
 import { provide, onMounted } from "vue";
 import { DefaultApolloClient } from "@vue/apollo-composable";
 import "styles/bulma.css";
+import "styles/bulma_slider.css";
 import "styles/custom.less";
 import { useStore } from "vuex";
 
