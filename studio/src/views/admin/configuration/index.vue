@@ -42,6 +42,7 @@ const foyerConfigs = () =>
         multiline: true,
         name: "FOYER_DESCRIPTION",
         defaultValue: state.value.foyer?.description ?? "",
+        richTextEditor: true
       }),
       h(Entry, {
         label: t("menu"),
