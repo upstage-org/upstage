@@ -235,7 +235,6 @@ class StageConnectionField(SQLAlchemyConnectionField):
                 query = query.filter(getattr(model, field) == value)
         return query
 
-
 class CreateStageInput(graphene.InputObjectType, StageAttribute):
     """Arguments to create a stage."""
 
@@ -658,26 +657,15 @@ class Mutation(graphene.ObjectType):
 
 
 class Query(graphene.ObjectType):
-    code, error, user, timezone = current_user()
     node = relay.Node.Field()
     foyerStageList = FoyerStageConnectionField(Stage.connection)
-    if user.role in (ADMIN, SUPER_ADMIN):
-        stageList = StageConnectionField(
-            Stage.connection,
-            id=graphene.ID(),
-            name_like=graphene.String(),
-            file_location=graphene.String(),
-            created_on=graphene.DateTime(),
-        )
-    else:
-        stageList = StageConnectionField(
-            Stage.connection,
-            id=graphene.ID(),
-            name_like=graphene.String(),
-            file_location=graphene.String(),
-            created_on=graphene.DateTime(),
-            permissions in ('owner','player','editor'),
-        )
+    stageList = StageConnectionField(
+        Stage.connection,
+        id=graphene.ID(),
+        name_like=graphene.String(),
+        file_location=graphene.String(),
+        created_on=graphene.DateTime(),
+    )
     assetList = AssetConnectionField(
         Asset.connection,
         id=graphene.ID(),
