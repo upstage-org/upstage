@@ -1,6 +1,6 @@
 <script lang="tsx">
 import { h } from "vue";
-import { defineComponent } from "vue";
+import { defineComponent, watch, reactive } from "vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import StarterKit from "@tiptap/starter-kit";
 import Image from "@tiptap/extension-image";
@@ -53,6 +53,13 @@ export default defineComponent({
       ],
     });
 
+    watch(
+      () => props.readonly,
+      (newValues) => {
+        editor?.value?.setEditable(!newValues)
+      },
+    );
+
     return () =>
       h(
         Space,
@@ -61,12 +68,12 @@ export default defineComponent({
           class: "w-full shadow rounded-xl bg-white p-4",
         },
         () => [
-          editor.value && h(Toolbox, { editor: editor.value }),
+          !props.readonly && editor.value && h(Toolbox, { editor: editor.value }),
           h(EditorContent, {
             editor: editor.value,
           }),
         ],
       );
-  },
+  }
 });
 </script>

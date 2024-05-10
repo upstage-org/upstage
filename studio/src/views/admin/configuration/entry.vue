@@ -3,12 +3,15 @@ import { useLoading } from "hooks/mutations";
 import { configClient } from "services/graphql";
 import { VNode } from "vue";
 import { ref } from "vue";
+import RichTextEditor from "components/editor/RichTextEditor.vue";
+import { boxShadow } from "html2canvas/dist/types/css/property-descriptors/box-shadow";
 
 const props = defineProps<{
   name: string;
   label: string;
   defaultValue: string | boolean;
   multiline?: boolean;
+  richTextEditor?: boolean;
   help?: VNode;
   refresh?: () => Promise<void>;
 }>();
@@ -43,44 +46,27 @@ const save = async () => {
 </script>
 
 <template>
-  <a-form-item
-    :label="props.label"
-    :name="name"
-    :label-col="{ span: 12, xl: { span: 4 }, xxl: { span: 3 } }"
-  >
+  <a-form-item :label="props.label" :name="name" :label-col="{ span: 12, xl: { span: 4 }, xxl: { span: 3 } }">
     <template v-if="typeof value === 'string'">
       <a-input-group compact style="display: flex">
-        <a-textarea
-          v-if="props.multiline"
-          :disabled="!editing"
-          v-model:value="value"
-          style="color: black"
-          auto-size
-        ></a-textarea>
-        <a-input
-          v-else
-          :disabled="!editing"
-          v-model:value="value"
-          style="color: black"
-        />
-        <a-button
-          v-if="!editing && !loading"
-          type="primary"
-          @click="editing = true"
-          >Edit</a-button
-        >
-        <a-button v-else type="primary" @click="save" :loading="loading"
-          >Save</a-button
-        >
+        <RichTextEditor v-if="richTextEditor" :readonly="!editing" v-model="value" :style="{
+    border: '1px solid rgb(217, 217, 217)',
+    boxShadow: 'none',
+    backgroundColor: editing ? 'white' : '#F0F0F0'
+  }" />
+        <template v-else>
+          <a-textarea v-if="props.multiline" :disabled="!editing" v-model:value="value" style="color: black"
+            auto-size></a-textarea>
+          <a-input v-else :disabled="!editing" v-model:value="value" style="color: black" />
+        </template>
+        <a-button v-if="!editing && !loading" type="primary" @click="editing = true">Edit</a-button>
+        <a-button v-else type="primary" @click="save" :loading="loading">Save</a-button>
       </a-input-group>
     </template>
-
-    <a-switch
-      v-if="typeof value === 'boolean'"
-      v-model:checked="value"
-      @change="save"
-      :loading="loading"
-    />
+    <a-switch v-if="typeof value === 'boolean'" v-model:checked="value" @change="save" :loading="loading" />
     <help v-if="help" class="mt-2" />
   </a-form-item>
 </template>
+<style>
+.richtexteditor {}
+</style>

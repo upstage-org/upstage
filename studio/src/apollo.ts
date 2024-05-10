@@ -18,7 +18,7 @@ import { provideApolloClient } from "@vue/apollo-composable";
 // HTTP connection to the API
 const httpLink = createHttpLink({
   // You should use an absolute URL here
-  uri: `${configs.SHARED.GRAPHQL_ENDPOINT}studio_graphql/`,
+  uri: `${configs.GRAPHQL_ENDPOINT}studio_graphql/`,
 });
 
 let refreshing = false;

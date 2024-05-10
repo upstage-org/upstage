@@ -17,10 +17,11 @@ import { useUpdateUser } from "hooks/mutations";
 import { useAsyncState } from "@vueuse/core";
 import { studioClient } from "services/graphql";
 import { AdminPlayerSortEnum, User } from "genql/studio";
-import { computed } from "vue";
+import { computed, ComputedRef } from "vue";
 import { useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
 import configs from "config";
+import { useRouter } from "vue-router";
 
 interface Pagination {
   current: number;
@@ -29,14 +30,20 @@ interface Pagination {
   showSizeChanger: boolean;
   total: number;
 }
+interface SortQueryParams {
+  sortByCreated?: boolean;
+}
 
 export default {
   setup() {
     const { t } = useI18n();
+    const router = useRouter();
+    const query: SortQueryParams = router.currentRoute.value.query;
+
     const tableParams = reactive({
       first: 10,
       after: undefined,
-      sort: ["CREATED_ON_ASC"] as AdminPlayerSortEnum[],
+      sort: [query.sortByCreated ? "CREATED_ON_DESC" : "CREATED_ON_ASC"] as AdminPlayerSortEnum[],
     });
     const { result: inquiryResult } = useQuery(gql`
       {
@@ -83,7 +90,7 @@ export default {
       refresh();
     });
 
-    const columns: ColumnType<User>[] = [
+    const columns: ComputedRef<ColumnType<User>[]> = computed((): ColumnType<User>[] => [
       {
         title: t("role"),
         dataIndex: "role",
@@ -108,8 +115,7 @@ export default {
                   role: value,
                 });
                 message.success(
-                  `Successfully switch ${displayName(opt.record)}'s role to ${
-                    (selectedOption as DefaultOptionType).label
+                  `Successfully switch ${displayName(opt.record)}'s role to ${(selectedOption as DefaultOptionType).label
                   }!`,
                 );
               },
@@ -166,8 +172,8 @@ export default {
         customRender(opt) {
           return opt.text
             ? h(DDate, {
-                value: opt.text,
-              })
+              value: opt.text,
+            })
             : "";
         },
       },
@@ -183,7 +189,7 @@ export default {
             value: opt.text,
           });
         },
-        defaultSortOrder: "ascend",
+        defaultSortOrder: query.sortByCreated ? "descend" : "ascend",
       },
       {
         title: t("status"),
@@ -200,8 +206,7 @@ export default {
                 active: !!value,
               });
               message.success(
-                `Account ${displayName(opt.record)} ${
-                  value ? "activated" : "deactivated"
+                `Account ${displayName(opt.record)} ${value ? "activated" : "deactivated"
                 } successfully!`,
               );
             },
@@ -253,7 +258,7 @@ export default {
           ]);
         },
       },
-    ];
+    ]);
 
     const handleTableChange = (
       { current = 1, pageSize = 10 }: TablePaginationConfig,
@@ -302,7 +307,7 @@ export default {
           h(Table, {
             class: "w-full overflow-auto",
             rowKey: "id",
-            columns,
+            columns: columns.value,
             dataSource: result.value.adminPlayers?.edges.map((e) => e?.node),
             loading: !isReady.value,
             onChange: handleTableChange,

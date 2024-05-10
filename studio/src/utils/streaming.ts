@@ -1,11 +1,11 @@
 import configs from "config";
 
 export const getSubsribeLink = (key: string) => {
-  return `${configs.SHARED.STREAMING.subscribe}live/${key}.flv`;
+  return `${configs.STREAMING.subscribe}live/${key}.flv`;
 };
 
 export const getPublishLink = (key: string) => {
-  return `${configs.SHARED.STREAMING.publish}/${key}`;
+  return `${configs.STREAMING.publish}/${key}`;
 };
 
 export const getLarixLink = (key: string, sign: string, name: string) => {

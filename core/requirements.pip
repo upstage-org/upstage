@@ -28,5 +28,6 @@ requests
 snapshottest
 sqlalchemy
 stripe
+uwsgi
 werkzeug
 wrapt

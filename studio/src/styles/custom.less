@@ -1,0 +1,342 @@
+// UpStage default font
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100;0,400;0,700;1,400&display=swap');
+// Text tool fonts
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Anton&family=Arvo:ital,wght@0,400;0,700;1,400;1,700&family=Asap:ital,wght@0,400;0,700;1,400;1,700&family=Bebas+Neue&family=Fira+Sans:ital,wght@0,400;0,900;1,400;1,900&family=Lato:ital,wght@0,400;0,900;1,400;1,900&family=Lobster&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Oswald:wght@400;700&family=Overpass:ital,wght@0,400;0,900;1,400;1,900&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=PT+Serif:ital,wght@0,400;0,700;1,400;1,700&family=Pacifico&family=Playfair+Display:ital,wght@0,400;0,900;1,400;1,900&family=Poppins:ital,wght@0,400;0,900;1,400;1,900&family=Roboto+Condensed:ital,wght@0,400;0,700;1,400;1,700&family=Roboto+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,900;1,400;1,900&family=Ubuntu:ital,wght@0,400;0,700;1,400;1,700&family=Varela+Round&display=swap');
+
+* {
+    font-family: 'Josefin Sans', sans-serif;
+}
+
+nav {
+    a {
+        color: black;
+
+        &.router-link-exact-active {
+            font-weight: bold;
+            color: #007011;
+        }
+    }
+}
+
+.button {
+    &.shadow:hover {
+        // $i: 0;
+        // $shadow-size: 5;
+        // $shadow: null;
+
+        // @while $i < $shadow-size {
+        //     $i: $i + 0.5;
+        //     $shadow: $shadow $i*1px $i*-1px 0 #363636#{if($i != $shadow-size, ',', '')};
+        // }
+
+        box-shadow: #888888;
+        transition-duration: 0.25s;
+    }
+
+    .icon:first-child:last-child {
+        margin: auto;
+    }
+}
+
+.card,
+.panel,
+.modal-card {
+    border-top: 10px solid #007011;
+}
+
+.panel-body {
+    overflow: visible !important;
+
+    .button {
+        text-align: left;
+        border: none;
+
+        &:hover {
+            border: 1px solid #363636;
+            z-index: 100;
+        }
+    }
+}
+
+.panel-heading {
+    overflow: visible !important;
+}
+
+#board {
+    box-shadow: 0 0 1em -0.125em #F5F5F5;
+}
+
+#topbar {
+    border-top: none;
+}
+
+#Texttool {
+    overflow: visible !important;
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Backdroptool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Avatarstool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Propstool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Streamtool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Drawtool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Whiteboardtool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Audiotool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Settingtool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Curtaintool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+}
+
+#Depthtool {
+    background-color: hsl(206, 70%, 96%);
+
+    >div,
+    >div span.tag {
+        background-color: hsl(206, 70%, 96%) !important;
+    }
+
+    span.tag {
+        color: white;
+    }
+}
+
+.is-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.5;
+
+    &:after {
+        // @include loader;
+        position: absolute;
+        top: calc(50% - 2.5em);
+        left: calc(50% - 2.5em);
+        width: 5em;
+        height: 5em;
+        border-width: 0.25em;
+    }
+}
+
+.foyer-background {
+    background-image: url(../assets/foyerbg.png);
+    min-height: calc(100vh - 120px);
+}
+
+.modal-card-foot {
+    padding: 10px;
+}
+
+.is-multi {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+}
+
+div.moveable-control-box {
+    --moveable-color: #007011;
+}
+
+// Desktop only css
+@media screen and (min-width: 1024px) {
+    .navbar-start {
+        flex: auto;
+        justify-content: center !important;
+    }
+
+    .navbar-item {
+        margin: 8px 12px;
+        padding: 0 20px !important;
+        justify-content: center;
+        border: 1px solid transparent;
+    }
+
+    .vertical-divider {
+        width: 8px;
+        height: 8px;
+        background-color: #007011;
+        border-radius: 100%;
+        margin: auto 0;
+    }
+
+    .navbar-menu {
+
+        a.navbar-item:hover,
+        .navbar-item.is-active,
+        .navbar-item.is-hoverable:focus,
+        .navbar-item.is-hoverable:focus-within,
+        .navbar-item.is-hoverable:hover {
+            &:hover {
+                // $i: 0;
+                // $shadow-size: 5;
+                // $shadow: null;
+
+                // @while $i < $shadow-size {
+                //     $i: $i + 0.5;
+                //     $shadow: $shadow $i*1px $i*-1px 0 #363636#{if($i != $shadow-size, ',', '')};
+                // }
+
+                border: 1px solid #363636;
+            }
+        }
+    }
+
+    .navbar-dropdown {
+        padding: 0 !important;
+        top: calc(100% + 1px) !important;
+        left: -1px !important;
+        width: calc(100% + 2px) !important;
+
+        a.navbar-item {
+            margin: 0;
+            padding: 8px 0 !important;
+            justify-content: center;
+            border-width: 0 1px 1px 1px;
+            border-style: solid;
+            border-color: #363636;
+            white-space: normal;
+            text-align: center;
+
+            &:hover {
+                box-shadow: none !important;
+                border-width: 0 1px 1px 1px !important;
+            }
+        }
+    }
+}
+
+@media screen and (max-width: 1280px) {
+    #app {
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .modal-card {
+        width: 100% !important;
+    }
+
+    .navbar-brand {
+        .navbar-item {
+            margin-right: 0;
+        }
+    }
+
+    .navbar-item {
+        margin: 8px;
+        padding: 0 10px !important;
+
+        &:first-child {
+            margin-left: 0;
+        }
+    }
+
+    .modal-card-title {
+        font-size: 1rem;
+    }
+}
+
+@media (pointer: coarse) {
+
+    // touch devices
+    [data-tooltip] {
+
+        &::before,
+        &::after {
+            content: none !important;
+        }
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-button {
+    background: #ccc;
+    width: 5px;
+}
+
+::-webkit-scrollbar-track-piece {
+    background: #888;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #007011;
+}
+
+.ant-tooltip {
+    z-index: 10001 !important;
+}

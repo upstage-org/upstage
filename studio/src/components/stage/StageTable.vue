@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { useMutation, useQuery } from "@vue/apollo-composable";
 import gql from "graphql-tag";
-import { computed, reactive, watch, provide, ref, inject, Ref } from "vue";
+import { computed, reactive, watch, provide, onMounted, ComputedRef } from "vue";
 import type { Media, Stage, StudioGraph } from "models/studio";
 import { absolutePath } from "utils/common";
 import { ColumnType, TablePaginationConfig } from "ant-design-vue/lib/table";
@@ -34,7 +34,7 @@ watch(inquiryResult, () => {
   tableParams.cursor = undefined;
 });
 
-const { result, loading, fetchMore } = useQuery<
+const { result, loading, fetchMore, refetch } = useQuery<
   StudioGraph,
   { cursor?: string; limit: number; sort?: string[] }
 >(
@@ -86,6 +86,10 @@ const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
   return fetchMoreResult ?? previousResult;
 };
 
+onMounted(() => {
+  refetch();
+});
+
 watch(params, () => {
   fetchMore({
     variables: params.value,
@@ -93,7 +97,7 @@ watch(params, () => {
   });
 });
 
-const columns: ColumnType<Stage>[] = [
+const columns: ComputedRef<ColumnType<Stage>[]> = computed((): ColumnType<Stage>[] => [
   {
     title: t("preview"),
     align: "center",
@@ -163,7 +167,7 @@ const columns: ColumnType<Stage>[] = [
     fixed: "right",
     key: "actions",
   },
-];
+]);
 
 interface Pagination {
   current: number;
@@ -267,27 +271,16 @@ onVisibilityUpdated(handleUpdate);
 
 <template>
   <a-layout class="w-full rounded-xl bg-white overflow-hidden">
-    <a-table
-      class="w-full shadow overflow-auto"
-      :columns="columns"
-      :data-source="dataSource"
-      rowKey="id"
-      :loading="loading"
-      @change="handleTableChange"
-      :pagination="
-        {
-          showQuickJumper: true,
-          showSizeChanger: true,
-          total: result ? result.stages.totalCount : 0,
-        } as Pagination
-      "
-    >
+    <a-table class="w-full shadow overflow-auto" :columns="columns as ColumnType<Stage>[]" :data-source="dataSource"
+      rowKey="id" :loading="loading" @change="handleTableChange" :pagination="{
+      showQuickJumper: true,
+      showSizeChanger: true,
+      total: result ? result.stages.totalCount : 0,
+    } as Pagination
+      ">
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">
-          <a-image
-            :src="absolutePath(text)"
-            class="w-24 max-h-24 object-contain"
-          />
+          <a-image :src="absolutePath(text)" class="w-24 max-h-24 object-contain" />
         </template>
         <template v-if="column.key === 'owner_id'">
           <span v-if="text.displayName">
@@ -299,9 +292,7 @@ onVisibilityUpdated(handleUpdate);
             <span>{{ text.username }}</span>
           </span>
         </template>
-        <template
-          v-if="['created_on', 'last_access'].includes(column.key as string)"
-        >
+        <template v-if="['created_on', 'last_access'].includes(column.key as string)">
           <d-date v-if="text" :value="text" />
         </template>
         <template v-if="column.key === 'permission'">
@@ -312,27 +303,17 @@ onVisibilityUpdated(handleUpdate);
             {{ capitalize(text) }}
           </a-tag>
           <a-tooltip v-else :title="capitalize(text)">
-            <a-switch
-              checked-children="L"
-              un-checked-children="R"
-              :checked="text === 'live'"
-              :loading="loadingUpdateStatus"
-              @change="handleChangeStatus(record as Stage)"
-            />
+            <a-switch checked-children="L" un-checked-children="R" :checked="text === 'live'"
+              :loading="loadingUpdateStatus" @change="handleChangeStatus(record as Stage)" />
           </a-tooltip>
         </template>
         <template v-if="column.key === 'visibility'">
-          <a-switch
-            :checked="!!text"
-            :loading="loadingUpdateVisibility"
-            @change="handleChangeVisibility(record as Stage)"
-          />
+          <a-switch :checked="!!text" :loading="loadingUpdateVisibility"
+            @change="handleChangeVisibility(record as Stage)" />
         </template>
         <template v-if="column.key === 'actions'">
           <a-space>
-            <router-link
-              :to="`/legacy/backstage/stage-management/${record.id}/`"
-            >
+            <router-link :to="`/stages/stage-management/${record.id}/`">
               <a-button>
                 <setting-outlined />
                 Manage

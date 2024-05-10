@@ -16,7 +16,7 @@ import { useLoading } from "hooks/mutations";
 import { settings } from "state/settings";
 
 export default {
-  async setup(_, { slots }) {
+  setup(_, { slots }) {
     const router = useRouter();
 
     const { whoami, updateProfile: save, loading: saving } = useUpdateProfile();
@@ -28,136 +28,132 @@ export default {
           whoami.value.role,
         ),
     );
-
-    return () => [
-      h(
-        LayoutSider,
-        {
-          theme: "light",
-          collapsed: true,
-          class: "select-none",
-          width: 240,
-        },
-        () => [
-          h(
-            Menu,
-            {
-              selectedKeys: [router.currentRoute.value.path],
-              onSelect: (e) => router.push(e.key.toString()),
-              mode: "inline",
-              class: "upstage-menu",
-            },
-            () =>
-              [
-                { key: "/media", icon: PictureOutlined, label: "Media" },
-                { key: "/stages", icon: CommentOutlined, label: "Stages" },
-                {
-                  children: whoami.value
-                    ? h(
-                        PlayerForm,
-                        {
-                          player: whoami.value,
-                          saving: saving.value,
-                          onSave: save as any,
-                          noUploadLimit: true,
-                          noStatusToggle: true,
-                        },
-                        {
-                          default: ({ onClick }: { onClick: () => void }) =>
-                            h(
-                              MenuItem,
-                              {
-                                onClick,
-                              },
-                              () => [h(UserOutlined), h("span", "Profile")],
-                            ),
-                        },
-                      )
-                    : h("span"),
-                },
-                ...(isAdmin.value
-                  ? [
-                      {
-                        children: h(
-                          SubMenu,
+    return () => h(
+      LayoutSider,
+      {
+        theme: "light",
+        collapsed: true,
+        class: "select-none",
+        width: 240,
+      },
+      () => [
+        h(
+          Menu,
+          {
+            selectedKeys: [router.currentRoute.value.path],
+            onSelect: (e) => e.key && router.push(e.key.toString()),
+            mode: "inline",
+            class: "upstage-menu",
+          },
+          () =>
+            [
+              { key: "/media", icon: PictureOutlined, label: "Media" },
+              { key: "/stages", icon: CommentOutlined, label: "Stages" },
+              {
+                children: whoami.value
+                  ? h(
+                    PlayerForm,
+                    {
+                      player: whoami.value,
+                      saving: saving.value,
+                      onSave: save as any,
+                      noUploadLimit: true,
+                      noStatusToggle: true,
+                    },
+                    {
+                      default: ({ onClick }: { onClick: () => void }) =>
+                        h(
+                          MenuItem,
                           {
-                            key: "/admin",
-                            style: {
-                              margin: 4,
-                              background:
-                                router.currentRoute.value.path.startsWith(
-                                  "/admin",
-                                )
-                                  ? router.currentRoute.value.meta.background
-                                  : undefined,
-                            },
+                            onClick,
                           },
-                          {
-                            icon: () => h(SettingOutlined),
-                            title: () => "Admin",
-                            default: () => [
-                              h(
-                                MenuItem,
-                                {
-                                  key: "/admin/player",
-                                },
-                                () => "Player Management",
-                              ),
-                              h(
-                                MenuItem,
-                                {
-                                  key: "/admin/email-notification",
-                                },
-                                () => "Email Notification",
-                              ),
-                              h(
-                                MenuItem,
-                                {
-                                  key: "/admin/configuration",
-                                },
-                                () => "Configuration",
-                              ),
-                            ],
-                          },
+                          () => [h(UserOutlined), h("span", "Profile")],
                         ),
-                      },
-                    ]
-                  : []),
-                {
-                  icon: ReadOutlined,
-                  label: "Manual",
-                  disabled: !settings.isReady.value,
-                  onClick: () =>
-                    open(
-                      settings.state.value.system?.manual ??
-                        "https://docs.upstage.live/",
-                      "_blank",
-                    ),
-                },
-              ].map((item) =>
-                item.children
-                  ? item.children
-                  : h(
-                      MenuItem,
+                    },
+                  )
+                  : h("span"),
+              },
+              ...(isAdmin.value
+                ? [
+                  {
+                    children: h(
+                      SubMenu,
                       {
-                        key: item.key,
-                        onClick: item.onClick,
-                        disabled: item.disabled,
+                        key: "/admin",
                         style: {
+                          margin: 4,
                           background:
-                            item.key === router.currentRoute.value.path
+                            router.currentRoute.value.path.startsWith(
+                              "/admin",
+                            )
                               ? router.currentRoute.value.meta.background
                               : undefined,
                         },
                       },
-                      () => [h(item.icon), h("span", item.label)],
+                      {
+                        icon: () => h(SettingOutlined),
+                        title: () => "Admin",
+                        default: () => [
+                          h(
+                            MenuItem,
+                            {
+                              key: "/admin/player",
+                            },
+                            () => "Player Management",
+                          ),
+                          h(
+                            MenuItem,
+                            {
+                              key: "/admin/email-notification",
+                            },
+                            () => "Email Notification",
+                          ),
+                          h(
+                            MenuItem,
+                            {
+                              key: "/admin/configuration",
+                            },
+                            () => "Configuration",
+                          ),
+                        ],
+                      },
                     ),
-              ),
-          ),
-        ],
-      ),
-      slots.default?.(),
-    ];
+                  },
+                ]
+                : []),
+              {
+                icon: ReadOutlined,
+                label: "Manual",
+                disabled: !settings.isReady.value,
+                onClick: () =>
+                  open(
+                    settings.state.value.system?.manual ??
+                    "https://docs.upstage.live/",
+                    "_blank",
+                  ),
+              },
+            ].map((item) =>
+              item.children
+                ? item.children
+                : h(
+                  MenuItem,
+                  {
+                    key: item.key,
+                    onClick: item.onClick,
+                    disabled: item.disabled,
+                    style: {
+                      background:
+                        item.key === router.currentRoute.value.path
+                          ? router.currentRoute.value.meta.background
+                          : undefined,
+                    },
+                  },
+                  () => [h(item.icon), h("span", item.label)],
+                ),
+            ),
+        ),
+      ],
+    )
   },
 };
 </script>
@@ -166,10 +162,10 @@ export default {
 .ant-menu-submenu {
   margin: 4px;
 }
+
 .ant-menu-submenu-title {
   margin: 0 !important;
   width: 100% !important;
   padding-inline: calc(50% - 10px) !important;
 }
 </style>
-state/auth
