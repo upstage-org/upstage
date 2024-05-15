@@ -28,7 +28,7 @@ const { result, loading } = useQuery<StudioGraph>(
     }
   `,
   null,
-  { fetchPolicy: "cache-only" },
+  { fetchPolicy: "cache-and-network" },
 );
 const stages = computed(() => {
   if (result.value?.stages) {
