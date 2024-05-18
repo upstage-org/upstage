@@ -34,7 +34,7 @@ export default {
       state.stageList = list;
     },
     UPDATE_STAGE_VISIBILITY(state, { stageId, visibility }) {
-      const stage = state.stageList.find((s) => s.id === stageId);
+      const stage = (state.stageList || []).find((s) => s.id === stageId);
       if (stage) {
         stage.visibility = visibility;
       }
