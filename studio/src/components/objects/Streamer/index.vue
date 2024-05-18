@@ -129,7 +129,7 @@ export default {
   setup: (props) => {
     const store = useStore();
     const shapes = computed(() => store.state.stage.tools.shapes);
-
+    const loading = ref(true);
     const stream = reactive({
       ...props.object,
       isPlaying: props.object.isRTMP ? true : props.object.isPlaying,
@@ -160,7 +160,6 @@ export default {
         synchronize();
       },
     );
-    const loading = ref(true);
     const loadeddata = () => {
       loading.value = false;
       synchronize();
