@@ -45,3 +45,9 @@ pnpm-debug.log*
 __pycache__
 *.pyc
 *.pyo
+
+# vuejs generated files
+studio/components.d.ts
+studio/src/genql/*
+studio/package-lock.json
+studio/yarn.lock
