@@ -6,15 +6,19 @@
       }" />
       <button v-else class="button">{{ $t("choose_an_image") }}</button>
     </template>
-    <template #header>{{
+    <template #header><span>{{
         $t("choose_an_existing_image_or_upload_new")
-      }}</template>
+      }}</span></template>
     <template #content="{ closeModal }">
       <Loading v-if="loading" />
       <div v-else class="columns is-multiline">
         <div class="column is-12">
           <div class="columns">
-            <div class="column panel-heading">
+            <div class="column uploadbtn">
+              <MediaUpload />
+            </div>
+
+            <div class="column">
               <p class="control has-icons-left">
                 <input class="input" type="text" placeholder="Search Media" v-model="filter.name" />
                 <span class="icon is-left">
@@ -46,16 +50,17 @@
 import Modal from "components/Modal.vue";
 import Loading from "components/Loading.vue";
 import Asset from "components/Asset.vue";
-import { computed, provide, reactive } from "vue";
+import { computed, provide, reactive, onMounted } from "vue";
 import Dropdown from "./Dropdown.vue";
 import { displayName } from "utils/common";
 import { stageGraph } from "services/graphql";
 import { useQuery } from "services/graphql/composable";
+import MediaUpload from "./Media/MediaUpload.vue";
 
 export default {
   props: ["modelValue"],
   emits: ["update:modelValue"],
-  components: { Modal, Loading, Asset, Dropdown },
+  components: { Modal, Loading, Asset, Dropdown, MediaUpload },
   setup: (props, { emit }) => {
     const {
       loading,
@@ -64,6 +69,10 @@ export default {
     } = useQuery(stageGraph.mediaList);
     const type_dis = ["avatar", "prop", "backdrop", "shape", "curtain"];
     provide("refresh", refresh);
+
+    onMounted(() => {
+      refresh();
+    });
 
     const select = (item, closeModal) => {
       emit("update:modelValue", item.src);
@@ -151,6 +160,14 @@ export default {
 </script>
 
 <style>
+.modal-card-title {
+  margin-bottom: 0px;
+}
+
+.modal-card {
+  border-top: none;
+}
+
 .dropdown .button {
   width: 95%;
 }
@@ -173,5 +190,9 @@ export default {
 .gallery img {
   height: 10vw;
   width: auto;
+}
+
+.uploadbtn {
+  flex-grow: 0;
 }
 </style>

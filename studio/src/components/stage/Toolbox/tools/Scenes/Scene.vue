@@ -58,12 +58,12 @@ export default {
     const deleteScene = async () => {
       const result = await mutation();
       if (result.deleteScene) {
-        const { message, success } = result.deleteScene;
+        const { success } = result.deleteScene;
         if (success) {
-          message.success(message);
+          message.success(result.deleteScene.message);
           store.dispatch("stage/loadScenes");
         } else {
-          message.error(message);
+          message.error(result.deleteScene.message);
         }
       }
     };

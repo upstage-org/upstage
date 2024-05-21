@@ -27,7 +27,7 @@
     "@vueuse/core": "^6.7.3",
     "@yeger/vue-masonry-wall": "^3.0.29",
     "animejs": "^3.2.1",
-    "ant-design-vue": "^4.0.3",
+    "ant-design-vue": "^4.2.1",
     "autoprefixer": "^10.3.7",
     "axios": "^1.6.0",
     "bulma": "^0.9.4",

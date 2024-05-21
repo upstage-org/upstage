@@ -11,7 +11,7 @@
 <script>
 import { ref } from "vue";
 import { watchEffect } from "vue";
-import Dropdown from "./Dropdown";
+import Dropdown from "./Dropdown.vue";
 import { titleCase } from "utils/common";
 
 export default {

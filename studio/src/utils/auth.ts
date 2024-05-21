@@ -22,6 +22,7 @@ export const loggedIn = computed(() => store.getters["auth/loggedIn"]);
 export const logout = () => store.dispatch("auth/logout");
 
 export function displayName(user) {
+  if(!user) return "";
   if (user.displayName?.trim()) return user.displayName;
   if (user.firstName || user.lastName)
     return `${user.firstName ?? ""} ${user.lastName ?? ""}`.trim();

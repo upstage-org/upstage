@@ -7,7 +7,7 @@
       <span>{{ $t("download_all_player_chat") }}</span>
     </button>
     <ClearChat />
-    <SweepStage>{{ $t("archive_performance") }}</SweepStage>
+    <SweepStage :archive="true">{{ $t("archive_performance") }}</SweepStage>
   </div>
 
   <DataTable :data="sessions" :headers="headers">
