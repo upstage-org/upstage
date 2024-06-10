@@ -198,6 +198,7 @@ if ENV_TYPE == "Production":
     log_handler(app)
     talisman = Talisman(app)
     print("Registering Crash Mailer")
+    #CORS(app, resources={r"*.upstage.live": {"origins": "*.upstage.live"}})
 
 elif "DEV" in ENV_TYPE:
     # Running crash reporting in dev when DEBUG is off, but not on individual machines.

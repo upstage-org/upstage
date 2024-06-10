@@ -27,7 +27,8 @@ from config import DEBUG, ENV_TYPE, HOSTNAME
 
 def add_details(sender, exception):
     exc = traceback.format_exc()
-    cid = get_jwt_identity()
+    #cid = get_jwt_identity()
+    cid = 'unknown'
 
     msg = """
 {0}:{1}: 
