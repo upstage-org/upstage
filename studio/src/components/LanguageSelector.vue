@@ -23,6 +23,8 @@ const flags = {
   vn: "🇻🇳",
   fr: "🇫🇷",
   se: "🇸🇪",
+  pt: "🇵🇹",
+  es: "🇪🇸",
 };
 
 const labels = {
@@ -31,6 +33,8 @@ const labels = {
   vn: "Tiếng Việt",
   fr: "Français",
   se: "Svenska",
+  pt: "Português",
+  es: "Español",
 };
 const persistLocale = (locale) => {
   localStorage.setItem("locale", locale);
