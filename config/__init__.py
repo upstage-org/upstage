@@ -130,7 +130,7 @@ SQLALCHEMY_DATABASE_URI = "postgresql+psycopg2://{0}:{1}@{2}:{3}/{4}".format(
     DB_USER, DB_PASSWD, DB_HOST, DB_PORT, DB_NAME
 )
 # SQLALCHEMY_DATABASE_URI = 'mysql+mysqldb://{0}:{1}@{2}:{3}/{4}'.format(DB_USER,DB_PASSWD,DB_HOST,DB_PORT,DB_NAME)
-NGINX_CONFIG_FILE = "config/dev/dev_app1_nginx_upstage.conf"
+NGINX_CONFIG_FILE = "/home/upstage/upstage/config/dev/dev_app1_nginx_upstage.conf"
 
 CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT = (
     "https://challenges.cloudflare.com/turnstile/v0/siteverify"
