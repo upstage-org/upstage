@@ -11,9 +11,10 @@
     "serve:localhost": "vite --mode localhost --port=3000",
     "start": "vite preview",
     "i18n": "node ./src/i18n/scan.js",
-    "genql": "genql --endpoint https://upstage.live/api/studio_graphql/ --output ./src/genql/studio && genql --endpoint https://upstage.live/api/config_graphql/ --output ./src/genql/config"
+    "genql": "genql --endpoint $(grep VITE_GRAPHQL_ENDPOINT .env)studio_graphql/ --output ./src/genql/studio && genql --endpoint https://qmu.upstage.live/api/config_graphql/ --output ./src/genql/config"
   },
   "dependencies": {
+    "16": "^0.0.2",
     "@ant-design/icons-vue": "^7.0.1",
     "@apollo/client": "^3.8.8",
     "@fortawesome/fontawesome-free": "^5.15.1",
@@ -38,6 +39,7 @@
     "core-js": "^3.6.5",
     "emoji-picker-element": "^1.4.0",
     "flv.js": "^1.5.0",
+    "genql": "^2.0.1",
     "graphql": "^15.6.1",
     "graphql-request": "^3.4.0",
     "graphql-tag": "^2.12.5",
@@ -49,6 +51,7 @@
     "moment": "^2.29.4",
     "moveable": "^0.24.5",
     "mqtt": "^4.2.6",
+    "node": "^20.14.0",
     "object-hash": "^2.1.1",
     "postcss": "^8.4.32",
     "qr-code-styling": "^1.6.0-rc.1",
@@ -61,7 +64,9 @@
     "vue-slicksort": "^2.0.0-alpha.5",
     "vue-turnstile": "^1.0.5",
     "vuex": "^4.0.0-0",
-    "vuex-persistedstate": "^4.0.0-beta.1"
+    "vuex-persistedstate": "^4.0.0-beta.1",
+    "yarn": "^1.22.22",
+    "yarnpkg": "^0.0.0"
   },
   "devDependencies": {
     "@genql/cli": "^6.2.1",
