@@ -1,98 +1,32 @@
 type Query {
   node(
-    """
-    The ID of the object
-    """
+    """The ID of the object"""
     id: ID!
   ): Node
-  mediaTypes(
-    sort: [AssetTypeSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): AssetTypeConnection
-  tags(
-    sort: [TagSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): TagConnection
-  users(
-    active: Boolean
-    sort: [UserSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): UserConnection
-  media(
-    id: ID
-    nameLike: String
-    createdBetween: [Date]
-    fileLocation: String
-    mediaTypes: [String]
-    owners: [String]
-    stages: [Int]
-    tags: [String]
-    sort: [AssetSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): AssetConnection
-  stages(
-    id: ID
-    nameLike: String
-    createdBetween: [Date]
-    fileLocation: String
-    owners: [String]
-    sort: [StageSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): StageConnection
-  adminPlayers(
-    id: ID
-    usernameLike: String
-    createdBetween: [Date]
-    role: Int
-    sort: [AdminPlayerSortEnum]
-    before: String
-    after: String
-    first: Int
-    last: Int
-  ): AdminPlayerConnection
+  mediaTypes(sort: [AssetTypeSortEnum], before: String, after: String, first: Int, last: Int): AssetTypeConnection
+  tags(sort: [TagSortEnum], before: String, after: String, first: Int, last: Int): TagConnection
+  users(active: Boolean, sort: [UserSortEnum], before: String, after: String, first: Int, last: Int): UserConnection
+  media(id: ID, nameLike: String, createdBetween: [Date], fileLocation: String, mediaTypes: [String], owners: [String], stages: [Int], tags: [String], sort: [AssetSortEnum], before: String, after: String, first: Int, last: Int): AssetConnection
+  stages(id: ID, nameLike: String, createdBetween: [Date], fileLocation: String, owners: [String], sort: [StageSortEnum], before: String, after: String, first: Int, last: Int): StageConnection
+  adminPlayers(id: ID, usernameLike: String, createdBetween: [Date], role: Int, sort: [AdminPlayerSortEnum], before: String, after: String, first: Int, last: Int): AdminPlayerConnection
 
-  """
-  Logged in user info
-  """
+  """Logged in user info"""
   whoami: User
   notifications: [Notification]
   voices: [Voice]
 }
 
-"""
-An object with an ID
-"""
+"""An object with an ID"""
 interface Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
 }
 
 type AssetTypeConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [AssetTypeEdge]!
 }
 
@@ -100,55 +34,37 @@ type AssetTypeConnection {
 The Relay compliant `PageInfo` type, containing data necessary to paginate this connection.
 """
 type PageInfo {
-  """
-  When paginating forwards, are there more items?
-  """
+  """When paginating forwards, are there more items?"""
   hasNextPage: Boolean!
 
-  """
-  When paginating backwards, are there more items?
-  """
+  """When paginating backwards, are there more items?"""
   hasPreviousPage: Boolean!
 
-  """
-  When paginating backwards, the cursor to continue.
-  """
+  """When paginating backwards, the cursor to continue."""
   startCursor: String
 
-  """
-  When paginating forwards, the cursor to continue.
-  """
+  """When paginating forwards, the cursor to continue."""
   endCursor: String
 }
 
-"""
-A Relay edge containing a `AssetType` and its cursor.
-"""
+"""A Relay edge containing a `AssetType` and its cursor."""
 type AssetTypeEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: AssetType
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type AssetType implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   name: String!
   description: String
   fileLocation: String!
   createdOn: DateTime!
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 }
 
@@ -159,9 +75,6 @@ value as specified by
 """
 scalar DateTime
 
-"""
-An enumeration.
-"""
 enum AssetTypeSortEnum {
   ID_ASC
   ID_DESC
@@ -176,50 +89,33 @@ enum AssetTypeSortEnum {
 }
 
 type TagConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [TagEdge]!
 }
 
-"""
-A Relay edge containing a `Tag` and its cursor.
-"""
+"""A Relay edge containing a `Tag` and its cursor."""
 type TagEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: Tag
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type Tag implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   name: String!
   color: String
   createdOn: DateTime!
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 }
 
-"""
-An enumeration.
-"""
 enum TagSortEnum {
   ID_ASC
   ID_DESC
@@ -232,36 +128,24 @@ enum TagSortEnum {
 }
 
 type UserConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [UserEdge]!
 }
 
-"""
-A Relay edge containing a `User` and its cursor.
-"""
+"""A Relay edge containing a `User` and its cursor."""
 type UserEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: User
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type User implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   username: String!
   password: String!
@@ -280,20 +164,13 @@ type User implements Node {
   canSendEmail: Boolean
   lastLogin: DateTime
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 
-  """
-  Name of the role
-  """
+  """Name of the role"""
   roleName: String
 }
 
-"""
-An enumeration.
-"""
 enum UserSortEnum {
   ID_ASC
   ID_DESC
@@ -332,37 +209,25 @@ enum UserSortEnum {
 }
 
 type AssetConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [AssetEdge]!
   totalCount: Int
 }
 
-"""
-A Relay edge containing a `Asset` and its cursor.
-"""
+"""A Relay edge containing a `Asset` and its cursor."""
 type AssetEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: Asset
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type Asset implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   name: String!
   assetTypeId: Int!
@@ -376,39 +241,25 @@ type Asset implements Node {
   assetType: AssetType
   owner: User
 
-  """
-  Stages that this media is assigned to
-  """
+  """Stages that this media is assigned to"""
   stages: [AssignedStage]
 
-  """
-  Media tags
-  """
+  """Media tags"""
   tags: [String]
 
-  """
-  Users who had been granted or acknowledged to use this media
-  """
+  """Users who had been granted or acknowledged to use this media"""
   permissions: [AssetUsage]
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 
-  """
-  Logical path of the media
-  """
+  """Logical path of the media"""
   src: String
 
-  """
-  Permission of the logged in user for this media
-  """
+  """Permission of the logged in user for this media"""
   privilege: Previlege
 
-  """
-  Stream sign that is required to publish from broadcaster
-  """
+  """Stream sign that is required to publish from broadcaster"""
   sign: String
 }
 
@@ -419,9 +270,7 @@ type AssignedStage {
 }
 
 type AssetUsage implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   assetId: Int!
   userId: Int!
@@ -448,9 +297,6 @@ value as specified by
 """
 scalar Date
 
-"""
-An enumeration.
-"""
 enum AssetSortEnum {
   ID_ASC
   ID_DESC
@@ -475,37 +321,25 @@ enum AssetSortEnum {
 }
 
 type StageConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [StageEdge]!
   totalCount: Int
 }
 
-"""
-A Relay edge containing a `Stage` and its cursor.
-"""
+"""A Relay edge containing a `Stage` and its cursor."""
 type StageEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: Stage
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type Stage implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   name: String!
   description: String
@@ -519,14 +353,10 @@ type Stage implements Node {
   owner: User
   attributes: [StageAttributes]
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 
-  """
-  Player access to this stage
-  """
+  """Player access to this stage"""
   permission: String
 }
 
@@ -539,9 +369,6 @@ type StageAttributes {
   stage: Stage
 }
 
-"""
-An enumeration.
-"""
 enum StageSortEnum {
   ID_ASC
   ID_DESC
@@ -560,37 +387,25 @@ enum StageSortEnum {
 }
 
 type AdminPlayerConnection {
-  """
-  Pagination data for this connection.
-  """
+  """Pagination data for this connection."""
   pageInfo: PageInfo!
 
-  """
-  Contains the nodes in this connection.
-  """
+  """Contains the nodes in this connection."""
   edges: [AdminPlayerEdge]!
   totalCount: Int
 }
 
-"""
-A Relay edge containing a `AdminPlayer` and its cursor.
-"""
+"""A Relay edge containing a `AdminPlayer` and its cursor."""
 type AdminPlayerEdge {
-  """
-  The item at the end of the edge
-  """
+  """The item at the end of the edge"""
   node: AdminPlayer
 
-  """
-  A cursor for use in pagination
-  """
+  """A cursor for use in pagination"""
   cursor: String!
 }
 
 type AdminPlayer implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
   username: String!
   password: String!
@@ -608,30 +423,19 @@ type AdminPlayer implements Node {
   intro: String
   canSendEmail: Boolean
 
-  """
-  Last login time
-  """
+  """Last login time"""
   lastLogin: DateTime
 
-  """
-  Database ID
-  """
+  """Database ID"""
   dbId: Int
 
-  """
-  Player access to this user
-  """
+  """Player access to this user"""
   permission: String
 
-  """
-  Name of the role
-  """
+  """Name of the role"""
   roleName: String
 }
 
-"""
-An enumeration.
-"""
 enum AdminPlayerSortEnum {
   ID_ASC
   ID_DESC
@@ -670,14 +474,10 @@ enum AdminPlayerSortEnum {
 }
 
 type Notification implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
 
-  """
-  Type of notification
-  """
+  """Type of notification"""
   type: NotificationType
 
   """
@@ -691,288 +491,179 @@ enum NotificationType {
 }
 
 type Voice implements Node {
-  """
-  The ID of the object.
-  """
+  """The ID of the object."""
   id: ID!
 
-  """
-  The voice
-  """
+  """The voice"""
   voice: VoiceOutput
 
-  """
-  The avatar owned this voice
-  """
+  """The avatar owned this voice"""
   avatar: Asset
 }
 
 type VoiceOutput {
-  """
-  Voice name
-  """
+  """Voice name"""
   voice: String
 
-  """
-  Voice variant
-  """
+  """Voice variant"""
   variant: String!
 
-  """
-  Voice pitch, range from 0 to 100
-  """
+  """Voice pitch, range from 0 to 100"""
   pitch: Int!
 
-  """
-  Voice speed, range from 0 to 350
-  """
+  """Voice speed, range from 0 to 350"""
   speed: Int!
 
-  """
-  Voice amplitude, range from 0 to 100
-  """
+  """Voice amplitude, range from 0 to 100"""
   amplitude: Int!
 }
 
 type Mutation {
-  """
-  Mutation to assign stages to a media.
-  """
+  """Mutation to assign stages to a media."""
   calcSizes: CalcSizes
 
-  """
-  Mutation to delete a media.
-  """
+  """Mutation to delete a media."""
   deleteMedia(
-    """
-    Global Id of the asset to be deleted.
-    """
+    """Global Id of the asset to be deleted."""
     id: ID!
   ): DeleteMedia
 
-  """
-  Mutation to upload a media.
-  """
+  """Mutation to upload a media."""
   uploadFile(
-    """
-    Base64 encoded content of the uploading media
-    """
+    """Base64 encoded content of the uploading media"""
     base64: String!
 
-    """
-    Original file name
-    """
+    """Original file name"""
     filename: String!
   ): UploadFile
 
-  """
-  Mutation to upload a media.
-  """
+  """Mutation to upload a media."""
   saveMedia(input: SaveMediaInput!): SaveMedia
   authUser(password: String, username: String): AuthMutation
   refreshUser(refreshToken: String): RefreshMutation
 
-  """
-  Mutation to approve or reject a media usage request
-  """
+  """Mutation to approve or reject a media usage request"""
   confirmPermission(
     """
     Whether the permission is approved. True for approving, False for rejecting
     """
     approved: Boolean
 
-    """
-    ID of the media usage request
-    """
+    """ID of the media usage request"""
     id: ID
   ): ConfirmPermission
 
-  """
-  Mutation to create an asset usage
-  """
+  """Mutation to create an asset usage"""
   requestPermission(
-    """
-    ID of the media usage request
-    """
+    """ID of the media usage request"""
     assetId: ID
 
-    """
-    Note for the media usage request
-    """
+    """Note for the media usage request"""
     note: String
   ): RequestPermission
 
-  """
-  Mutation to assign a stage to a media
-  """
+  """Mutation to assign a stage to a media"""
   quickAssignMutation(
-    """
-    ID of the media
-    """
+    """ID of the media"""
     id: ID
 
-    """
-    ID of the stage
-    """
+    """ID of the stage"""
     stageId: Int
   ): QuickAssignMutation
 
-  """
-  Mutation to update a stage status attribute.
-  """
+  """Mutation to update a stage status attribute."""
   updateStatus(
-    """
-    Global Id of the stage.
-    """
+    """Global Id of the stage."""
     stageId: ID!
   ): UpdateAttributeStatus
 
-  """
-  Mutation to update a stage visibility attribute.
-  """
+  """Mutation to update a stage visibility attribute."""
   updateVisibility(
-    """
-    Global Id of the stage.
-    """
+    """Global Id of the stage."""
     stageId: ID!
   ): UpdateAttributeVisibility
 
-  """
-  Update a user.
-  """
+  """Update a user."""
   updateUser(inbound: UpdateUserInput!): UpdateUser
   deleteUser(inbound: DeleteUserInput!): DeleteUser
 
-  """
-  Mutation to create a user.
-  """
-  batchUserCreation(
-    stageIds: [Int]
-    users: [BatchUserInput]!
-  ): BatchUserCreation
+  """Mutation to create a user."""
+  batchUserCreation(stageIds: [Int], users: [BatchUserInput]!): BatchUserCreation
 
-  """
-  Mutation to customise foyer.
-  """
+  """Mutation to customise foyer."""
   sendEmail(
-    """
-    The bcc recipients of the email. Comma separated.
-    """
+    """The bcc recipients of the email. Comma separated."""
     bcc: String
 
-    """
-    The body of the email. HTML is allowed.
-    """
+    """The body of the email. HTML is allowed."""
     body: String!
 
-    """
-    The recipients of the email. Comma separated.
-    """
+    """The recipients of the email. Comma separated."""
     recipients: String!
 
-    """
-    The subject of the email.
-    """
+    """The subject of the email."""
     subject: String!
   ): SendEmail
   changePassword(inbound: ChangePasswordInput!): ChangePassword
 }
 
-"""
-Mutation to assign stages to a media.
-"""
+"""Mutation to assign stages to a media."""
 type CalcSizes {
-  """
-  Total calculated sizes
-  """
+  """Total calculated sizes"""
   size: Int
 }
 
-"""
-Mutation to delete a media.
-"""
+"""Mutation to delete a media."""
 type DeleteMedia {
   success: Boolean
   message: String
 }
 
-"""
-Mutation to upload a media.
-"""
+"""Mutation to upload a media."""
 type UploadFile {
-  """
-  Uploaded file url
-  """
+  """Uploaded file url"""
   url: String
 }
 
-"""
-Mutation to upload a media.
-"""
+"""Mutation to upload a media."""
 type SaveMedia {
-  """
-  Media saved by this mutation.
-  """
+  """Media saved by this mutation."""
   asset: Asset
 }
 
-"""
-Arguments to update a stage.
-"""
+"""Arguments to update a stage."""
 input SaveMediaInput {
-  """
-  Name of the media
-  """
+  """Name of the media"""
   name: String!
 
-  """
-  Uploaded url of files
-  """
+  """Uploaded url of files"""
   urls: [String]
 
-  """
-  Avatar/prop/backdrop,... default to just a generic media
-  """
+  """Avatar/prop/backdrop,... default to just a generic media"""
   mediaType: String = "media"
 
-  """
-  ID of the media (for updating)
-  """
+  """ID of the media (for updating)"""
   id: ID
 
-  """
-  Copyright level
-  """
+  """Copyright level"""
   copyrightLevel: Int
 
-  """
-  Owner of the media, in case of uploading for someone else
-  """
+  """Owner of the media, in case of uploading for someone else"""
   owner: String
 
-  """
-  Users who can access and edit this media
-  """
+  """Users who can access and edit this media"""
   userIds: [Int]
 
-  """
-  Id of stages to be assigned to
-  """
+  """Id of stages to be assigned to"""
   stageIds: [Int]
 
-  """
-  Media tags
-  """
+  """Media tags"""
   tags: [String]
 
-  """
-  Width of the media
-  """
+  """Width of the media"""
   w: Int
 
-  """
-  Height of the media
-  """
+  """Height of the media"""
   h: Int
 
   """
@@ -980,58 +671,38 @@ input SaveMediaInput {
   """
   note: String
 
-  """
-  Voice settings
-  """
+  """Voice settings"""
   voice: AvatarVoiceInput
 
-  """
-  On click action link
-  """
+  """On click action link"""
   link: LinkInput
 }
 
 input AvatarVoiceInput {
-  """
-  Voice name
-  """
+  """Voice name"""
   voice: String
 
-  """
-  Voice variant
-  """
+  """Voice variant"""
   variant: String!
 
-  """
-  Voice pitch, range from 0 to 100
-  """
+  """Voice pitch, range from 0 to 100"""
   pitch: Int!
 
-  """
-  Voice speed, range from 0 to 350
-  """
+  """Voice speed, range from 0 to 350"""
   speed: Int!
 
-  """
-  Voice amplitude, range from 0 to 100
-  """
+  """Voice amplitude, range from 0 to 100"""
   amplitude: Int!
 }
 
 input LinkInput {
-  """
-  Link url
-  """
+  """Link url"""
   url: String!
 
-  """
-  Open in new tab?
-  """
+  """Open in new tab?"""
   blank: Boolean!
 
-  """
-  Link effect
-  """
+  """Link effect"""
   effect: Boolean!
 }
 
@@ -1044,229 +715,141 @@ type RefreshMutation {
   newToken: String
 }
 
-"""
-Mutation to approve or reject a media usage request
-"""
+"""Mutation to approve or reject a media usage request"""
 type ConfirmPermission {
-  """
-  Success
-  """
+  """Success"""
   success: Boolean
 
-  """
-  Reason for why the mutation failed
-  """
+  """Reason for why the mutation failed"""
   message: String
 
-  """
-  Permissions that were updated
-  """
+  """Permissions that were updated"""
   permissions: [AssetUsage]
 }
 
-"""
-Mutation to create an asset usage
-"""
+"""Mutation to create an asset usage"""
 type RequestPermission {
-  """
-  Success
-  """
+  """Success"""
   success: Boolean
 }
 
-"""
-Mutation to assign a stage to a media
-"""
+"""Mutation to assign a stage to a media"""
 type QuickAssignMutation {
-  """
-  Success
-  """
+  """Success"""
   success: Boolean
 
-  """
-  Reason for why the mutation failed
-  """
+  """Reason for why the mutation failed"""
   message: String
 }
 
-"""
-Mutation to update a stage status attribute.
-"""
+"""Mutation to update a stage status attribute."""
 type UpdateAttributeStatus {
   result: String
 }
 
-"""
-Mutation to update a stage visibility attribute.
-"""
+"""Mutation to update a stage visibility attribute."""
 type UpdateAttributeVisibility {
   result: String
 }
 
-"""
-Update a user.
-"""
+"""Update a user."""
 type UpdateUser {
-  """
-  User updated by this mutation.
-  """
+  """User updated by this mutation."""
   user: AdminPlayer
 }
 
-"""
-Arguments to update a user.
-"""
+"""Arguments to update a user."""
 input UpdateUserInput {
-  """
-  Username
-  """
+  """Username"""
   username: String
 
-  """
-  Password
-  """
+  """Password"""
   password: String
 
-  """
-  Email Address
-  """
+  """Email Address"""
   email: String
 
-  """
-  bin_name
-  """
+  """bin_name"""
   binName: String
 
-  """
-  User Role
-  """
+  """User Role"""
   role: Int
 
-  """
-  First Name
-  """
+  """First Name"""
   firstName: String
 
-  """
-  Last Name
-  """
+  """Last Name"""
   lastName: String
 
-  """
-  Display Name
-  """
+  """Display Name"""
   displayName: String
 
-  """
-  Active record or not
-  """
+  """Active record or not"""
   active: Boolean
 
-  """
-  firebase_pushnot_id
-  """
+  """firebase_pushnot_id"""
   firebasePushnotId: String
 
-  """
-  Maximum file upload size limit, in bytes
-  """
+  """Maximum file upload size limit, in bytes"""
   uploadLimit: Int
 
-  """
-  Introduction
-  """
+  """Introduction"""
   intro: String
 
-  """
-  Global Id of the user.
-  """
+  """Global Id of the user."""
   id: ID!
 }
 
 type DeleteUser {
-  """
-  Password changed successful or not
-  """
+  """Password changed successful or not"""
   success: Boolean
 }
 
-"""
-Arguments to update a user.
-"""
+"""Arguments to update a user."""
 input DeleteUserInput {
-  """
-  Username
-  """
+  """Username"""
   username: String
 
-  """
-  Password
-  """
+  """Password"""
   password: String
 
-  """
-  Email Address
-  """
+  """Email Address"""
   email: String
 
-  """
-  bin_name
-  """
+  """bin_name"""
   binName: String
 
-  """
-  User Role
-  """
+  """User Role"""
   role: Int
 
-  """
-  First Name
-  """
+  """First Name"""
   firstName: String
 
-  """
-  Last Name
-  """
+  """Last Name"""
   lastName: String
 
-  """
-  Display Name
-  """
+  """Display Name"""
   displayName: String
 
-  """
-  Active record or not
-  """
+  """Active record or not"""
   active: Boolean
 
-  """
-  firebase_pushnot_id
-  """
+  """firebase_pushnot_id"""
   firebasePushnotId: String
 
-  """
-  Maximum file upload size limit, in bytes
-  """
+  """Maximum file upload size limit, in bytes"""
   uploadLimit: Int
 
-  """
-  Introduction
-  """
+  """Introduction"""
   intro: String
 
-  """
-  Global Id of the user.
-  """
+  """Global Id of the user."""
   id: ID!
 }
 
-"""
-Mutation to create a user.
-"""
+"""Mutation to create a user."""
 type BatchUserCreation {
-  """
-  Users created by this mutation.
-  """
+  """Users created by this mutation."""
   users: [AdminPlayer]
 }
 
@@ -1276,30 +859,20 @@ input BatchUserInput {
   password: String!
 }
 
-"""
-Mutation to customise foyer.
-"""
+"""Mutation to customise foyer."""
 type SendEmail {
-  """
-  True if the config was saved.
-  """
+  """True if the config was saved."""
   success: Boolean
 }
 
 type ChangePassword {
-  """
-  Password changed successful or not
-  """
+  """Password changed successful or not"""
   success: Boolean
 }
 
-"""
-Arguments to update a user.
-"""
+"""Arguments to update a user."""
 input ChangePasswordInput {
-  """
-  Global Id of the user.
-  """
+  """Global Id of the user."""
   id: ID!
   oldPassword: String!
   newPassword: String!

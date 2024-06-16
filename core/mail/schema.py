@@ -87,7 +87,12 @@ class PostToken(graphene.Mutation):
         token = graphene.String(required=True)
 
     def mutate(self, info, token):
+        '''
+        No: don't save these any longer. Tokens are auto-generated and 
+        all written to the master DB on svc1.upstage.live.
+        Clinet app server need ufw access to the svc1 mong instance.
         save_email_token_client(token)
+        '''
 
         return PostToken(success=True)
 
