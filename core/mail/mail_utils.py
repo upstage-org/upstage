@@ -258,7 +258,7 @@ def generate_email_token_clients():
             #    postToken(token: "'''
             #    + encrypt(live_token)
             #    + """"){
-                    success
+            #        success
             #    }
             #}
             #"""
