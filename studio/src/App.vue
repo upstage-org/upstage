@@ -14,9 +14,13 @@ const store = useStore();
 store.dispatch("user/fetchCurrent");
 store.dispatch("config/fetchConfig");
 onMounted(() => {
-  caches.keys().then((keyList) => {
-    Promise.all(keyList.map((key) => caches.delete(key)))
-  })
+  try {
+    caches.keys().then((keyList) => {
+      Promise.all(keyList.map((key) => caches.delete(key)))
+    })
+  } catch (err) {
+
+  }
 });
 
 </script>

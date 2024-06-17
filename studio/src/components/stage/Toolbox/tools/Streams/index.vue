@@ -18,7 +18,7 @@
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
-  <div v-if="loading">
+  <!-- <div v-if="loading">
     <Loading height="64px" />
   </div>
   <div v-else @click="fetchRunningStreams">
@@ -26,7 +26,7 @@
       <Icon src="refresh.svg" size="36" />
     </div>
     <span class="tag is-light is-block">{{ $t("refresh") }}</span>
-  </div>
+  </div> -->
 </template>
 
 <script>
@@ -58,7 +58,7 @@ export default {
       () => store.state.stage.config.streaming?.autoDetect,
     );
     onMounted(() => {
-      fetchRunningStreams();
+      //fetchRunningStreams();
     });
 
     const streams = computed(() => {
