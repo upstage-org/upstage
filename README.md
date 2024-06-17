@@ -54,27 +54,14 @@ systemctl start upstage.service
 systemctl enable upstage.service
 ```
 
-3. Setup `Dashboard`:
-
-```bash
-cd dashboard
-
-# Install dependencies
-yarn
-
-# Build source
-yarn build
-```
-
-The compiled source code will be stored in the `dist` folder. Later we will set up `Nginx` to serve these content on our root path.
-
-4. Setup `Studio` (very similar to Dashboard):
+3. Setup `Studio`:
 
 ```bash
 cd studio
 
 # Install dependencies
-yarn
+yarn install
+yarn genql (This requires Node 16)
 
 # Build source
 yarn build
@@ -82,7 +69,7 @@ yarn build
 
 Studio will be served at `/studio` path of our instance.
 
-5. Setup `Event Archive Service`:
+4. Setup `Event Archive Service`:
 
 ```bash
 # Create the systemd service using our example configuration
@@ -95,7 +82,7 @@ systemctl start event_archive.service
 systemctl enable event_archive.service
 ```
 
-6. Setup `Streaming Service`:
+5. Setup `Streaming Service`:
 
 ```bash
 # Clone the Node-Media-Server repository
@@ -111,12 +98,17 @@ systemctl start upstage-streaming.service
 systemctl enable upstage-streaming.service
 ```
 
-7. Setup `Upstage Send Email Token To Cient Server`:
+8. Setup `Upstage Send Email Token To Cient Server`:
+- To allow a client in another domain to send Upstage emails, the upstage.live
+server must know about this new client so it can handle inbound email requests.
+The client must also know where to send its email requests and where to get its
+tokens from. 
 
-```bash
+```
+# Add the client server to ACCEPT_SERVER_SEND_EMAIL_EXTERNAL on upstage.live config file.
+ACCEPT_SERVER_SEND_EMAIL_EXTERNAL=['some_url', 'some_other_url', ...]
 
-# Only setup on Upstage Prod
-# Create the systemd service using our example configuration
+# On the upstage.live app server, make sure this is running:
 cp config/prod/upstage_email_token.service /etc/systemd/system/upstage_email_token.service
 
 # Start the service
@@ -124,6 +116,17 @@ systemctl start upstage_email_token.service
 
 # Enable the service if you want it start automatically on boot
 systemctl enable upstage_email_token.service
+
+# On the svc1.upstage.live server (not client svc1), poke a hole in the ufw firewall to allow access to the mongo db from the new client server:
+ufw allow from <external_ip> to any port <mongo_port>
+
+# On the new client server, make sure these are set in the config file:
+FULL_DOMAIN (most be set everywhere)
+SEND_EMAIL_SERVER (set to URL for upstage.live app server
+MONGO_EMAIL_HOST = "external_IP_of_svc1.upstage.live"
+MONGO_EMAIL_PORT = mongo_port_of_same_server
+MONGO_EMAIL_DB = "mongo_db_name"
+
 ```
 
 ## Configurations
