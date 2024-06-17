@@ -40,27 +40,28 @@ from core.user.models import User, PLAYER, ADMIN
 # System user(s)
 def create_some_users():
     db_session = get_scoped_session()
-    user = User(
-        username="nnnn",
-        password=encrypt("nnnnn"),
-        email="nnnnnn",
-        active=True,
-        role=ADMIN,
-    )
-    db_session.add(user)
+    for i in range(1,11):
+        user = User(
+            username=f"testuser{i}",
+            password=encrypt(f"qmu_test~!_user{i}"),
+            email=f"testuser{i}@no.none",
+            active=True,
+            role=ADMIN,
+        )
+        db_session.add(user)
     db_session.commit()
     db_session.close()
 
 
 def modify_user():
     db_session = get_scoped_session()
-    user = db_session.query(User).filter(User.username == "nnnn").one()
-    # user.password = encrypt('nnnnn')
-    user.email = ("nnnn",)
+    user = db_session.query(User).filter(User.username == "gloria2").one()
+    user.password = encrypt('QMUtestingH8W*n1~')
+    #user.email = ("",)
     db_session.commit()
 
 
 if __name__ == "__main__":
-    # create_some_users()
-    # modify_user()
-    pass
+     create_some_users()
+    #modify_user()
+    #pass

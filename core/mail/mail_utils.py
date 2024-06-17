@@ -40,6 +40,7 @@ from config import (
     HOSTNAME,
     SEND_EMAIL_SERVER,
     DOMAIN,
+    FULL_DOMAIN,
 )
 from core.event_archive.db import get_mongo_token_collection
 
@@ -170,7 +171,7 @@ def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
     s = requests.Session()
     url = f"{SEND_EMAIL_SERVER}/api/email_graphql/"
     client = get_mongo_token_collection()
-    token = client.find_one({}, sort=[("_id", pymongo.DESCENDING)])
+    token = client.find_one({'from_server':FULL_DOMAIN}, sort=[("_id", pymongo.DESCENDING)])
     headers = {}
     if token and "token" in token:
         headers["X-Email-Token"] = token["token"]
@@ -209,12 +210,13 @@ def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
         result.ok
         and json.loads(result.text)["data"]["sendEmailExternal"]["success"] == True
     ):
-        return True
+        #return True
+        return headers["X-Email-Token"]
     else:
         raise Exception(json.loads(result.text))
 
 
-def save_email_token_client(token):
+def save_email_token_client(token,from_site):
     client = get_mongo_token_collection()
     # client.delete_many({})
     client.insert_one({"token": token, "expired_date": datetime.utcnow()})
@@ -222,7 +224,8 @@ def save_email_token_client(token):
 
 def valid_token(token):
     client = get_mongo_token_collection()
-    if client.find_one({"token": decrypt(token)}):
+    #if client.find_one({"token": decrypt(token)}):
+    if client.find_one({"token": token}):
         return True
 
 
@@ -232,6 +235,11 @@ def generate_email_token_clients():
         app.logger.info(f"client_server {ACCEPT_SERVER_SEND_EMAIL_EXTERNAL}")
         # client.delete_many({})
 
+        '''
+        Only generate and insert new tokens locally.
+        The remote site will have access to this mongodb server, and will be able
+        to look them up directly.
+        '''
         for client_server in ACCEPT_SERVER_SEND_EMAIL_EXTERNAL:
             live_token = uuid.uuid4().hex
             client.insert_one(
@@ -242,29 +250,33 @@ def generate_email_token_clients():
                 }
             )
 
-            s = requests.Session()
-            url = f"{client_server}/api/email_graphql/"
-            data = (
-                '''
-            mutation{
-                postToken(token: "'''
-                + encrypt(live_token)
-                + """"){
+            #s = requests.Session()
+            #url = f"{client_server}/api/email_graphql/"
+            #data = (
+            #    '''
+            #mutation{
+            #    postToken(token: "'''
+            #    + encrypt(live_token)
+            #    + """"){
                     success
-                }
-            }
-            """
-            )
+            #    }
+            #}
+            #"""
+            #)
 
-            result = s.post(url=url, data={"query": data})
-            if result.ok:
-                app.logger.info(f"Send email token to {client_server} successfully")
-            else:
-                app.logger.info(f"Send email token to {client_server} failed")
+            #result = s.post(url=url, data={"query": data})
+            #if result.ok:
+            #    app.logger.info(f"Send email token to {client_server} successfully")
+            #else:
+            #    app.logger.info(f"Send email token to {client_server} failed")
 
         sleep(EMAIL_TIME_EXPIRED_TOKEN)
 
 if __name__ == "__main__":
+    import pdb;pdb.set_trace()
+    token = call_send_email_external_api(subject='Test', body='Test', recipients=['aagg@comcast.net'], cc=None, bcc=None, filenames=None)
+    valid_token(token)
+    '''
     asyncio.run(
         send(
             "gwcorresp01@gmail.com",
@@ -275,4 +287,5 @@ if __name__ == "__main__":
             filenames=[],
         )
     )
+    '''
 

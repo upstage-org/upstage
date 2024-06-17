@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: iso8859-15 -*-
 
+import os, sys
+
 from gevent import monkey
 
 _mp = monkey.patch_all()
 
 import pdb
-import os, sys
 from gevent.pywsgi import WSGIServer
 import pprint
 

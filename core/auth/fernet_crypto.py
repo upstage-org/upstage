@@ -34,5 +34,5 @@ def check_password(enc_key, password):
 if __name__ == "__main__":
     c = Fernet(b"Y9fzvL6bbiTqWumKfk7-phWutaPjK_HcdhIHGqQmSg0=")
     text = str.encode("12345678")
-    print(c.encrypt(text).decode())
-    # print("Copy-paste this key: {}".format(Fernet.generate_key()))
+    print(c.encrypt(text).decode('utf-8'))
+    print("Copy-paste this key: {}".format(Fernet.generate_key()))
