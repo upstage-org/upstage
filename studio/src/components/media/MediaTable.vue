@@ -11,6 +11,7 @@ import {
   inject,
   Ref,
   ComputedRef,
+  onMounted
 } from "vue";
 import { editingMediaVar, inquiryVar } from "apollo";
 import configs from "config";
@@ -53,7 +54,7 @@ watch(inquiryResult, () => {
   tableParams.cursor = undefined;
 });
 
-const { result, loading, fetchMore } = useQuery<
+const { result, loading, fetchMore, refetch } = useQuery<
   StudioGraph,
   { cursor?: string; limit: number; sort?: string[] }
 >(
@@ -122,6 +123,10 @@ const { result, loading, fetchMore } = useQuery<
 const updateQuery = (previousResult: StudioGraph, { fetchMoreResult }: any) => {
   return fetchMoreResult ?? previousResult;
 };
+
+onMounted(() => {
+  refetch();
+});
 
 watch(params, () => {
   fetchMore({

@@ -85,6 +85,8 @@ export default {
     const store = useStore();
     const { whoami } = useUpdateProfile();
     const stage = inject("stage");
+    const clearCache = inject("clearCache");
+
     const selectedMedia = ref([]);
     const medias = ref(stage);
     const totalSize = ref(0);
@@ -132,6 +134,7 @@ export default {
     const saveMedia = async () => {
       const ids = selectedMedia.value.map((media) => media.dbId);
       await save("Stage updated successfully!", stage.value.id, ids);
+      clearCache();
     };
 
     const mediaTypes = [
