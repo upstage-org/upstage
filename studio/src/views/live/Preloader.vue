@@ -2,7 +2,7 @@
   <transition @leave="leave">
     <section v-if="!ready || !clicked || (status !== 'live' && !canPlay)"
       class="hero is-fullheight is-fullwidth cover-image" :class="{ replaying }" @click="clicked = true" :style="{
-    'background-image': model && model.cover && `url(${model.cover})`,
+    'background-image': model && `url(${model.cover || '/img/greencurtain.jpg'})`,
     'background-color': backdropColor,
   }">
       <div class="hero-body">

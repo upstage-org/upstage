@@ -10,10 +10,7 @@
         <div v-else class="stages my-4 pt-6">
           <masonry-wall :items="visibleStages" :ssr-columns="1" :column-width="300" :gap="32">
             <template #default="{ item }">
-              <Entry :stage="item" :fallback-cover="item.status === 'live'
-              ? 'live-stage.png'
-              : 'upcoming-performance.png'
-            " />
+              <Entry :stage="item" :fallback-cover="'greencurtain.jpg'" />
             </template>
           </masonry-wall>
         </div>

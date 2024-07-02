@@ -280,8 +280,7 @@ onVisibilityUpdated(handleUpdate);
       ">
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">
-          <a-image v-if="text" :src="absolutePath(text)" class="w-24 max-h-24 object-contain" />
-          <div v-else class="emptyImg"></div>
+          <a-image :src="text ? absolutePath(text) : '/img/greencurtain.jpg'" class="w-24 max-h-24 object-contain" />
         </template>
         <template v-if="column.key === 'owner_id'">
           <span v-if="text.displayName">
