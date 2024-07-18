@@ -1,79 +1,30 @@
-<script lang="tsx">
-import { h } from "vue";
-import { defineComponent, watch, reactive } from "vue";
-import { useEditor, EditorContent } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
-import Link from "@tiptap/extension-link";
-import Placeholder from "@tiptap/extension-placeholder";
-import Toolbox from "./Toolbox.vue";
-import { Space } from "ant-design-vue";
-
-export default defineComponent({
-  props: {
-    modelValue: {
-      type: String,
-      default: "",
-    },
-    placeholder: {
-      type: String,
-      default: "",
-    },
-    readonly: {
-      type: Boolean,
-      default: false,
-    },
-  },
-  emits: ["update:modelValue"],
-  setup(props, { emit }) {
-    const editor = useEditor({
-      editorProps: {
-        attributes: {
-          class: "prose focus:outline-none",
-        },
-      },
-      content: props.modelValue,
-      onUpdate: ({ editor }) => {
-        emit("update:modelValue", editor.getHTML());
-      },
-      editable: !props.readonly,
-      extensions: [
-        StarterKit,
-        Link.configure({
-          openOnClick: false,
-          autolink: true,
-        }),
-        Image.configure({
-          inline: true,
-          allowBase64: true,
-        }),
-        Placeholder.configure({
-          placeholder: props.placeholder,
-        }),
+<template>
+  <Space direction="vertical" class="w-full shadow rounded-xl bg-white">
+    <Editor :key="readonly ? 'readonly' : 'default'" :init="{
+      height: 500,
+      menubar: false,
+      plugins: [
+        'advlist autolink lists link image charmap print preview anchor',
+        'searchreplace visualblocks code fullscreen',
+        'insertdatetime media table paste code help wordcount',
+        'image',
+        'table',
       ],
-    });
+      toolbar: readonly ? '' :
+        'undo redo | formatselect | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link | table | image | code | help',
+    }" v-bind="$attrs" />
+  </Space>
+</template>
 
-    watch(
-      () => props.readonly,
-      (newValues) => {
-        editor?.value?.setEditable(!newValues)
-      },
-    );
-
-    return () =>
-      h(
-        Space,
-        {
-          direction: "vertical",
-          class: "w-full shadow rounded-xl bg-white p-4",
-        },
-        () => [
-          !props.readonly && editor.value && h(Toolbox, { editor: editor.value }),
-          h(EditorContent, {
-            editor: editor.value,
-          }),
-        ],
-      );
-  }
-});
+<script setup>
+import Editor from "@tinymce/tinymce-vue";
+import { Space } from "ant-design-vue";
+import { defineProps, ref, watch } from 'vue'
+const props = defineProps({
+  readonly: Boolean
+})
+const readonly = ref(props.readonly);
+watch(() => props.readonly, (newVal, oldVal) => {
+  readonly.value = newVal
+})
 </script>

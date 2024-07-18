@@ -99,7 +99,7 @@ const systemConfigs = () =>
 
 <template>
   <Header><Space/></Header>
-  <a-layout class="w-full shadow rounded-xl bg-white px-4 overflow-hidden">
+  <a-layout class="w-full shadow rounded-xl bg-white px-4 overflow-y-auto">
     <a-tabs v-model:activeKey="activeKey" type="card">
       <template #leftExtra>
         <a-tag color="#007011">
