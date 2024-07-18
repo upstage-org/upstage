@@ -1,4 +1,5 @@
 <script lang="tsx">
+// @ts-nocheck
 import { defineComponent } from "vue";
 import { PropType } from "vue";
 import { Editor } from "@tiptap/vue-3";

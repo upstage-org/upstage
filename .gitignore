@@ -50,5 +50,5 @@ __pycache__
 studio/components.d.ts
 studio/src/genql/*
 studio/package-lock.json
-studio/yarn.lock
+#studio/yarn.lock
 studio/.env
