@@ -1,6 +1,6 @@
 <template>
   <transition @leave="leave">
-    <section v-if="!ready || !clicked || (status !== 'live' && !canPlay)"
+    <section v-if="!ready || !clicked || (status !== 'live' && !canPlay && !masquerading)"
       class="hero is-fullheight is-fullwidth cover-image" :class="{ replaying }" @click="clicked = true" :style="{
     'background-image': model && `url(${model.cover || '/img/greencurtain.jpg'})`,
     'background-color': backdropColor,
@@ -126,7 +126,7 @@ export default {
     const backdropColor = computed(() => store.state.stage.backdropColor);
 
     const canPlay = computed(() => store.getters["stage/canPlay"]);
-
+    const masquerading = computed(() => store.state.stage.masquerading);
     return {
       model,
       preloadableAssets,
@@ -140,6 +140,7 @@ export default {
       backdropColor,
       status,
       canPlay,
+      masquerading
     };
   },
 };
