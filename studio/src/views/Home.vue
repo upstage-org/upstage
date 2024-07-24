@@ -80,6 +80,7 @@ export default {
       background-position: center;
       animation: fadeIn 1s;
       opacity: 0.5;
+      max-height: 350px;
     }
   }
 
