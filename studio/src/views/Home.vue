@@ -2,12 +2,12 @@
   <section id="welcome" class="hero is-fullheight foyer-background">
     <div class="hero-body">
       <div class="container">
-        <div v-if="!loading">
+        <!-- <div v-if="!loading">
           <img src="/img/foyer-background.png" class="brushstroke" style="top: 56px; right: -180px;" />
           <img src="/img/foyer-background.png" class="brushstroke" style="top: 47px; right: 47px;" />
           <img src="/img/foyer-background.png" class="brushstroke" style="top: 110px; right: -20px;" />
           <img src="/img/foyer-background.png" class="brushstroke" style="top: 11px; right: -277px;" />
-        </div>
+        </div> -->
         <div class="describe">
           <h1 class="title" v-html="foyer.title" />
           <h2 v-if="foyer.description" class="subtitle" v-html="foyer.description" />
@@ -68,6 +68,19 @@ export default {
     color: black;
     text-shadow: -3px 0 #007011;
     font-size: 50px;
+    &:after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url("/img/foyer-background.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      animation: fadeIn 1s;
+      opacity: 0.5;
+    }
   }
 
   .subtitle {
@@ -75,6 +88,20 @@ export default {
     max-width: 800px;
     margin: auto;
     white-space: pre-wrap;
+    >:after {
+      content: "";
+      pointer-events: none;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-image: url("/img/foyer-background.png");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      animation: fadeIn 1s;
+      opacity: 0.5;
+      max-height: 250px;
+    }
   }
 
   .filters {
@@ -90,21 +117,8 @@ export default {
   .describe {
     position: relative;
 
-    // ::after {
-    //   content: "";
-    //   pointer-events: none;
-    //   position: absolute;
-    //   width: 100%;
-    //   height: 100%;
-    //   background-image: url("/img/foyer-background.png");
-    //   background-size: contain;
-    //   background-repeat: no-repeat;
-    //   background-position: center;
-    //   animation: fadeIn 1s;
-    //   opacity: 0.5;
-    // }
+    
   }
-
   .brushstroke {
     position: absolute;
     top: 0px;
