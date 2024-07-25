@@ -56,7 +56,7 @@ def create_some_users():
 def modify_user():
     db_session = get_scoped_session()
     user = db_session.query(User).filter(User.username == "gloria2").one()
-    user.password = encrypt('QMUtestingH8W*n1~')
+    user.password = encrypt('')
     #user.email = ("",)
     db_session.commit()
 
