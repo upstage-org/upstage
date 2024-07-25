@@ -3,17 +3,15 @@
 #
 #per_listener_settings false
 
-# NOTE: The order is very important here. The first port won't be
-# set up with TLS. I have no clue why. Our clients are websockets
-# so this does not affect us. But the websocket port can't be first!
-# Crazy, right?
+# NOTE: No TLS on the TCP connection. We do use it on the websocket
+# connection to avoid mixed content issues.
 listener 1884 0.0.0.0
 protocol mqtt
 http_dir /etc/http
 require_certificate false
-cafile /etc/mosquitto/ca_certificates/fullchain.pem
-keyfile /etc/mosquitto/ca_certificates/privkey.pem
-certfile /etc/mosquitto/ca_certificates/fullchain.pem
+#cafile /etc/mosquitto/ca_certificates/fullchain.pem
+#keyfile /etc/mosquitto/ca_certificates/privkey.pem
+#certfile /etc/mosquitto/ca_certificates/fullchain.pem
 
 listener 9002 0.0.0.0
 protocol websockets
