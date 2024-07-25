@@ -150,7 +150,7 @@ const { proceed, loading } = useLoading(
 </script>
 
 <template>
-  <Header><Space/></Header>
+  <Header><Space><span/></Space></Header>
   <Layout
     v-if="successMessage"
     class="bg-white rounded-lg overflow-y-auto justify-center"

@@ -1,5 +1,10 @@
 /*! bulma.io v0.9.4 | MIT License | github.com/jgthms/bulma */
 /* Bulma Utilities */
+.tox-tinymce {
+  border-radius: 4px !important;
+  border-color: 1px solid rgb(217, 217, 217) !important;
+}
+
 .button,
 .input,
 .textarea,

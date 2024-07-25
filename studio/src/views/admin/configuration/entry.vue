@@ -50,9 +50,8 @@ const save = async () => {
     <template v-if="typeof value === 'string'">
       <a-input-group compact style="display: flex">
         <RichTextEditor v-if="richTextEditor" :readonly="!editing" v-model="value" :style="{
-    border: '1px solid rgb(217, 217, 217)',
     boxShadow: 'none',
-    backgroundColor: editing ? 'white' : '#F0F0F0'
+    pointerEvents: editing ? 'auto' : 'none'
   }" />
         <template v-else>
           <a-textarea v-if="props.multiline" :disabled="!editing" v-model:value="value" style="color: black"

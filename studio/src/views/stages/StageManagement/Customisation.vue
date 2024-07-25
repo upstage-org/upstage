@@ -240,11 +240,11 @@ export default {
   }
 }
 .custom-ratio {
+  white-space: nowrap;
   input {
     width: 50px;
     text-align: center;
   }
-  white-space: nowrap;
 }
 .speed-slider {
   display: flex;

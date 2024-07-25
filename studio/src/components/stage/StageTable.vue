@@ -280,7 +280,7 @@ onVisibilityUpdated(handleUpdate);
       ">
       <template #bodyCell="{ column, record, text }">
         <template v-if="column.key === 'cover'">
-          <a-image :src="absolutePath(text)" class="w-24 max-h-24 object-contain" />
+          <a-image :src="text ? absolutePath(text) : '/img/greencurtain.jpg'" class="w-24 max-h-24 object-contain" />
         </template>
         <template v-if="column.key === 'owner_id'">
           <span v-if="text.displayName">
@@ -330,3 +330,11 @@ onVisibilityUpdated(handleUpdate);
     <slot></slot>
   </a-layout>
 </template>
+<style scoped>
+.emptyImg {
+  width: 50px;
+  height: 50px;
+  background-color: green;
+  margin: auto;
+}
+</style>
