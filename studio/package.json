@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.9",
-  "versionAlias": "Kona-2.0.9",
+  "version": "2.1.0",
+  "versionAlias": "Monteiths-2.1.0",
   "license": "GPL-3.0",
   "scripts": {
     "serve": "vite --port=3000 --host",
@@ -11,7 +11,8 @@
     "serve:localhost": "vite --mode localhost --port=3000",
     "start": "vite preview",
     "i18n": "node ./src/i18n/scan.js",
-    "genql": "genql --endpoint $(grep VITE_GRAPHQL_ENDPOINT .env)studio_graphql/ --output ./src/genql/studio && genql --endpoint $(grep VITE_GRAPHQL_ENDPOINT .env)config_graphql/ --output ./src/genql/config"
+    "genql": "genql --endpoint $(grep VITE_GRAPHQL_ENDPOINT .env)studio_graphql/ --output ./src/genql/studio && genql --endpoint $(grep VITE_GRAPHQL_ENDPOINT .env)config_graphql/ --output ./src/genql/config",
+    "fix_genql_urls": "sh ./fix_genql_urls.sh"
   },
   "dependencies": {
     "16": "^0.0.2",
