@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.8",
-  "versionAlias": "Sapporo-2.0.8",
+  "version": "2.0.9",
+  "versionAlias": "Kona-2.0.9",
   "license": "GPL-3.0",
   "scripts": {
     "serve": "vite --port=3000 --host",
