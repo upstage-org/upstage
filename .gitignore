@@ -48,7 +48,6 @@ __pycache__
 
 # vuejs generated files
 studio/components.d.ts
-studio/src/genql/*
 studio/package-lock.json
 # NO: don't do this:studio/yarn.lock
 studio/.env
