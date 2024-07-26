@@ -1,8 +1,8 @@
 <template>
   <transition @leave="leave">
-    <section v-if="!ready || !clicked" class="hero is-fullheight is-fullwidth cover-image" :class="{ replaying }"
-      @click="clicked = true" :style="{
-    'background-image': model && model.cover && `url(${model.cover})`,
+    <section v-if="!ready || !clicked || (status !== 'live' && !canPlay && !masquerading)"
+      class="hero is-fullheight is-fullwidth cover-image" :class="{ replaying }" @click="clicked = true" :style="{
+    'background-image': model && `url(${model.cover || '/img/greencurtain.jpg'})`,
     'background-color': backdropColor,
   }">
       <div class="hero-body">
@@ -14,18 +14,18 @@
             <h2 v-if="model.description" class="subtittle">
               {{ model.description }}
             </h2>
-            <h2 v-if="ready" class="subtitle">
+            <template v-if="status !== 'live' && !canPlay">
+              <span v-if="status" class="tag is-dark">{{
+    status.toUpperCase()
+  }}</span>&nbsp;
+              <span>This stage is not currently open to the public. Please come
+                back later!</span>
+            </template>
+            <h2 v-else-if="ready" class="subtitle">
               <span class="sparkle" style="line-height: 2">Stage loaded 100%, click anywhere to continue...</span>
             </h2>
             <h2 v-else class="subtitle">
-              <template v-if="status !== 'live' && !canPlay">
-                <span v-if="status" class="tag is-dark">{{
-    status.toUpperCase()
-  }}</span>&nbsp;
-                <span>This stage is not currently open to the public. Please come
-                  back later!</span>
-              </template>
-              <template v-else-if="preloadableAssets.length">
+              <template v-if="preloadableAssets.length">
                 <button class="button is-primary is-loading" />
                 <span style="line-height: 2">
                   <span>
@@ -74,7 +74,7 @@ export default {
       store.commit("stage/SET_PRELOADING_STATUS", false);
     const increaseProgress = () => {
       progress.value++;
-      if (progress.value === preloadableAssets.value.length) {
+      if (progress.value === preloadableAssets.value.length - 1) {
         stopLoading();
       }
     };
@@ -126,7 +126,7 @@ export default {
     const backdropColor = computed(() => store.state.stage.backdropColor);
 
     const canPlay = computed(() => store.getters["stage/canPlay"]);
-
+    const masquerading = computed(() => store.state.stage.masquerading);
     return {
       model,
       preloadableAssets,
@@ -140,6 +140,7 @@ export default {
       backdropColor,
       status,
       canPlay,
+      masquerading
     };
   },
 };
