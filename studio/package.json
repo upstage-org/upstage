@@ -1,7 +1,7 @@
 {
   "name": "studio",
-  "version": "2.0.8",
-  "versionAlias": "Sapporo-2.0.8",
+  "version": "2.1.0",
+  "versionAlias": "Monteiths-2.1.0",
   "license": "GPL-3.0",
   "scripts": {
     "serve": "vite --port=3000 --host",
