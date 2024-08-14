@@ -39,7 +39,7 @@ export default {
       store.commit("stage/CREATE_ROOM", {
         type: "meeting",
         name: form.name,
-        description: "",
+        description: store.state.user.user?.email,
         w: stageSize.value.width / 2,
         h: stageSize.value.height / 2,
       });

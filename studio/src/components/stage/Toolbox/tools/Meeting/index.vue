@@ -5,7 +5,7 @@
     </div>
     <span class="tag is-light is-block">{{ $t("new_room") }}</span>
   </div>
-  <Yourself />
+  <!-- <Yourself /> -->
   <Skeleton v-for="(room, i) in rooms" :key="i" :data="room">
     <div class="room-skeleton">
       <Icon src="backdrop.svg" size="36" />
