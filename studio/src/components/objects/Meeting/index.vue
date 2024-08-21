@@ -43,10 +43,24 @@ export default {
           prejoinConfig: { enabled: false },
           disableRemoteMute: true,
           notifications: [],
+          hideParticipantsStats: true,
+          disableSelfViewSettings: true,
+          remoteVideoMenu: {
+            disabled: true
+          },
+          connectionIndicators: {
+            disabled: true
+          },
           ...meeting.value.description != store.state.user.user?.email ? {
             filmstrip: { disabled: true },
             participantsPane: { enabled: false },
-          } : {}
+            toolbarButtons: [],
+            disableTileView: true,
+            startWithAudioMuted: true,
+            startWithVideoMuted: true
+          } : {
+            toolbarButtons: ['microphone', 'camera', 'tileview']
+          }
         },
         interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false },
         disableInitialGUM: true,
