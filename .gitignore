@@ -54,3 +54,4 @@ src/genql/studio/index.ts
 src/genql/config/index.ts
 
 studio/.env
+core-v2/.env

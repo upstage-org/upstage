@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+ariadne
+sqlalchemy
+asyncpg
+databases
+python-dotenv
+alembic 
+cryptography
+fastapi_orm_helper
+sentry_sdk
+fastapi_global_variable
+fastapi_exception
+psycopg2

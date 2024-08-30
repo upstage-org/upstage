@@ -1,0 +1,1 @@
+alembic revision -m "Create User Table"  --version-path=src/users/databases/migrations
