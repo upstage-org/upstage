@@ -11,17 +11,17 @@ sys.path.append(prodder)
 
 from config.database import global_session
 from core.helpers.fernet_crypto import encrypt
-from users.entities.user import UserEntity
+from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
 
 
 def create_some_users():
-    for i in range(1, 2):
+    for i in range(10, 12):
         user = UserEntity(
             username=f"quang{i}",
             password=encrypt(f"Secret@123{i}"),
             email=f"quang{i}@no.none",
             active=True,
-            role=32,
+            role=SUPER_ADMIN,
         )
         global_session.add(user)
     global_session.commit()

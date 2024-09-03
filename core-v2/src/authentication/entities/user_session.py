@@ -7,7 +7,7 @@ from users.entities.user import UserEntity
 
 class UserSessionEntity(db):
     __tablename__ = "user_session"
-    id = Column(BigInteger, primary_key=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(
         Integer,
         ForeignKey(UserEntity.id, deferrable=True, initially="DEFERRED"),

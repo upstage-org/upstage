@@ -12,6 +12,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="PIM API", lifespan=lifespan)
 GlobalVariable.set("app", app)
 
-
 # if 'pytest' not in sys.modules and env.SENTRY_DNS:
 #   sentry_sdk.init(dsn=env.SENTRY_DNS, traces_sample_rate=0.1)

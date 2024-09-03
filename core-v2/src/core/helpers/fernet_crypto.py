@@ -1,7 +1,8 @@
 from cryptography.fernet import Fernet
 
-cipher_key = Fernet.generate_key()
-cipher = Fernet(cipher_key)
+from config.env import CIPHER_KEY
+
+cipher = Fernet(CIPHER_KEY)
 
 
 def encrypt(some_str):

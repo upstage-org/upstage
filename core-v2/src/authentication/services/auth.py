@@ -1,12 +1,11 @@
 from datetime import datetime, timedelta
-from fastapi.responses import JSONResponse
+from graphql import GraphQLError
 import jwt
-from fastapi import Depends, Request, status
+from fastapi import Request
 from email.utils import parseaddr
 from authentication.http.dtos.login import LoginDTO
 from config.database import ScopedSession
-from core.exceptions.throw_custom_exception import throw_custom_exception
-from users.entities.user import ADMIN, GUEST, PLAYER, ROLES, SUPER_ADMIN, UserEntity
+from users.entities.user import ADMIN, GUEST, PLAYER, SUPER_ADMIN, UserEntity
 from users.services.user import UserService
 from core.helpers.fernet_crypto import decrypt
 from config.env import (
@@ -21,23 +20,18 @@ from authentication.entities.user_session import UserSessionEntity
 
 
 class AuthenticationService:
-    def __init__(
-        self,
-        user_service: UserService = Depends(),
-    ):
-        self.user_service = user_service
+    def __init__(self):
+        self.user_service = UserService()
 
     async def login(self, dto: LoginDTO, request: Request):
         user: UserEntity = None
-        username, password, profile_id = dto.username, dto.password, dto.profile_id
+        username, password = dto.username, dto.password
 
-        email = self.validate_login_payload(username, password, profile_id)
+        email = self.validate_login_payload(username, password)
 
         user = self.user_service.find_one(username, email)
         if not user:
-            return throw_custom_exception(
-                status.HTTP_403_FORBIDDEN, {"error": "Bad email or password (17)"}
-            )
+            return GraphQLError("Bad email or password (17)")
 
         self.validate_password(password, user)
         access_token = self.create_token(
@@ -90,55 +84,31 @@ class AuthenticationService:
             "title": title,
         }
 
-    def validate_login_payload(self, username: str, password: str, profile_id: str):
-        if (
-            not username or len(username) == 0 or len(username) > 100
-        ) and not profile_id:
-            return throw_custom_exception(
-                status.HTTP_400_BAD_REQUEST,
-                {"error": "Missing/invalid username or email (12)"},
-            )
+    def validate_login_payload(self, username: str, password: str):
+        if not username or len(username) == 0 or len(username) > 100:
+            raise GraphQLError("Missing/invalid username or email (12)")
 
-        if (
-            not password or len(password) == 0 or len(password) > 100
-        ) and not profile_id:
-            return throw_custom_exception(
-                status.HTTP_400_BAD_REQUEST,
-                {"error": "Missing/invalid password parameter (13)"},
-            )
+        if not password or len(password) == 0 or len(password) > 100:
+            raise GraphQLError("Missing/invalid password parameter (13)")
 
         username = username.strip()
         if "@" in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
-                return throw_custom_exception(
-                    status.HTTP_400_BAD_REQUEST,
-                    {"error": "Invalid username or email (14)"},
-                )
+                raise GraphQLError("Invalid username or email (14)")
             return email
 
     def validate_password(self, enter_password: str, user: UserEntity):
         try:
             if decrypt(user.password) != enter_password:
-                return throw_custom_exception(
-                    status.HTTP_403_FORBIDDEN,
-                    {"error": "Incorrect username or password (16)"},
-                )
+                raise GraphQLError("Incorrect username or password (16)")
         except:
-            return throw_custom_exception(
-                status.HTTP_403_FORBIDDEN,
-                {
-                    "error": "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up (18)"
-                },
+            raise GraphQLError(
+                "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up (18)"
             )
-
-        if not user.is_active:
-            return throw_custom_exception(
-                status.HTTP_403_FORBIDDEN,
-                {
-                    "error": "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!",
-                    "level": "warning",
-                },
+        if not user.active:
+            raise GraphQLError(
+                "Your account has been successfully created but not approved yet.<br/>Please wait for approval or contact UpStage Admin for support!"
             )
 
     def create_token(
@@ -151,11 +121,9 @@ class AuthenticationService:
         return encoded_jwt
 
     async def logout(self, request: Request):
-        bearer_token = request.headers.get("Authorization").split(" ")
+        bearer_token = request.headers.get("Authorization", "").split(" ")
         if len(bearer_token) != 2:
-            return throw_custom_exception(
-                status.HTTP_400_BAD_REQUEST, {"error": "Invalid access token"}
-            )
+            raise GraphQLError("Invalid access token")
 
         access_token = bearer_token[1]
         with ScopedSession() as local_db_session:
@@ -165,24 +133,17 @@ class AuthenticationService:
                 .first()
             )
             if not user_session:
-                return throw_custom_exception(
-                    status.HTTP_400_BAD_REQUEST, {"error": "Invalid access token"}
-                )
+                raise GraphQLError("Invalid access token")
             local_db_session.delete(user_session)
 
-        return JSONResponse(
-            status_code=status.HTTP_200_OK, content={"message": "Logout successful"}
-        )
+        return "Logged out"
 
-    async def refresh_token(self, user: UserEntity, request: Request):
+    async def refresh_token(self, user, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
-        user = self.user_service.find_by_id(user.id)
+        user = self.user_service.find_by_id(user["user_id"])
 
         if not user:
-            return throw_custom_exception(
-                status.HTTP_401_UNAUTHORIZED,
-                {"error": "Your session expired. Please log in again."},
-            )
+            raise GraphQLError("Your session expired. Please log in again.")
 
         access_token = self.create_token(
             {"user_id": user.id}, timedelta(minutes=int(JWT_ACCESS_TOKEN_MINUTES))

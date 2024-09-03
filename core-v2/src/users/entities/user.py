@@ -1,4 +1,4 @@
-from sqlalchemy import TIMESTAMP, Boolean, Column, Integer, String, Text
+from sqlalchemy import TIMESTAMP, BigInteger, Boolean, Column, Integer, String, Text
 from datetime import datetime
 from config.database import db
 
@@ -19,7 +19,7 @@ ROLES = {
 class UserEntity(db):
     __tablename__ = "upstage_user"
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     username = Column(Text, nullable=False, unique=True, default="")
     password = Column(Text, nullable=False, default="")
     email = Column(Text, nullable=True, default="")

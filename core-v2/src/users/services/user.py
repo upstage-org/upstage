@@ -1,8 +1,12 @@
+from operator import or_
 from config.database import DBSession, ScopedSession
 from users.entities.user import UserEntity
 
 
 class UserService:
+    def __init__(self):
+        pass
+
     def find_one(self, username: str, email: str):
         return (
             DBSession.query(UserEntity)
