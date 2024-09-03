@@ -1,1 +1,2 @@
-alembic revision -m "Create User Table"  --version-path=src/users/databases/migrations
+alembic revision -m "Create Facebook Profile Table"  --version-path=src/authentication/databases/migrations
+alembic revision -m "Create Apple Profile Table"  --version-path=src/authentication/databases/migrations

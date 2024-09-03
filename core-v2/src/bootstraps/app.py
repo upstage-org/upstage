@@ -1,18 +1,16 @@
-import sys
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi_global_variable import GlobalVariable
 
 
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-  yield
+    yield
 
 
-app = FastAPI(title='PIM API', lifespan=lifespan)
-GlobalVariable.set('app', app)
+app = FastAPI(title="PIM API", lifespan=lifespan)
+GlobalVariable.set("app", app)
 
 
 # if 'pytest' not in sys.modules and env.SENTRY_DNS:
