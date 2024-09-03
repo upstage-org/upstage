@@ -51,7 +51,7 @@ export default {
     const runningStreams = computed(() => store.state.stage.runningStreams);
     const loading = computed(() => store.state.stage.loadingRunningStreams);
     const fetchRunningStreams = () => {
-      store.dispatch("stage/getRunningStreams");
+     
     };
 
     const autoDetect = computed(

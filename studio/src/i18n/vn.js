@@ -188,4 +188,5 @@ export default {
   },
   studio: "Studio",
   display_name: "Tên hiển thị",
+  new_stream: "Create Stream"
 };

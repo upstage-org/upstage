@@ -29,7 +29,6 @@ import { getViewport } from "./reactiveViewport";
 import { stageGraph } from "services/graphql";
 import { useAttribute } from "services/graphql/composable";
 import { avatarSpeak, stopSpeaking } from "services/speech";
-import { nmsService } from "services/rest";
 import anime from "animejs";
 import { Promise } from "core-js";
 
@@ -1337,12 +1336,6 @@ export default {
           true,
         );
       }
-    },
-    async getRunningStreams({ state, commit }) {
-      state.loadingRunningStreams = true;
-      const streams = await nmsService.getStreams();
-      commit("PUSH_RUNNING_STREAMS", streams);
-      state.loadingRunningStreams = false;
     },
     clearChat() {
       mqtt.sendMessage(TOPICS.CHAT, { clear: true });

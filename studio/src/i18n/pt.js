@@ -225,4 +225,5 @@ export default {
   profile_title: "{name}'s Perfil",
   introduction: "Introdução",
   new_object: "Novo {0}",
+  new_stream: "Create Stream"
 };

@@ -1,6 +1,9 @@
 <template>
   <div>
     <Object :object="meeting">
+      <template #menu="slotProps">
+        <MenuContent :object="object" v-bind="slotProps" v-model:active="active" />
+      </template>
       <template #render>
         <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }"
           :class="activeMovable ? 'disable-pointer' : ''">
@@ -18,9 +21,9 @@ import Loading from "components/Loading.vue";
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useJitsiDomain } from "./composable";
-
+import MenuContent from "../Avatar/ContextMenu.vue";
 export default {
-  components: { Object, Loading },
+  components: { Object, Loading, MenuContent },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
@@ -71,7 +74,14 @@ export default {
 
     const activeMovable = computed(() => store.getters["stage/activeMovable"]);
 
-    return { meeting, room, activeMovable };
+    const clip = (shape) => {
+      store.dispatch("stage/shapeObject", {
+        ...props.object,
+        shape,
+      });
+    };
+
+    return { meeting, room, activeMovable, clip };
   },
 };
 </script>

@@ -225,4 +225,5 @@ export default {
   profile_title: "{name}s Profil",
   introduction: "Inledning",
   new_object: "Ny {0}",
+  new_stream: "Create Stream"
 };
