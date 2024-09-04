@@ -7,7 +7,7 @@ from config.database import DBSession, ScopedSession
 from config.env import CLOUDFLARE_CAPTCHA_SECRETKEY, CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT
 from core.helpers.fernet_crypto import encrypt
 from users.entities.user import PLAYER, UserEntity
-from users.http.dtos.signup import SignupDTO
+from users.http.validation import CreateUserInput
 
 
 class UserService:
@@ -28,7 +28,7 @@ class UserService:
             .first()
         )
 
-    def create(self, data: SignupDTO, request: Request):
+    def create(self, data: CreateUserInput, request: Request):
         self.verify_captcha(data, request)
 
         existing_user = self.find_one(data["username"], data.get("email", ""))
@@ -60,7 +60,7 @@ class UserService:
 
         return {"user": user.to_dict()}
 
-    def verify_captcha(self, data: SignupDTO, request: Request):
+    def verify_captcha(self, data: CreateUserInput, request: Request):
         ip = request.headers.get("X-Forwarded-For", request.client.host)
         formData = {
             "secret": CLOUDFLARE_CAPTCHA_SECRETKEY,

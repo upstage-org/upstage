@@ -1,6 +1,6 @@
 from ariadne import MutationType, QueryType, make_executable_schema
 from ariadne.asgi import GraphQL
-from authentication.http.dtos.login import LoginDTO
+from authentication.http.validation import LoginInput
 from authentication.services.auth import AuthenticationService
 from bootstraps import app
 from core.decorators.authenticated import authenticated
@@ -16,11 +16,11 @@ mutation = MutationType()
 async def login(
     _,
     info,
-    payload: LoginDTO,
+    payload: LoginInput,
     authentication_service: AuthenticationService = AuthenticationService(),
 ):
     return await authentication_service.login(
-        LoginDTO(**payload), info.context["request"]
+        LoginInput(**payload), info.context["request"]
     )
 
 

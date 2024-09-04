@@ -3,7 +3,7 @@ from graphql import GraphQLError
 import jwt
 from fastapi import Request
 from email.utils import parseaddr
-from authentication.http.dtos.login import LoginDTO
+from authentication.http.validation import LoginInput
 from config.database import ScopedSession
 from users.entities.user import ADMIN, GUEST, PLAYER, SUPER_ADMIN, UserEntity
 from users.services.user import UserService
@@ -23,7 +23,7 @@ class AuthenticationService:
     def __init__(self):
         self.user_service = UserService()
 
-    async def login(self, dto: LoginDTO, request: Request):
+    async def login(self, dto: LoginInput, request: Request):
         user: UserEntity = None
         username, password = dto.username, dto.password
 

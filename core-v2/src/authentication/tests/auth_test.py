@@ -1,7 +1,7 @@
 from bootstraps import app
 from config.database import global_session
 import pytest
-from authentication.http.controllers.authentication import auth_graphql_app
+from authentication.http.authentication import auth_graphql_app
 from config.env import JWT_HEADER_NAME
 from core.helpers.fernet_crypto import encrypt
 from users.entities.user import SUPER_ADMIN, UserEntity

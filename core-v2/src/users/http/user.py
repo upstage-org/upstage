@@ -4,7 +4,7 @@ from core.helpers.object import convert_keys_to_camel_case
 from users.graphql.user import type_defs
 from ariadne.asgi import GraphQL
 
-from users.http.dtos.signup import SignupDTO
+from users.http.validation import CreateUserInput
 from users.services.user import UserService
 
 query = QueryType()
@@ -18,7 +18,7 @@ def current_user(_, info):
 
 
 @mutation.field("createUser")
-def create_user(_, info, inbound: SignupDTO, user_service=UserService()):
+def create_user(_, info, inbound: CreateUserInput, user_service=UserService()):
     return user_service.create(inbound, info.context["request"])
 
 

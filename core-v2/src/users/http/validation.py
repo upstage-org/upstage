@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 
 
-class SignupDTO(BaseModel):
+class CreateUserInput(BaseModel):
     username: str
     password: str
     email: str

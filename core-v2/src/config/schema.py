@@ -8,8 +8,8 @@ sys.path.append(app_dir)
 sys.path.append(prodder)
 
 from fastapi import FastAPI
-from users.http.controllers.user import user_graphql_app
-from authentication.http.controllers.authentication import auth_graphql_app
+from users.http.user import user_graphql_app
+from authentication.http.authentication import auth_graphql_app
 
 
 def config_graphql_endpoints(app: FastAPI):
