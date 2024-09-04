@@ -1,5 +1,4 @@
 from sqlalchemy import inspect
-
 from config.database import db
 
 

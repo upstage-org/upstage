@@ -1,4 +1,6 @@
 from ariadne import MutationType, QueryType, make_executable_schema
+from core.decorators.authenticated import authenticated
+from core.helpers.object import convert_keys_to_camel_case
 from users.graphql.user import type_defs
 from ariadne.asgi import GraphQL
 
@@ -9,9 +11,10 @@ query = QueryType()
 mutation = MutationType()
 
 
-@query.field("hello")
-def resolve_hello(*_):
-    return {"res": [{"id": 1, "name": "Hello"}, {"id": 2, "name": "World"}]}
+@query.field("currentUser")
+@authenticated()
+def current_user(_, info):
+    return convert_keys_to_camel_case(info.context["request"].state.current_user)
 
 
 @mutation.field("createUser")

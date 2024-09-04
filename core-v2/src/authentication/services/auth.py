@@ -28,7 +28,6 @@ class AuthenticationService:
         username, password = dto.username, dto.password
 
         email = self.validate_login_payload(username, password)
-
         user = self.user_service.find_one(username, email)
         if not user:
             return GraphQLError("Bad email or password (17)")
@@ -58,6 +57,7 @@ class AuthenticationService:
 
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)
+            local_db_session.commit()
             local_db_session.flush()
 
         title_prefix = "" if ENV_TYPE == "Production" else "DEV "
@@ -73,16 +73,18 @@ class AuthenticationService:
             group = {"id": 0, "name": "test"}
             groups = [group]
 
-        return {
-            "user_id": user.id,
-            "access_token": access_token,
-            "refresh_token": refresh_token,
-            "role": user.role,
-            "first_name": user.first_name,
-            "groups": groups,
-            "username": user.username,
-            "title": title,
-        }
+        return dict(
+            {
+                "user_id": user.id,
+                "access_token": access_token,
+                "refresh_token": refresh_token,
+                "role": user.role,
+                "first_name": user.first_name,
+                "groups": groups,
+                "username": user.username,
+                "title": title,
+            }
+        )
 
     def validate_login_payload(self, username: str, password: str):
         if not username or len(username) == 0 or len(username) > 100:
@@ -138,12 +140,10 @@ class AuthenticationService:
 
         return "Logged out"
 
-    async def refresh_token(self, user, request: Request):
+    async def refresh_token(self, user: UserEntity, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
-        user = self.user_service.find_by_id(user["user_id"])
-
-        if not user:
-            raise GraphQLError("Your session expired. Please log in again.")
+        if not refresh_token:
+            raise GraphQLError("Invalid refresh token")
 
         access_token = self.create_token(
             {"user_id": user.id}, timedelta(minutes=int(JWT_ACCESS_TOKEN_MINUTES))

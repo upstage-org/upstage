@@ -56,7 +56,7 @@ class UserService:
             .first()
         )
 
-        #TODO: Send email
+        # TODO: Send email
 
         return {"user": user.to_dict()}
 
@@ -80,4 +80,3 @@ class UserService:
 
     def update(self, user: UserEntity):
         return DBSession.merge(user)
-

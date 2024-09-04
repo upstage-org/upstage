@@ -32,7 +32,7 @@ type_defs = gql("""
 
     type Mutation {
         login(payload: LoginInput!): TokenType
-        refresh_token: RefreshTokenResponse
+        refreshToken: RefreshTokenResponse
         logout: String
     }
 """)

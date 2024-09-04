@@ -30,7 +30,7 @@ class UserEntity(BaseEntity):
     display_name = Column(String, default=None)
     active = Column(Boolean, nullable=False, default=False)
     firebase_pushnot_id = Column(String, default=None)
-    created_on = Column(TIMESTAMP(timezone=True), default=datetime.utcnow)
+    created_on = Column(TIMESTAMP(timezone=True), default=datetime.now)
     deactivated_on = Column(TIMESTAMP(timezone=True), default=None)
     upload_limit = Column(Integer, default=1024 * 1024)
     intro = Column(Text, default=None)
