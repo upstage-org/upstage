@@ -1,6 +1,6 @@
 from sqlalchemy import TIMESTAMP, BigInteger, Boolean, Column, Integer, String, Text
 from datetime import datetime
-from config.database import db
+from core.entities.base import BaseEntity
 
 
 PLAYER = 1
@@ -16,7 +16,7 @@ ROLES = {
 }
 
 
-class UserEntity(db):
+class UserEntity(BaseEntity):
     __tablename__ = "upstage_user"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)

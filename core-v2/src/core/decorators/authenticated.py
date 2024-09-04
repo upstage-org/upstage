@@ -24,7 +24,7 @@ def authenticated():
                 raise GraphQLError("Token has expired")
             except jwt.InvalidTokenError:
                 raise GraphQLError("Invalid token")
-        
+
             return await func(*args, **kwargs)
 
         return wrapper

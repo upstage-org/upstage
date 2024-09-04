@@ -1,5 +1,4 @@
-from sqlalchemy import BigInteger, Column, DateTime, func
-from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy import inspect
 
 from config.database import db
 
@@ -7,16 +6,5 @@ from config.database import db
 class BaseEntity(db):
     __abstract__ = True
 
-    id = Column(
-        BigInteger,
-        primary_key=True,
-        autoincrement=True,
-    )
-    created_at = Column(
-        DateTime(True),
-        nullable=False,
-        default=func.now(),
-        server_default=func.now(),
-        index=True,
-    )
-    updated_at = Column(DateTime(True), nullable=False, onupdate=func.now())
+    def to_dict(self):
+        return {c.key: getattr(self, c.key) for c in inspect(self).mapper.column_attrs}
