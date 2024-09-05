@@ -32,7 +32,7 @@ def authenticated(allowed_roles=None):
                 request.state.current_user = current_user.to_dict()
 
             except jwt.ExpiredSignatureError:
-                raise GraphQLError("Token has expired")
+                raise GraphQLError("Signature has expired")
             except jwt.InvalidTokenError:
                 raise GraphQLError("Invalid token")
 

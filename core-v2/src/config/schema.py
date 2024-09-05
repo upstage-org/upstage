@@ -10,6 +10,7 @@ sys.path.append(prodder)
 from fastapi import FastAPI
 from users.http.user import user_graphql_app
 from authentication.http.authentication import auth_graphql_app
+from studio.http.studio import studio_graphql_app
 
 
 def config_graphql_endpoints(app: FastAPI):
@@ -18,3 +19,6 @@ def config_graphql_endpoints(app: FastAPI):
 
     app.add_route("/api/auth_graphql", auth_graphql_app)
     app.add_websocket_route("/api/auth_graphql", auth_graphql_app)
+
+    app.add_route("/api/studio_graphql", studio_graphql_app)
+    app.add_websocket_route("/api/studio_graphql", studio_graphql_app)

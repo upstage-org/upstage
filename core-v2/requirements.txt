@@ -16,3 +16,4 @@ ruff
 pyjwt
 fastapi_exception
 fastapi_pagination
+email-validator

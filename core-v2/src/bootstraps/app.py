@@ -9,7 +9,7 @@ async def lifespan(app: FastAPI):
     yield
 
 
-app = FastAPI(title="PIM API", lifespan=lifespan)
+app = FastAPI(title="upstage", lifespan=lifespan)
 GlobalVariable.set("app", app)
 
 # if 'pytest' not in sys.modules and env.SENTRY_DNS:

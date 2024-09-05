@@ -30,7 +30,7 @@ class AuthenticationService:
         email = self.validate_login_payload(username, password)
         user = self.user_service.find_one(username, email)
         if not user:
-            return GraphQLError("Bad email or password (17)")
+            return GraphQLError("Incorrect username or password")
 
         self.validate_password(password, user)
         access_token = self.create_token(
@@ -88,25 +88,25 @@ class AuthenticationService:
 
     def validate_login_payload(self, username: str, password: str):
         if not username or len(username) == 0 or len(username) > 100:
-            raise GraphQLError("Missing/invalid username or email (12)")
+            raise GraphQLError("Missing/invalid username or email")
 
-        if not password or len(password) == 0 or len(password) > 100:
-            raise GraphQLError("Missing/invalid password parameter (13)")
+        if not password or len(password) == 0 or len(password) > 256:
+            raise GraphQLError("Missing/invalid password parameter")
 
         username = username.strip()
         if "@" in username:
             email = parseaddr(username)[1]
             if not email or len(email) <= 0 or len(email) > 100:
-                raise GraphQLError("Invalid username or email (14)")
+                raise GraphQLError("Invalid username or email")
             return email
 
     def validate_password(self, enter_password: str, user: UserEntity):
         try:
             if decrypt(user.password) != enter_password:
-                raise GraphQLError("Incorrect username or password (16)")
+                raise GraphQLError("Incorrect username or password")
         except:
             raise GraphQLError(
-                "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up (18)"
+                "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up."
             )
         if not user.active:
             raise GraphQLError(
