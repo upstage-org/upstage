@@ -79,4 +79,8 @@ class UserService:
             del data["token"]
 
     def update(self, user: UserEntity):
-        return DBSession.merge(user)
+        DBSession.query(UserEntity).filter(UserEntity.id == user.id).update(
+            {**user.to_dict()}
+        )
+        DBSession.commit()
+        DBSession.flush()

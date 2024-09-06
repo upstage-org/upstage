@@ -53,12 +53,13 @@ class AuthenticationService:
             app_device=request.headers.get("X-Upstage-Device-Model"),
         )
 
-        user.last_login = datetime.now()
+        user.last_login = datetime.utcnow()
 
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)
             local_db_session.commit()
             local_db_session.flush()
+        self.user_service.update(user)
 
         title_prefix = "" if ENV_TYPE == "Production" else "DEV "
         default_title = title_prefix + "Upstage"

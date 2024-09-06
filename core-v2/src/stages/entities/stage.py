@@ -25,7 +25,7 @@ class StageEntity(db):
     attributes = relationship(
         lambda: StageAttributeEntity, lazy="dynamic", back_populates="stage"
     )
-    assets = relationship("ParentStage", lazy="dynamic", back_populates="stage")
+    assets = relationship("ParentStageEntity", lazy="dynamic", back_populates="stage")
 
     @hybrid_property
     def cover(self):

@@ -17,7 +17,7 @@ class ParentStageEntity(db):
     id = Column(BigInteger, primary_key=True)
     stage_id = Column(Integer, ForeignKey(StageEntity.id), nullable=False, default=0)
     child_asset_id = Column(
-        Integer, ForeignKey(StageEntity.id), nullable=False, default=0
+        Integer, ForeignKey(AssetEntity.id), nullable=False, default=0
     )
     stage = relationship(StageEntity, foreign_keys=[stage_id], back_populates="assets")
     child_asset = relationship(
