@@ -4,8 +4,14 @@ from fastapi import Request
 from graphql import GraphQLError
 import requests
 from config.database import DBSession, ScopedSession
-from config.env import CLOUDFLARE_CAPTCHA_SECRETKEY, CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT
+from config.env import (
+    CLOUDFLARE_CAPTCHA_SECRETKEY,
+    CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT,
+    SUPPORT_EMAILS,
+)
 from core.helpers.fernet_crypto import encrypt
+from mails.helpers.mail import send
+from mails.templates.templates import admin_registration_notification, user_registration
 from users.entities.user import PLAYER, UserEntity
 from users.http.validation import CreateUserInput
 
@@ -28,7 +34,7 @@ class UserService:
             .first()
         )
 
-    def create(self, data: CreateUserInput, request: Request):
+    async def create(self, data: CreateUserInput, request: Request):
         self.verify_captcha(data, request)
 
         existing_user = self.find_one(data["username"], data.get("email", ""))
@@ -56,7 +62,14 @@ class UserService:
             .first()
         )
 
-        # TODO: Send email
+        await send([user.email], f"Welcome to UpStage!", user_registration(user))
+        admin_emails = SUPPORT_EMAILS
+        approval_url = f"{request.url_root}admin/player?sortByCreated=true"
+        await send(
+            admin_emails,
+            f"Approval required for {user.username}'s registration",
+            admin_registration_notification(user, approval_url),
+        )
 
         return {"user": user.to_dict()}
 

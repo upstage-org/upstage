@@ -56,3 +56,4 @@ src/genql/config/index.ts
 studio/.env
 core-v2/.env
 core-v2/env
+core-v2/assets/uploads/

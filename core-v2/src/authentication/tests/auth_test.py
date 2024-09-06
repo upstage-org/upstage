@@ -72,6 +72,7 @@ class TestAuthenticationController:
         assert "data" in data
         assert "login" in data["data"]
         assert data["data"]["login"]["username"] == email
+        return data
 
     async def test_refresh_token_successfully(self, client):
         email = Faker().email({"locale": "en_US"})
@@ -114,7 +115,7 @@ class TestAuthenticationController:
         assert response.status_code == 200
         data = response.json()
         assert "errors" in data
-        assert data["errors"][0]["message"] == "Invalid token"
+        assert data["errors"][0]["message"] == "Authenticated Failed"
 
     async def test_logout(self, client):
         email = Faker().email({"locale": "en_US"})

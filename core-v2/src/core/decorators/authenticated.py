@@ -17,14 +17,14 @@ def authenticated(allowed_roles=None):
             request: Request = info.context["request"]
             authorization: str = request.headers.get("Authorization")
             if not authorization:
-                raise GraphQLError("Authorization header missing")
+                raise GraphQLError("Authenticated Failed")
 
             token = authorization.split(" ")[1]
             try:
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 current_user = UserService().find_by_id(payload.get("user_id"))
                 if not current_user:
-                    raise GraphQLError("Invalid token")
+                    raise GraphQLError("Authenticated Failed")
 
                 if allowed_roles and current_user.role not in allowed_roles:
                     raise GraphQLError("Permission denied")
@@ -34,7 +34,7 @@ def authenticated(allowed_roles=None):
             except jwt.ExpiredSignatureError:
                 raise GraphQLError("Signature has expired")
             except jwt.InvalidTokenError:
-                raise GraphQLError("Invalid token")
+                raise GraphQLError("Authenticated Failed")
 
             return func(*args, **kwargs)
 

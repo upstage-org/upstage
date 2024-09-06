@@ -42,6 +42,7 @@ type_defs = gql("""
     }
                 
     type Query {
+        hello: String
         whoami: User
         adminPlayers(
             first: Int,
@@ -60,6 +61,7 @@ type_defs = gql("""
 
     type Mutation { 
         batchUserCreation(users: [BatchUserInput]!, stageIds: [Int]): BatchUserCreationPayload
+        uploadFile(base64: String!, filename: String!): File!
     }
                 
     type BatchUserCreationPayload {
@@ -87,5 +89,7 @@ type_defs = gql("""
         roleName
     }
                 
-
+    type File {
+        url: String!
+    }
 """)
