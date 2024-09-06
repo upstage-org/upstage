@@ -76,7 +76,7 @@ class StudioService:
     def validate_user_information(self, users: List[BatchUserInput], session):
         for user in users:
             BatchUserInput(**user)
-    
+
         duplicated = []
         for i in range(len(users) - 1):
             for j in range(i + 1, len(users)):
