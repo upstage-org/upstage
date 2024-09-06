@@ -39,14 +39,16 @@ class TestAuthenticationController:
     """
 
     async def test_login_with_invalid_credentials(self, client):
-        variables = {"payload": {"username": "aaaa", "password": "testpassword"}}
+        variables = {
+            "payload": {"username": Faker().email(), "password": "testpassword"}
+        }
         response = client.post(
             "/graphql", json={"query": self.login_query, "variables": variables}
         )
         assert response.status_code == 200
         data = response.json()
         assert "errors" in data
-        assert data["errors"][0]["message"] == "Bad email or password (17)"
+        assert data["errors"][0]["message"] == "Incorrect username or password"
 
     async def test_login_successfully(self, client):
         email = Faker().email()

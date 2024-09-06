@@ -32,7 +32,7 @@ load_module("*/core/*/*.py")
 load_module("*/core/exceptions/*.py")
 load_module("*/*/scripts/*.py")
 load_module("*/*/graphql/*.py")
-load_module("*/*/http/controllers/*.py")
+load_module("*/*/http/*.py")
 load_module("*/config/*.py")
 
 
