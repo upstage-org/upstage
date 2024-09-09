@@ -60,7 +60,7 @@
     "tailwindcss": "^3.4.0",
     "unplugin-vue-components": "^0.26.0",
     "uuid": "^9.0.1",
-    "vue": "^3.3.13",
+    "vue": "^3.5.1",
     "vue-i18n": "^9.5.0",
     "vue-router": "4",
     "vue-slicksort": "^2.0.0-alpha.5",
