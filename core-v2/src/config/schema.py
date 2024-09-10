@@ -38,13 +38,15 @@ def setup_studio_endpoint(app: FastAPI):
     combined_query = QueryType()
     combined_mutation = MutationType()
 
-    combined_query.set_field("hello", asset_query._resolvers["hello"])
+    combined_query.set_field("media", asset_query._resolvers["media"])
     combined_query.set_field("whoami", studio_query._resolvers["whoami"])
     combined_query.set_field("adminPlayers", studio_query._resolvers["adminPlayers"])
     combined_mutation.set_field(
         "batchUserCreation", studio_mutation._resolvers["batchUserCreation"]
     )
     combined_mutation.set_field("uploadFile", asset_mutation._resolvers["uploadFile"])
+    combined_mutation.set_field("saveMedia", asset_mutation._resolvers["saveMedia"])
+    combined_mutation.set_field("deleteMedia", asset_mutation._resolvers["deleteMedia"])
     combined_schema = make_executable_schema(
         studio_type_defs, combined_query, combined_mutation
     )

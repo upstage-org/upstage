@@ -35,10 +35,6 @@ def build_pg_session():
 def get_mongo_token_collection():
     client = build_mongo_email_client()
     mongo_db = client[MONGO_EMAIL_DB]
-    # queue = db[EVENT_COLLECTION]
-
-    # mongo_connection = pymongo.MongoClient(f'mongodb://{MONGO_HOST}:{MONGO_PORT}/')
-    # mongo_db = mongo_connection[MONGO_DB]
     collection = mongo_db[MONGODB_COLLECTION_TOKEN]
     if "expired_date" not in collection.index_information():
         collection.create_index(
@@ -46,5 +42,4 @@ def get_mongo_token_collection():
             name="expired_date",
             expireAfterSeconds=EMAIL_TIME_EXPIRED_TOKEN,
         )
-    # collection.drop_index("expired_date")
     return collection
