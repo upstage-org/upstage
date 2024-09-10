@@ -2,12 +2,12 @@ from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.hybrid import hybrid_property
+from core.entities.base import BaseEntity
 from stages.entities.stage_attribute import StageAttributeEntity
 from users.entities.user import UserEntity
-from config.database import db
 
 
-class StageEntity(db):
+class StageEntity(BaseEntity):
     """
     Stage is yet another asset type, with its own attributes,
     but is broken out for convenience of group licensing/permissions.

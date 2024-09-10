@@ -5,7 +5,7 @@ from sqlalchemy import asc, desc, or_
 from config.database import DBSession, ScopedSession
 from core.helpers.fernet_crypto import encrypt
 from core.helpers.object import convert_keys_to_camel_case
-from studio.http.validation import BatchUserInput
+from studios.http.validation import BatchUserInput
 from users.entities.user import GUEST, UserEntity
 from graphql import GraphQLError
 

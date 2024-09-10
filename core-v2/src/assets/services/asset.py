@@ -14,7 +14,6 @@ from assets.http.validation import MediaTableInput, SaveMediaInput
 from config.database import DBSession, ScopedSession
 from core.helpers.object import convert_keys_to_camel_case
 from stages.entities.parent_stage import ParentStageEntity
-from stages.entities.stage import StageEntity
 from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
 from graphql import GraphQLError
 
@@ -111,7 +110,7 @@ class AssetService:
                     .first()
                 )
                 if (
-                    not owner.role in ["SUPER_ADMIN", "ADMIN"]
+                    owner.role not in ["SUPER_ADMIN", "ADMIN"]
                     and asset.owner_id != owner.id
                 ):
                     raise GraphQLError("You are not allowed to update this asset")

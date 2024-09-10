@@ -2,7 +2,7 @@ from ariadne import MutationType, QueryType, make_executable_schema
 from ariadne.asgi import GraphQL
 from assets.http.validation import MediaTableInput, SaveMediaInput
 from core.decorators.authenticated import authenticated
-from studio.graphql.studio import type_defs
+from studios.graphql.studio import type_defs
 from assets.services.asset import AssetService
 from users.entities.user import ADMIN, PLAYER, SUPER_ADMIN, UserEntity
 

@@ -11,13 +11,14 @@ from ariadne import MutationType, QueryType, gql, make_executable_schema
 from fastapi import FastAPI
 from users.http.user import user_graphql_app
 from authentication.http.authentication import auth_graphql_app
-from studio.http.studio import (
+from studios.http.studio import (
     query as studio_query,
     mutation as studio_mutation,
 )
 from assets.http.asset import query as asset_query, mutation as asset_mutation
-from studio.graphql.studio import type_defs as studio_type_defs
+from studios.graphql.studio import type_defs as studio_type_defs
 from mails.http.mail import mail_graphql_app
+from stages.http.stage import stage_graphql_app
 from ariadne.asgi import GraphQL
 
 
@@ -30,7 +31,10 @@ def config_graphql_endpoints(app: FastAPI):
 
     setup_studio_endpoint(app)
 
-    app.add_route("/api/email_graphql", mail_graphql_app)
+    app.add_route("/api/stage_graphql", stage_graphql_app)
+    app.add_websocket_route("/api/email_graphql", stage_graphql_app)
+
+    app.add_route("/api/stage_graphql", mail_graphql_app)
     app.add_websocket_route("/api/email_graphql", mail_graphql_app)
 
 

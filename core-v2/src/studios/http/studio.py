@@ -3,9 +3,9 @@ from ariadne import MutationType, QueryType, make_executable_schema
 from core.decorators.authenticated import authenticated
 from core.helpers.object import convert_keys_to_camel_case
 from ariadne.asgi import GraphQL
-from studio.graphql.studio import type_defs
-from studio.http.validation import BatchUserInput
-from studio.services.sudio import StudioService
+from studios.graphql.studio import type_defs
+from studios.http.validation import BatchUserInput
+from studios.services.studio import StudioService
 from users.entities.user import ADMIN, ROLES, SUPER_ADMIN
 
 

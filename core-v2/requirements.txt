@@ -18,3 +18,4 @@ fastapi_exception
 fastapi_pagination
 email-validator
 pymongo
+coverage
