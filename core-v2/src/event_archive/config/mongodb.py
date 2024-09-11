@@ -1,5 +1,4 @@
 from config.env import (
-    DATABASE_URL,
     EMAIL_TIME_EXPIRED_TOKEN,
     MONGO_EMAIL_DB,
     MONGO_EMAIL_HOST,
@@ -10,9 +9,6 @@ from config.env import (
 )
 import pymongo
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 
 def build_mongo_client(host=MONGO_HOST, port=MONGO_PORT):
     return pymongo.MongoClient(host, port)
@@ -20,16 +16,6 @@ def build_mongo_client(host=MONGO_HOST, port=MONGO_PORT):
 
 def build_mongo_email_client(host=MONGO_EMAIL_HOST, port=MONGO_EMAIL_PORT):
     return pymongo.MongoClient(host, port)
-
-
-def build_pg_engine(connection_string=DATABASE_URL):
-    return create_engine(connection_string)
-
-
-def build_pg_session():
-    eng = build_pg_engine()
-    Session = sessionmaker(bind=eng)
-    return Session()
 
 
 def get_mongo_token_collection():

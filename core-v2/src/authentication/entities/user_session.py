@@ -1,11 +1,11 @@
 from datetime import datetime
 from sqlalchemy import BigInteger, Column, Integer, Text, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
-from config.database import db
+from core.entities.base import BaseEntity
 from users.entities.user import UserEntity
 
 
-class UserSessionEntity(db):
+class UserSessionEntity(BaseEntity):
     __tablename__ = "user_session"
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(

@@ -4,6 +4,14 @@ from ariadne import gql
 type_defs = gql("""
     type Mutation {
         createStage(input: StageInput!): State
+        updateStage(input: StageInput!): State
+        duplicateStage(id: ID!, name: String!): State
+        deleteStage(id: ID!): CommonResponse
+    }
+                
+    type CommonResponse {
+        success: Boolean
+        message: String           
     }
                 
     input StageInput {
@@ -15,6 +23,7 @@ type_defs = gql("""
         name: String
         description: String
         playerAccess: String
+        config: String
     }
                 
     type State {

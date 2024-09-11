@@ -1,9 +1,9 @@
 from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, String, Text
-from config.database import db
+from core.entities.base import BaseEntity
 
 
-class AssetTypeEntity(db):
+class AssetTypeEntity(BaseEntity):
     """
     Asset type is Prop, Avatar/Sprite, Backdrop, for example.
     Over time we should be able to add more types or variations on

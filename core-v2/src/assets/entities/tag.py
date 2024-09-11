@@ -1,9 +1,9 @@
 from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, String
-from config.database import db
+from core.entities.base import BaseEntity
 
 
-class TagEntity(db):
+class TagEntity(BaseEntity):
     __tablename__ = "tag"
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)

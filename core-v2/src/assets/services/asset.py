@@ -26,6 +26,19 @@ class AssetService:
     def __init__(self):
         pass
 
+    def get_all_medias(self, filter: dict = None):
+        query = DBSession.query(AssetEntity).join(AssetTypeEntity).join(UserEntity)
+
+        if filter["mediaType"]:
+            query = query.filter(AssetTypeEntity.name == filter["mediaType"])
+
+        if filter["owner"]:
+            query = query.filter(UserEntity.username == filter["owner"])
+
+        assets = query.all()
+
+        return [convert_keys_to_camel_case(asset.to_dict()) for asset in assets]
+
     def search_assets(self, search_assets: MediaTableInput):
         total_count = DBSession.query(AssetEntity).count()
 

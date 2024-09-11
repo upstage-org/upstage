@@ -1,9 +1,9 @@
 from sqlalchemy import Column, DateTime, String, BigInteger, Text
 from datetime import datetime
-from config.database import db
+from core.entities.base import BaseEntity
 
 
-class ConfigEntity(db):
+class ConfigEntity(BaseEntity):
     """
     System configuration, such as the Terms of Service's URL, theme, global settings,...
     """

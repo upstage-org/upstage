@@ -2,10 +2,10 @@ from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import relationship
 from assets.entities.asset import AssetEntity
-from config.database import db
+from core.entities.base import BaseEntity
 
 
-class AssetAttributeEntity(db):
+class AssetAttributeEntity(BaseEntity):
     """
     Attributes are the abilities of the asset: What the asset can do or be.
     For example, flip, rotate, draw, overlay, be opaque, dissolve, loop.

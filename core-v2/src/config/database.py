@@ -1,8 +1,5 @@
 import logging
 from sqlite3 import IntegrityError
-from typing import Annotated
-from fastapi import Depends
-from requests import Session
 from sqlalchemy import create_engine, MetaData
 from databases import Database
 from fastapi_global_variable import GlobalVariable

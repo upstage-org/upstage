@@ -1,10 +1,10 @@
 from datetime import datetime
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, Text
+from core.entities.base import BaseEntity
 from users.entities.user import UserEntity
-from config.database import db
 
 
-class FacebookProfileEntity(db):
+class FacebookProfileEntity(BaseEntity):
     __tablename__ = "facebook_profile"
     id = Column(BigInteger, primary_key=True)
     user_id = Column(Integer, ForeignKey(UserEntity.id), nullable=True, default=None)

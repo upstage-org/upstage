@@ -1,11 +1,11 @@
 from sqlalchemy import Column, Integer, BigInteger, ForeignKey
 from sqlalchemy.orm import relationship
 from assets.entities.asset import AssetEntity
-from config.database import db
+from core.entities.base import BaseEntity
 from stages.entities.stage import StageEntity
 
 
-class ParentStageEntity(db):
+class ParentStageEntity(BaseEntity):
     """
     This maps all 'children' in a hierarchy of assets for a stage.
     Assets also have children.

@@ -207,8 +207,6 @@ class TestAssetController:
         assert asset is None
 
     async def test_07_delete_media_without_authentication(self, client):
-        asset = DBSession.query(AssetEntity).first()
-
         mutation_query = """
             mutation DeleteMedia($id: ID!) {
                 deleteMedia(id: $id) {
@@ -217,7 +215,7 @@ class TestAssetController:
             }
         """
 
-        variables = {"id": asset.id}
+        variables = {"id": 1}
         response = client.post(
             "/asset_graphql",
             json={"query": mutation_query, "variables": variables},

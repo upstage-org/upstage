@@ -52,6 +52,7 @@ type_defs = gql("""
             createdBetween: [String]
         ): AdminPlayerConnection      
         media(input: MediaTableInput!): AssetConnection!  
+        mediaList(mediaType: String, owner: String): [Asset!]!
     }      
 
     

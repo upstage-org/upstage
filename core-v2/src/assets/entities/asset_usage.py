@@ -9,10 +9,10 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import relationship
-from config.database import db
+from core.entities.base import BaseEntity
 
 
-class AssetUsageEntity(db):
+class AssetUsageEntity(BaseEntity):
     __tablename__ = "asset_usage"
     id = Column(BigInteger, primary_key=True)
     asset_id = Column(Integer, ForeignKey("asset.id"), nullable=False, default=0)
