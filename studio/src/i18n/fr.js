@@ -225,5 +225,6 @@ export default {
   profile_title: "{name}'s Profile",
   introduction: "Introduction",
   new_object: "Nouveau {0}",
-  new_stream: "Create Stream"
+  new_stream: "Create Stream",
+  default_backgroundcolor: "Default Background Color"
 };

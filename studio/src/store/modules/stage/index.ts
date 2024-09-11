@@ -555,6 +555,8 @@ export default {
         const snapshot = JSON.parse(payload);
         snapshot.board.objects.forEach(deserializeObject);
         snapshot.board.tracks = state.board.tracks;
+        snapshot.backdropColor = state.config?.defaultcolor || COLORS.DEFAULT_BACKDROP;
+
         Object.keys(snapshot).forEach((key) => {
           if (
             key == "audioPlayers" &&
