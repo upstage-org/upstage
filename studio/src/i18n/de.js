@@ -64,5 +64,5 @@ export default {
   over_limit_upload:
     "Ihr Upload-Limit beträgt {limit}. Die Datei, die Sie hochladen möchten ({name}), ist zu groß ({size}). Bitte wählen Sie eine kleinere Datei.",
   new_stream: "Create Stream",
-  default_backgroundcolor: "Default Background Color"
+  default_backgroundcolor: "Default Background Colour"
 };

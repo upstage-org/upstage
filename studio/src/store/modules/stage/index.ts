@@ -41,7 +41,7 @@ export default {
     model: null,
     background: null,
     curtain: null,
-    backdropColor: COLORS.DEFAULT_BACKDROP,
+    backdropColor: "gray",
     chatPosition: "right",
     status: "OFFLINE",
     subscribeSuccess: false,
@@ -251,7 +251,7 @@ export default {
       state.replay.isReplaying = false;
       state.background = null;
       state.curtain = null;
-      state.backdropColor = COLORS.DEFAULT_BACKDROP;
+      state.backdropColor = "gray";
       state.tools.avatars = [];
       state.tools.props = [];
       state.tools.backdrops = [];
@@ -1074,7 +1074,7 @@ export default {
           commit("REPLACE_SCENE", {
             payload: JSON.stringify({
               background: null,
-              backdropColor: COLORS.DEFAULT_BACKDROP,
+              backdropColor: "gray",
               board: {
                 objects: [],
                 drawings: [],

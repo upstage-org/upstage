@@ -204,5 +204,5 @@ export default {
   introduction: "Introduction",
   new_object: "New {0}",
   new_stream: "Create Stream",
-  default_backgroundcolor: "Default Background Color"
+  default_backgroundcolor: "Default Background Colour"
 };

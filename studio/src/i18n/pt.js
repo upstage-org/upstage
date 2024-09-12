@@ -226,5 +226,5 @@ export default {
   introduction: "Introdução",
   new_object: "Novo {0}",
   new_stream: "Create Stream",
-  default_backgroundcolor: "Default Background Color"
+  default_backgroundcolor: "Default Background Colour"
 };
