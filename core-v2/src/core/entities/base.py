@@ -6,7 +6,15 @@ from config.database import db
 class BaseEntity(db):
     __abstract__ = True
 
-    def to_dict(self):
+    def to_dict(self, visited=None):
+        if visited is None:
+            visited = set()
+
+        # Avoid circular references
+        if id(self) in visited:
+            return None
+        visited.add(id(self))
+
         result = {}
         mapper = class_mapper(self.__class__)
 
@@ -26,12 +34,14 @@ class BaseEntity(db):
                 if value is not None:
                     if isinstance(value, list):
                         result[attr.key] = [
-                            item.to_dict() if hasattr(item, "to_dict") else item
+                            item.to_dict(visited) if hasattr(item, "to_dict") else item
                             for item in value
                         ]
-                    elif hasattr(value, "to_dict"):
-                        result[attr.key] = value.to_dict()
                     else:
-                        result[attr.key] = value
+                        result[attr.key] = (
+                            value.to_dict(visited)
+                            if hasattr(value, "to_dict")
+                            else value
+                        )
 
         return result

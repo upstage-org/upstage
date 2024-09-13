@@ -82,7 +82,7 @@ class StageService:
     ):
         if not value:
             return
-        
+
         if stage_id:
             stage_attribute = (
                 local_db_session.query(StageAttributeEntity)
@@ -186,7 +186,7 @@ class StageService:
             )
 
     def get_short_name(self, name, local_db_session):
-        shortname = re.sub("\s+", "-", re.sub("[^A-Za-z0-9 ]+", "", name)).lower()
+        shortname = re.sub(r"\s+", "-", re.sub("[^A-Za-z0-9 ]+", "", name)).lower()
 
         suffix = ""
         while True:

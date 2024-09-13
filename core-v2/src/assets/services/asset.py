@@ -1,9 +1,11 @@
 from base64 import b64decode
-from datetime import datetime
+from datetime import datetime, timedelta
+import hashlib
 import json
 from operator import or_
 import os
 import uuid
+import time
 
 from assets.entities.asset import AssetEntity
 from assets.entities.asset_type import AssetTypeEntity
@@ -12,6 +14,7 @@ from assets.entities.media_tag import MediaTagEntity
 from assets.entities.tag import TagEntity
 from assets.http.validation import MediaTableInput, SaveMediaInput
 from config.database import DBSession, ScopedSession
+from config.env import STREAM_EXPIRY_DAYS, STREAM_KEY
 from core.helpers.object import convert_keys_to_camel_case
 from stages.entities.parent_stage import ParentStageEntity
 from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
@@ -175,6 +178,26 @@ class AssetService:
 
         return asset
 
+    def create_asset(
+        self,
+        owner: UserEntity,
+        asset_type_id: int,
+        name: str,
+        file_location: str,
+        local_db_session,
+    ):
+        asset = AssetEntity(
+            owner_id=owner.id,
+            asset_type_id=asset_type_id,
+            name=name,
+            file_location=file_location,
+        )
+        local_db_session.add(asset)
+        local_db_session.commit()
+        local_db_session.flush()
+        local_db_session.refresh(asset)
+        return asset
+
     def update_asset_permissions(
         self, input: SaveMediaInput, local_db_session, asset: AssetEntity
     ):
@@ -283,18 +306,18 @@ class AssetService:
         local_db_session.flush()
 
     def process_file_location(self, input, local_db_session, asset):
-        file_location = input.urls[0]
+        file_location = input["urls"][0]
 
         if "?" in file_location:
             file_location = file_location[: file_location.index("?")]
             if file_location != asset.file_location and "/" not in file_location:
-                existedAsset = (
+                existed_asset = (
                     local_db_session.query(AssetEntity)
                     .filter(AssetEntity.file_location == file_location)
                     .filter(AssetEntity.id != asset.id)
                     .first()
                 )
-                if existedAsset:
+                if existed_asset:
                     raise GraphQLError(
                         "Stream with the same key already existed, please pick another unique key!"
                     )
@@ -304,15 +327,15 @@ class AssetService:
         return file_location
 
     def validate_asset_type(self, input, local_db_session):
-        mediaType = input.mediaType
+        media_type = input.mediaType
         asset_type = (
             local_db_session.query(AssetTypeEntity)
-            .filter(AssetTypeEntity.name == mediaType)
+            .filter(AssetTypeEntity.name == media_type)
             .first()
         )
 
         if not asset_type:
-            asset_type = AssetTypeEntity(name=mediaType, file_location=mediaType)
+            asset_type = AssetTypeEntity(name=media_type, file_location=media_type)
             local_db_session.add(asset_type)
             local_db_session.flush()
 
@@ -393,3 +416,49 @@ class AssetService:
 
         if os.path.exists(physical_path):
             os.remove(physical_path)
+
+    def resolve_sign(self, user: UserEntity, asset: AssetEntity):
+        if asset.owner_id == user.id:
+            timestamp = int(
+                (datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp()
+            )
+            payload = "/live/{0}-{1}-{2}".format(
+                asset.file_location, timestamp, STREAM_KEY
+            )
+            hashvalue = hashlib.md5(payload.encode("utf-8")).hexdigest()
+            return "{0}-{1}".format(timestamp, hashvalue)
+        return ""
+
+    def resolve_src(self, asset: AssetEntity):
+        timestamp = int(time.mktime(asset.updated_on.timetuple()))
+        return asset.file_location + "?t=" + str(timestamp)
+
+    def resolve_permissions(self, user_id: int, asset: AssetEntity):
+        if not user_id:
+            return "none"
+        if asset.owner_id == user_id:
+            return "owner"
+        if not asset.asset_license or asset.asset_license.level == 0:
+            return "editor"
+        if asset.asset_license.level == 3:
+            return "none"
+        player_access = asset.asset_license.permissions
+        if player_access:
+            accesses = json.loads(player_access)
+            if len(accesses) == 2:
+                if user_id in accesses[0]:
+                    return "readonly"
+                elif user_id in accesses[1]:
+                    return "editor"
+        return "none"
+
+    def resolve_fields(self, asset: AssetEntity):
+        src = self.resolve_src(asset)
+        sign = self.resolve_sign(asset.owner, asset)
+        permission = self.resolve_permissions(asset.owner_id, asset)
+        return {
+            **convert_keys_to_camel_case(asset.to_dict()),
+            "src": src,
+            "sign": sign,
+            "permission": permission,
+        }

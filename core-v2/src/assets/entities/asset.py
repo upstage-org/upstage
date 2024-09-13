@@ -27,6 +27,7 @@ class AssetEntity(BaseEntity):
     description = Column(Text, nullable=True)
     file_location = Column(Text, nullable=False)
     created_on = Column(TIMESTAMP(timezone=True), default=datetime.now)
+    updated_on = Column(TIMESTAMP(timezone=True), default=datetime.now)
     size = Column(BigInteger, nullable=False, default=0)
     copyright_level = Column(Integer, nullable=False, default=0)
     asset_type = relationship(AssetTypeEntity, foreign_keys=[asset_type_id])
