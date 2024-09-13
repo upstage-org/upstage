@@ -286,6 +286,13 @@ export default {
 .saved-text {
   >div {
     width: 100%;
+    overflow: hidden;
+    p {
+      font-size: 12px !important;
+      transform: none !important;
+      transform-origin: none !important;
+      margin: 0px !important;
+    }
   }
 }
 </style>
