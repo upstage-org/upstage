@@ -48,3 +48,15 @@ class UpdateMediaInput(BaseModel):
 class AssignStagesInput(BaseModel):
     id: int = Field(..., description="ID of the stage")
     stageIds: Optional[list[int]] = Field([], description="List of stage IDs")
+
+
+class SceneInput(BaseModel):
+    name: str = Field(..., description="Name of the scene")
+    preview: str = Field(..., description="Preview of the scene")
+    payload: str = Field(..., description="Payload of the scene")
+    stageId: int = Field(..., description="ID of the stage")
+
+class PerformanceInput(BaseModel):
+    id: int = Field(..., description="ID of the performance")
+    name: Optional[str] = Field(None, description="Name of the performance")
+    description: Optional[str] = Field(None, description="Description of the performance")

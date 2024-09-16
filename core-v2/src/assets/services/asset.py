@@ -306,7 +306,7 @@ class AssetService:
         local_db_session.flush()
 
     def process_file_location(self, input, local_db_session, asset):
-        file_location = input["urls"][0]
+        file_location = input["urls"][0] if "urls" in input else input.urls[0]
 
         if "?" in file_location:
             file_location = file_location[: file_location.index("?")]

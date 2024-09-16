@@ -3,6 +3,8 @@ from graphql import GraphQLError
 from sqlalchemy import and_
 from config.database import ScopedSession
 from core.helpers.object import convert_keys_to_camel_case
+from event_archive.entities.event import EventEntity
+from performance_config.entities.performance import PerformanceEntity
 from stages.entities.parent_stage import ParentStageEntity
 from stages.entities.stage import StageEntity
 from stages.entities.stage_attribute import StageAttributeEntity
@@ -199,3 +201,36 @@ class StageService:
                 suffix = int(suffix or 0) + 1
             else:
                 break
+
+    def sweep_stage(self, user: UserEntity, id: int):
+        with ScopedSession() as local_db_session:
+            stage = (
+                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+            )
+            if not stage:
+                raise GraphQLError("Stage not found")
+
+            events = (
+                local_db_session.query(EventEntity)
+                .filter(EventEntity.performance_id == None)
+                .filter(EventEntity.topic.ilike("%/{}/%".format(stage.file_location)))
+            )
+
+            if events.count() > 0:
+                performance = PerformanceEntity(stage_id=stage.id)
+
+                local_db_session.add(performance)
+                local_db_session.flush()
+
+                events.update(
+                    {EventEntity.performance_id: performance.id},
+                    synchronize_session="fetch",
+                )
+            else:
+                raise GraphQLError("The stage is already sweeped!")
+
+            local_db_session.commit()
+
+            return convert_keys_to_camel_case(
+                {"success": True, "performanceId": performance.id}
+            )

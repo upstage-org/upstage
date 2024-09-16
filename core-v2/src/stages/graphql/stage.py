@@ -12,11 +12,49 @@ type_defs = gql("""
         updateMedia(input: UpdateMediaInput!): Asset
         deleteMedia(id: ID!): CommonResponse
         assignStages(input: AssignStagesInput!): Asset
+        sweepStage(id: ID!): CommonResponse
+        saveScene(input: SceneInput!): Scene
+        deleteScene(id: ID!): CommonResponse
+        updatePerformance(input: PerformanceInput!): CommonResponse
+        deletePerformance(id: ID!): CommonResponse
+    }
+    
+                
+    input PerformanceInput {
+        id: ID!
+        name: String
+        description: String
+    }
+    
+    input SceneInput {
+        name: String
+        preview: String
+        payload: String
+        stageId: ID
+    }
+                
+    type Scene {
+        id: ID!
+        name: String
+        sceneOrder: Int
+        scenePreview: String
+        payload: String
+        createdOn: Date 
+        active: Boolean
+        stageId: ID
+        ownerId: ID
+        owner: User
+        stage: Stage
     }
                 
     input AssignStagesInput {
         id: ID!
         stageIds: [ID!]
+    }
+                
+    type SweepResponse {
+        success: Boolean
+        performanceId: ID
     }
                 
     type CommonResponse {
