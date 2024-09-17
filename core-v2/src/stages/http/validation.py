@@ -56,7 +56,18 @@ class SceneInput(BaseModel):
     payload: str = Field(..., description="Payload of the scene")
     stageId: int = Field(..., description="ID of the stage")
 
+
 class PerformanceInput(BaseModel):
     id: int = Field(..., description="ID of the performance")
-    name: Optional[str] = Field(None, description="Name of the performance")
-    description: Optional[str] = Field(None, description="Description of the performance")
+    name: str = Field(..., description="Name of the performance")
+    description: Optional[str] = Field(
+        None, description="Description of the performance"
+    )
+
+
+class RecordInput(BaseModel):
+    stageId: int = Field(..., description="ID of the stage")
+    name: str = Field(..., description="Name of the performance")
+    description: Optional[str] = Field(
+        None, description="Description of the performance"
+    )

@@ -10,6 +10,7 @@ from stages.http.validation import (
     AssignStagesInput,
     DuplicateStageInput,
     PerformanceInput,
+    RecordInput,
     SceneInput,
     StageInput,
     UpdateMediaInput,
@@ -21,11 +22,6 @@ from users.entities.user import ADMIN, PLAYER, SUPER_ADMIN, UserEntity
 
 query = QueryType()
 mutation = MutationType()
-
-
-@query.field("hello")
-def hello(*_):
-    return "Hello, world!"
 
 
 @mutation.field("createStage")
@@ -119,20 +115,64 @@ def delete_scene(_, info, id: int):
         UserEntity(**info.context["request"].state.current_user), id
     )
 
+
 @mutation.field("updatePerformance")
-@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
 def update_performance(_, info, input):
     return PerformanceService().update_performance(
-        UserEntity(**info.context["request"].state.current_user), PerformanceInput(**input)
+        UserEntity(**info.context["request"].state.current_user),
+        PerformanceInput(**input),
     )
 
 
 @mutation.field("deletePerformance")
-@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
 def delete_performance(_, info, id: int):
     return PerformanceService().delete_performance(
         UserEntity(**info.context["request"].state.current_user), id
     )
+
+
+@mutation.field("startRecording")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def start_recording(_, info, input):
+    return PerformanceService().create_performance(
+        UserEntity(**info.context["request"].state.current_user),
+        RecordInput(**input),
+    )
+
+
+@mutation.field("saveRecording")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def save_recording(_, info, id: int):
+    return PerformanceService().save_recording(
+        UserEntity(**info.context["request"].state.current_user), id
+    )
+
+
+@mutation.field("updateStatus")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def update_status(_, info, id: int):
+    return StageService().update_status(
+        UserEntity(**info.context["request"].state.current_user), id
+    )
+
+
+@mutation.field("updateVisibility")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def update_visibility(_, info, id: int):
+    return StageService().update_visibility(
+        UserEntity(**info.context["request"].state.current_user), id
+    )
+
+
+@mutation.field("updateLastAccess")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def update_last_access(_, info, id: int):
+    return StageService().update_last_access(
+        UserEntity(**info.context["request"].state.current_user), id
+    )
+
 
 schema = make_executable_schema(type_defs, query, mutation)
 stage_graphql_app = GraphQL(schema, debug=True)

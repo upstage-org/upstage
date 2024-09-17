@@ -17,12 +17,37 @@ type_defs = gql("""
         deleteScene(id: ID!): CommonResponse
         updatePerformance(input: PerformanceInput!): CommonResponse
         deletePerformance(id: ID!): CommonResponse
+        startRecording(input: RecordInput!): Performance
+        saveRecording(id: ID!): Performance
+        updateStatus(id: ID!): UpdateStageResponse
+        updateVisibility(id: ID!): UpdateStageResponse   
+        updateLastAccess(id: ID!): UpdateStageResponse   
     }
     
+    type Performance {
+        id: ID!
+        name: String
+        description: String
+        stageId: ID!
+        stage: Stage
+        createdOn: Date
+        savedOn: Date
+        recording: Boolean
+    }
+                
+    type UpdateStageResponse {
+            result: String
+    }
+                
+    input RecordInput {
+        stageId: ID!
+        name: String!
+        description: String 
+    }
                 
     input PerformanceInput {
         id: ID!
-        name: String
+        name: String!
         description: String
     }
     

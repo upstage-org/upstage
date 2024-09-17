@@ -1,3 +1,4 @@
+from datetime import datetime
 import re
 from graphql import GraphQLError
 from sqlalchemy import and_
@@ -234,3 +235,80 @@ class StageService:
             return convert_keys_to_camel_case(
                 {"success": True, "performanceId": performance.id}
             )
+
+    def update_status(self, user: UserEntity, id: int):
+        with ScopedSession() as local_db_session:
+            stage = (
+                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+            )
+            if not stage:
+                raise GraphQLError("Stage not found")
+
+            if stage.owner_id != user.id and user.role not in [ADMIN, SUPER_ADMIN]:
+                raise GraphQLError("You are not authorized to update this stage")
+
+            attribute = (
+                local_db_session.query(StageAttributeEntity)
+                .filter(
+                    StageAttributeEntity.stage_id == id,
+                    StageAttributeEntity.name == "status",
+                )
+                .first()
+            )
+
+            if attribute is not None:
+                attribute.description = (
+                    "rehearsal" if attribute.description == "live" else "live"
+                )
+            else:
+                attribute = StageAttributeEntity(
+                    stage_id=id, name="status", description="live"
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+            return {"result": attribute.description}
+
+    def update_visibility(self, user: UserEntity, id: int):
+        with ScopedSession() as local_db_session:
+            stage = (
+                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+            )
+            if not stage:
+                raise GraphQLError("Stage not found")
+
+            if stage.owner_id != user.id and user.role not in [ADMIN, SUPER_ADMIN]:
+                raise GraphQLError("You are not authorized to update this stage")
+
+            attribute = (
+                local_db_session.query(StageAttributeEntity)
+                .filter(
+                    StageAttributeEntity.stage_id == id,
+                    StageAttributeEntity.name == "visibility",
+                )
+                .first()
+            )
+
+            if attribute is not None:
+                attribute.description = True if not attribute.description else ""
+            else:
+                attribute = StageAttributeEntity(
+                    stage_id=id, name="visibility", description=True
+                )
+            local_db_session.add(attribute)
+            local_db_session.commit()
+            return {"result": attribute.description}
+
+    def update_last_access(self, user: UserEntity, id: int):
+        with ScopedSession() as local_db_session:
+            stage = (
+                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+            )
+            if not stage:
+                raise GraphQLError("Stage not found")
+
+            if stage.owner_id != user.id and user.role not in [ADMIN, SUPER_ADMIN]:
+                raise GraphQLError("You are not authorized to update this stage")
+
+            stage.last_access = datetime.now()
+            local_db_session.commit()
+            return {"result": stage.last_access}
