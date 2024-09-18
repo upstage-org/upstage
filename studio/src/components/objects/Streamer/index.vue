@@ -54,7 +54,7 @@
               <span>{{ $t("restart") }}</span>
             </a>
           </template>
-          <a class="panel-block" @click="toggleLoop">
+          <a v-if="!stream.jitsi" class="panel-block" @click="toggleLoop">
             <span class="panel-icon">
               <i v-if="stream.loop" class="fas fa-infinity"></i>
               <b v-else>1</b>
