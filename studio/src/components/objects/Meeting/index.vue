@@ -1,9 +1,6 @@
 <template>
   <div>
     <Object :object="meeting">
-      <template #menu="slotProps">
-        <MenuContent :object="object" v-bind="slotProps" v-model:active="active" />
-      </template>
       <template #render>
         <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }"
           :class="activeMovable ? 'disable-pointer' : ''">
@@ -21,9 +18,9 @@ import Loading from "components/Loading.vue";
 import { computed, onMounted, ref } from "vue";
 import { useStore } from "vuex";
 import { useJitsiDomain } from "./composable";
-import MenuContent from "../Avatar/ContextMenu.vue";
+
 export default {
-  components: { Object, Loading, MenuContent },
+  components: { Object, Loading },
   props: ["object"],
   setup: (props) => {
     const store = useStore();
@@ -43,27 +40,9 @@ export default {
           displayName: store.getters["user/chatname"],
         },
         configOverwrite: {
-          prejoinConfig: { enabled: false },
-          disableRemoteMute: true,
-          notifications: [],
-          hideParticipantsStats: true,
-          disableSelfViewSettings: true,
-          remoteVideoMenu: {
-            disabled: true
-          },
-          connectionIndicators: {
-            disabled: true
-          },
-          ...meeting.value.description != store.state.user.user?.email ? {
-            filmstrip: { disabled: true },
-            participantsPane: { enabled: false },
-            toolbarButtons: [],
-            disableTileView: true,
-            startWithAudioMuted: true,
-            startWithVideoMuted: true
-          } : {
-            toolbarButtons: ['microphone', 'camera', 'tileview']
-          }
+          prejoinPageEnabled: false,
+          startVideoMuted: 1,
+          startAudioMuted: 1,
         },
         interfaceConfigOverwrite: { SHOW_CHROME_EXTENSION_BANNER: false },
         disableInitialGUM: true,
@@ -74,14 +53,7 @@ export default {
 
     const activeMovable = computed(() => store.getters["stage/activeMovable"]);
 
-    const clip = (shape) => {
-      store.dispatch("stage/shapeObject", {
-        ...props.object,
-        shape,
-      });
-    };
-
-    return { meeting, room, activeMovable, clip };
+    return { meeting, room, activeMovable };
   },
 };
 </script>

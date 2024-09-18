@@ -3,7 +3,7 @@
     <div class="icon is-large">
       <Icon src="new.svg" size="36" />
     </div>
-    <span class="tag is-light is-block">{{ $t("new_stream") }}</span>
+    <span class="tag is-light is-block">{{ $t("new_room") }}</span>
   </div>
   <!-- <Yourself /> -->
   <Skeleton v-for="(room, i) in rooms" :key="i" :data="room">

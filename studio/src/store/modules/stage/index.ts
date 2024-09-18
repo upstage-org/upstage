@@ -626,6 +626,9 @@ export default {
     CREATE_ROOM(state, room) {
       state.tools.meetings.push(room);
     },
+    CREATE_STREAM(state, room) {
+      state.tools.streams.push(room);
+    },
     REORDER_TOOLBOX(state, { from, to }) {
       console.log(from, to);
       if (from.scenePreview) {

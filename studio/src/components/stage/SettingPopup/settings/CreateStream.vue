@@ -1,16 +1,16 @@
 <template>
   <div class="card-header">
-    <span class="card-header-title">{{ $t("create_new_meeting_room") }}</span>
+    <span class="card-header-title">{{ $t("new_stream") }}</span>
   </div>
   <div class="card-content voice-parameters">
     <form @submit.prevent="createRoom">
-      <HorizontalField title="Room name">
-        <Field v-model="form.name" required required-message="Room name is required" pattern="^[^?&:&quot;'%#]+$"
+      <HorizontalField title="Name">
+        <Field v-model="form.name" required required-message="Stream name is required" pattern="^[^?&:&quot;'%#]+$"
           title="Meeting name should not contain any of these characters: ?, &, :, ', &quot;, %, #.">
         </Field>
       </HorizontalField>
       <SaveButton :disabled="!form.name.trim()">{{
-        $t("create_room")
+        $t("new_stream")
       }}</SaveButton>
     </form>
   </div>
@@ -31,8 +31,9 @@ export default {
 
     const form = reactive({ name: "" });
     const createRoom = async () => {
-      store.commit("stage/CREATE_ROOM", {
-        type: "meeting",
+      store.commit("stage/CREATE_STREAM", {
+        type: "stream",
+        jitsi: true,
         name: form.name,
         description: store.state.user.user?.email,
         w: stageSize.value.width / 2,

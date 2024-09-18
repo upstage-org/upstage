@@ -1,23 +1,27 @@
 <template>
-  <div
-    v-for="stream in streams"
-    :key="stream"
-    :class="{ 'has-background-warning': !stream.ready && stream.alive }"
-  >
+  <div @click="createRoom" class="is-pulled-left room-skeleton">
+    <div class="icon is-large">
+      <Icon src="new.svg" size="36" />
+    </div>
+    <span class="tag is-light is-block">{{ $t("new_stream") }}</span>
+  </div>
+  <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
     <Skeleton :data="stream" :nodrop="stream.isRTMP && !stream.ready">
       <template v-if="stream.isRTMP">
         <div class="centered">
-          <RTMPStream
-            v-if="stream.alive"
-            :src="stream.url"
-            @scan="scanVideo($event, stream)"
-          ></RTMPStream>
+          <RTMPStream v-if="stream.alive" :src="stream.url" @scan="scanVideo($event, stream)"></RTMPStream>
           <QRCodePopup v-else :stream="stream" />
         </div>
       </template>
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
+  <Skeleton v-for="(room, i) in rooms" :key="i" :data="room">
+    <div class="room-skeleton">
+      <Icon src="backdrop.svg" size="36" />
+      <span class="tag is-light is-block">{{ room.name }}</span>
+    </div>
+  </Skeleton>
   <!-- <div v-if="loading">
     <Loading height="64px" />
   </div>
@@ -48,10 +52,11 @@ export default {
   },
   setup: () => {
     const store = useStore();
+    const rooms = computed(() => store.state.stage.tools.streams.filter(el => el.jitsi));
     const runningStreams = computed(() => store.state.stage.runningStreams);
     const loading = computed(() => store.state.stage.loadingRunningStreams);
     const fetchRunningStreams = () => {
-     
+
     };
 
     const autoDetect = computed(
@@ -62,7 +67,7 @@ export default {
     });
 
     const streams = computed(() => {
-      const res = [...store.state.stage.tools.streams];
+      const res = [...store.state.stage.tools.streams.filter(el => !el.jitsi)];
       res.forEach((s) => (s.alive = false));
       runningStreams.value.forEach((stream) => {
         const index = res.findIndex((s) => s.url === stream.url);
@@ -93,17 +98,23 @@ export default {
       }
     };
 
-    return { streams, loading, fetchRunningStreams, autoDetect, scanVideo };
+    const createRoom = () => {
+      store.dispatch("stage/openSettingPopup", {
+        type: "CreateStream",
+      });
+    };
+    return { streams, loading, fetchRunningStreams, autoDetect, scanVideo, createRoom, rooms };
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @mixin gradientText($from, $to) {
-    background: linear-gradient(to top, $from, $to);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  background: linear-gradient(to top, $from, $to);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
 .fas.fa-plus {
   @include gradientText(#30ac45, #6fb1fc);
 }
@@ -118,5 +129,13 @@ video {
 
 .pending-stream {
   cursor: not-allowed;
+}
+
+.room-skeleton {
+  flex: none;
+}
+
+div:has(> .room-skeleton) {
+  width: auto !important;
 }
 </style>
