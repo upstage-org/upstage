@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 class PerformanceMQTTConfigEntity(BaseEntity):
     # This holds the MQTT server configuration for one performance, to make connecting easier.
     # There may be > 1 MQTT connection in a performance.
-    __tablename__ = "performance_mqtt_config"
+    __tablename__ = "live_performance_mqtt_config"
     id = Column(BigInteger, primary_key=True)
     owner_id = Column(Integer, ForeignKey(UserEntity.id), nullable=False, default=0)
     ip_address = Column(Text, nullable=False)

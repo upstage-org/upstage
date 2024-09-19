@@ -4,6 +4,9 @@ from config.database import DBSession, ScopedSession
 from core.helpers.object import convert_keys_to_camel_case
 from event_archive.entities.event import EventEntity
 from performance_config.entities.performance import PerformanceEntity
+from performance_config.entities.performance_mqtt_config import (
+    PerformanceMQTTConfigEntity,
+)
 from stages.entities.stage import StageEntity
 from stages.http.validation import PerformanceInput, RecordInput
 from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
@@ -13,6 +16,19 @@ from sqlalchemy.orm.session import make_transient
 class PerformanceService:
     def __init__(self):
         pass
+
+    def get_performance_communication(self):
+        return [
+            convert_keys_to_camel_case(performance)
+            for performance in DBSession.query(PerformanceMQTTConfigEntity).all()
+        ]
+
+    def get_performance_config(self):
+        return [
+            convert_keys_to_camel_case(performance)
+            for performance in DBSession.query(PerformanceEntity).all()
+        ]
+    
 
     def create_performance(self, user: UserEntity, input: RecordInput):
         with ScopedSession() as local_db_session:
@@ -35,7 +51,9 @@ class PerformanceService:
             local_db_session.add(performance)
             local_db_session.flush()
             local_db_session.commit()
-            performance = DBSession.query(PerformanceEntity).filter_by(id=performance.id).first()
+            performance = (
+                DBSession.query(PerformanceEntity).filter_by(id=performance.id).first()
+            )
             return convert_keys_to_camel_case(performance)
 
     def update_performance(self, user: UserEntity, input: PerformanceInput):

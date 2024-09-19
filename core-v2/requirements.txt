@@ -19,3 +19,4 @@ fastapi_pagination
 email-validator
 pymongo
 coverage
+paho-mqtt          

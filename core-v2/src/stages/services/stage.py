@@ -2,7 +2,7 @@ from datetime import datetime
 import re
 from graphql import GraphQLError
 from sqlalchemy import and_
-from config.database import ScopedSession
+from config.database import DBSession, ScopedSession
 from core.helpers.object import convert_keys_to_camel_case
 from event_archive.entities.event import EventEntity
 from performance_config.entities.performance import PerformanceEntity
@@ -312,3 +312,6 @@ class StageService:
             stage.last_access = datetime.now()
             local_db_session.commit()
             return {"result": stage.last_access}
+
+    def get_parent_stage(self):
+        return [convert_keys_to_camel_case(stage) for stage in DBSession.query(ParentStageEntity).all()]

@@ -7,7 +7,7 @@ prodder = os.path.abspath(os.path.join(app_dir, ".."))
 sys.path.append(app_dir)
 sys.path.append(prodder)
 
-from ariadne import MutationType, QueryType, gql, make_executable_schema
+from ariadne import MutationType, QueryType, make_executable_schema
 from fastapi import FastAPI
 from users.http.user import user_graphql_app
 from authentication.http.authentication import auth_graphql_app
@@ -19,6 +19,8 @@ from assets.http.asset import query as asset_query, mutation as asset_mutation
 from studios.graphql.studio import type_defs as studio_type_defs
 from mails.http.mail import mail_graphql_app
 from stages.http.stage import stage_graphql_app
+from licenses.http.license import license_graphql_app
+from performance_config.http.performance import performance_graphql_app
 from ariadne.asgi import GraphQL
 
 
@@ -36,6 +38,12 @@ def config_graphql_endpoints(app: FastAPI):
 
     app.add_route("/api/stage_graphql", mail_graphql_app)
     app.add_websocket_route("/api/email_graphql", mail_graphql_app)
+
+    app.add_route("/api/license_graphql", license_graphql_app)
+    app.add_websocket_route("/api/license_graphql", license_graphql_app)
+
+    app.add_route('/api/performance_graphql', performance_graphql_app)
+    app.add_websocket_route('/api/performance_graphql', performance_graphql_app)
 
 
 def setup_studio_endpoint(app: FastAPI):
