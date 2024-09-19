@@ -167,7 +167,7 @@ export default {
         disableInitialGUM: true,
       };
       const api = new window.JitsiMeetExternalAPI(domain, options);
-      console.log("----", api);
+      console.log("***********", api);
     });
     watch(
       () => stream.replayed,

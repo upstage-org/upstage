@@ -1,10 +1,4 @@
 <template>
-  <div @click="createRoom" class="is-pulled-left room-skeleton">
-    <div class="icon is-large">
-      <Icon src="new.svg" size="36" />
-    </div>
-    <span class="tag is-light is-block">{{ $t("new_stream") }}</span>
-  </div>
   <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
     <Skeleton :data="stream" :nodrop="stream.isRTMP && !stream.ready">
       <template v-if="stream.isRTMP">
@@ -16,12 +10,6 @@
       <video v-else :src="stream.url"></video>
     </Skeleton>
   </div>
-  <Skeleton v-for="(room, i) in rooms" :key="i" :data="room">
-    <div class="room-skeleton">
-      <Icon src="backdrop.svg" size="36" />
-      <span class="tag is-light is-block">{{ room.name }}</span>
-    </div>
-  </Skeleton>
   <!-- <div v-if="loading">
     <Loading height="64px" />
   </div>
