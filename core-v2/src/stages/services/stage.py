@@ -314,4 +314,7 @@ class StageService:
             return {"result": stage.last_access}
 
     def get_parent_stage(self):
-        return [convert_keys_to_camel_case(stage) for stage in DBSession.query(ParentStageEntity).all()]
+        return [
+            convert_keys_to_camel_case(stage)
+            for stage in DBSession.query(ParentStageEntity).all()
+        ]

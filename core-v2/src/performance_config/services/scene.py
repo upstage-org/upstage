@@ -11,7 +11,10 @@ class SceneService:
         pass
 
     def get_scene(self):
-        return [ convert_keys_to_camel_case(scene) for scene in ScopedSession.query(SceneEntity).all() ]
+        return [
+            convert_keys_to_camel_case(scene)
+            for scene in ScopedSession.query(SceneEntity).all()
+        ]
 
     def create_scene(self, user: UserEntity, input: SceneInput):
         with ScopedSession() as local_db_session:

@@ -10,7 +10,7 @@ mutation = MutationType()
 
 
 @mutation.field("sendEmailExternal")
-async def send_email_external(_, info, email_info):
+async def send_email_external(_, info, emailInfo):
     request = info.context["request"]
     token = request.headers.get("X-Email-Token")
     if not token:
@@ -23,14 +23,15 @@ async def send_email_external(_, info, email_info):
         raise GraphQLError("Invalid X-Email-Token")
 
     msg = create_email(
-        to=email_info.recipients,
-        subject=email_info.subject,
-        html=email_info.body,
-        cc=email_info.cc,
-        bcc=email_info.bcc,
-        filenames=email_info.filenames,
+        to=emailInfo["recipients"],
+        subject=emailInfo["subject"],
+        html=emailInfo["body"],
+        cc=emailInfo["cc"],
+        bcc=emailInfo["bcc"],
+        filenames=emailInfo["filenames"],
         external=True,
     )
+
     await send_async(msg=msg)
     return {"success": True}
 

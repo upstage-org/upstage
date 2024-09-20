@@ -21,6 +21,7 @@ from mails.http.mail import mail_graphql_app
 from stages.http.stage import stage_graphql_app
 from licenses.http.license import license_graphql_app
 from performance_config.http.performance import performance_graphql_app
+from setting.http.setting import config_graphql_app
 from ariadne.asgi import GraphQL
 
 
@@ -34,16 +35,19 @@ def config_graphql_endpoints(app: FastAPI):
     setup_studio_endpoint(app)
 
     app.add_route("/api/stage_graphql", stage_graphql_app)
-    app.add_websocket_route("/api/email_graphql", stage_graphql_app)
+    app.add_websocket_route("/api/stage_graphql", stage_graphql_app)
 
-    app.add_route("/api/stage_graphql", mail_graphql_app)
+    app.add_route("/api/email_graphql", mail_graphql_app)
     app.add_websocket_route("/api/email_graphql", mail_graphql_app)
 
     app.add_route("/api/license_graphql", license_graphql_app)
     app.add_websocket_route("/api/license_graphql", license_graphql_app)
 
-    app.add_route('/api/performance_graphql', performance_graphql_app)
-    app.add_websocket_route('/api/performance_graphql', performance_graphql_app)
+    app.add_route("/api/performance_graphql", performance_graphql_app)
+    app.add_websocket_route("/api/performance_graphql", performance_graphql_app)
+
+    app.add_route("/api/config_graphql", config_graphql_app)
+    app.add_websocket_route("/api/config_graphql", config_graphql_app)
 
 
 def setup_studio_endpoint(app: FastAPI):

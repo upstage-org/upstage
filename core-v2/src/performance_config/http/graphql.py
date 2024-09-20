@@ -1,4 +1,3 @@
-
 from ariadne import gql
 
 

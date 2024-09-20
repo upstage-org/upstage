@@ -19,9 +19,11 @@ def performance_communication(*_):
 def performance_config(*_):
     return PerformanceService().get_performance_config()
 
+
 @query.field("scene")
 def scene(*_):
     return SceneService().get_scene()
+
 
 @query.field("parentStage")
 def parent_stage(*_):
@@ -30,4 +32,3 @@ def parent_stage(*_):
 
 schema = make_executable_schema(type_defs, query)
 performance_graphql_app = GraphQL(schema, debug=True)
-

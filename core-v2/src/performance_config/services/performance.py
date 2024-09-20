@@ -28,7 +28,6 @@ class PerformanceService:
             convert_keys_to_camel_case(performance)
             for performance in DBSession.query(PerformanceEntity).all()
         ]
-    
 
     def create_performance(self, user: UserEntity, input: RecordInput):
         with ScopedSession() as local_db_session:
