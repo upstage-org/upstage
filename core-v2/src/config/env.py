@@ -79,3 +79,5 @@ EVENT_COLLECTION = os.getenv("EVENT_COLLECTION")
 NGINX_CONFIG_FILE = os.getenv(
     "NGINX_CONFIG_FILE", "config/dev/dev_app1_nginx_upstage.conf"
 )
+
+UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")

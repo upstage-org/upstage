@@ -64,6 +64,25 @@ def setup_studio_endpoint(app: FastAPI):
     combined_mutation.set_field("uploadFile", asset_mutation._resolvers["uploadFile"])
     combined_mutation.set_field("saveMedia", asset_mutation._resolvers["saveMedia"])
     combined_mutation.set_field("deleteMedia", asset_mutation._resolvers["deleteMedia"])
+    combined_mutation.set_field("updateUser", studio_mutation._resolvers["updateUser"])
+    combined_mutation.set_field("deleteUser", studio_mutation._resolvers["deleteUser"])
+    combined_mutation.set_field("sendEmail", studio_mutation._resolvers["sendEmail"])
+    combined_mutation.set_field(
+        "changePassword", studio_mutation._resolvers["changePassword"]
+    )
+    combined_mutation.set_field("calcSizes", studio_mutation._resolvers["calcSizes"])
+    combined_mutation.set_field(
+        "requestPermission",
+        studio_mutation._resolvers["requestPermission"],
+    )
+    combined_mutation.set_field(
+        "confirmPermission",
+        studio_mutation._resolvers["confirmPermission"],
+    )
+    combined_mutation.set_field(
+        "quickAssignMutation",
+        studio_mutation._resolvers["quickAssignMutation"],
+    )
     combined_schema = make_executable_schema(
         studio_type_defs, combined_query, combined_mutation
     )

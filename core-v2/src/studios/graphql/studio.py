@@ -55,6 +55,21 @@ type_defs = gql("""
         mediaList(mediaType: String, owner: String): [Asset!]!
     }      
 
+    input UpdateUserInput {
+        id: ID!
+        username: String
+        password: String
+        email: String
+        binName: String
+        role: Int
+        firstName: String
+        lastName: String
+        displayName: String
+        active: Boolean
+        firebasePushnotId: String
+        uploadLimit: Int
+        intro: String
+    }
     
     input MediaTableInput {
         page: Int
@@ -121,13 +136,48 @@ type_defs = gql("""
 
     type Mutation { 
         batchUserCreation(users: [BatchUserInput]!, stageIds: [Int]): BatchUserCreationPayload
+        updateUser(input: UpdateUserInput!): User
+        deleteUser(id: ID!): CommonResponse
         uploadFile(base64: String!, filename: String!): File!
         saveMedia(input: SaveMediaInput!): SaveMediaPayload!
         deleteMedia(id: ID!): DeleteMediaPayload!
+        sendEmail(input: SendEmailInput!): CommonResponse
+        changePassword(input: ChangePasswordInput!): CommonResponse
+        calcSizes: Size
+        confirmPermission(id: ID!, approved: Boolean): ConfirmPermissionResponse
+        requestPermission(assetId: ID!, note: String): ConfirmPermissionResponse
+        quickAssignMutation(stageId: ID!, assetId: ID!): CommonResponse
+    }
+                
+    type ConfirmPermissionResponse {
+        success: Boolean
+        permissions: [Permission]
+    }
+                
+    type Size {
+        size: Int
+    }
+                
+    input ChangePasswordInput {
+        oldPassword: String!
+        newPassword: String!
+        id: ID!
+    }
+    
+    input SendEmailInput {
+        subject: String!
+        body: String!
+        to: String!
+        bcc: String
     }
                 
     type BatchUserCreationPayload {
         users: [User!]!
+    }
+                
+    type CommonResponse {
+        success: Boolean
+        message: String
     }
                 
      fragment permissionFragment on Permission {
