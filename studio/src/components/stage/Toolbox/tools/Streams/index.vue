@@ -1,17 +1,9 @@
 <template>
-  <div
-    v-for="stream in streams"
-    :key="stream"
-    :class="{ 'has-background-warning': !stream.ready && stream.alive }"
-  >
+  <div v-for="stream in streams" :key="stream" :class="{ 'has-background-warning': !stream.ready && stream.alive }">
     <Skeleton :data="stream" :nodrop="stream.isRTMP && !stream.ready">
       <template v-if="stream.isRTMP">
         <div class="centered">
-          <RTMPStream
-            v-if="stream.alive"
-            :src="stream.url"
-            @scan="scanVideo($event, stream)"
-          ></RTMPStream>
+          <RTMPStream v-if="stream.alive" :src="stream.url" @scan="scanVideo($event, stream)"></RTMPStream>
           <QRCodePopup v-else :stream="stream" />
         </div>
       </template>
@@ -48,10 +40,11 @@ export default {
   },
   setup: () => {
     const store = useStore();
+    const rooms = computed(() => store.state.stage.tools.streams.filter(el => el.jitsi));
     const runningStreams = computed(() => store.state.stage.runningStreams);
     const loading = computed(() => store.state.stage.loadingRunningStreams);
     const fetchRunningStreams = () => {
-      store.dispatch("stage/getRunningStreams");
+
     };
 
     const autoDetect = computed(
@@ -62,7 +55,7 @@ export default {
     });
 
     const streams = computed(() => {
-      const res = [...store.state.stage.tools.streams];
+      const res = [...store.state.stage.tools.streams.filter(el => !el.jitsi)];
       res.forEach((s) => (s.alive = false));
       runningStreams.value.forEach((stream) => {
         const index = res.findIndex((s) => s.url === stream.url);
@@ -93,17 +86,23 @@ export default {
       }
     };
 
-    return { streams, loading, fetchRunningStreams, autoDetect, scanVideo };
+    const createRoom = () => {
+      store.dispatch("stage/openSettingPopup", {
+        type: "CreateStream",
+      });
+    };
+    return { streams, loading, fetchRunningStreams, autoDetect, scanVideo, createRoom, rooms };
   },
 };
 </script>
 
 <style lang="scss" scoped>
 @mixin gradientText($from, $to) {
-    background: linear-gradient(to top, $from, $to);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+  background: linear-gradient(to top, $from, $to);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
+
 .fas.fa-plus {
   @include gradientText(#30ac45, #6fb1fc);
 }
@@ -118,5 +117,13 @@ video {
 
 .pending-stream {
   cursor: not-allowed;
+}
+
+.room-skeleton {
+  flex: none;
+}
+
+div:has(> .room-skeleton) {
+  width: auto !important;
 }
 </style>

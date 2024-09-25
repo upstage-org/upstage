@@ -29,7 +29,6 @@ import { getViewport } from "./reactiveViewport";
 import { stageGraph } from "services/graphql";
 import { useAttribute } from "services/graphql/composable";
 import { avatarSpeak, stopSpeaking } from "services/speech";
-import { nmsService } from "services/rest";
 import anime from "animejs";
 import { Promise } from "core-js";
 
@@ -42,7 +41,7 @@ export default {
     model: null,
     background: null,
     curtain: null,
-    backdropColor: COLORS.DEFAULT_BACKDROP,
+    backdropColor: "gray",
     chatPosition: "right",
     status: "OFFLINE",
     subscribeSuccess: false,
@@ -252,7 +251,7 @@ export default {
       state.replay.isReplaying = false;
       state.background = null;
       state.curtain = null;
-      state.backdropColor = COLORS.DEFAULT_BACKDROP;
+      state.backdropColor = "gray";
       state.tools.avatars = [];
       state.tools.props = [];
       state.tools.backdrops = [];
@@ -556,6 +555,8 @@ export default {
         const snapshot = JSON.parse(payload);
         snapshot.board.objects.forEach(deserializeObject);
         snapshot.board.tracks = state.board.tracks;
+        snapshot.backdropColor = state.config?.defaultcolor || COLORS.DEFAULT_BACKDROP;
+
         Object.keys(snapshot).forEach((key) => {
           if (
             key == "audioPlayers" &&
@@ -624,6 +625,9 @@ export default {
     },
     CREATE_ROOM(state, room) {
       state.tools.meetings.push(room);
+    },
+    CREATE_STREAM(state, room) {
+      state.tools.streams.push(room);
     },
     REORDER_TOOLBOX(state, { from, to }) {
       console.log(from, to);
@@ -1073,7 +1077,7 @@ export default {
           commit("REPLACE_SCENE", {
             payload: JSON.stringify({
               background: null,
-              backdropColor: COLORS.DEFAULT_BACKDROP,
+              backdropColor: "gray",
               board: {
                 objects: [],
                 drawings: [],
@@ -1337,12 +1341,6 @@ export default {
           true,
         );
       }
-    },
-    async getRunningStreams({ state, commit }) {
-      state.loadingRunningStreams = true;
-      const streams = await nmsService.getStreams();
-      commit("PUSH_RUNNING_STREAMS", streams);
-      state.loadingRunningStreams = false;
     },
     clearChat() {
       mqtt.sendMessage(TOPICS.CHAT, { clear: true });

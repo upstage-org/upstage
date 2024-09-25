@@ -2,12 +2,8 @@
   <div>
     <Object :object="meeting">
       <template #render>
-        <div
-          id="meeting-room"
-          class="frame"
-          :style="{ width: object.w + 'px', height: object.h + 'px' }"
-          :class="activeMovable ? 'disable-pointer' : ''"
-        >
+        <div id="meeting-room" class="frame" :style="{ width: object.w + 'px', height: object.h + 'px' }"
+          :class="activeMovable ? 'disable-pointer' : ''">
           <Loading v-if="loading" height="100%" />
           <div class="room" ref="room"></div>
         </div>
@@ -63,7 +59,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 .frame {
   border: 2px solid black;
   border-top: 10px solid #007011;

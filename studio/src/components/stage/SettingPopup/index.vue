@@ -27,6 +27,7 @@ import SaveScene from "./settings/SaveScene.vue";
 import Icon from "components/Icon.vue";
 import VolumeParameters from "./settings/VolumeParameters.vue";
 import CreateRoom from "./settings/CreateRoom.vue";
+import CreateStream from "./settings/CreateStream.vue";
 
 export default {
   components: {
@@ -37,6 +38,7 @@ export default {
     SaveScene,
     VolumeParameters,
     CreateRoom,
+    CreateStream
   },
   setup: () => {
     const store = useStore();
