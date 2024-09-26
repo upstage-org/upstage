@@ -21,7 +21,7 @@ from mails.http.mail import mail_graphql_app
 from stages.http.stage import stage_graphql_app
 from licenses.http.license import license_graphql_app
 from performance_config.http.performance import performance_graphql_app
-from setting.http.setting import config_graphql_app
+from upstage_options.http.setting import config_graphql_app
 from ariadne.asgi import GraphQL
 
 

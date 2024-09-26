@@ -27,7 +27,7 @@ class AuthenticationService:
         user: UserEntity = None
         username, password = dto.username, dto.password
 
-        email = self.validate_login_payload(username, password)
+        email = self.validate_login_payload(username)
         user = self.user_service.find_one(username, email)
         if not user:
             return GraphQLError("Incorrect username or password")
@@ -53,7 +53,7 @@ class AuthenticationService:
             app_device=request.headers.get("X-Upstage-Device-Model"),
         )
 
-        user.last_login = datetime.utcnow()
+        user.last_login = datetime.now()
 
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)
@@ -64,6 +64,8 @@ class AuthenticationService:
         title_prefix = "" if ENV_TYPE == "Production" else "DEV "
         default_title = title_prefix + "Upstage"
         title = default_title
+        groups = []
+        group = None
 
         if user.role == SUPER_ADMIN:
             title = title_prefix + "Super Admin"
@@ -87,19 +89,10 @@ class AuthenticationService:
             }
         )
 
-    def validate_login_payload(self, username: str, password: str):
-        if not username or len(username) == 0 or len(username) > 100:
-            raise GraphQLError("Missing/invalid username or email")
-
-        if not password or len(password) == 0 or len(password) > 256:
-            raise GraphQLError("Missing/invalid password parameter")
-
+    def validate_login_payload(self, username: str):
         username = username.strip()
         if "@" in username:
-            email = parseaddr(username)[1]
-            if not email or len(email) <= 0 or len(email) > 100:
-                raise GraphQLError("Invalid username or email")
-            return email
+            return parseaddr(username)[1]
 
     def validate_password(self, enter_password: str, user: UserEntity):
         try:
@@ -141,8 +134,9 @@ class AuthenticationService:
 
         return "Logged out"
 
-    async def refresh_token(self, user: UserEntity, request: Request):
+    def refresh_token(self, user: UserEntity, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
+        print("AABBCCDD", refresh_token)
         if not refresh_token:
             raise GraphQLError("Invalid refresh token")
 

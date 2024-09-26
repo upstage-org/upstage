@@ -3,8 +3,8 @@ from config.database import DBSession, ScopedSession
 from config.env import NGINX_CONFIG_FILE
 from core.helpers.object import convert_keys_to_camel_case
 from mails.helpers.mail import send
-from setting.entities.config import ConfigEntity
-from setting.http.validation import ConfigInput, EmailInput
+from upstage_options.entities.config import ConfigEntity
+from upstage_options.http.validation import ConfigInput, EmailInput
 
 TERMS_OF_SERVICE = "TERMS_OF_SERVICE"
 MANUAL = "MANUAL"

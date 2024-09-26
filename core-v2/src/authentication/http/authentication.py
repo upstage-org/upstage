@@ -26,13 +26,14 @@ async def login(
 
 @mutation.field("refreshToken")
 @authenticated()
-async def refresh_token(
+def refresh_token(
     _,
     info,
     authentication_service: AuthenticationService = AuthenticationService(),
 ):
-    return await authentication_service.refresh_token(
-        info.context["request"].state.current_user, info.context["request"]
+    return authentication_service.refresh_token(
+        UserEntity(**info.context["request"].state.current_user),
+        info.context["request"],
     )
 
 

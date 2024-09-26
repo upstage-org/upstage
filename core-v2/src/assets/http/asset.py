@@ -12,8 +12,10 @@ mutation = MutationType()
 
 @query.field("mediaList")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def search_assets(_, __, **kwargs):
-    return AssetService().get_all_medias(kwargs)
+def search_assets(_, info, **kwargs):
+    return AssetService().get_all_medias(
+        UserEntity(**info.context["request"].state.current_user), kwargs
+    )
 
 
 @query.field("media")

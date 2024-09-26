@@ -32,7 +32,7 @@ class AssetEntity(BaseEntity):
     copyright_level = Column(Integer, nullable=False, default=0)
     asset_type = relationship(AssetTypeEntity, foreign_keys=[asset_type_id])
     owner = relationship(UserEntity, foreign_keys=[owner_id])
-    asset_license = relationship(AssetLicenseEntity, uselist=False, backref="asset")
+    asset_license = relationship("AssetLicenseEntity", uselist=False, backref="asset")
     stages = relationship(
         "ParentStageEntity", lazy="dynamic", back_populates="child_asset"
     )

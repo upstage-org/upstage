@@ -1,11 +1,8 @@
 import logging
-from sqlite3 import IntegrityError
 from sqlalchemy import create_engine, MetaData
 from databases import Database
-from fastapi_global_variable import GlobalVariable
 
 import os
-import sys
 
 # Always on top
 app_dir = os.path.abspath(os.path.dirname(__file__))
@@ -40,14 +37,6 @@ def get_scoped_session():
 global_session = get_scoped_session()
 
 
-def run_with_global_session(callback):
-    try:
-        return callback(global_session)
-    except Exception as e:
-        global_session.rollback()
-        raise e
-
-
 class ScopedSession(object):
     """
     Use this for local session scope.
@@ -77,12 +66,6 @@ class ScopedSession(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         try:
             self.session.commit()
-
-        except IntegrityError as e:
-            if isinstance(e.orig, UniqueViolation):
-                self.session.remove()
-                logging.error(f"Duplicate unique key, rejecting: {e}")
-
         except Exception as e:
             if self.rollback_upon_failure:
                 self.session.rollback()
@@ -93,6 +76,3 @@ class ScopedSession(object):
                 )
         finally:
             self.session.close()
-
-
-GlobalVariable.set("run_with_global_session", run_with_global_session)

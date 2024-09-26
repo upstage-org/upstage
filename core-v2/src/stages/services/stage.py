@@ -6,6 +6,7 @@ from config.database import DBSession, ScopedSession
 from core.helpers.object import convert_keys_to_camel_case
 from event_archive.entities.event import EventEntity
 from performance_config.entities.performance import PerformanceEntity
+from performance_config.entities.scene import SceneEntity
 from stages.entities.parent_stage import ParentStageEntity
 from stages.entities.stage import StageEntity
 from stages.entities.stage_attribute import StageAttributeEntity
@@ -123,7 +124,22 @@ class StageService:
                 ParentStageEntity.stage_id == id
             ).delete()
 
-            # TODO: Remove all Scene,Performance, Event
+            local_db_session.query(SceneEntity).filter(
+                SceneEntity.stage_id == id
+            ).delete()
+
+            performances = local_db_session.query(PerformanceEntity).filter(
+                PerformanceEntity.stage_id == id
+            )
+
+            local_db_session.query(EventEntity).filter(
+                EventEntity.performance_id.in_([p.id for p in performances])
+            ).delete()
+
+            local_db_session.query(PerformanceEntity).filter(
+                PerformanceEntity.stage_id == id
+            )
+
             local_db_session.delete(stage)
             local_db_session.commit()
             local_db_session.flush()
@@ -193,15 +209,16 @@ class StageService:
 
         suffix = ""
         while True:
-            existedStages = (
+            existed_stage = (
                 local_db_session.query(StageEntity)
                 .filter(StageEntity.file_location == f"{shortname}{suffix}")
                 .first()
             )
-            if existedStages:
+            if existed_stage:
                 suffix = int(suffix or 0) + 1
             else:
                 break
+        return f"{shortname}{suffix}"
 
     def sweep_stage(self, user: UserEntity, id: int):
         with ScopedSession() as local_db_session:

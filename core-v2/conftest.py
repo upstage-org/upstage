@@ -13,7 +13,7 @@ def anyio_backend():
 
 @pytest.fixture(scope='session', autouse=True)
 def client():
-  with TestClient(app=app, base_url='http://test') as client:
+  with TestClient(app=app, base_url='http://localhost:8000') as client:
     logging.error('Client is ready')
     yield client
 

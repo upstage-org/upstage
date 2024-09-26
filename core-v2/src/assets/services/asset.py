@@ -4,10 +4,12 @@ import hashlib
 import json
 from operator import or_
 import os
+from typing import Optional
 import uuid
 import time
 
 from assets.entities.asset import AssetEntity
+from assets.entities.asset_license import AssetLicenseEntity
 from assets.entities.asset_type import AssetTypeEntity
 from assets.entities.asset_usage import AssetUsageEntity
 from assets.entities.media_tag import MediaTagEntity
@@ -29,23 +31,28 @@ class AssetService:
     def __init__(self):
         pass
 
-    def get_all_medias(self, filter: dict = None):
-        query = DBSession.query(AssetEntity).join(AssetTypeEntity).join(UserEntity)
+    def get_all_medias(self, user: UserEntity, filter: dict = None):
+        query = (
+            DBSession.query(AssetEntity)
+            .join(AssetTypeEntity)
+            .join(UserEntity)
+            .outerjoin(AssetLicenseEntity)
+        )
 
-        if filter["mediaType"]:
+        if "mediaType" in filter:
             query = query.filter(AssetTypeEntity.name == filter["mediaType"])
 
-        if filter["owner"]:
+        if "owner" in filter:
             query = query.filter(UserEntity.username == filter["owner"])
 
         assets = query.all()
 
-        return [convert_keys_to_camel_case(asset.to_dict()) for asset in assets]
+        return [self.resolve_fields(asset, user) for asset in assets]
 
     def search_assets(self, search_assets: MediaTableInput):
         total_count = DBSession.query(AssetEntity).count()
 
-        query = DBSession.query(AssetEntity)
+        query = DBSession.query(AssetEntity).outerjoin(AssetLicenseEntity)
         if search_assets.name:
             query = query.filter(AssetEntity.name.like(f"%{search_assets.name}%"))
         if search_assets.mediaTypes:
@@ -64,8 +71,10 @@ class AssetService:
                 )
             )
         if search_assets.tags:
-            query = query.filter(
-                AssetEntity.tags.any(MediaTagEntity.tag_id.in_(search_assets.tags))
+            query = (
+                query.join(MediaTagEntity)
+                .join(TagEntity)
+                .filter(TagEntity.name.in_(search_assets.tags))
             )
         if search_assets.createdBetween:
             query = query.filter(
@@ -86,18 +95,17 @@ class AssetService:
                     sort_field = AssetEntity.name
                 elif field == "CREATED_ON":
                     sort_field = AssetEntity.created_on
-                else:
-                    continue
 
                 if direction == "ASC":
                     query = query.order_by(sort_field.asc())
                 elif direction == "DESC":
                     query = query.order_by(sort_field.desc())
-                if search_assets.page and search_assets.limit:
-                    query = query.limit(search_assets.limit).offset(
-                        (search_assets.page - 1) * search_assets.limit
-                    )
+        if search_assets.page and search_assets.limit:
+            query = query.limit(search_assets.limit).offset(
+                (search_assets.page - 1) * search_assets.limit
+            )
 
+        print("AAAAA")
         assets = query.all()
         return convert_keys_to_camel_case({"totalCount": total_count, "edges": assets})
 
@@ -126,7 +134,7 @@ class AssetService:
                     .first()
                 )
                 if (
-                    owner.role not in ["SUPER_ADMIN", "ADMIN"]
+                    owner.role not in [SUPER_ADMIN, ADMIN]
                     and asset.owner_id != owner.id
                 ):
                     raise GraphQLError("You are not allowed to update this asset")
@@ -242,7 +250,7 @@ class AssetService:
 
             attributes = json.loads(asset.description)
 
-            if not "frame" in attributes or attributes["frames"]:
+            if not "frames" in attributes or attributes["frames"]:
                 attributes["frames"] = []
 
             asset.size = 0
@@ -255,11 +263,8 @@ class AssetService:
                     size = 0  # file not exist
                 asset.size += size
 
-            if len(urls) > 1:
-                attributes["multi"] = True
-            else:
-                attributes["multi"] = False
-                attributes["frames"] = []
+            attributes["multi"] = True if len(urls) > 0 else False
+            attributes["frames"] = attributes["frames"] if len(urls) > 0 else []
             attributes["w"] = input.w
             attributes["h"] = input.h
             if asset_type.name == "stream" and "/" not in file_location:
@@ -307,7 +312,7 @@ class AssetService:
 
     def process_file_location(self, input, local_db_session, asset):
         file_location = input["urls"][0] if "urls" in input else input.urls[0]
-
+        asset.file_location = uuid.uuid4()
         if "?" in file_location:
             file_location = file_location[: file_location.index("?")]
             if file_location != asset.file_location and "/" not in file_location:
@@ -322,8 +327,7 @@ class AssetService:
                         "Stream with the same key already existed, please pick another unique key!"
                     )
             asset.file_location = file_location
-        else:
-            asset.file_location = uuid.uuid4()
+
         return file_location
 
     def validate_asset_type(self, input, local_db_session):
@@ -369,6 +373,7 @@ class AssetService:
     def cleanup_assets(self, local_db_session, asset: AssetEntity):
         if asset.description:
             attributes = json.loads(asset.description)
+            print(attributes)
             if "frames" in attributes:
                 for frame in attributes["frames"]:
                     frame_asset = (
@@ -393,9 +398,9 @@ class AssetService:
         local_db_session.query(MediaTagEntity).filter(
             MediaTagEntity.asset_id == asset.id
         ).delete(synchronize_session=False)
-        # local_db_session.query(AssetLicenseE).filter(
-        #     AssetLicense.asset_id == id
-        # ).delete(synchronize_session=False)
+        local_db_session.query(AssetLicenseEntity).filter(
+            AssetLicenseEntity.asset_id == asset.id
+        ).delete(synchronize_session=False)
         local_db_session.query(AssetUsageEntity).filter(
             AssetUsageEntity.asset_id == asset.id
         ).delete(synchronize_session=False)
@@ -442,7 +447,8 @@ class AssetService:
             return "editor"
         if asset.asset_license.level == 3:
             return "none"
-        player_access = asset.asset_license.permissions
+
+        player_access = asset.asset_license.permissions if asset.asset_license else None
         if player_access:
             accesses = json.loads(player_access)
             if len(accesses) == 2:
@@ -452,10 +458,11 @@ class AssetService:
                     return "editor"
         return "none"
 
-    def resolve_fields(self, asset: AssetEntity):
+    def resolve_fields(self, asset: AssetEntity, user: Optional[UserEntity] = None):
         src = self.resolve_src(asset)
         sign = self.resolve_sign(asset.owner, asset)
-        permission = self.resolve_permissions(asset.owner_id, asset)
+        user_id = user.id if user else asset.owner_id
+        permission = self.resolve_permissions(user_id, asset)
         return {
             **convert_keys_to_camel_case(asset.to_dict()),
             "src": src,

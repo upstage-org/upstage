@@ -1,3 +1,4 @@
+import socket
 from dotenv import load_dotenv
 import os
 
@@ -36,7 +37,7 @@ APPLE_APP_SECRET = os.getenv("APPLE_APP_SECRET")
 APPLE_TEAM_ID = os.getenv("APPLE_TEAM_ID")
 
 DATABASE_URL = f"{DATABASE_CONNECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
-print(DATABASE_URL)
+print("aa", DATABASE_URL)
 
 JWT_HEADER_NAME = "X-Access-Token"
 
@@ -79,5 +80,15 @@ EVENT_COLLECTION = os.getenv("EVENT_COLLECTION")
 NGINX_CONFIG_FILE = os.getenv(
     "NGINX_CONFIG_FILE", "config/dev/dev_app1_nginx_upstage.conf"
 )
+
+
+if "HARDCODED_HOSTNAME" in os.environ:
+    ORIG_HOSTNAME = HOSTNAME = os.environ["HARDCODED_HOSTNAME"]
+    print("Loading local settings from a hard-coded env hostname: %s.py" % HOSTNAME)
+else:
+    ORIG_HOSTNAME = socket.gethostname()
+    HOSTNAME = socket.gethostname().replace(".", "_").replace("-", "_")
+    print("Loading local settings from %s.py" % HOSTNAME)
+
 
 UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")

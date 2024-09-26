@@ -1,9 +1,9 @@
 from ariadne import MutationType, QueryType, make_executable_schema
 
 from core.decorators.authenticated import authenticated
-from setting.http.validation import ConfigInput, EmailInput
-from setting.services.setting import SettingService
-from setting.http.graphql import type_defs
+from upstage_options.http.validation import ConfigInput, EmailInput
+from upstage_options.services.setting import SettingService
+from upstage_options.http.graphql import type_defs
 from ariadne.asgi import GraphQL
 
 from users.entities.user import ADMIN, SUPER_ADMIN

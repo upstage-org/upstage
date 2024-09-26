@@ -8,6 +8,7 @@ from config.env import (
     CLOUDFLARE_CAPTCHA_SECRETKEY,
     CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT,
     SUPPORT_EMAILS,
+    UPSTAGE_FRONTEND_URL,
 )
 from core.helpers.fernet_crypto import encrypt
 from mails.helpers.mail import send
@@ -64,7 +65,7 @@ class UserService:
 
         await send([user.email], f"Welcome to UpStage!", user_registration(user))
         admin_emails = SUPPORT_EMAILS
-        approval_url = f"{request.url_root}admin/player?sortByCreated=true"
+        approval_url = f"{UPSTAGE_FRONTEND_URL}/admin/player?sortByCreated=true"
         await send(
             admin_emails,
             f"Approval required for {user.username}'s registration",
@@ -80,6 +81,9 @@ class UserService:
             "response": data["token"],
             "remoteip": ip,
         }
+
+        if not CLOUDFLARE_CAPTCHA_SECRETKEY:
+            return
 
         result = requests.post(CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT, data=formData)
         outcome = result.json()

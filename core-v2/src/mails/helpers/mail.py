@@ -29,16 +29,16 @@ from config.env import (
     SUPPORT_EMAILS,
 )
 from event_archive.config.mongodb import get_mongo_token_collection
-from setting.entities.config import ConfigEntity
+from upstage_options.entities.config import ConfigEntity
 
 
 async def send(to, subject, content, bcc=[], cc=[], filenames=[]):
-    if HOSTNAME not in ACCEPT_EMAIL_HOST:
-        call_send_email_external_api(subject, content, to, cc, bcc, filenames)
-    else:
-        msg = create_email(
-            to=to, subject=subject, html=content, cc=cc, bcc=bcc, filenames=filenames
-        )
+    msg = create_email(
+        to=to, subject=subject, html=content, cc=cc, bcc=bcc, filenames=filenames
+    )
+
+    to = list(set(to).difference(set(SUPPORT_EMAILS)))
+    if len(to):
         await send_async(msg=msg)
 
 
