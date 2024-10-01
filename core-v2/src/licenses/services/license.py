@@ -4,7 +4,6 @@ from licenses.http.validation import LicenseInput
 from assets.db_models.asset_license import AssetLicenseModel
 
 
-
 class LicenseService:
     def __init__(self):
         pass
