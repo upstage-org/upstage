@@ -128,7 +128,7 @@ def generate_email_token_clients():
                 {
                     "token": live_token,
                     "from_server": client_server,
-                    "expired_date": datetime.utcnow(),
+                    "expired_date": datetime.now(),
                 }
             )
         sleep(EMAIL_TIME_EXPIRED_TOKEN)

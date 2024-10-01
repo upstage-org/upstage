@@ -12,6 +12,7 @@ DATABASE_USER = os.getenv("DATABASE_USER")
 DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD")
 DATABASE_NAME = os.getenv("DATABASE_NAME")
 
+
 # MONGODB
 
 EMAIL_TIME_EXPIRED_TOKEN = os.getenv("EMAIL_TIME_EXPIRED_TOKEN", 600)
@@ -93,3 +94,6 @@ else:
 
 UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")
 ENV_TYPE = os.getenv("ENV_TYPE", "development")
+
+
+UPLOAD_USER_CONTENT_FOLDER = "/home/upstage/assets_all_releases"
