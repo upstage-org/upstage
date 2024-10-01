@@ -1,4 +1,4 @@
-from config.env import (
+from global_config import (
     EMAIL_TIME_EXPIRED_TOKEN,
     MONGO_EMAIL_DB,
     MONGO_EMAIL_HOST,

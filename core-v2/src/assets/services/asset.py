@@ -7,20 +7,25 @@ import os
 from typing import Optional
 import uuid
 import time
-
-from assets.entities.asset import AssetEntity
-from assets.entities.asset_license import AssetLicenseEntity
-from assets.entities.asset_type import AssetTypeEntity
-from assets.entities.asset_usage import AssetUsageEntity
-from assets.entities.media_tag import MediaTagEntity
-from assets.entities.tag import TagEntity
-from assets.http.validation import MediaTableInput, SaveMediaInput
-from config.database import DBSession, ScopedSession
-from config.env import STREAM_EXPIRY_DAYS, STREAM_KEY
-from core.helpers.object import convert_keys_to_camel_case
-from stages.entities.parent_stage import ParentStageEntity
-from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
 from graphql import GraphQLError
+
+
+from global_config import (
+    ScopedSession,
+    DBSession,
+    STREAM_EXPIRY_DAYS,
+    STREAM_KEY,
+    convert_keys_to_camel_case,
+)
+from assets.db_models.asset import AssetModel
+from assets.db_models.asset_license import AssetLicenseModel
+from assets.db_models.asset_type import AssetTypeModel
+from assets.db_models.asset_usage import AssetUsageModel
+from assets.db_models.media_tag import MediaTagModel
+from assets.db_models.tag import TagModel
+from assets.http.validation import MediaTableInput, SaveMediaInput
+from stages.db_models.parent_stage import ParentStageModel
+from users.db_models.user import ADMIN, SUPER_ADMIN, UserModel
 
 appdir = os.path.abspath(os.path.dirname(__file__))
 absolutePath = os.path.dirname(appdir)
@@ -31,54 +36,54 @@ class AssetService:
     def __init__(self):
         pass
 
-    def get_all_medias(self, user: UserEntity, filter: dict = None):
+    def get_all_medias(self, user: UserModel, filter: dict = None):
         query = (
-            DBSession.query(AssetEntity)
-            .join(AssetTypeEntity)
-            .join(UserEntity)
-            .outerjoin(AssetLicenseEntity)
+            DBSession.query(AssetModel)
+            .join(AssetTypeModel)
+            .join(UserModel)
+            .outerjoin(AssetLicenseModel)
         )
 
         if "mediaType" in filter:
-            query = query.filter(AssetTypeEntity.name == filter["mediaType"])
+            query = query.filter(AssetTypeModel.name == filter["mediaType"])
 
         if "owner" in filter:
-            query = query.filter(UserEntity.username == filter["owner"])
+            query = query.filter(UserModel.username == filter["owner"])
 
         assets = query.all()
 
         return [self.resolve_fields(asset, user) for asset in assets]
 
     def search_assets(self, search_assets: MediaTableInput):
-        total_count = DBSession.query(AssetEntity).count()
+        total_count = DBSession.query(AssetModel).count()
 
-        query = DBSession.query(AssetEntity).outerjoin(AssetLicenseEntity)
+        query = DBSession.query(AssetModel).outerjoin(AssetLicenseModel)
         if search_assets.name:
-            query = query.filter(AssetEntity.name.like(f"%{search_assets.name}%"))
+            query = query.filter(AssetModel.name.like(f"%{search_assets.name}%"))
         if search_assets.mediaTypes:
-            query = query.join(AssetTypeEntity).filter(
-                AssetTypeEntity.name.in_(search_assets.mediaTypes)
+            query = query.join(AssetTypeModel).filter(
+                AssetTypeModel.name.in_(search_assets.mediaTypes)
             )
         if search_assets.owners:
-            query = query.join(UserEntity).filter(
-                UserEntity.username.in_(search_assets.owners)
+            query = query.join(UserModel).filter(
+                UserModel.username.in_(search_assets.owners)
             )
 
         if search_assets.stages:
             query = query.filter(
-                AssetEntity.stages.any(
-                    ParentStageEntity.stage_id.in_(search_assets.stages)
+                AssetModel.stages.any(
+                    ParentStageModel.stage_id.in_(search_assets.stages)
                 )
             )
         if search_assets.tags:
             query = (
-                query.join(MediaTagEntity)
-                .join(TagEntity)
-                .filter(TagEntity.name.in_(search_assets.tags))
+                query.join(MediaTagModel)
+                .join(TagModel)
+                .filter(TagModel.name.in_(search_assets.tags))
             )
         if search_assets.createdBetween:
             query = query.filter(
-                AssetEntity.created_on.between(
+                AssetModel.created_on.between(
                     search_assets.createdBetween[0], search_assets.createdBetween[1]
                 )
             )
@@ -88,13 +93,13 @@ class AssetService:
             for sort_option in sort:
                 field, direction = sort_option.rsplit("_", 1)
                 if field == "ASSET_TYPE_ID":
-                    sort_field = AssetEntity.asset_type_id
+                    sort_field = AssetModel.asset_type_id
                 elif field == "OWNER_ID":
-                    sort_field = AssetEntity.owner_id
+                    sort_field = AssetModel.owner_id
                 elif field == "NAME":
-                    sort_field = AssetEntity.name
+                    sort_field = AssetModel.name
                 elif field == "CREATED_ON":
-                    sort_field = AssetEntity.created_on
+                    sort_field = AssetModel.created_on
 
                 if direction == "ASC":
                     query = query.order_by(sort_field.asc())
@@ -122,15 +127,15 @@ class AssetService:
         file_location = os.path.join(subpath, unique_filename)
         return {"url": file_location}
 
-    def save_media(self, owner: UserEntity, input: SaveMediaInput):
+    def save_media(self, owner: UserModel, input: SaveMediaInput):
         asset = None
         with ScopedSession() as local_db_session:
             asset_type = self.validate_asset_type(input, local_db_session)
 
             if input.id:
                 asset = (
-                    local_db_session.query(AssetEntity)
-                    .filter(AssetEntity.id == input.id)
+                    local_db_session.query(AssetModel)
+                    .filter(AssetModel.id == input.id)
                     .first()
                 )
                 if (
@@ -139,7 +144,7 @@ class AssetService:
                 ):
                     raise GraphQLError("You are not allowed to update this asset")
             else:
-                asset = AssetEntity(owner_id=owner.id)
+                asset = AssetModel(owner_id=owner.id)
                 local_db_session.add(asset)
 
             asset.name = input.name
@@ -159,28 +164,28 @@ class AssetService:
             return convert_keys_to_camel_case({"asset": {"id": asset.id}})
 
     def update_asset_tags(
-        self, input: SaveMediaInput, local_db_session, asset: AssetEntity
+        self, input: SaveMediaInput, local_db_session, asset: AssetModel
     ):
         if input.tags:
             tags = input.tags
             asset.tags.delete()
             for tag in tags:
                 tag_model = (
-                    local_db_session.query(TagEntity)
-                    .filter(TagEntity.name == tag)
+                    local_db_session.query(TagModel)
+                    .filter(TagModel.name == tag)
                     .first()
                 )
                 if not tag_model:
-                    tag_model = TagEntity(name=tag)
+                    tag_model = TagModel(name=tag)
                     local_db_session.add(tag_model)
                     local_db_session.flush()
-                asset.tags.append(MediaTagEntity(tag_id=tag_model.id))
+                asset.tags.append(MediaTagModel(tag_id=tag_model.id))
 
             local_db_session.flush()
             local_db_session.commit()
             asset = (
-                local_db_session.query(AssetEntity)
-                .filter(AssetEntity.id == asset.id)
+                local_db_session.query(AssetModel)
+                .filter(AssetModel.id == asset.id)
                 .first()
             )
 
@@ -188,13 +193,13 @@ class AssetService:
 
     def create_asset(
         self,
-        owner: UserEntity,
+        owner: UserModel,
         asset_type_id: int,
         name: str,
         file_location: str,
         local_db_session,
     ):
-        asset = AssetEntity(
+        asset = AssetModel(
             owner_id=owner.id,
             asset_type_id=asset_type_id,
             name=name,
@@ -207,13 +212,13 @@ class AssetService:
         return asset
 
     def update_asset_permissions(
-        self, input: SaveMediaInput, local_db_session, asset: AssetEntity
+        self, input: SaveMediaInput, local_db_session, asset: AssetModel
     ):
         if input.userIds:
             user_ids = input.userIds
             granted_permissions = asset.permissions.all()
             for permission in granted_permissions:
-                if isinstance(permission, AssetUsageEntity):
+                if isinstance(permission, AssetUsageModel):
                     if (
                         permission.user_id not in user_ids
                         and permission.approved == True
@@ -222,15 +227,15 @@ class AssetService:
                         local_db_session.delete(permission)
             for user_id in user_ids:
                 permission = (
-                    local_db_session.query(AssetUsageEntity)
+                    local_db_session.query(AssetUsageModel)
                     .filter(
-                        AssetUsageEntity.asset_id == asset.id,
-                        AssetUsageEntity.user_id == user_id,
+                        AssetUsageModel.asset_id == asset.id,
+                        AssetUsageModel.user_id == user_id,
                     )
                     .first()
                 )
                 if not permission:
-                    permission = AssetUsageEntity(user_id=user_id)
+                    permission = AssetUsageModel(user_id=user_id)
                     asset.permissions.append(permission)
                 permission.approved = True
             local_db_session.flush()
@@ -239,8 +244,8 @@ class AssetService:
         self,
         input: SaveMediaInput,
         local_db_session,
-        asset_type: AssetTypeEntity,
-        asset: AssetEntity,
+        asset_type: AssetTypeModel,
+        asset: AssetModel,
         file_location: str,
     ):
         if input.urls:
@@ -290,13 +295,13 @@ class AssetService:
         if input.stageIds != None:
             asset.stages = []
             for id in input.stageIds:
-                asset.stages.append(ParentStageEntity(stage_id=id))
+                asset.stages.append(ParentStageModel(stage_id=id))
 
-    def change_owner(self, owner: UserEntity, local_db_session, asset: AssetEntity):
+    def change_owner(self, owner: UserModel, local_db_session, asset: AssetModel):
         if owner:
             new_owner = (
-                local_db_session.query(UserEntity)
-                .filter(UserEntity.username == owner.username)
+                local_db_session.query(UserModel)
+                .filter(UserModel.username == owner.username)
                 .first()
             )
             if new_owner:
@@ -317,9 +322,9 @@ class AssetService:
             file_location = file_location[: file_location.index("?")]
             if file_location != asset.file_location and "/" not in file_location:
                 existed_asset = (
-                    local_db_session.query(AssetEntity)
-                    .filter(AssetEntity.file_location == file_location)
-                    .filter(AssetEntity.id != asset.id)
+                    local_db_session.query(AssetModel)
+                    .filter(AssetModel.file_location == file_location)
+                    .filter(AssetModel.id != asset.id)
                     .first()
                 )
                 if existed_asset:
@@ -333,22 +338,22 @@ class AssetService:
     def validate_asset_type(self, input, local_db_session):
         media_type = input.mediaType
         asset_type = (
-            local_db_session.query(AssetTypeEntity)
-            .filter(AssetTypeEntity.name == media_type)
+            local_db_session.query(AssetTypeModel)
+            .filter(AssetTypeModel.name == media_type)
             .first()
         )
 
         if not asset_type:
-            asset_type = AssetTypeEntity(name=media_type, file_location=media_type)
+            asset_type = AssetTypeModel(name=media_type, file_location=media_type)
             local_db_session.add(asset_type)
             local_db_session.flush()
 
         return asset_type
 
-    def delete_media(self, owner: UserEntity, id: int):
+    def delete_media(self, owner: UserModel, id: int):
         with ScopedSession() as local_db_session:
             asset = (
-                local_db_session.query(AssetEntity).filter(AssetEntity.id == id).first()
+                local_db_session.query(AssetModel).filter(AssetModel.id == id).first()
             )
 
             if not asset:
@@ -370,18 +375,18 @@ class AssetService:
                 "message": "Media deleted successfully!",
             }
 
-    def cleanup_assets(self, local_db_session, asset: AssetEntity):
+    def cleanup_assets(self, local_db_session, asset: AssetModel):
         if asset.description:
             attributes = json.loads(asset.description)
             print(attributes)
             if "frames" in attributes:
                 for frame in attributes["frames"]:
                     frame_asset = (
-                        local_db_session.query(AssetEntity)
+                        local_db_session.query(AssetModel)
                         .filter(
                             or_(
-                                AssetEntity.file_location == frame,
-                                AssetEntity.description.contains(frame),
+                                AssetModel.file_location == frame,
+                                AssetModel.description.contains(frame),
                             )
                         )
                         .first()
@@ -392,22 +397,22 @@ class AssetService:
                             os.remove(physical_path)
 
         physical_path = os.path.join(absolutePath, storagePath, asset.file_location)
-        local_db_session.query(ParentStageEntity).filter(
-            ParentStageEntity.child_asset_id == asset.id
+        local_db_session.query(ParentStageModel).filter(
+            ParentStageModel.child_asset_id == asset.id
         ).delete(synchronize_session=False)
-        local_db_session.query(MediaTagEntity).filter(
-            MediaTagEntity.asset_id == asset.id
+        local_db_session.query(MediaTagModel).filter(
+            MediaTagModel.asset_id == asset.id
         ).delete(synchronize_session=False)
-        local_db_session.query(AssetLicenseEntity).filter(
-            AssetLicenseEntity.asset_id == asset.id
+        local_db_session.query(AssetLicenseModel).filter(
+            AssetLicenseModel.asset_id == asset.id
         ).delete(synchronize_session=False)
-        local_db_session.query(AssetUsageEntity).filter(
-            AssetUsageEntity.asset_id == asset.id
+        local_db_session.query(AssetUsageModel).filter(
+            AssetUsageModel.asset_id == asset.id
         ).delete(synchronize_session=False)
 
         for multiframe_media in (
-            local_db_session.query(AssetEntity)
-            .filter(AssetEntity.description.like(f"%{asset.file_location}%"))
+            local_db_session.query(AssetModel)
+            .filter(AssetModel.description.like(f"%{asset.file_location}%"))
             .all()
         ):
             attributes = json.loads(multiframe_media.description)
@@ -422,7 +427,7 @@ class AssetService:
         if os.path.exists(physical_path):
             os.remove(physical_path)
 
-    def resolve_sign(self, user: UserEntity, asset: AssetEntity):
+    def resolve_sign(self, user: UserModel, asset: AssetModel):
         if asset.owner_id == user.id:
             timestamp = int(
                 (datetime.now() + timedelta(days=STREAM_EXPIRY_DAYS)).timestamp()
@@ -434,11 +439,11 @@ class AssetService:
             return "{0}-{1}".format(timestamp, hashvalue)
         return ""
 
-    def resolve_src(self, asset: AssetEntity):
+    def resolve_src(self, asset: AssetModel):
         timestamp = int(time.mktime(asset.updated_on.timetuple()))
         return asset.file_location + "?t=" + str(timestamp)
 
-    def resolve_permissions(self, user_id: int, asset: AssetEntity):
+    def resolve_permissions(self, user_id: int, asset: AssetModel):
         if not user_id:
             return "none"
         if asset.owner_id == user_id:
@@ -458,7 +463,7 @@ class AssetService:
                     return "editor"
         return "none"
 
-    def resolve_fields(self, asset: AssetEntity, user: Optional[UserEntity] = None):
+    def resolve_fields(self, asset: AssetModel, user: Optional[UserModel] = None):
         src = self.resolve_src(asset)
         sign = self.resolve_sign(asset.owner, asset)
         user_id = user.id if user else asset.owner_id

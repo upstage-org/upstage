@@ -4,19 +4,19 @@ import jwt
 from fastapi import Request
 from email.utils import parseaddr
 from authentication.http.validation import LoginInput
-from config.database import ScopedSession
-from users.entities.user import ADMIN, GUEST, PLAYER, SUPER_ADMIN, UserEntity
+from users.db_models.user import ADMIN, GUEST, PLAYER, SUPER_ADMIN, UserModel
 from users.services.user import UserService
-from core.helpers.fernet_crypto import decrypt
-from config.env import (
+from global_config import decrypt
+from global_config import (
     ENV_TYPE,
     JWT_ACCESS_TOKEN_MINUTES,
     JWT_HEADER_NAME,
     JWT_REFRESH_TOKEN_DAYS,
     SECRET_KEY,
     ALGORITHM,
+    ScopedSession,
 )
-from authentication.entities.user_session import UserSessionEntity
+from authentication.db_models.user_session import UserSessionModel
 
 
 class AuthenticationService:
@@ -24,7 +24,7 @@ class AuthenticationService:
         self.user_service = UserService()
 
     async def login(self, dto: LoginInput, request: Request):
-        user: UserEntity = None
+        user: UserModel = None
         username, password = dto.username, dto.password
 
         email = self.validate_login_payload(username)
@@ -43,7 +43,7 @@ class AuthenticationService:
             ),
         )
 
-        user_session = UserSessionEntity(
+        user_session = UserSessionModel(
             user_id=user.id,
             access_token=access_token,
             refresh_token=refresh_token,
@@ -94,7 +94,7 @@ class AuthenticationService:
         if "@" in username:
             return parseaddr(username)[1]
 
-    def validate_password(self, enter_password: str, user: UserEntity):
+    def validate_password(self, enter_password: str, user: UserModel):
         try:
             if decrypt(user.password) != enter_password:
                 raise GraphQLError("Incorrect username or password")
@@ -124,8 +124,8 @@ class AuthenticationService:
         access_token = bearer_token[1]
         with ScopedSession() as local_db_session:
             user_session = (
-                local_db_session.query(UserSessionEntity)
-                .filter(UserSessionEntity.access_token == access_token)
+                local_db_session.query(UserSessionModel)
+                .filter(UserSessionModel.access_token == access_token)
                 .first()
             )
             if not user_session:
@@ -134,7 +134,7 @@ class AuthenticationService:
 
         return "Logged out"
 
-    def refresh_token(self, user: UserEntity, request: Request):
+    def refresh_token(self, user: UserModel, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
         print("AABBCCDD", refresh_token)
         if not refresh_token:
@@ -145,11 +145,11 @@ class AuthenticationService:
         )
 
         with ScopedSession() as local_db_session:
-            local_db_session.query(UserSessionEntity).filter(
-                UserSessionEntity.refresh_token == refresh_token
+            local_db_session.query(UserSessionModel).filter(
+                UserSessionModel.refresh_token == refresh_token
             ).delete()
 
-            user_session = UserSessionEntity(
+            user_session = UserSessionModel(
                 user_id=user.id,
                 access_token=access_token,
                 refresh_token=refresh_token,

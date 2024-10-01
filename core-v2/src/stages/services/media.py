@@ -4,28 +4,27 @@ import os
 import uuid
 from graphql import GraphQLError
 from sqlalchemy import and_, or_
-from assets.entities.asset import AssetEntity
-from assets.entities.asset_license import AssetLicenseEntity
-from assets.entities.asset_type import AssetTypeEntity
-from assets.entities.asset_usage import AssetUsageEntity
-from assets.entities.media_tag import MediaTagEntity
+from assets.db_models.asset import AssetModel
+from assets.db_models.asset_license import AssetLicenseModel
+from assets.db_models.asset_type import AssetTypeModel
+from assets.db_models.asset_usage import AssetUsageModel
+from assets.db_models.media_tag import MediaTagModel
 from assets.services.asset import AssetService
 from assets.services.asset_license import AssetLicenseService
-from config.database import ScopedSession
-from core.helpers.object import convert_keys_to_camel_case
-from stages.entities.parent_stage import ParentStageEntity
-from stages.entities.stage import StageEntity
+from global_config import DBSession, ScopedSession, convert_keys_to_camel_case
+from stages.db_models.parent_stage import ParentStageModel
+from stages.db_models.stage import StageModel
 from stages.http.validation import (
     AssignMediaInput,
     AssignStagesInput,
     UpdateMediaInput,
     UploadMediaInput,
 )
-from users.entities.user import UserEntity
+from users.db_models.user import UserModel
 
 appdir = os.path.abspath(os.path.dirname(__file__))
-absolutePath = os.path.dirname(appdir)
-storagePath = "../../uploads/assets"
+absolutePath = os.path.dirname(os.path.abspath(os.path.join(appdir, "..", "..")))
+storagePath = "uploads/assets"
 
 
 class MediaService:
@@ -35,23 +34,23 @@ class MediaService:
 
     def assign_media(self, input: AssignMediaInput):
         with ScopedSession() as local_db_session:
-            stage = local_db_session.query(StageEntity).filter_by(id=input.id).first()
+            stage = local_db_session.query(StageModel).filter_by(id=input.id).first()
             if not stage or not input.id:
                 raise GraphQLError("Stage not found")
 
-            local_db_session.query(ParentStageEntity).filter(
-                ParentStageEntity.stage_id == input.id
+            local_db_session.query(ParentStageModel).filter(
+                ParentStageModel.stage_id == input.id
             ).delete()
 
             for media_id in input.mediaIds:
-                media = ParentStageEntity(stage_id=input.id, child_asset_id=media_id)
+                media = ParentStageModel(stage_id=input.id, child_asset_id=media_id)
                 local_db_session.add(media)
 
             local_db_session.commit()
             local_db_session.flush()
             return convert_keys_to_camel_case(stage.to_dict())
 
-    def upload_media(self, user: UserEntity, input: UploadMediaInput):
+    def upload_media(self, user: UserModel, input: UploadMediaInput):
         with ScopedSession() as local_db_session:
             asset_type = self.asset_service.validate_asset_type(input, local_db_session)
 
@@ -97,6 +96,7 @@ class MediaService:
                 media_directory = os.path.join(
                     absolutePath, storagePath, asset.file_location
                 )
+
                 with open(media_directory, "wb") as fh:
                     fh.write(b64decode(input.base64.split(",")[1]))
 
@@ -107,23 +107,24 @@ class MediaService:
                 copyright_level=input.copyrightLevel,
             )
             asset.description = self.process_uploaded_frames(input, asset, asset_type)
+            local_db_session.commit()
             local_db_session.flush()
-            asset = local_db_session.query(AssetEntity).filter_by(id=asset.id).first()
+            asset = DBSession.query(AssetModel).filter_by(id=asset.id).first()
             return convert_keys_to_camel_case(asset.to_dict())
 
     def retrieve_asset(self, input, local_db_session):
         if input.id:
-            asset = local_db_session.query(AssetEntity).filter_by(id=input.id).first()
+            asset = local_db_session.query(AssetModel).filter_by(id=input.id).first()
             if not asset:
                 raise GraphQLError("Media not found")
 
         if input.fileLocation:
             existed_asset = (
-                local_db_session.query(AssetEntity)
+                local_db_session.query(AssetModel)
                 .filter(
                     and_(
-                        AssetEntity.file_location == input.fileLocation,
-                        AssetEntity.id != input.id,
+                        AssetModel.file_location == input.fileLocation,
+                        AssetModel.id != input.id,
                     )
                 )
                 .first()
@@ -136,12 +137,12 @@ class MediaService:
         return asset
 
     def process_uploaded_frames(
-        self, input: UpdateMediaInput, asset: AssetEntity, asset_type: AssetTypeEntity
+        self, input: UpdateMediaInput, asset: AssetModel, asset_type: AssetTypeModel
     ):
         if input.uploadedFrames:
             filename, file_extension = os.path.splitext(asset.file_location)
             attributes = json.loads(asset.description)
-            if not attributes["frames"]:
+            if "frames" not in attributes:
                 attributes["frames"] = []
 
             for frame in input.uploadedFrames:
@@ -161,7 +162,7 @@ class MediaService:
 
     def delete_media(self, id: int):
         with ScopedSession() as local_db_session:
-            asset = local_db_session.query(AssetEntity).filter_by(id=id).first()
+            asset = local_db_session.query(AssetModel).filter_by(id=id).first()
             if not asset:
                 raise GraphQLError("Media not found")
             physical_path = self.remove_media_frames_and_get_path(
@@ -187,11 +188,11 @@ class MediaService:
     def _delete_frames(self, local_db_session, frames):
         for frame in frames:
             frame_asset = (
-                local_db_session.query(AssetEntity)
+                local_db_session.query(AssetModel)
                 .filter(
                     or_(
-                        AssetEntity.file_location == frame,
-                        AssetEntity.description.contains(frame),
+                        AssetModel.file_location == frame,
+                        AssetModel.description.contains(frame),
                     )
                 )
                 .first()
@@ -205,23 +206,23 @@ class MediaService:
         return os.path.join(absolutePath, storagePath, file_location)
 
     def cleanup_related_entities(self, id: int, local_db_session):
-        local_db_session.query(ParentStageEntity).filter(
-            ParentStageEntity.child_asset_id == id
+        local_db_session.query(ParentStageModel).filter(
+            ParentStageModel.child_asset_id == id
         ).delete(synchronize_session=False)
-        local_db_session.query(MediaTagEntity).filter(
-            MediaTagEntity.asset_id == id
+        local_db_session.query(MediaTagModel).filter(
+            MediaTagModel.asset_id == id
         ).delete(synchronize_session=False)
-        local_db_session.query(AssetLicenseEntity).filter(
-            AssetLicenseEntity.asset_id == id
+        local_db_session.query(AssetLicenseModel).filter(
+            AssetLicenseModel.asset_id == id
         ).delete(synchronize_session=False)
-        local_db_session.query(AssetUsageEntity).filter(
-            AssetUsageEntity.asset_id == id
+        local_db_session.query(AssetUsageModel).filter(
+            AssetUsageModel.asset_id == id
         ).delete(synchronize_session=False)
 
-    def remove_asset_from_frames(self, local_db_session, asset: AssetEntity):
+    def remove_asset_from_frames(self, local_db_session, asset: AssetModel):
         for multiple_frame_media in (
-            local_db_session.query(AssetEntity)
-            .filter(AssetEntity.description.ilike(f"%{asset.file_location}%"))
+            local_db_session.query(AssetModel)
+            .filter(AssetModel.description.ilike(f"%{asset.file_location}%"))
             .all()
         ):
             attributes = json.loads(multiple_frame_media.description)
@@ -235,15 +236,15 @@ class MediaService:
 
     def assign_stages(self, input: AssignStagesInput):
         with ScopedSession() as local_db_session:
-            local_db_session.query(ParentStageEntity).filter(
-                ParentStageEntity.child_asset_id == input.id
+            local_db_session.query(ParentStageModel).filter(
+                ParentStageModel.child_asset_id == input.id
             ).delete()
             for stage_id in input.stageIds:
                 local_db_session.add(
-                    ParentStageEntity(stage_id=stage_id, child_asset_id=input.id)
+                    ParentStageModel(stage_id=stage_id, child_asset_id=input.id)
                 )
             local_db_session.commit()
             local_db_session.flush()
 
-            asset = local_db_session.query(AssetEntity).filter_by(id=input.id).first()
+            asset = local_db_session.query(AssetModel).filter_by(id=input.id).first()
             return convert_keys_to_camel_case(asset.to_dict())

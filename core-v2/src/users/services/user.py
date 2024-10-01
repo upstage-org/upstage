@@ -3,17 +3,17 @@ from operator import or_
 from fastapi import Request
 from graphql import GraphQLError
 import requests
-from config.database import DBSession, ScopedSession
-from config.env import (
+from global_config import (
     CLOUDFLARE_CAPTCHA_SECRETKEY,
     CLOUDFLARE_CAPTCHA_VERIFY_ENDPOINT,
     SUPPORT_EMAILS,
     UPSTAGE_FRONTEND_URL,
+    DBSession,
+    ScopedSession,
 )
-from core.helpers.fernet_crypto import encrypt
 from mails.helpers.mail import send
 from mails.templates.templates import admin_registration_notification, user_registration
-from users.entities.user import PLAYER, UserEntity
+from users.db_models.user import PLAYER, UserModel
 from users.http.validation import CreateUserInput
 
 
@@ -23,15 +23,15 @@ class UserService:
 
     def find_one(self, username: str, email: str):
         return (
-            DBSession.query(UserEntity)
-            .filter(or_(UserEntity.username == username, UserEntity.email == email))
+            DBSession.query(UserModel)
+            .filter(or_(UserModel.username == username, UserModel.email == email))
             .first()
         )
 
     def find_by_id(self, user_id: int):
         return (
-            DBSession.query(UserEntity)
-            .filter(UserEntity.id == user_id, UserEntity.active.is_(True))
+            DBSession.query(UserModel)
+            .filter(UserModel.id == user_id, UserModel.active.is_(True))
             .first()
         )
 
@@ -42,9 +42,11 @@ class UserService:
         if existing_user:
             raise GraphQLError("User already exists")
 
-        user = UserEntity()
+        user = UserModel()
 
         with ScopedSession() as local_db_session:
+            from global_config import encrypt
+
             user.password = encrypt(data["password"])
             user.role = PLAYER if not user.role else user.role
             user.active = True
@@ -58,8 +60,8 @@ class UserService:
             local_db_session.flush()
 
         user = (
-            DBSession.query(UserEntity)
-            .filter(UserEntity.username == data["username"])
+            DBSession.query(UserModel)
+            .filter(UserModel.username == data["username"])
             .first()
         )
 
@@ -95,8 +97,8 @@ class UserService:
         else:
             del data["token"]
 
-    def update(self, user: UserEntity):
-        DBSession.query(UserEntity).filter(UserEntity.id == user.id).update(
+    def update(self, user: UserModel):
+        DBSession.query(UserModel).filter(UserModel.id == user.id).update(
             {**user.to_dict()}
         )
         DBSession.commit()

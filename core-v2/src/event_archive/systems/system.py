@@ -4,7 +4,7 @@ import json
 from multiprocessing import Process, cpu_count
 import os
 
-from config.env import EVENT_COLLECTION, MONGO_DB
+from global_config import EVENT_COLLECTION, MONGO_DB
 from event_archive.config.mongodb import build_mongo_client
 
 

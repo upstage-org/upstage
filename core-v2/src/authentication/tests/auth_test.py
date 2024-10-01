@@ -1,10 +1,9 @@
-from bootstraps import app
-from config.database import global_session
+from src.main import app
+from global_config import global_session, JWT_HEADER_NAME
 import pytest
-from authentication.http.authentication import auth_graphql_app
-from config.env import JWT_HEADER_NAME
-from core.helpers.fernet_crypto import encrypt
-from users.entities.user import PLAYER, SUPER_ADMIN, UserEntity
+from authentication.http.schema import auth_graphql_app
+from global_config import encrypt
+from users.db_models.user import PLAYER, SUPER_ADMIN, UserModel
 from faker import Faker
 
 app.mount("/graphql", auth_graphql_app)
@@ -52,7 +51,7 @@ class TestAuthenticationController:
 
     async def test_02_login_successfully(self, client):
         email = Faker().email()
-        user = UserEntity(
+        user = UserModel(
             username=email,
             password=encrypt(f"testpassword"),
             email=email,
@@ -76,7 +75,7 @@ class TestAuthenticationController:
 
     async def test_player_login_successfully(self, client):
         email = Faker().email()
-        user = UserEntity(
+        user = UserModel(
             username=email,
             password=encrypt(f"testpassword"),
             email=email,
@@ -100,7 +99,7 @@ class TestAuthenticationController:
 
     async def test_03_refresh_token_successfully(self, client):
         email = Faker().email({"locale": "en_US"})
-        user = UserEntity(
+        user = UserModel(
             username=email,
             password=encrypt(f"testpassword"),
             email=email,
@@ -143,7 +142,7 @@ class TestAuthenticationController:
 
     async def test_05_logout(self, client):
         email = Faker().email({"locale": "en_US"})
-        user = UserEntity(
+        user = UserModel(
             username=email,
             password=encrypt(f"testpassword"),
             email=email,
@@ -192,3 +191,26 @@ class TestAuthenticationController:
         data = response.json()
         assert "errors" in data
         assert data["errors"][0]["message"] == "Invalid access token"
+
+    async def get_headers(self, client, role):
+        email = Faker().email({"locale": "en_US"})
+        user = UserModel(
+            username=email,
+            password=encrypt(f"testpassword"),
+            email=email,
+            active=True,
+            role=role,
+        )
+        global_session.add(user)
+        global_session.commit()
+        global_session.close()
+
+        variables = {"payload": {"username": email, "password": "testpassword"}}
+        response = client.post(
+            "/graphql", json={"query": self.login_query, "variables": variables}
+        )
+        data = response.json()
+        return {
+            "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
+            JWT_HEADER_NAME: data["data"]["login"]["refresh_token"],
+        }

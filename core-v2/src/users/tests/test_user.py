@@ -1,9 +1,9 @@
 import pytest
 from authentication.tests.auth_test import TestAuthenticationController
-from bootstraps import app
-from config.env import JWT_HEADER_NAME
-from users.http.user import user_graphql_app
-from mails.http.mail import mail_graphql_app
+from src.main import app
+from global_config import JWT_HEADER_NAME
+from users.http.schema import user_graphql_app
+from mails.http.shema import mail_graphql_app
 from faker import Faker
 
 app.mount("/user_graphql", user_graphql_app)

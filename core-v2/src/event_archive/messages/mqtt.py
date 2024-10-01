@@ -4,7 +4,7 @@ from time import time
 
 import paho.mqtt.client as paho
 
-from config.env import (
+from global_config import (
     EVENT_COLLECTION,
     MONGO_DB,
     MQTT_TRANSPORT,

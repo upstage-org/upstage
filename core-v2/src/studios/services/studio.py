@@ -1,15 +1,20 @@
 from datetime import datetime
 import os
+import sys
 from typing import List
 
 from sqlalchemy import and_, asc, desc, or_
-from assets.entities.asset import AssetEntity
-from assets.entities.asset_usage import AssetUsageEntity
-from authentication.entities.user_session import UserSessionEntity
-from config.database import DBSession, ScopedSession
-from config.env import UPSTAGE_FRONTEND_URL
-from core.helpers.fernet_crypto import decrypt, encrypt
-from core.helpers.object import convert_keys_to_camel_case
+
+from assets.db_models.asset_usage import AssetUsageModel
+from authentication.db_models.user_session import UserSessionModel
+from global_config import (
+    UPSTAGE_FRONTEND_URL,
+    DBSession,
+    ScopedSession,
+    convert_keys_to_camel_case,
+    decrypt,
+    encrypt,
+)
 from mails.helpers.mail import send
 from mails.templates.templates import (
     display_user,
@@ -19,12 +24,12 @@ from mails.templates.templates import (
     user_approved,
     waiting_request_media_approve,
 )
-from performance_config.entities.performance import PerformanceEntity
-from stages.entities.parent_stage import ParentStageEntity
-from stages.entities.stage import StageEntity
-from stages.entities.stage_attribute import StageAttributeEntity
+from performance_config.db_models.performance import PerformanceModel
+from stages.db_models.parent_stage import ParentStageModel
+from stages.db_models.stage import StageModel
+from stages.db_models.stage_attribute import StageAttributeModel
 from studios.http.validation import BatchUserInput, ChangePasswordInput, UpdateUserInput
-from users.entities.user import ADMIN, GUEST, SUPER_ADMIN, UserEntity
+from users.db_models.user import ADMIN, GUEST, SUPER_ADMIN, UserModel
 from graphql import GraphQLError
 
 appdir = os.path.abspath(os.path.dirname(__file__))
@@ -37,29 +42,29 @@ class StudioService:
         pass
 
     def admin_players(self, params):
-        totalCount = DBSession.query(UserEntity).count()
-        query = DBSession.query(UserEntity)
+        totalCount = DBSession.query(UserModel).count()
+        query = DBSession.query(UserModel)
 
         if "usernameLike" in params:
             query = query.filter(
-                UserEntity.username.ilike(f"%{params['usernameLike']}%")
+                UserModel.username.ilike(f"%{params['usernameLike']}%")
             )
 
         if "createdBetween" in params:
             start_date = datetime.strptime(params["createdBetween"][0], "%Y-%m-%d")
             end_date = datetime.strptime(params["createdBetween"][1], "%Y-%m-%d")
-            query = query.filter(UserEntity.created_on.between(start_date, end_date))
+            query = query.filter(UserModel.created_on.between(start_date, end_date))
 
         if "sort" in params:
             for sort_param in params["sort"]:
                 if sort_param == "USERNAME_ASC":
-                    query = query.order_by(asc(UserEntity.username))
+                    query = query.order_by(asc(UserModel.username))
                 elif sort_param == "USERNAME_DESC":
-                    query = query.order_by(desc(UserEntity.username))
+                    query = query.order_by(desc(UserModel.username))
                 elif sort_param == "CREATED_ON_ASC":
-                    query = query.order_by(asc(UserEntity.created_on))
+                    query = query.order_by(asc(UserModel.created_on))
                 elif sort_param == "CREATED_ON_DESC":
-                    query = query.order_by(desc(UserEntity.created_on))
+                    query = query.order_by(desc(UserModel.created_on))
 
         if "first" in params:
             limit = params["first"] or 10
@@ -78,7 +83,7 @@ class StudioService:
             self.validate_user_information(users, session)
 
             for user in users:
-                user = UserEntity(
+                user = UserModel(
                     username=user["username"],
                     email=user["email"],
                     active=True,
@@ -89,8 +94,8 @@ class StudioService:
             session.commit()
 
         users = (
-            DBSession.query(UserEntity)
-            .filter(UserEntity.email.in_([user["email"] for user in users]))
+            DBSession.query(UserModel)
+            .filter(UserModel.email.in_([user["email"] for user in users]))
             .all()
         )
         return convert_keys_to_camel_case({"users": [user.to_dict() for user in users]})
@@ -112,11 +117,11 @@ class StudioService:
             raise GraphQLError(f"Duplicated user information {''.join(duplicated)}")
 
         existing_users = (
-            session.query(UserEntity)
+            session.query(UserModel)
             .filter(
                 or_(
-                    UserEntity.username.in_([user["username"] for user in users]),
-                    UserEntity.email.in_([user["email"] for user in users]),
+                    UserModel.username.in_([user["username"] for user in users]),
+                    UserModel.email.in_([user["email"] for user in users]),
                 )
             )
             .all()
@@ -146,15 +151,15 @@ class StudioService:
             raise GraphQLError("Email is required!")
 
     def _get_user(self, session, user_id):
-        user = session.query(UserEntity).filter(UserEntity.id == user_id).first()
+        user = session.query(UserModel).filter(UserModel.id == user_id).first()
         if not user:
             raise GraphQLError("User not found!")
         return user
 
     def _check_existing_email(self, input: UpdateUserInput):
         existing_email = (
-            DBSession.query(UserEntity)
-            .filter(and_(UserEntity.email == input.email, UserEntity.id != input.id))
+            DBSession.query(UserModel)
+            .filter(and_(UserModel.email == input.email, UserModel.id != input.id))
             .first()
         )
         if existing_email:
@@ -171,7 +176,7 @@ class StudioService:
             if hasattr(user, key):
                 setattr(user, key, value)
 
-    async def _handle_active_status(self, user: UserEntity, value):
+    async def _handle_active_status(self, user: UserModel, value):
         if value and not user.active and not user.deactivated_on:
             await send(
                 [user.email],
@@ -181,36 +186,34 @@ class StudioService:
         if not value and user.active:
             user.deactivated_on = datetime.now()
 
-    def delete_user(self, id: int, current_user: UserEntity):
+    def delete_user(self, id: int, current_user: UserModel):
         with ScopedSession() as local_db_session:
-            user = (
-                local_db_session.query(UserEntity).filter(UserEntity.id == id).first()
-            )
+            user = local_db_session.query(UserModel).filter(UserModel.id == id).first()
             if not user:
                 raise GraphQLError("User not found!")
 
-            local_db_session.query(UserSessionEntity).filter(
-                UserSessionEntity.user_id == id
+            local_db_session.query(UserSessionModel).filter(
+                UserSessionModel.user_id == id
             ).delete()
 
-            local_db_session.query(StageAttributeEntity).filter(
-                StageAttributeEntity.stage.has(StageEntity.owner_id == id)
+            local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage.has(StageModel.owner_id == id)
             ).delete(synchronize_session="fetch")
 
-            local_db_session.query(ParentStageEntity).filter(
-                ParentStageEntity.stage.has(StageEntity.owner_id == id)
+            local_db_session.query(ParentStageModel).filter(
+                ParentStageModel.stage.has(StageModel.owner_id == id)
             ).delete(synchronize_session="fetch")
 
-            local_db_session.query(PerformanceEntity).filter(
-                PerformanceEntity.stage.has(StageEntity.owner_id == id)
+            local_db_session.query(PerformanceModel).filter(
+                PerformanceModel.stage.has(StageModel.owner_id == id)
             ).delete(synchronize_session="fetch")
 
-            local_db_session.query(StageEntity).filter(
-                StageEntity.owner_id == id
+            local_db_session.query(StageModel).filter(
+                StageModel.owner_id == id
             ).delete()
-            local_db_session.query(AssetEntity).filter(
-                AssetEntity.owner_id == id
-            ).update({AssetEntity.owner_id: current_user.id})
+            local_db_session.query(db_models.AssetModel).filter(
+                AssetModel.owner_id == id
+            ).update({AssetModel.owner_id: current_user.id})
 
             local_db_session.delete(user)
             local_db_session.commit()
@@ -221,8 +224,8 @@ class StudioService:
     def change_password(self, input: ChangePasswordInput):
         with ScopedSession() as local_db_session:
             user = (
-                local_db_session.query(UserEntity)
-                .filter(UserEntity.id == input.id)
+                local_db_session.query(UserModel)
+                .filter(UserModel.id == input.id)
                 .first()
             )
             if not user:
@@ -241,7 +244,7 @@ class StudioService:
     def calc_sizes(self):
         with ScopedSession() as local_db_session:
             size = 0
-            for media in local_db_session.query(AssetEntity).all():
+            for media in local_db_session.query(AssetModel).all():
                 if not media.size:
                     full_path = os.path.join(
                         absolutePath, storagePath, media.file_location
@@ -256,16 +259,16 @@ class StudioService:
 
         return {"size": size}
 
-    async def request_permission(self, user: UserEntity, asset_id: int, note: str):
+    async def request_permission(self, user: UserModel, asset_id: int, note: str):
         with ScopedSession() as local_db_session:
             asset = (
-                local_db_session.query(AssetEntity)
-                .filter(AssetEntity.id == asset_id)
+                local_db_session.query(AssetModel)
+                .filter(AssetModel.id == asset_id)
                 .first()
             )
             if not asset:
                 raise GraphQLError("Asset not found!")
-            asset_usage = AssetUsageEntity(
+            asset_usage = AssetUsageModel(
                 user_id=user.id,
                 asset_id=asset_id,
                 note=note,
@@ -304,11 +307,11 @@ class StudioService:
             )
         return {"success": True}
 
-    async def confirm_permission(self, user: UserEntity, id: int, approved: bool):
+    async def confirm_permission(self, user: UserModel, id: int, approved: bool):
         with ScopedSession() as local_db_session:
             asset_usage = (
-                local_db_session.query(AssetUsageEntity)
-                .filter(AssetUsageEntity.id == id)
+                local_db_session.query(AssetUsageModel)
+                .filter(AssetUsageModel.id == id)
                 .first()
             )
             if not asset_usage:
@@ -343,8 +346,8 @@ class StudioService:
                 ),
             )
         permissions = (
-            DBSession.query(AssetUsageEntity)
-            .filter(AssetUsageEntity.asset_id == asset_usage.asset_id)
+            DBSession.query(AssetUsageModel)
+            .filter(AssetUsageModel.asset_id == asset_usage.asset_id)
             .all()
         )
         return convert_keys_to_camel_case(
@@ -354,26 +357,26 @@ class StudioService:
             },
         )
 
-    def quick_assign_mutation(self, user: UserEntity, stage_id: int, asset_id: int):
+    def quick_assign_mutation(self, user: UserModel, stage_id: int, asset_id: int):
         with ScopedSession() as local_db_session:
             asset = (
-                local_db_session.query(AssetEntity)
-                .filter(AssetEntity.id == asset_id)
+                local_db_session.query(AssetModel)
+                .filter(AssetModel.id == asset_id)
                 .first()
             )
             if not asset:
                 raise GraphQLError("Asset not found!")
 
             stage = (
-                local_db_session.query(StageEntity)
-                .filter(StageEntity.id == stage_id)
+                local_db_session.query(StageModel)
+                .filter(StageModel.id == stage_id)
                 .first()
             )
             if not stage:
                 raise GraphQLError("Stage not found!")
 
             asset.stages.append(
-                ParentStageEntity(stage_id=stage_id, child_asset_id=asset_id)
+                ParentStageModel(stage_id=stage_id, child_asset_id=asset_id)
             )
             local_db_session.commit()
             local_db_session.flush()

@@ -1,15 +1,14 @@
 from datetime import datetime
 from graphql import GraphQLError
-from config.database import DBSession, ScopedSession
-from core.helpers.object import convert_keys_to_camel_case
-from event_archive.entities.event import EventEntity
-from performance_config.entities.performance import PerformanceEntity
-from performance_config.entities.performance_mqtt_config import (
-    PerformanceMQTTConfigEntity,
+from global_config import DBSession, ScopedSession, convert_keys_to_camel_case
+from event_archive.db_models.event import EventModel
+from performance_config.db_models.performance import PerformanceModel
+from performance_config.db_models.performance_mqtt_config import (
+    PerformanceMQTTConfigModel,
 )
-from stages.entities.stage import StageEntity
+from stages.db_models.stage import StageModel
 from stages.http.validation import PerformanceInput, RecordInput
-from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
+from users.db_models.user import ADMIN, SUPER_ADMIN, UserModel
 from sqlalchemy.orm.session import make_transient
 
 
@@ -20,19 +19,19 @@ class PerformanceService:
     def get_performance_communication(self):
         return [
             convert_keys_to_camel_case(performance)
-            for performance in DBSession.query(PerformanceMQTTConfigEntity).all()
+            for performance in DBSession.query(PerformanceMQTTConfigModel).all()
         ]
 
     def get_performance_config(self):
         return [
             convert_keys_to_camel_case(performance)
-            for performance in DBSession.query(PerformanceEntity).all()
+            for performance in DBSession.query(PerformanceModel).all()
         ]
 
-    def create_performance(self, user: UserEntity, input: RecordInput):
+    def create_performance(self, user: UserModel, input: RecordInput):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter_by(id=input.stageId).first()
+                local_db_session.query(StageModel).filter_by(id=input.stageId).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
@@ -40,7 +39,7 @@ class PerformanceService:
             if user.role not in ["SUPER_ADMIN", "ADMIN"] and user.id != stage.owner_id:
                 raise GraphQLError("You are not allowed to record for this stage")
 
-            performance = PerformanceEntity(
+            performance = PerformanceModel(
                 name=input.name,
                 description=input.description,
                 recording=True,
@@ -51,14 +50,14 @@ class PerformanceService:
             local_db_session.flush()
             local_db_session.commit()
             performance = (
-                DBSession.query(PerformanceEntity).filter_by(id=performance.id).first()
+                DBSession.query(PerformanceModel).filter_by(id=performance.id).first()
             )
             return convert_keys_to_camel_case(performance)
 
-    def update_performance(self, user: UserEntity, input: PerformanceInput):
+    def update_performance(self, user: UserModel, input: PerformanceInput):
         with ScopedSession() as local_db_session:
             performance = (
-                local_db_session.query(PerformanceEntity).filter_by(id=input.id).first()
+                local_db_session.query(PerformanceModel).filter_by(id=input.id).first()
             )
             if not performance:
                 raise GraphQLError("Performance not found")
@@ -75,10 +74,10 @@ class PerformanceService:
             local_db_session.commit()
             return {"success": True}
 
-    def delete_performance(self, user: UserEntity, id: int):
+    def delete_performance(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             performance = (
-                local_db_session.query(PerformanceEntity).filter_by(id=id).first()
+                local_db_session.query(PerformanceModel).filter_by(id=id).first()
             )
             if not performance:
                 raise GraphQLError("Performance not found")
@@ -89,17 +88,17 @@ class PerformanceService:
             ):
                 raise GraphQLError("You are not allowed to delete this performance")
 
-            local_db_session.query(EventEntity).filter(
-                EventEntity.performance_id == id
+            local_db_session.query(EventModel).filter(
+                EventModel.performance_id == id
             ).delete(synchronize_session=False)
             local_db_session.delete(performance)
             local_db_session.commit()
             return {"success": True}
 
-    def save_recording(self, user: UserEntity, id: int):
+    def save_recording(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             performance = (
-                local_db_session.query(PerformanceEntity).filter_by(id=id).first()
+                local_db_session.query(PerformanceModel).filter_by(id=id).first()
             )
             if not performance:
                 raise GraphQLError("Performance not found")
@@ -112,14 +111,14 @@ class PerformanceService:
             saved_on = datetime.now()
 
             events = (
-                local_db_session.query(EventEntity)
+                local_db_session.query(EventModel)
                 .filter(
-                    EventEntity.topic.ilike(
+                    EventModel.topic.ilike(
                         "%/{}/%".format(performance.stage.file_location)
                     )
                 )
-                .filter(EventEntity.created > performance.created_on)
-                .filter(EventEntity.created < saved_on)
+                .filter(EventModel.created > performance.created_on)
+                .filter(EventModel.created < saved_on)
             )
 
             if events.count() > 0:

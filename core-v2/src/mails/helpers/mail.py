@@ -11,9 +11,7 @@ import uuid
 import requests
 import pymongo
 import aiosmtplib
-from config.database import ScopedSession
-from config.env import (
-    ACCEPT_EMAIL_HOST,
+from global_config import (
     ACCEPT_SERVER_SEND_EMAIL_EXTERNAL,
     DOMAIN,
     EMAIL_HOST,
@@ -23,13 +21,14 @@ from config.env import (
     EMAIL_PORT,
     EMAIL_TIME_EXPIRED_TOKEN,
     EMAIL_USE_TLS,
+    ENV_TYPE,
     FULL_DOMAIN,
-    HOSTNAME,
     SEND_EMAIL_SERVER,
     SUPPORT_EMAILS,
+    ScopedSession,
 )
 from event_archive.config.mongodb import get_mongo_token_collection
-from upstage_options.entities.config import ConfigEntity
+from upstage_options.db_models.config import ConfigModel
 
 
 async def send(to, subject, content, bcc=[], cc=[], filenames=[]):
@@ -38,15 +37,15 @@ async def send(to, subject, content, bcc=[], cc=[], filenames=[]):
     )
 
     to = list(set(to).difference(set(SUPPORT_EMAILS)))
-    if len(to):
+    if ENV_TYPE != "test" and len(to):
         await send_async(msg=msg)
 
 
 def call_send_email_external_api(subject, body, recipients, cc, bcc, filenames):
     with ScopedSession() as local_db_session:
         subject_prefix = (
-            local_db_session.query(ConfigEntity)
-            .filter(ConfigEntity.name == "EMAIL_SUBJECT_PREFIX")
+            local_db_session.query(ConfigModel)
+            .filter(ConfigModel.name == "EMAIL_SUBJECT_PREFIX")
             .first()
         )
         if subject_prefix:
@@ -170,8 +169,8 @@ def create_email(
     if not external:
         with ScopedSession() as local_db_session:
             subject_prefix = (
-                local_db_session.query(ConfigEntity)
-                .filter(ConfigEntity.name == "EMAIL_SUBJECT_PREFIX")
+                local_db_session.query(ConfigModel)
+                .filter(ConfigModel.name == "EMAIL_SUBJECT_PREFIX")
                 .first()
             )
             if subject_prefix:

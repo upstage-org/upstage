@@ -1,26 +1,28 @@
-from datetime import datetime
 import re
+from datetime import datetime
 from graphql import GraphQLError
 from sqlalchemy import and_
-from config.database import DBSession, ScopedSession
-from core.helpers.object import convert_keys_to_camel_case
-from event_archive.entities.event import EventEntity
-from performance_config.entities.performance import PerformanceEntity
-from performance_config.entities.scene import SceneEntity
-from stages.entities.parent_stage import ParentStageEntity
-from stages.entities.stage import StageEntity
-from stages.entities.stage_attribute import StageAttributeEntity
+from global_config import DBSession, ScopedSession, convert_keys_to_camel_case
+
+from users.db_models.user import ADMIN, SUPER_ADMIN
 from stages.http.validation import DuplicateStageInput, StageInput
-from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
+
+from event_archive.db_models.event import EventModel
+from performance_config.db_models.performance import PerformanceModel
+from performance_config.db_models.scene import SceneModel
+from stages.db_models.parent_stage import ParentStageModel
+from stages.db_models.stage import StageModel
+from stages.db_models.stage_attribute import StageAttributeModel
+from users.db_models.user import UserModel
 
 
 class StageService:
     def __init__(self):
         pass
 
-    def create_stage(self, user: UserEntity, input: StageInput):
+    def create_stage(self, user: UserModel, input: StageInput):
         with ScopedSession() as local_db_session:
-            stage = StageEntity(
+            stage = StageModel(
                 name=input.name,
                 description=input.description,
                 owner_id=user.id,
@@ -50,9 +52,9 @@ class StageService:
             local_db_session.flush()
             return convert_keys_to_camel_case(stage.to_dict())
 
-    def update_stage(self, user: UserEntity, input: StageInput):
+    def update_stage(self, user: UserModel, input: StageInput):
         with ScopedSession() as local_db_session:
-            stage = local_db_session.query(StageEntity).filter_by(id=input.id).first()
+            stage = local_db_session.query(StageModel).filter_by(id=input.id).first()
             if not stage or not input.id:
                 raise GraphQLError("Stage not found")
 
@@ -89,11 +91,11 @@ class StageService:
 
         if stage_id:
             stage_attribute = (
-                local_db_session.query(StageAttributeEntity)
+                local_db_session.query(StageAttributeModel)
                 .filter(
                     and_(
-                        StageAttributeEntity.stage_id == stage_id,
-                        StageAttributeEntity.name == name,
+                        StageAttributeModel.stage_id == stage_id,
+                        StageAttributeModel.name == name,
                     )
                 )
                 .first()
@@ -103,13 +105,13 @@ class StageService:
                 local_db_session.commit()
                 return
         local_db_session.add(
-            StageAttributeEntity(stage_id=stage_id, name=name, description=value)
+            StageAttributeModel(stage_id=stage_id, name=name, description=value)
         )
 
-    def delete_stage(self, user: UserEntity, id: int):
+    def delete_stage(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+                local_db_session.query(StageModel).filter(StageModel.id == id).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
@@ -117,27 +119,27 @@ class StageService:
             if stage.owner_id != user.id and user.role not in [ADMIN, SUPER_ADMIN]:
                 raise GraphQLError("You are not authorized to delete this stage")
 
-            local_db_session.query(StageAttributeEntity).filter(
-                StageAttributeEntity.stage_id == id
+            local_db_session.query(StageAttributeModel).filter(
+                StageAttributeModel.stage_id == id
             ).delete()
-            local_db_session.query(ParentStageEntity).filter(
-                ParentStageEntity.stage_id == id
-            ).delete()
-
-            local_db_session.query(SceneEntity).filter(
-                SceneEntity.stage_id == id
+            local_db_session.query(ParentStageModel).filter(
+                ParentStageModel.stage_id == id
             ).delete()
 
-            performances = local_db_session.query(PerformanceEntity).filter(
-                PerformanceEntity.stage_id == id
+            local_db_session.query(SceneModel).filter(
+                SceneModel.stage_id == id
+            ).delete()
+
+            performances = local_db_session.query(PerformanceModel).filter(
+                PerformanceModel.stage_id == id
             )
 
-            local_db_session.query(EventEntity).filter(
-                EventEntity.performance_id.in_([p.id for p in performances])
+            local_db_session.query(EventModel).filter(
+                EventModel.performance_id.in_([p.id for p in performances])
             ).delete()
 
-            local_db_session.query(PerformanceEntity).filter(
-                PerformanceEntity.stage_id == id
+            local_db_session.query(PerformanceModel).filter(
+                PerformanceModel.stage_id == id
             )
 
             local_db_session.delete(stage)
@@ -145,11 +147,11 @@ class StageService:
             local_db_session.flush()
             return {"success": True, "message": "Stage deleted"}
 
-    def duplicate_stage(self, user: UserEntity, input: DuplicateStageInput):
+    def duplicate_stage(self, user: UserModel, input: DuplicateStageInput):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity)
-                .filter(StageEntity.id == input.id)
+                local_db_session.query(StageModel)
+                .filter(StageModel.id == input.id)
                 .first()
             )
             if not stage:
@@ -157,7 +159,7 @@ class StageService:
 
             file_location = self.get_short_name(input.name, local_db_session)
 
-            new_stage = StageEntity(
+            new_stage = StageModel(
                 name=input.name,
                 description=stage.description,
                 owner_id=user.id,
@@ -175,11 +177,11 @@ class StageService:
             return convert_keys_to_camel_case(new_stage.to_dict())
 
     def copy_data(
-        self, input: DuplicateStageInput, local_db_session, new_stage: StageEntity
+        self, input: DuplicateStageInput, local_db_session, new_stage: StageModel
     ):
         stage_attributes = (
-            local_db_session.query(StageAttributeEntity)
-            .filter(StageAttributeEntity.stage_id == input.id)
+            local_db_session.query(StageAttributeModel)
+            .filter(StageAttributeModel.stage_id == input.id)
             .all()
         )
 
@@ -192,13 +194,13 @@ class StageService:
             )
 
         parent_stages = (
-            local_db_session.query(ParentStageEntity)
-            .filter(ParentStageEntity.stage_id == input.id)
+            local_db_session.query(ParentStageModel)
+            .filter(ParentStageModel.stage_id == input.id)
             .all()
         )
         for parent_stage in parent_stages:
             local_db_session.add(
-                ParentStageEntity(
+                ParentStageModel(
                     stage_id=new_stage.id,
                     child_asset_id=parent_stage.child_asset_id,
                 )
@@ -210,8 +212,8 @@ class StageService:
         suffix = ""
         while True:
             existed_stage = (
-                local_db_session.query(StageEntity)
-                .filter(StageEntity.file_location == f"{shortname}{suffix}")
+                local_db_session.query(StageModel)
+                .filter(StageModel.file_location == f"{shortname}{suffix}")
                 .first()
             )
             if existed_stage:
@@ -220,28 +222,28 @@ class StageService:
                 break
         return f"{shortname}{suffix}"
 
-    def sweep_stage(self, user: UserEntity, id: int):
+    def sweep_stage(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+                local_db_session.query(StageModel).filter(StageModel.id == id).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
 
             events = (
-                local_db_session.query(EventEntity)
-                .filter(EventEntity.performance_id == None)
-                .filter(EventEntity.topic.ilike("%/{}/%".format(stage.file_location)))
+                local_db_session.query(EventModel)
+                .filter(EventModel.performance_id == None)
+                .filter(EventModel.topic.ilike("%/{}/%".format(stage.file_location)))
             )
 
             if events.count() > 0:
-                performance = PerformanceEntity(stage_id=stage.id)
+                performance = PerformanceModel(stage_id=stage.id)
 
                 local_db_session.add(performance)
                 local_db_session.flush()
 
                 events.update(
-                    {EventEntity.performance_id: performance.id},
+                    {EventModel.performance_id: performance.id},
                     synchronize_session="fetch",
                 )
             else:
@@ -253,10 +255,10 @@ class StageService:
                 {"success": True, "performanceId": performance.id}
             )
 
-    def update_status(self, user: UserEntity, id: int):
+    def update_status(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+                local_db_session.query(StageModel).filter(StageModel.id == id).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
@@ -265,10 +267,10 @@ class StageService:
                 raise GraphQLError("You are not authorized to update this stage")
 
             attribute = (
-                local_db_session.query(StageAttributeEntity)
+                local_db_session.query(StageAttributeModel)
                 .filter(
-                    StageAttributeEntity.stage_id == id,
-                    StageAttributeEntity.name == "status",
+                    StageAttributeModel.stage_id == id,
+                    StageAttributeModel.name == "status",
                 )
                 .first()
             )
@@ -278,17 +280,17 @@ class StageService:
                     "rehearsal" if attribute.description == "live" else "live"
                 )
             else:
-                attribute = StageAttributeEntity(
+                attribute = StageAttributeModel(
                     stage_id=id, name="status", description="live"
                 )
             local_db_session.add(attribute)
             local_db_session.commit()
             return {"result": attribute.description}
 
-    def update_visibility(self, user: UserEntity, id: int):
+    def update_visibility(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+                local_db_session.query(StageModel).filter(StageModel.id == id).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
@@ -297,10 +299,10 @@ class StageService:
                 raise GraphQLError("You are not authorized to update this stage")
 
             attribute = (
-                local_db_session.query(StageAttributeEntity)
+                local_db_session.query(StageAttributeModel)
                 .filter(
-                    StageAttributeEntity.stage_id == id,
-                    StageAttributeEntity.name == "visibility",
+                    StageAttributeModel.stage_id == id,
+                    StageAttributeModel.name == "visibility",
                 )
                 .first()
             )
@@ -308,17 +310,17 @@ class StageService:
             if attribute is not None:
                 attribute.description = True if not attribute.description else ""
             else:
-                attribute = StageAttributeEntity(
+                attribute = StageAttributeModel(
                     stage_id=id, name="visibility", description=True
                 )
             local_db_session.add(attribute)
             local_db_session.commit()
             return {"result": attribute.description}
 
-    def update_last_access(self, user: UserEntity, id: int):
+    def update_last_access(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
             stage = (
-                local_db_session.query(StageEntity).filter(StageEntity.id == id).first()
+                local_db_session.query(StageModel).filter(StageModel.id == id).first()
             )
             if not stage:
                 raise GraphQLError("Stage not found")
@@ -333,5 +335,5 @@ class StageService:
     def get_parent_stage(self):
         return [
             convert_keys_to_camel_case(stage)
-            for stage in DBSession.query(ParentStageEntity).all()
+            for stage in DBSession.query(ParentStageModel).all()
         ]

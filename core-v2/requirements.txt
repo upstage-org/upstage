@@ -20,3 +20,6 @@ email-validator
 pymongo
 coverage
 paho-mqtt          
+aiosmtplib
+pytest
+faker

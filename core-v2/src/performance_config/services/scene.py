@@ -1,9 +1,8 @@
 from graphql import GraphQLError
-from config.database import ScopedSession
-from core.helpers.object import convert_keys_to_camel_case
-from performance_config.entities.scene import SceneEntity
+from global_config import ScopedSession, convert_keys_to_camel_case
+from performance_config.db_models.scene import SceneModel
 from stages.http.validation import SceneInput
-from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
+from users.db_models.user import ADMIN, SUPER_ADMIN, UserModel
 
 
 class SceneService:
@@ -13,12 +12,12 @@ class SceneService:
     def get_scene(self):
         return [
             convert_keys_to_camel_case(scene)
-            for scene in ScopedSession.query(SceneEntity).all()
+            for scene in ScopedSession.query(SceneModel).all()
         ]
 
-    def create_scene(self, user: UserEntity, input: SceneInput):
+    def create_scene(self, user: UserModel, input: SceneInput):
         with ScopedSession() as local_db_session:
-            scene = SceneEntity(
+            scene = SceneModel(
                 owner_id=user.id,
                 stage_id=input.stageId,
                 payload=input.payload,
@@ -26,8 +25,8 @@ class SceneService:
             )
 
             scene_order = (
-                local_db_session.query(SceneEntity)
-                .filter(SceneEntity.stage_id == input.stageId)
+                local_db_session.query(SceneModel)
+                .filter(SceneModel.stage_id == input.stageId)
                 .count()
                 + 1
             )
@@ -36,10 +35,10 @@ class SceneService:
 
             if input.name:
                 existed_scene = (
-                    local_db_session.query(SceneEntity)
-                    .filter(SceneEntity.stage_id == stage_id)
-                    .filter(SceneEntity.active == True)
-                    .filter(SceneEntity.name == input.name)
+                    local_db_session.query(SceneModel)
+                    .filter(SceneModel.stage_id == input.stageId)
+                    .filter(SceneModel.active == True)
+                    .filter(SceneModel.name == input.name)
                     .first()
                 )
                 if existed_scene:
@@ -58,9 +57,9 @@ class SceneService:
             local_db_session.refresh(scene)
             return convert_keys_to_camel_case(scene)
 
-    def delete_scene(self, user: UserEntity, id: int):
+    def delete_scene(self, user: UserModel, id: int):
         with ScopedSession() as local_db_session:
-            scene = local_db_session.query(SceneEntity).filter_by(id=id).first()
+            scene = local_db_session.query(SceneModel).filter_by(id=id).first()
             if not scene:
                 raise GraphQLError("Scene not found")
 

@@ -1,4 +1,4 @@
-from config.env import EMAIL_HOST_USER
+from global_config import EMAIL_HOST_USER
 
 
 footer = """<br>

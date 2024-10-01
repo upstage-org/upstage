@@ -1,39 +1,34 @@
-import glob
-import importlib
-import os
-import sys
+from fastapi import FastAPI
+from fastapi_exception import FastApiException
+from fastapi_global_variable import GlobalVariable
+from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 
-# Always on top
-app_dir = os.path.abspath(os.path.dirname(__file__))
-if app_dir not in sys.path:
-    sys.path.append(app_dir)
-
-from config.schema import config_graphql_endpoints
-from core.middlewares.middleware import add_cors_middleware
-from bootstraps import Bootstrap, app
+from global_config import ENV_TYPE, config_graphql_endpoints
 
 
-def load_module(path: str):
-    modules = glob.glob(path, recursive=True)
-    for module in modules:
-        importlib.import_module(
-            module.replace(".py", "")
-            .replace(".graphql", "")
-            .replace("/", ".")
-            .replace("src.", ""),
-            package=None,
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
+
+def add_cors_middleware(app):
+    if ENV_TYPE == "Production":
+        app.add_middleware(
+            CORSMiddleware,
+            allow_origins=["*"],
+            allow_credentials=True,
+            allow_methods=["*"],
+            allow_headers=["*"],
         )
 
 
-load_module("*/*/entities/*.py")
-load_module("*/*/schemas/*.py")
-load_module("*/core/*/*.py")
-load_module("*/core/*/*.py")
-load_module("*/core/exceptions/*.py")
-load_module("*/*/scripts/*.py")
-load_module("*/*/graphql/*.py")
-load_module("*/*/http/*.py")
-load_module("*/config/*.py")
+class Bootstrap:
+    def __init__(self, app: FastAPI):
+        self.app = app
+
+    def init_exception(self):
+        FastApiException.config()
 
 
 def start_app():
@@ -42,5 +37,8 @@ def start_app():
     config_graphql_endpoints(app)
     bootstrap.init_exception()
 
+
+app = FastAPI(title="upstage", lifespan=lifespan)
+GlobalVariable.set("app", app)
 
 start_app()

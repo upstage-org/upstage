@@ -3,8 +3,8 @@ import json
 import os
 import sys
 
-from config.database import ScopedSession
-from event_archive.entities.event import EventEntity
+from global_config import ScopedSession
+from event_archive.db_models.event import EventModel
 from event_archive.systems.system import reacts_to_anything
 
 
@@ -15,7 +15,7 @@ def record_event(topic, payload, timestamp):
     session = None
     try:
         with ScopedSession() as session:
-            event = EventEntity(topic=topic, payload=payload, mqtt_timestamp=timestamp)
+            event = EventModel(topic=topic, payload=payload, mqtt_timestamp=timestamp)
             session.add(event)
             session.commit()
             session.flush()

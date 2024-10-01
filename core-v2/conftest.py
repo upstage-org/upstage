@@ -1,10 +1,10 @@
 import logging
 import time
 import pytest
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from starlette.testclient import TestClient
-from bootstraps import app
-from config import env
+from src.global_config import env
+from src.main import app
 
 
 @pytest.fixture(scope='session')

@@ -2,7 +2,7 @@ from ariadne import MutationType, make_executable_schema
 from licenses.http.graphql import type_defs
 from ariadne.asgi import GraphQL
 
-from licenses.http.validatiion import LicenseInput
+from licenses.http.validation import LicenseInput
 from licenses.services.license import LicenseService
 
 

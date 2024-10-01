@@ -1,8 +1,8 @@
 from secrets import token_urlsafe
-from assets.entities.asset_license import AssetLicenseEntity
-from config.database import ScopedSession
-from core.helpers.object import convert_keys_to_camel_case
-from licenses.http.validatiion import LicenseInput
+from global_config import ScopedSession, convert_keys_to_camel_case
+from licenses.http.validation import LicenseInput
+from assets.db_models.asset_license import AssetLicenseModel
+
 
 
 class LicenseService:
@@ -13,7 +13,7 @@ class LicenseService:
         with ScopedSession as session:
             asset_path = token_urlsafe(16)
 
-            license = AssetLicenseEntity(
+            license = AssetLicenseModel(
                 asset_id=license_input.assetId,
                 level=license_input.level,
                 permissions=license_input.permissions,
@@ -27,4 +27,4 @@ class LicenseService:
 
     def get_license(self, **kwargs):
         with ScopedSession as session:
-            return session.query(AssetLicenseEntity).filter_by(**kwargs).first()
+            return session.query(AssetLicenseModel).filter_by(**kwargs).first()

@@ -9,14 +9,13 @@ prodder = os.path.abspath(os.path.join(app_dir, "../.."))
 sys.path.append(app_dir)
 sys.path.append(prodder)
 
-from config.database import global_session
-from core.helpers.fernet_crypto import encrypt
-from users.entities.user import ADMIN, SUPER_ADMIN, UserEntity
+from global_config import global_session, encrypt
+from users.db_models.user import SUPER_ADMIN, UserModel
 
 
 def create_some_users():
-    for i in range(10, 12):
-        user = UserEntity(
+    for i in range(15, 16):
+        user = UserModel(
             username=f"quang{i}",
             password=encrypt(f"Secret@123{i}"),
             email=f"quang{i}@no.none",
@@ -30,7 +29,7 @@ def create_some_users():
 
 def modify_user():
     db_session = global_session
-    user = db_session.query(UserEntity).filter(UserEntity.username == "gloria2").one()
+    user = db_session.query(UserModel).filter(UserModel.username == "gloria2").one()
     user.password = encrypt("")
     # user.email = ("",)
     db_session.commit()

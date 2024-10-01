@@ -1,4 +1,4 @@
-from assets.entities.asset_license import AssetLicenseEntity
+from assets.db_models.asset_license import AssetLicenseModel
 
 
 class AssetLicenseService:
@@ -8,11 +8,11 @@ class AssetLicenseService:
     def create(
         self, asset_id: int, copyright_level: str, player_access: str, local_db_session
     ):
-        local_db_session.query(AssetLicenseEntity).filter(
-            AssetLicenseEntity.asset_id == asset_id
+        local_db_session.query(AssetLicenseModel).filter(
+            AssetLicenseModel.asset_id == asset_id
         ).delete()
 
-        asset_license = AssetLicenseEntity(
+        asset_license = AssetLicenseModel(
             asset_id=asset_id,
             level=copyright_level,
             permissions=player_access,

@@ -1,12 +1,11 @@
 import base64
 import pytest
-from assets.entities.asset import AssetEntity
+from src.main import app
+from global_config import JWT_HEADER_NAME, DBSession
+from assets.http.schema import asset_graphql_app
 from authentication.tests.auth_test import TestAuthenticationController
-from bootstraps import app
-from assets.http.asset import asset_graphql_app
-from config.database import DBSession
-from config.env import JWT_HEADER_NAME
-from users.entities.user import UserEntity
+from assets.db_models.asset import AssetModel
+from users.db_models.user import UserModel
 
 
 def load_base64_from_image(image_path):
@@ -151,7 +150,7 @@ class TestAssetController:
 
     async def test_05_search_assets(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        asset = DBSession.query(AssetEntity).join(UserEntity).first()
+        asset = DBSession.query(AssetModel).join(UserModel).first()
         print(asset.to_dict())
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
@@ -205,7 +204,7 @@ class TestAssetController:
 
     async def test_06_get_all_medias(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        asset = DBSession.query(AssetEntity).join(UserEntity).first()
+        asset = DBSession.query(AssetModel).join(UserModel).first()
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
             JWT_HEADER_NAME: data["data"]["login"]["refresh_token"],
@@ -244,7 +243,7 @@ class TestAssetController:
 
     async def test_07_update_media(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        asset = DBSession.query(AssetEntity).join(UserEntity).first()
+        asset = DBSession.query(AssetModel).join(UserModel).first()
 
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
@@ -288,7 +287,7 @@ class TestAssetController:
         data = await test_AuthenticationController.test_player_login_successfully(
             client
         )
-        asset = DBSession.query(AssetEntity).join(UserEntity).first()
+        asset = DBSession.query(AssetModel).join(UserModel).first()
 
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
@@ -329,7 +328,7 @@ class TestAssetController:
         assert response.status_code == 200
 
     async def test_09_delete_media_failed(self, client):
-        asset = DBSession.query(AssetEntity).first()
+        asset = DBSession.query(AssetModel).first()
         data = await test_AuthenticationController.test_player_login_successfully(
             client
         )
@@ -369,7 +368,7 @@ class TestAssetController:
         assert response.status_code == 200
 
     async def test_10_delete_media(self, client):
-        asset = DBSession.query(AssetEntity).first()
+        asset = DBSession.query(AssetModel).first()
         data = await test_AuthenticationController.test_02_login_successfully(client)
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
@@ -392,5 +391,5 @@ class TestAssetController:
         )
         assert response.status_code == 200
 
-        asset = DBSession.query(AssetEntity).filter_by(id=asset.id).first()
+        asset = DBSession.query(AssetModel).filter_by(id=asset.id).first()
         assert asset is None

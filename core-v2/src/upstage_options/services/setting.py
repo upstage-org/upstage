@@ -1,9 +1,12 @@
 import os
-from config.database import DBSession, ScopedSession
-from config.env import NGINX_CONFIG_FILE
-from core.helpers.object import convert_keys_to_camel_case
+from global_config import (
+    NGINX_CONFIG_FILE,
+    DBSession,
+    ScopedSession,
+    convert_keys_to_camel_case,
+)
 from mails.helpers.mail import send
-from upstage_options.entities.config import ConfigEntity
+from upstage_options.db_models.config import ConfigModel
 from upstage_options.http.validation import ConfigInput, EmailInput
 
 TERMS_OF_SERVICE = "TERMS_OF_SERVICE"
@@ -21,7 +24,7 @@ prodder = os.path.abspath(os.path.join(app_dir, "../.."))
 
 class SettingService:
     def get_config(self, name: str):
-        return DBSession.query(ConfigEntity).filter_by(name=name).first()
+        return DBSession.query(ConfigModel).filter_by(name=name).first()
 
     def upload_limit(self):
         limit = 0
@@ -63,7 +66,7 @@ class SettingService:
         with ScopedSession() as local_db_session:
             config = self.get_config(TERMS_OF_SERVICE)
             if not config:
-                config = ConfigEntity(name=TERMS_OF_SERVICE, value=url)
+                config = ConfigModel(name=TERMS_OF_SERVICE, value=url)
                 local_db_session.add(config)
             else:
                 config.value = url
@@ -75,7 +78,7 @@ class SettingService:
         with ScopedSession() as local_db_session:
             config = self.get_config(input.name)
             if not config:
-                config = ConfigEntity(name=input.name, value=input.value)
+                config = ConfigModel(name=input.name, value=input.value)
                 local_db_session.add(config)
             else:
                 config.value = input.value
