@@ -1,5 +1,5 @@
 from graphql import GraphQLError
-from global_config import ScopedSession, convert_keys_to_camel_case
+from global_config import DBSession, ScopedSession, convert_keys_to_camel_case
 from performance_config.db_models.scene import SceneModel
 from stages.http.validation import SceneInput
 from users.db_models.user import ADMIN, SUPER_ADMIN, UserModel
@@ -12,7 +12,7 @@ class SceneService:
     def get_scene(self):
         return [
             convert_keys_to_camel_case(scene)
-            for scene in ScopedSession.query(SceneModel).all()
+            for scene in DBSession.query(SceneModel).all()
         ]
 
     def create_scene(self, user: UserModel, input: SceneInput):

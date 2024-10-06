@@ -14,7 +14,7 @@ from users.db_models.user import SUPER_ADMIN, UserModel
 
 
 def create_some_users():
-    for i in range(15, 16):
+    for i in range(17, 18):
         user = UserModel(
             username=f"quang{i}",
             password=encrypt(f"Secret@123{i}"),

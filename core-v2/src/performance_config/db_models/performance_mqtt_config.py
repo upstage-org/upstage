@@ -1,9 +1,7 @@
 from datetime import datetime
+from sqlalchemy.orm import relationship
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, Text
 from global_config import BaseModel
-from performance_config.db_models.performance_config import PerformanceConfigModel
-from users.db_models.user import UserModel
-from sqlalchemy.orm import relationship
 
 
 class PerformanceMQTTConfigModel(BaseModel):
@@ -11,7 +9,6 @@ class PerformanceMQTTConfigModel(BaseModel):
     # There may be > 1 MQTT connection in a performance.
     __tablename__ = "live_performance_mqtt_config"
     id = Column(BigInteger, primary_key=True)
-    owner_id = Column(Integer, ForeignKey(UserModel.id), nullable=False, default=0)
     ip_address = Column(Text, nullable=False)
     websocket_port = Column(Integer, nullable=False, default=0)
     webclient_port = Column(Integer, nullable=False, default=0)
@@ -26,11 +23,12 @@ class PerformanceMQTTConfigModel(BaseModel):
     password = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.now)
     expires_on = Column(DateTime, nullable=False, default=None)
-    performance_config_id = Column(
-        Integer, ForeignKey(PerformanceConfigModel.id), nullable=False, default=0
+    performance_id = Column(
+        Integer, ForeignKey("performance_config.id"), nullable=False, default=0
     )
+    owner_id = Column(Integer, ForeignKey("upstage_user.id"), nullable=False, default=0)
 
     owner = relationship("UserModel", foreign_keys=[owner_id])
-    performance_config = relationship(
-        "PerformanceConfigModel", foreign_keys=[performance_config_id]
-    )
+    # performance_config = relationship(
+    #     "PerformanceConfigModel", foreign_keys=[performance_id]
+    # )

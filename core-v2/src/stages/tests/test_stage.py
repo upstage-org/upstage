@@ -1,8 +1,12 @@
 import pytest
 
 from authentication.tests.auth_test import TestAuthenticationController
+from event_archive.db_models.event import EventModel
+from global_config.database import ScopedSession
 from src.main import app
 from global_config import JWT_HEADER_NAME, DBSession
+from stages.db_models.stage_attribute import StageAttributeModel
+from users.db_models.user import PLAYER, SUPER_ADMIN
 from stages.db_models.stage import StageModel
 from stages.http.schema import stage_graphql_app
 
@@ -106,7 +110,7 @@ class TestStageController:
 
     async def test_03_update_stage_failed(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        response = self.update_stage(client, 10, data)
+        response = self.update_stage(client, 1000, data)
         assert "errors" in response
 
     def duplicate_stage(self, client, id: int, data):
@@ -139,7 +143,7 @@ class TestStageController:
 
     async def test_04_duplicate_stage_failed_with_wrong_id(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        response = self.duplicate_stage(client, 10, data)
+        response = self.duplicate_stage(client, 1000, data)
         assert "errors" in response
 
     async def test_05_duplicate_stage(self, client):
@@ -173,7 +177,7 @@ class TestStageController:
 
     async def test_06_delete_stage_failed_with_wrong_id(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        response = self.remove_media(client, 10, data)
+        response = self.remove_media(client, 1000, data)
         assert "errors" in response
 
     async def test_07_delete_stage_wrong_role(self, client):
@@ -189,3 +193,274 @@ class TestStageController:
         stage = DBSession.query(StageModel).first()
         response = self.remove_media(client, stage.id, data)
         assert response["data"]["deleteStage"]["success"] == True
+
+    async def sweep_stage(self, client, id: int):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        variables = {"id": id}
+        query = """
+        mutation sweepStage($id: ID!) {
+            sweepStage(id: $id) {
+                    success
+                    performanceId
+            }
+        }
+        """
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        return response.json()
+
+    async def test_09_sweep_stage_not_found(self, client):
+        response = await self.sweep_stage(client, 1000)
+        assert "errors" in response
+        assert response["errors"][0]["message"] == "Stage not found"
+
+    async def test_10_sweep_stage(self, client):
+        stage = DBSession.query(StageModel).all()[-1]
+        response = await self.sweep_stage(client, stage.id)
+        assert response["errors"][0]["message"] == "The stage is already sweeped!"
+
+    async def test_11_sweep_stage_successfully(self, client):
+        stage = DBSession.query(StageModel).all()[-1]
+        with ScopedSession() as session:
+            event = EventModel(
+                topic="/{}/".format(stage.file_location),
+                mqtt_timestamp=1630000000,
+                payload={"key": "value"},
+            )
+            session.add(event)
+            session.commit()
+            session.flush()
+        response = await self.sweep_stage(client, stage.id)
+        assert response["data"]["sweepStage"]["success"] == True
+        assert response["data"]["sweepStage"]["performanceId"] is not None
+
+    async def test_12_update_status_failed(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        variables = {"id": 1000}
+        query = """ 
+            mutation updateStatus($id: ID!) {
+                updateStatus(id: $id) {
+                    result
+                }
+            }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert response.json()["errors"][0]["message"] == "Stage not found"
+
+        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert (
+            response.json()["errors"][0]["message"]
+            == "You are not authorized to update this stage"
+        )
+
+    async def test_13_update_status(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        query = """ 
+            mutation updateStatus($id: ID!) {
+                updateStatus(id: $id) {
+                    result
+                }
+            }
+        """
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateStatus"]["result"] == "live"
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateStatus"]["result"] == "rehearsal"
+
+        with ScopedSession() as session:
+            status = (
+                session.query(StageAttributeModel)
+                .filter(
+                    StageAttributeModel.stage_id == stage.id,
+                    StageAttributeModel.name == "status",
+                )
+                .all()
+            )
+            session.delete(status[0])
+            session.commit()
+            session.flush()
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateStatus"]["result"] == "live"
+
+    async def test_14_update_visibility_failed(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        variables = {"id": 1000}
+        query = """ 
+            mutation updateVisibility($id: ID!) {
+                updateVisibility(id: $id) {
+                    result
+                }
+            }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert response.json()["errors"][0]["message"] == "Stage not found"
+
+        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert (
+            response.json()["errors"][0]["message"]
+            == "You are not authorized to update this stage"
+        )
+
+    async def test_15_update_visibility(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        query = """ 
+            mutation updateVisibility($id: ID!) {
+                updateVisibility(id: $id) {
+                    result
+                }
+            }
+        """
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateVisibility"]["result"] == ""
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateVisibility"]["result"] == "true"
+
+        with ScopedSession() as session:
+            status = (
+                session.query(StageAttributeModel)
+                .filter(
+                    StageAttributeModel.stage_id == stage.id,
+                    StageAttributeModel.name == "visibility",
+                )
+                .first()
+            )
+            session.delete(status)
+            session.commit()
+            session.flush()
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateVisibility"]["result"] == "true"
+
+    async def test_16_update_last_access_failed(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        variables = {"id": 1000}
+        query = """ 
+            mutation updateLastAccess($id: ID!) {
+                updateLastAccess(id: $id) {
+                    result
+                }
+            }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert response.json()["errors"][0]["message"] == "Stage not found"
+
+        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" in response.json()
+        assert (
+            response.json()["errors"][0]["message"]
+            == "You are not authorized to update this stage"
+        )
+
+    async def test_17_update_last_access(self, client):
+        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        stage = DBSession.query(StageModel).all()[-1]
+        variables = {"id": stage.id}
+        query = """ 
+            mutation updateLastAccess($id: ID!) {
+                updateLastAccess(id: $id) {
+                    result
+                }
+            }
+        """
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        assert "errors" not in response.json()
+        assert response.json()["data"]["updateLastAccess"]["result"] is not None

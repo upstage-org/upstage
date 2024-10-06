@@ -12,7 +12,7 @@ type_defs = gql("""
         updateMedia(input: UpdateMediaInput!): Asset
         deleteMedia(id: ID!): CommonResponse
         assignStages(input: AssignStagesInput!): Asset
-        sweepStage(id: ID!): CommonResponse
+        sweepStage(id: ID!): SweepResponse
         saveScene(input: SceneInput!): Scene
         deleteScene(id: ID!): CommonResponse
         updatePerformance(input: PerformanceInput!): CommonResponse
@@ -36,7 +36,7 @@ type_defs = gql("""
     }
                 
     type UpdateStageResponse {
-            result: String
+        result: String
     }
                 
     input RecordInput {

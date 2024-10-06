@@ -11,4 +11,10 @@
 # alembic revision -m "Create Stage Attribute Table"  --version-path=src/stages/databases/migrations
 # alembic revision -m "Create Parent Stage Table"  --version-path=src/stages/databases/migrations
 
-alembic revision -m "Create Config Table"  --version-path=src/setting/databases/migrations
+# alembic revision -m "Create Config Table"  --version-path=src/setting/databases/migrations
+
+# alembic revision -m "Create Event Table"  --version-path=src/event_archive/databases/migrations
+
+
+alembic revision -m "Create Connection Stat Table"  --version-path=src/upstage_stats/db_migrations
+alembic revision -m "Create Receive Stat Table"  --version-path=src/upstage_stats/db_migrations

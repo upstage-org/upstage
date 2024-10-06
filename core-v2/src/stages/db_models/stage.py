@@ -21,7 +21,7 @@ class StageModel(BaseModel):
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.now)
     last_access = Column(DateTime, nullable=True)
-    owner = relationship(UserModel, foreign_keys=[owner_id])
+    owner = relationship("UserModel", foreign_keys=[owner_id])
     attributes = relationship(
         lambda: StageAttributeModel, lazy="dynamic", back_populates="stage"
     )

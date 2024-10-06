@@ -27,6 +27,7 @@ from mails.templates.templates import (
 from performance_config.db_models.performance import PerformanceModel
 from stages.db_models.parent_stage import ParentStageModel
 from stages.db_models.stage import StageModel
+from assets.db_models.asset import AssetModel
 from stages.db_models.stage_attribute import StageAttributeModel
 from studios.http.validation import BatchUserInput, ChangePasswordInput, UpdateUserInput
 from users.db_models.user import ADMIN, GUEST, SUPER_ADMIN, UserModel
@@ -211,9 +212,9 @@ class StudioService:
             local_db_session.query(StageModel).filter(
                 StageModel.owner_id == id
             ).delete()
-            local_db_session.query(db_models.AssetModel).filter(
-                AssetModel.owner_id == id
-            ).update({AssetModel.owner_id: current_user.id})
+            local_db_session.query(AssetModel).filter(AssetModel.owner_id == id).update(
+                {AssetModel.owner_id: current_user.id}
+            )
 
             local_db_session.delete(user)
             local_db_session.commit()

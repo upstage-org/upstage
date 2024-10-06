@@ -36,7 +36,7 @@ class PerformanceService:
             if not stage:
                 raise GraphQLError("Stage not found")
 
-            if user.role not in ["SUPER_ADMIN", "ADMIN"] and user.id != stage.owner_id:
+            if user.role not in [SUPER_ADMIN, ADMIN] and user.id != stage.owner_id:
                 raise GraphQLError("You are not allowed to record for this stage")
 
             performance = PerformanceModel(
@@ -47,8 +47,8 @@ class PerformanceService:
             )
 
             local_db_session.add(performance)
-            local_db_session.flush()
             local_db_session.commit()
+            local_db_session.flush()
             performance = (
                 DBSession.query(PerformanceModel).filter_by(id=performance.id).first()
             )
@@ -59,18 +59,18 @@ class PerformanceService:
             performance = (
                 local_db_session.query(PerformanceModel).filter_by(id=input.id).first()
             )
+
             if not performance:
                 raise GraphQLError("Performance not found")
 
             if (
-                user.role not in ["SUPER_ADMIN", "ADMIN"]
-                and user.id != performance.owner_id
+                user.role not in [SUPER_ADMIN, ADMIN]
+                and user.id != performance.stage.owner_id
             ):
                 raise GraphQLError("You are not allowed to update this performance")
 
             performance.name = input.name
             performance.description = input.description
-            local_db_session.flush()
             local_db_session.commit()
             return {"success": True}
 
@@ -83,7 +83,7 @@ class PerformanceService:
                 raise GraphQLError("Performance not found")
 
             if (
-                user.role not in ["SUPER_ADMIN", "ADMIN"]
+                user.role not in [SUPER_ADMIN, ADMIN]
                 and user.id != performance.stage.owner_id
             ):
                 raise GraphQLError("You are not allowed to delete this performance")
@@ -105,7 +105,7 @@ class PerformanceService:
 
             if (
                 user.role not in [SUPER_ADMIN, ADMIN]
-                and user.id != performance.owner_id
+                and user.id != performance.stage.owner_id
             ):
                 raise GraphQLError("Only stage owner or Admin can save a recording!")
             saved_on = datetime.now()
@@ -133,6 +133,12 @@ class PerformanceService:
 
             performance.saved_on = saved_on
             performance.recording = False
-            local_db_session.flush()
             local_db_session.commit()
-            return performance
+            local_db_session.flush()
+
+            return (
+                DBSession.query(PerformanceModel)
+                .filter_by(id=performance.id)
+                .first()
+                .to_dict()
+            )
