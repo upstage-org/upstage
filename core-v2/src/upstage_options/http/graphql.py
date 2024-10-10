@@ -39,7 +39,7 @@ type_defs = gql("""
         id: Int!
         name: String!
         value: String
-        created_on: Date!
+        createdOn: Date
     }
                 
     type SystemConfig {

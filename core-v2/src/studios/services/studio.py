@@ -139,9 +139,11 @@ class StudioService:
                 self._validate_email(input)
                 user = self._get_user(session, input.id)
                 self._check_existing_email(input)
-                self._update_user_fields(user, input)
+                await self._update_user_fields(user, input)
                 session.commit()
                 session.flush()
+                user = self._get_user(session, input.id)
+                return convert_keys_to_camel_case(user.to_dict())
             except Exception as e:
                 raise GraphQLError(
                     f"There was an error updating this user information: {str(e)}. Please check the logs and try again later!"
@@ -171,7 +173,8 @@ class StudioService:
             user.password = encrypt(input.password)
         else:
             del input.password
-        for key, value in input.items():
+
+        for key, value in input.model_dump().items():
             if key == "active":
                 await self._handle_active_status(user, value)
             if hasattr(user, key):
@@ -319,14 +322,13 @@ class StudioService:
                 raise GraphQLError("Asset not found!")
             if (
                 user.role not in [SUPER_ADMIN, ADMIN]
-                and user.id != asset_usage.owner_id
+                and user.id != asset_usage.asset.owner_id
             ):
                 raise GraphQLError("You are not authorized to perform this action!")
 
             if approved:
                 asset_usage.approved = True
                 asset_usage.seen = True
-                asset_usage.approved_on = datetime.now()
             else:
                 local_db_session.delete(asset_usage)
 
@@ -346,17 +348,17 @@ class StudioService:
                     studio_url,
                 ),
             )
-        permissions = (
-            DBSession.query(AssetUsageModel)
-            .filter(AssetUsageModel.asset_id == asset_usage.asset_id)
-            .all()
-        )
-        return convert_keys_to_camel_case(
-            {
-                "permissions": [permission.to_dict() for permission in permissions],
-                "success": True,
-            },
-        )
+            permissions = (
+                DBSession.query(AssetUsageModel)
+                .filter(AssetUsageModel.asset_id == asset_usage.asset_id)
+                .all()
+            )
+            return convert_keys_to_camel_case(
+                {
+                    "permissions": [permission.to_dict() for permission in permissions],
+                    "success": True,
+                },
+            )
 
     def quick_assign_mutation(self, user: UserModel, stage_id: int, asset_id: int):
         with ScopedSession() as local_db_session:

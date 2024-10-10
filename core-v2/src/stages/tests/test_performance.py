@@ -4,6 +4,7 @@ from global_config import DBSession, ScopedSession
 from event_archive.db_models.event import EventModel
 from src.main import app
 from performance_config.db_models.performance import PerformanceModel
+from performance_config.db_models.scene import SceneModel
 from stages.db_models.stage import StageModel
 from users.db_models.user import PLAYER, SUPER_ADMIN
 from stages.tests.test_stage import TestStageController
@@ -20,7 +21,7 @@ class TestPerformanceController:
 
     async def test_01_start_recording(self, client):
         stage = await test_StageController.test_01_create_stage(client)
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {
             "input": {"stageId": stage["id"], "name": "Test", "description": "Test"}
         }
@@ -46,7 +47,7 @@ class TestPerformanceController:
         assert data["data"]["startRecording"] is not None
 
     async def test_02_start_recording_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"input": {"stageId": 1000, "name": "Test", "description": "Test"}}
 
         query = """
@@ -72,7 +73,7 @@ class TestPerformanceController:
             "input": {"stageId": stage["id"], "name": "Test", "description": "Test"}
         }
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         response = client.post(
             "/stage_graphql",
             json={"query": query, "variables": variables},
@@ -87,7 +88,7 @@ class TestPerformanceController:
         )
 
     async def test_03_update_recording(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         stage = await test_StageController.test_01_create_stage(client)
         variables = {
             "input": {"stageId": stage["id"], "name": "Test", "description": "Test"}
@@ -139,7 +140,7 @@ class TestPerformanceController:
         assert data["data"]["updatePerformance"] is not None
 
     async def test_04_update_recording_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"input": {"id": 1000, "name": "Test", "description": "Test"}}
 
         query = """
@@ -169,7 +170,7 @@ class TestPerformanceController:
             }
         }
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         response = client.post(
             "/stage_graphql",
             json={"query": query, "variables": variables},
@@ -184,7 +185,7 @@ class TestPerformanceController:
         )
 
     async def test_05_save_recording(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         performance = DBSession.query(PerformanceModel).first()
         variables = {"id": performance.id}
 
@@ -230,7 +231,7 @@ class TestPerformanceController:
         assert data["data"]["saveRecording"] is not None
 
     async def test_06_save_recording_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": 1000}
 
         query = """
@@ -254,7 +255,7 @@ class TestPerformanceController:
         performance = DBSession.query(PerformanceModel).first()
         variables = {"id": performance.id}
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         response = client.post(
             "/stage_graphql",
             json={"query": query, "variables": variables},
@@ -269,7 +270,7 @@ class TestPerformanceController:
         )
 
     async def test_07_delete_performance(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         performance = DBSession.query(PerformanceModel).first()
         variables = {"id": performance.id}
 
@@ -291,10 +292,10 @@ class TestPerformanceController:
         assert "errors" not in data
         assert "data" in data
         assert "deletePerformance" in data["data"]
-        assert data["data"]["deletePerformance"] is not None
+        assert data["data"]["deletePerformance"] is not None 
 
     async def test_08_delete_performance_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": 1000}
 
         query = """
@@ -318,7 +319,7 @@ class TestPerformanceController:
         performance = DBSession.query(PerformanceModel).first()
         variables = {"id": performance.id}
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         response = client.post(
             "/stage_graphql",
             json={"query": query, "variables": variables},
@@ -330,4 +331,142 @@ class TestPerformanceController:
         assert (
             data["errors"][0]["message"]
             == "You are not allowed to delete this performance"
+        )
+
+    async def test_09_save_scene(self, client):
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        stage = await test_StageController.test_01_create_stage(client)
+        variables = {
+            "input": {
+                "stageId": stage["id"],
+                "name": "Test",
+                "preview": "Test preview",
+                "payload": "Test payload",
+            }
+        }
+
+        query = """
+            mutation saveScene($input: SceneInput!) {
+                saveScene(input: $input) {
+                    id
+                    }
+                }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" not in data
+        assert "data" in data
+        assert "saveScene" in data["data"]
+        assert data["data"]["saveScene"] is not None
+
+        variables = {
+            "input": {
+                "stageId": stage["id"],
+                "preview": "Test preview",
+                "payload": "Test payload"
+            }
+        }
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" not in data
+        assert "data" in data
+        assert "saveScene" in data["data"]
+        assert data["data"]["saveScene"] is not None
+
+
+        variables = {
+            "input": {
+                "name": "Test",
+                "stageId": stage["id"],
+                "preview": "Test preview",
+                "payload": "Test payload",
+            }
+        }
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" in data
+        assert "data" in data
+        assert "saveScene" in data["data"]
+        assert data["data"]["saveScene"] is None
+
+
+    async def test_10_delete_scene(self, client):
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        scene = DBSession.query(SceneModel).first()
+        variables = {"id": scene.id}
+
+        query = """
+            mutation deleteScene($id: ID!) {
+                deleteScene(id: $id) {
+                        success
+                    }
+                }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" not in data
+        assert "data" in data
+        assert "deleteScene" in data["data"]
+        assert data["data"]["deleteScene"] is not None
+
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        variables = {"id": 1000}
+
+        query = """
+            mutation deleteScene($id: ID!) {
+                deleteScene(id: $id) {
+                        success
+                    }
+                }
+        """
+
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" in data
+        assert data["errors"][0]["message"] == "Scene not found"
+
+        scene = DBSession.query(SceneModel).first()
+        variables = {"id": scene.id}
+
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
+        response = client.post(
+            "/stage_graphql",
+            json={"query": query, "variables": variables},
+            headers=headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "errors" in data
+        assert (
+            data["errors"][0]["message"]
+            == "You are not allowed to delete this scene"
         )

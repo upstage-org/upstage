@@ -2,7 +2,7 @@ from ariadne import MutationType, QueryType, make_executable_schema
 
 from global_config import authenticated
 from upstage_options.http.validation import ConfigInput, EmailInput
-from upstage_options.services.setting import SettingService
+from upstage_options.services.upstage_option import SettingService
 from upstage_options.http.graphql import type_defs
 from ariadne.asgi import GraphQL
 

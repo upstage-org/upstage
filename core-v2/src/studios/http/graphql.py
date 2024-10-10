@@ -135,7 +135,7 @@ type_defs = gql("""
 
 
     type Mutation { 
-        batchUserCreation(users: [BatchUserInput]!, stageIds: [Int]): BatchUserCreationPayload
+        batchUserCreation(users: [BatchUserInput]!): BatchUserCreationPayload
         updateUser(input: UpdateUserInput!): User
         deleteUser(id: ID!): CommonResponse
         uploadFile(base64: String!, filename: String!): File!
@@ -167,7 +167,7 @@ type_defs = gql("""
     input SendEmailInput {
         subject: String!
         body: String!
-        to: String!
+        recipients: String!
         bcc: String
     }
                 

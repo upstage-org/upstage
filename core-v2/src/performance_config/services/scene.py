@@ -52,9 +52,9 @@ class SceneService:
                 scene.name = f"Scene {scene_order}"
 
             local_db_session.add(scene)
-            local_db_session.flush()
             local_db_session.commit()
-            local_db_session.refresh(scene)
+            local_db_session.flush()
+            scene = DBSession.query(SceneModel).filter_by(id=scene.id).first()
             return convert_keys_to_camel_case(scene)
 
     def delete_scene(self, user: UserModel, id: int):
@@ -64,12 +64,11 @@ class SceneService:
                 raise GraphQLError("Scene not found")
 
             if user.role not in [SUPER_ADMIN, ADMIN] and scene.owner_id != user.id:
-                return {
-                    "success": False,
-                    "message": "You are not allowed to delete this scene",
-                }
+                raise GraphQLError(
+                  "You are not allowed to delete this scene",
+                )
 
             scene.active = False
-            local_db_session.flush()
             local_db_session.commit()
+            local_db_session.flush()
             return {"success": True, "message": "Scene deleted successfully"}

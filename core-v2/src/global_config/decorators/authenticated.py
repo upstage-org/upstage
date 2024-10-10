@@ -19,7 +19,7 @@ def authenticated(allowed_roles=None):
 
     def decorator(func):
         @wraps(func)
-        async def wrapper(*args, **kwargs):
+        def wrapper(*args, **kwargs):
             info = args[1]
             request: Request = info.context["request"]
             authorization: str = request.headers.get("Authorization")

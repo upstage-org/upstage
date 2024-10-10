@@ -17,7 +17,7 @@ test_AssetController = TestAssetController()
 @pytest.mark.anyio
 class TestMediaController:
     async def assign_media(self, client, stage_id, media_ids):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"input": {"id": stage_id, "mediaIds": media_ids}}
 
         query = """
@@ -58,7 +58,7 @@ class TestMediaController:
         assert data["errors"][0]["message"] == "Stage not found"
 
     async def test_03_upload_media(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
 
         variables = {
             "input": {
@@ -90,7 +90,7 @@ class TestMediaController:
         assert "errors" not in response.json()
 
     async def test_04_update_media(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         await test_AssetController.test_03_save_media_successfully(client)
         asset = DBSession.query(AssetModel).first()
 
@@ -134,7 +134,7 @@ class TestMediaController:
         return response
 
     async def test_05_delete_media(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         asset = DBSession.query(AssetModel).first()
         self.update_media(client, headers, asset, "image/test2.png")
 
@@ -142,7 +142,7 @@ class TestMediaController:
         assert response.json()["data"]["deleteMedia"]["success"] == True
 
     async def test_06_delete_media_not_found(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         response = self.delete_media_request(client, headers, AssetModel(id=0))
         assert "errors" in response.json()
         assert response.json()["errors"][0]["message"] == "Media not found"
@@ -188,7 +188,7 @@ class TestMediaController:
         return response
 
     async def test_07_assign_stages(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         stage = await test_StageController.test_01_create_stage(client)
         stage2 = await test_StageController.test_01_create_stage(client)
         asset = DBSession.query(AssetModel).first()

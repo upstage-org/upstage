@@ -29,14 +29,13 @@ def admin_players(_, __, **kwargs):
 @mutation.field("batchUserCreation")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
 def create_users(_, __, users: List[BatchUserInput]):
-    print(users)
     return StudioService().create_users(users)
 
 
 @mutation.field("updateUser")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
-async def update_user(_, __, input: UpdateUserInput):
-    return await StudioService().update_user(UpdateUserInput(**input))
+async def update_user(_, __, input: UpdateUserInput, studio_service=StudioService()):
+    return await studio_service.update_user(UpdateUserInput(**input))
 
 
 @mutation.field("deleteUser")
@@ -72,9 +71,9 @@ def calc_sizes(_, __):
 
 @mutation.field("requestPermission")
 @authenticated()
-def request_permission(_, info, asset_id: int, note: str):
+def request_permission(_, info, assetId: int, note: str):
     return StudioService().request_permission(
-        UserModel(**info.context["request"].state.current_user), asset_id, note
+        UserModel(**info.context["request"].state.current_user), assetId, note
     )
 
 
@@ -88,9 +87,9 @@ def confirm_permission(_, info, id: int, approved: bool):
 
 @mutation.field("quickAssignMutation")
 @authenticated()
-def quick_assign_mutation(_, info, stage_id: int, asset_id: int):
+def quick_assign_mutation(_, info, stageId: int, assetId: int):
     return StudioService().quick_assign_mutation(
-        UserModel(**info.context["request"].state.current_user), stage_id, asset_id
+        UserModel(**info.context["request"].state.current_user), stageId, assetId
     )
 
 

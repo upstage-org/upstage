@@ -195,7 +195,7 @@ class TestStageController:
         assert response["data"]["deleteStage"]["success"] == True
 
     async def sweep_stage(self, client, id: int):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": id}
         query = """
         mutation sweepStage($id: ID!) {
@@ -239,7 +239,7 @@ class TestStageController:
         assert response["data"]["sweepStage"]["performanceId"] is not None
 
     async def test_12_update_status_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": 1000}
         query = """ 
             mutation updateStatus($id: ID!) {
@@ -258,7 +258,7 @@ class TestStageController:
         assert "errors" in response.json()
         assert response.json()["errors"][0]["message"] == "Stage not found"
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         response = client.post(
@@ -274,7 +274,7 @@ class TestStageController:
         )
 
     async def test_13_update_status(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         query = """ 
@@ -325,7 +325,7 @@ class TestStageController:
         assert response.json()["data"]["updateStatus"]["result"] == "live"
 
     async def test_14_update_visibility_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": 1000}
         query = """ 
             mutation updateVisibility($id: ID!) {
@@ -344,7 +344,7 @@ class TestStageController:
         assert "errors" in response.json()
         assert response.json()["errors"][0]["message"] == "Stage not found"
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         response = client.post(
@@ -360,7 +360,7 @@ class TestStageController:
         )
 
     async def test_15_update_visibility(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         query = """ 
@@ -411,7 +411,7 @@ class TestStageController:
         assert response.json()["data"]["updateVisibility"]["result"] == "true"
 
     async def test_16_update_last_access_failed(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         variables = {"id": 1000}
         query = """ 
             mutation updateLastAccess($id: ID!) {
@@ -430,7 +430,7 @@ class TestStageController:
         assert "errors" in response.json()
         assert response.json()["errors"][0]["message"] == "Stage not found"
 
-        headers = await test_AuthenticationController.get_headers(client, PLAYER)
+        headers = test_AuthenticationController.get_headers(client, PLAYER)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         response = client.post(
@@ -446,7 +446,7 @@ class TestStageController:
         )
 
     async def test_17_update_last_access(self, client):
-        headers = await test_AuthenticationController.get_headers(client, SUPER_ADMIN)
+        headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         stage = DBSession.query(StageModel).all()[-1]
         variables = {"id": stage.id}
         query = """ 

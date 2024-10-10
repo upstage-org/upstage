@@ -192,7 +192,7 @@ class TestAuthenticationController:
         assert "errors" in data
         assert data["errors"][0]["message"] == "Invalid access token"
 
-    async def get_headers(self, client, role):
+    def get_headers(self, client, role):
         email = Faker().email({"locale": "en_US"})
         user = UserModel(
             username=email,

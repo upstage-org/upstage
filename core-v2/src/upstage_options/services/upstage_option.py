@@ -72,7 +72,9 @@ class SettingService:
                 config.value = url
             local_db_session.commit()
             local_db_session.flush()
-            return convert_keys_to_camel_case(config)
+            config = self.get_config(TERMS_OF_SERVICE)
+            print("AA", convert_keys_to_camel_case(config.to_dict()))
+            return convert_keys_to_camel_case(config.to_dict())
 
     def save_config(self, input: ConfigInput):
         with ScopedSession() as local_db_session:
@@ -84,6 +86,8 @@ class SettingService:
                 config.value = input.value
             local_db_session.commit()
             local_db_session.flush()
+
+            config = self.get_config(input.name)
             return convert_keys_to_camel_case(config)
 
     async def send_email(self, input: EmailInput):

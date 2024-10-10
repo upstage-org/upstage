@@ -51,7 +51,7 @@ class AssignStagesInput(BaseModel):
 
 
 class SceneInput(BaseModel):
-    name: str = Field(..., description="Name of the scene")
+    name: Optional[str] = Field(None, description="Name of the scene")
     preview: str = Field(..., description="Preview of the scene")
     payload: str = Field(..., description="Payload of the scene")
     stageId: int = Field(..., description="ID of the stage")
