@@ -11,7 +11,7 @@ class SceneService:
 
     def get_scene(self):
         return [
-            convert_keys_to_camel_case(scene)
+            convert_keys_to_camel_case(scene.to_dict())
             for scene in DBSession.query(SceneModel).all()
         ]
 
@@ -65,7 +65,7 @@ class SceneService:
 
             if user.role not in [SUPER_ADMIN, ADMIN] and scene.owner_id != user.id:
                 raise GraphQLError(
-                  "You are not allowed to delete this scene",
+                    "You are not allowed to delete this scene",
                 )
 
             scene.active = False

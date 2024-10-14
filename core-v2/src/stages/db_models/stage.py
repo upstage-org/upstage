@@ -27,26 +27,26 @@ class StageModel(BaseModel):
     )
     assets = relationship("ParentStageModel", lazy="dynamic", back_populates="stage")
 
-    @hybrid_property
-    def cover(self):
-        return (
-            self.attributes.filter(StageAttributeModel.name == "cover")
-            .first()
-            .description
-        )
+    # @hybrid_property
+    # def cover(self):
+    #     return (
+    #         self.attributes.filter(StageAttributeModel.name == "cover")
+    #         .first()
+    #         .description
+    #     )
 
-    @hybrid_property
-    def visibility(self):
-        return (
-            self.attributes.filter(StageAttributeModel.name == "visibility")
-            .first()
-            .description
-        )
+    # @hybrid_property
+    # def visibility(self):
+    #     return (
+    #         self.attributes.filter(StageAttributeModel.name == "visibility")
+    #         .first()
+    #         .description
+    #     )
 
-    @hybrid_property
-    def status(self):
-        return (
-            self.attributes.filter(StageAttributeModel.name == "status")
-            .first()
-            .description
-        )
+    # @hybrid_property
+    # def status(self):
+    #     return (
+    #         self.attributes.filter(StageAttributeModel.name == "status")
+    #         .first()
+    #         .description
+    #     )

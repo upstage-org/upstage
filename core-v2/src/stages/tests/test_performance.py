@@ -292,7 +292,7 @@ class TestPerformanceController:
         assert "errors" not in data
         assert "data" in data
         assert "deletePerformance" in data["data"]
-        assert data["data"]["deletePerformance"] is not None 
+        assert data["data"]["deletePerformance"] is not None
 
     async def test_08_delete_performance_failed(self, client):
         headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
@@ -369,7 +369,7 @@ class TestPerformanceController:
             "input": {
                 "stageId": stage["id"],
                 "preview": "Test preview",
-                "payload": "Test payload"
+                "payload": "Test payload",
             }
         }
 
@@ -384,7 +384,6 @@ class TestPerformanceController:
         assert "data" in data
         assert "saveScene" in data["data"]
         assert data["data"]["saveScene"] is not None
-
 
         variables = {
             "input": {
@@ -406,7 +405,6 @@ class TestPerformanceController:
         assert "data" in data
         assert "saveScene" in data["data"]
         assert data["data"]["saveScene"] is None
-
 
     async def test_10_delete_scene(self, client):
         headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
@@ -467,6 +465,5 @@ class TestPerformanceController:
         data = response.json()
         assert "errors" in data
         assert (
-            data["errors"][0]["message"]
-            == "You are not allowed to delete this scene"
+            data["errors"][0]["message"] == "You are not allowed to delete this scene"
         )

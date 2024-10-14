@@ -16,7 +16,7 @@ def config_graphql_endpoints(app: FastAPI):
     from authentication.http.schema import auth_graphql_app
     from mails.http.shema import mail_graphql_app
     from stages.http.schema import stage_graphql_app
-    from licenses.http.license import license_graphql_app
+    from licenses.http.schema import license_graphql_app
     from performance_config.http.schema import performance_graphql_app
     from upstage_options.http.schema import config_graphql_app
 

@@ -136,7 +136,6 @@ class AuthenticationService:
 
     def refresh_token(self, user: UserModel, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
-        print("AABBCCDD", refresh_token)
         if not refresh_token:
             raise GraphQLError("Invalid refresh token")
 

@@ -73,7 +73,6 @@ class SettingService:
             local_db_session.commit()
             local_db_session.flush()
             config = self.get_config(TERMS_OF_SERVICE)
-            print("AA", convert_keys_to_camel_case(config.to_dict()))
             return convert_keys_to_camel_case(config.to_dict())
 
     def save_config(self, input: ConfigInput):

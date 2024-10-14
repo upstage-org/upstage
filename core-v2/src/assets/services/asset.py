@@ -110,7 +110,6 @@ class AssetService:
                 (search_assets.page - 1) * search_assets.limit
             )
 
-        print("AAAAA")
         assets = query.all()
         return convert_keys_to_camel_case({"totalCount": total_count, "edges": assets})
 
@@ -378,7 +377,6 @@ class AssetService:
     def cleanup_assets(self, local_db_session, asset: AssetModel):
         if asset.description:
             attributes = json.loads(asset.description)
-            print(attributes)
             if "frames" in attributes:
                 for frame in attributes["frames"]:
                     frame_asset = (

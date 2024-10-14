@@ -9,6 +9,7 @@ if projdir not in sys.path:
     sys.path.append(projdir)
 
 from src.mails.helpers.mail import generate_email_token_clients
+import asyncio
 
 if __name__ == "__main__":
-    generate_email_token_clients()
+        asyncio.run(generate_email_token_clients())

@@ -334,6 +334,6 @@ class StageService:
 
     def get_parent_stage(self):
         return [
-            convert_keys_to_camel_case(stage)
+            convert_keys_to_camel_case(stage.to_dict())
             for stage in DBSession.query(ParentStageModel).all()
         ]

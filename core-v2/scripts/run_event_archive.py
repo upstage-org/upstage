@@ -7,10 +7,9 @@ if projdir not in sys.path:
     sys.path.append(appdir)
     sys.path.append(projdir)
 
-from core.event_archive.system import run
-from core.event_archive.mqtt import build_client
-import src.event_archive.actions
-from config import MQTT_USER, MQTT_PASSWORD, MQTT_BROKER, MQTT_PORT
+from src.global_config import MQTT_USER, MQTT_PASSWORD, MQTT_BROKER, MQTT_PORT
+from src.event_archive.systems.system import run
+from src.event_archive.messages.mqtt import build_client
 
 if __name__ == "__main__":
     run()

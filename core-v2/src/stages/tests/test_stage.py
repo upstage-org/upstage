@@ -3,8 +3,10 @@ import pytest
 from authentication.tests.auth_test import TestAuthenticationController
 from event_archive.db_models.event import EventModel
 from global_config.database import ScopedSession
+from assets.db_models.asset import AssetModel
 from src.main import app
 from global_config import JWT_HEADER_NAME, DBSession
+from stages.db_models.parent_stage import ParentStageModel
 from stages.db_models.stage_attribute import StageAttributeModel
 from users.db_models.user import PLAYER, SUPER_ADMIN
 from stages.db_models.stage import StageModel
@@ -113,7 +115,7 @@ class TestStageController:
         response = self.update_stage(client, 1000, data)
         assert "errors" in response
 
-    def duplicate_stage(self, client, id: int, data):
+    async def duplicate_stage(self, client, id: int, data):
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
             JWT_HEADER_NAME: data["data"]["login"]["refresh_token"],
@@ -143,14 +145,25 @@ class TestStageController:
 
     async def test_04_duplicate_stage_failed_with_wrong_id(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        response = self.duplicate_stage(client, 1000, data)
+        response = await self.duplicate_stage(client, 1000, data)
         assert "errors" in response
 
     async def test_05_duplicate_stage(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
-        stage = DBSession.query(StageModel).first()
-        response = self.duplicate_stage(client, stage.id, data)
-        assert "errors" not in response
+        from stages.tests.test_media import TestMediaController
+
+        test_MediaController = TestMediaController()
+        asset_id = await test_MediaController.test_03_upload_media(client)
+
+        with ScopedSession() as session:
+            stage = DBSession.query(StageModel).first()
+            item = ParentStageModel(stage_id=stage.id, child_asset_id=asset_id)
+            session.add(item)
+            session.commit()
+            session.flush()
+
+            response = await self.duplicate_stage(client, stage.id, data)
+            assert "errors" not in response
 
     def remove_media(self, client, id: int, data):
         headers = {

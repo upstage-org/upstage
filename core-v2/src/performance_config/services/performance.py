@@ -6,6 +6,7 @@ from performance_config.db_models.performance import PerformanceModel
 from performance_config.db_models.performance_mqtt_config import (
     PerformanceMQTTConfigModel,
 )
+from performance_config.db_models.performance_config import PerformanceConfigModel
 from stages.db_models.stage import StageModel
 from stages.http.validation import PerformanceInput, RecordInput
 from users.db_models.user import ADMIN, SUPER_ADMIN, UserModel
@@ -18,14 +19,14 @@ class PerformanceService:
 
     def get_performance_communication(self):
         return [
-            convert_keys_to_camel_case(performance)
+            convert_keys_to_camel_case(performance.to_dict())
             for performance in DBSession.query(PerformanceMQTTConfigModel).all()
         ]
 
     def get_performance_config(self):
         return [
-            convert_keys_to_camel_case(performance)
-            for performance in DBSession.query(PerformanceModel).all()
+            convert_keys_to_camel_case(performance.to_dict())
+            for performance in DBSession.query(PerformanceConfigModel).all()
         ]
 
     def create_performance(self, user: UserModel, input: RecordInput):

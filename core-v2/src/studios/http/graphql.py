@@ -78,7 +78,7 @@ type_defs = gql("""
         name: String
         mediaTypes: [String]
         owners: [String]
-        stages: [Int]
+        stages: [ID]
         tags: [String]
         createdBetween: [Date]
     }
@@ -225,8 +225,8 @@ type_defs = gql("""
         mediaType: String!
         copyrightLevel: Int!
         owner: String!
-        stageIds: [Int!]!
-        userIds: [Int!]
+        stageIds: [ID!]!
+        userIds: [ID!]
         tags: [String!]
         w: Float!
         h: Float!

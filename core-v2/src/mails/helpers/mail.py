@@ -114,7 +114,7 @@ def valid_token(token):
         return True
 
 
-def generate_email_token_clients():
+async def generate_email_token_clients():
     while True:
         client = get_mongo_token_collection()
         """
@@ -131,7 +131,7 @@ def generate_email_token_clients():
                     "expired_date": datetime.now(),
                 }
             )
-        sleep(EMAIL_TIME_EXPIRED_TOKEN)
+        await sleep(EMAIL_TIME_EXPIRED_TOKEN)
 
 
 async def send_async(msg, user=EMAIL_HOST_USER, password=EMAIL_HOST_PASSWORD):

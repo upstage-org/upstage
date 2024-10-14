@@ -88,23 +88,32 @@ class TestMediaController:
         assert "uploadMedia" in response.json()["data"]
         assert "id" in response.json()["data"]["uploadMedia"]
         assert "errors" not in response.json()
+        return response.json()["data"]["uploadMedia"]["id"]
 
     async def test_04_update_media(self, client):
         headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         await test_AssetController.test_03_save_media_successfully(client)
         asset = DBSession.query(AssetModel).first()
 
-        response = self.update_media(client, headers, asset)
+        response = self.update_media(client, headers, asset.id)
         assert response.status_code == 200
         assert "data" in response.json()
         assert "updateMedia" in response.json()["data"]
         assert "id" in response.json()["data"]["updateMedia"]
         assert "errors" not in response.json()
 
-    def update_media(self, client, headers, asset, file_location="image/test.png"):
+        response = self.update_media(client, headers, 1000)
+        assert response.status_code == 200
+        assert "errors" in response.json()
+
+        asset = DBSession.query(AssetModel).all()[1]
+        response = self.update_media(client, headers, asset.id)
+        assert "errors" in response.json()
+
+    def update_media(self, client, headers, id, file_location="image/test.png"):
         variables = {
             "input": {
-                "id": asset.id,
+                "id": id,
                 "name": "updated_test",
                 "mediaType": "image",
                 "description": '{ "config": "test" }',
@@ -136,7 +145,7 @@ class TestMediaController:
     async def test_05_delete_media(self, client):
         headers = test_AuthenticationController.get_headers(client, SUPER_ADMIN)
         asset = DBSession.query(AssetModel).first()
-        self.update_media(client, headers, asset, "image/test2.png")
+        self.update_media(client, headers, asset.id, "image/test2.png")
 
         response = self.delete_media_request(client, headers, asset)
         assert response.json()["data"]["deleteMedia"]["success"] == True

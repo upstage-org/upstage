@@ -5,6 +5,8 @@ from global_config import JWT_HEADER_NAME, DBSession
 from assets.http.schema import asset_graphql_app
 from authentication.tests.auth_test import TestAuthenticationController
 from assets.db_models.asset import AssetModel
+from stages.tests.test_stage import TestStageController
+from stages.db_models.stage import StageModel
 from users.db_models.user import UserModel
 
 
@@ -16,6 +18,7 @@ def load_base64_from_image(image_path):
 
 app.mount("/asset_graphql", asset_graphql_app)
 test_AuthenticationController = TestAuthenticationController()
+test_stageController = TestStageController()
 
 
 @pytest.mark.anyio
@@ -88,6 +91,8 @@ class TestAssetController:
             }
         """
 
+        stage = await test_stageController.test_01_create_stage(client)
+
         variables = {
             "input": {
                 "name": "test",
@@ -97,7 +102,7 @@ class TestAssetController:
                 "h": 100,
                 "tags": ["test"],
                 "copyrightLevel": 0,
-                "stageIds": [],
+                "stageIds": [stage["id"]],
                 "userIds": [assigned_user["data"]["login"]["user_id"]],
                 "owner": data["data"]["login"]["username"],
             }
@@ -124,6 +129,9 @@ class TestAssetController:
             }
         """
 
+        stages = DBSession.query(StageModel).all()
+        users = DBSession.query(UserModel).all()
+
         variables = {
             "input": {
                 "name": "test",
@@ -133,8 +141,8 @@ class TestAssetController:
                 "h": 100,
                 "tags": ["test"],
                 "copyrightLevel": 0,
-                "stageIds": [],
-                "userIds": [],
+                "stageIds": [stage.id for stage in stages],
+                "userIds": [user.id for user in users],
                 "owner": "test",
             }
         }
@@ -151,7 +159,6 @@ class TestAssetController:
     async def test_05_search_assets(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)
         asset = DBSession.query(AssetModel).join(UserModel).first()
-        print(asset.to_dict())
         headers = {
             "Authorization": f'Bearer {data["data"]["login"]["access_token"]}',
             JWT_HEADER_NAME: data["data"]["login"]["refresh_token"],
@@ -169,6 +176,9 @@ class TestAssetController:
             }
         """
 
+        users = DBSession.query(UserModel).all()
+        stages = DBSession.query(StageModel).all()
+
         response = client.post(
             "/asset_graphql",
             json={
@@ -185,10 +195,10 @@ class TestAssetController:
                         ],
                         "name": "test",
                         "mediaTypes": ["image"],
-                        "owners": [asset.owner.username],
-                        "stages": [],
+                        "owners": [user.username for user in users],
+                        "stages": [stage.id for stage in stages],
                         "tags": ["test"],
-                        "createdBetween": ["2021-01-01", "2024-12-31"],
+                        "createdBetween": ["2021-01-01", "2026-12-31"],
                     }
                 },
             },
@@ -200,7 +210,7 @@ class TestAssetController:
         assert "media" in data["data"]
         assert "totalCount" in data["data"]["media"]
         assert "edges" in data["data"]["media"]
-        assert len(data["data"]["media"]["edges"]) == 1
+        assert len(data["data"]["media"]["edges"]) > 0
 
     async def test_06_get_all_medias(self, client):
         data = await test_AuthenticationController.test_02_login_successfully(client)

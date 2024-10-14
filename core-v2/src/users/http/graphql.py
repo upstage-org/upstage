@@ -38,8 +38,22 @@ type_defs = gql("""
 
     type Mutation {
         createUser(inbound: CreateUserInput!): CreateUserPayload
+        requestPasswordReset(email: String!): CommonResponse
+        verifyPasswordReset(input: ResetPasswordInput!): CommonResponse
+        resetPassword(input: ResetPasswordInput!): CommonResponse       
     }  
+                
+    input ResetPasswordInput {
+        email: String!
+        token: String!
+        password: String
+    }
       
+    type CommonResponse {
+        success: Boolean
+        message: String           
+    }
+                
     fragment userFragment on User {
         id
         dbId

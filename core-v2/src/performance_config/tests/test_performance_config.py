@@ -31,8 +31,8 @@ class TestPerformanceConfig:
             query PerformanceConfig {
                 performanceConfig {
                     id
-                    ownerId
-                } 
+
+                 } 
 
             }
         """

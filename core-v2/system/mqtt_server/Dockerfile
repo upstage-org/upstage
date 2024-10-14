@@ -5,8 +5,8 @@ RUN apk --no-cache add mosquitto mosquitto-clients
 
 RUN mkdir /var/log/mosquitto && chown mosquitto /var/log/mosquitto
 
-COPY ./pw.txt /etc/mosquitto/pw.txt
-COPY ./mosquitto.conf /etc/mosquitto/mosquitto.conf
+COPY ./system/mqtt_server/pw.txt /etc/mosquitto/pw.txt
+COPY ./system/mqtt_server/mosquitto.conf /etc/mosquitto/mosquitto.conf
 RUN mosquitto_passwd  -U /etc/mosquitto/pw.txt
 
 # Expose MQTT port

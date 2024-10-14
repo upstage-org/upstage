@@ -11,7 +11,7 @@ type_defs = gql("""
                 
     type PerformanceCommunication {
         id: ID!
-        ownerId: Int!
+        ownerId: ID!
         ipAddress: String!
         websocketPort: Int!
         webclientPort: Int!
@@ -26,7 +26,7 @@ type_defs = gql("""
     type PerformanceConfig {
         id: ID!
         name: String!
-        ownerId: Int!
+        ownerId: ID!
         description: String!
         splashScreenText: String
         splashScreenAnimationUrls: String
@@ -37,7 +37,7 @@ type_defs = gql("""
     type Scene {
         id: ID!
         name: String!
-        ownerId: Int!
+        ownerId: ID!
         description: String!
         splashScreenText: String
         splashScreenAnimationUrls: String
@@ -47,8 +47,8 @@ type_defs = gql("""
                 
     type ParentStage {
         id: ID!
-        stageId: Int!
-        childAssetId: Int!
+        stageId: ID!
+        childAssetId: ID!
         stage: Stage!
         childAsset: Asset!
     }
