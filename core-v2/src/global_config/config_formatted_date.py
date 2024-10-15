@@ -1,9 +1,9 @@
 DATABASE_CONNECT = "postgresql"
-DATABASE_HOST = "localhost"
-DATABASE_PORT = 5437
+DATABASE_HOST = "postgres"
+DATABASE_PORT = 5432
 DATABASE_USER = "postgres"
-DATABASE_PASSWORD = "postgres"
-DATABASE_NAME = "up_test"
+DATABASE_PASSWORD = "k8d1XbA4GoMWBd+p"
+DATABASE_NAME = "upstage"
 
 MONGO_DB = "upstage"
 MONGO_HOST = "mongodb"
@@ -24,5 +24,4 @@ MQTT_BROKER = "mosquitto"
 MQTT_PORT = 1883
 MQTT_TRANSPORT = "tcp"
 MQTT_USER = "admin"
-MQTT_PASSWORD = "abcd1234"
-ENV_TYPE="test"
+MQTT_PASSWORD = "908nn4uHZqdJods7"

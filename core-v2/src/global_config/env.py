@@ -91,7 +91,7 @@ else:
 UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")
 ENV_TYPE = os.getenv("ENV_TYPE", "development")
 
-hstr = "from .{} import *".format(str(os.getenv("TIMESTAMP", "formatted_date")))
+hstr = "from .config_{} import *".format(str(os.getenv("TIMESTAMP", "formatted_date")))
 exec(hstr)
 
 DATABASE_URL = f"{DATABASE_CONNECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"

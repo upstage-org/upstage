@@ -1,12 +1,13 @@
 #!/bin/sh
 # Get the current date in the format DayOfWeek_Day_Month_Year
-formatted_date=$(date +"%A_%d_%m_%Y")
+formatted_date=$(date +"%d_%m_%Y")
 
 # Print the formatted date
 echo "Formatted Date: $formatted_date"
 
 # Rename a file to formatted_date.py
-mv src/global_config/formatted_date.py src/global_config/$formatted_date.py
+
+mv src/global_config/config_formatted_date.py src/global_config/config_$formatted_date.py
 
 # Export the timestamp as an environment variable
 export TIMESTAMP=$formatted_date
