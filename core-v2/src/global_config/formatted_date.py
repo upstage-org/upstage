@@ -1,0 +1,28 @@
+DATABASE_CONNECT = "postgresql"
+DATABASE_HOST = "localhost"
+DATABASE_PORT = 5437
+DATABASE_USER = "postgres"
+DATABASE_PASSWORD = "postgres"
+DATABASE_NAME = "up_test"
+
+MONGO_DB = "upstage"
+MONGO_HOST = "mongodb"
+MONGO_PORT = 27017
+EVENT_COLLECTION = "events"
+MONGODB_COLLECTION_TOKEN = "token"
+MONGO_EMAIL_DB = "email"
+MONGO_EMAIL_HOST = "mongodb"
+MONGO_EMAIL_PORT = 27017
+
+EMAIL_USE_TLS = False
+EMAIL_HOST = "mail.gandi.net"
+EMAIL_HOST_USER = "support@upstage.live"
+EMAIL_HOST_PASSWORD = "4=Mw-a!xf34+XgGedt*E"
+EMAIL_PORT = 465
+EMAIL_HOST_DISPLAY_NAME = "UpStage Support"
+MQTT_BROKER = "mosquitto"
+MQTT_PORT = 1883
+MQTT_TRANSPORT = "tcp"
+MQTT_USER = "admin"
+MQTT_PASSWORD = "abcd1234"
+ENV_TYPE="test"

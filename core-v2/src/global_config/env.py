@@ -18,11 +18,11 @@ DATABASE_NAME = os.getenv("DATABASE_NAME")
 EMAIL_TIME_EXPIRED_TOKEN = os.getenv("EMAIL_TIME_EXPIRED_TOKEN", 600)
 MONGO_DB = os.getenv("MONGO_DB")
 MONGO_HOST = os.getenv("MONGO_HOST")
-MONGO_PORT = int(os.getenv("MONGO_PORT"))
+MONGO_PORT = int(os.getenv("MONGO_PORT", "27017"))
 MONGODB_COLLECTION_TOKEN = os.getenv("MONGODB_COLLECTION_TOKEN")
 MONGO_EMAIL_DB = os.getenv("MONGO_EMAIL_DB")
 MONGO_EMAIL_HOST = os.getenv("MONGO_EMAIL_HOST")
-MONGO_EMAIL_PORT = int(os.getenv("MONGO_EMAIL_PORT"))
+MONGO_EMAIL_PORT = int(os.getenv("MONGO_EMAIL_PORT", "27017"))
 
 # JWT
 SECRET_KEY = os.getenv("JWT_SECRET_KEY", "Secret@123")
@@ -36,8 +36,6 @@ APPLE_ACCESS_TOKEN_CREATE = os.getenv("APPLE_ACCESS_TOKEN_CREATE")
 APPLE_APP_ID = os.getenv("APPLE_APP_ID")
 APPLE_APP_SECRET = os.getenv("APPLE_APP_SECRET")
 APPLE_TEAM_ID = os.getenv("APPLE_TEAM_ID")
-
-DATABASE_URL = f"{DATABASE_CONNECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 JWT_HEADER_NAME = "X-Access-Token"
 
@@ -69,7 +67,7 @@ STREAM_EXPIRY_DAYS = 180
 STREAM_KEY = os.getenv("STREAM_KEY", "")
 
 MQTT_BROKER = os.getenv("MQTT_BROKER")
-MQTT_PORT = int(os.getenv("MQTT_PORT"))
+MQTT_PORT = int(os.getenv("MQTT_PORT", "1883"))
 MQTT_TRANSPORT = "tcp"
 MQTT_USER = os.getenv("MQTT_USER")
 MQTT_PASSWORD = os.getenv("MQTT_PASSWORD")
@@ -82,7 +80,6 @@ NGINX_CONFIG_FILE = os.getenv(
     "NGINX_CONFIG_FILE", "config/dev/dev_app1_nginx_upstage.conf"
 )
 
-
 if "HARDCODED_HOSTNAME" in os.environ:
     ORIG_HOSTNAME = HOSTNAME = os.environ["HARDCODED_HOSTNAME"]
     print("Loading local settings from a hard-coded env hostname: %s.py" % HOSTNAME)
@@ -91,9 +88,13 @@ else:
     HOSTNAME = socket.gethostname().replace(".", "_").replace("-", "_")
     print("Loading local settings from %s.py" % HOSTNAME)
 
-
 UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")
 ENV_TYPE = os.getenv("ENV_TYPE", "development")
+
+hstr = "from .{} import *".format(str(os.getenv("TIMESTAMP", "formatted_date")))
+exec(hstr)
+
+DATABASE_URL = f"{DATABASE_CONNECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
 
 
 UPLOAD_USER_CONTENT_FOLDER = "/home/upstage/assets_all_releases"

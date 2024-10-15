@@ -1,4 +1,17 @@
-cp .env.example .env
+#!/bin/sh
+# Get the current date in the format DayOfWeek_Day_Month_Year
+formatted_date=$(date +"%A_%d_%m_%Y")
+
+# Print the formatted date
+echo "Formatted Date: $formatted_date"
+
+# Rename a file to formatted_date.py
+mv src/global_config/formatted_date.py src/global_config/$formatted_date.py
+
+# Export the timestamp as an environment variable
+export TIMESTAMP=$formatted_date
+
 alembic upgrade head
 ruff format src
-uvicorn src.main:app --reload
+
+uvicorn src.main:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 3001

@@ -1,17 +1,18 @@
-version: '3.3'
+version: '3.8'
 services:
   postgres:
     image: postgres:16
+    container_name: postgres_container
     volumes:
       - data-volume:/data/db
     ports:
-      - 5432:5432
+      - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: "J8+6OiFRLXFPVRrD"
-      POSTGRES_USER: postgres
-      POSTGRES_DB: "upstage-dev"
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_DB: ${DATABASE_NAME}
     networks:
-      - upstage
+     - upstage-network
   mongodb:
     image: mongo:latest
     container_name: mongodb_container
@@ -20,11 +21,12 @@ services:
     volumes:
       - mongo_data:/data/db
     networks:
-      - upstage
+    - upstage-network
   mosquitto:
     build:
       context: .
       dockerfile: ./system/mqtt_server/Dockerfile
+    container_name: mosquitto_container
     ports:
       - "1883:1883"
       - "9001:9001"
@@ -32,10 +34,24 @@ services:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
     networks:
-      - upstage
+     - upstage-network
+  upstage:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./system/upstage:/app
+    networks:
+      - upstage-network
+    depends_on:
+      - postgres
+      - mongodb
+      - mosquitto
 
 networks:
-  upstage:
+  upstage-network:
 volumes:
   data-volume:
   mongo_data:

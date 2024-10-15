@@ -1,9 +1,9 @@
 import os
 import sys
 from logging.config import fileConfig
-
 from dotenv import dotenv_values
 from sqlalchemy import engine_from_config, pool, text
+from src.global_config import DATABASE_URL
 
 from alembic import context
 
@@ -28,13 +28,8 @@ def get_env(key, default=None):
   return loaded_env.get(key) or os.getenv(key, default)
 
 
-database_url = (
-  f"postgresql://"
-  f"{get_env('DATABASE_USER')}:{get_env('DATABASE_PASSWORD')}"
-  f"@{get_env('DATABASE_HOST')}:{get_env('DATABASE_PORT')}"
-  f"/{get_env('DATABASE_NAME')}"
-)
-config.set_main_option('sqlalchemy.url', database_url)
+
+config.set_main_option('sqlalchemy.url', DATABASE_URL)
 
 # add your model's MetaData object here
 # for 'autogenerate' support

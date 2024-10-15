@@ -24,3 +24,4 @@ aiosmtplib
 pytest
 faker
 pyotp
+arrow
