@@ -6,7 +6,6 @@ formatted_date=$(date +"%d_%m_%Y")
 echo "Formatted Date: $formatted_date"
 
 # Rename a file to formatted_date.py
-
 mv src/global_config/config_formatted_date.py src/global_config/config_$formatted_date.py
 
 # Export the timestamp as an environment variable
@@ -14,5 +13,4 @@ export TIMESTAMP=$formatted_date
 
 alembic upgrade head
 ruff format src
-
-uvicorn src.main:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 3001
+uvicorn src.main:app --proxy-headers --forwarded-allow-ips='*' --host 0.0.0.0 --port 3000

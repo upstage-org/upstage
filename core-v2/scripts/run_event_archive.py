@@ -12,8 +12,10 @@ from src.event_archive.systems.system import run
 from src.event_archive.messages.mqtt import build_client
 
 if __name__ == "__main__":
+    print(f"Connecting to {MQTT_BROKER}:{MQTT_PORT} as {MQTT_USER}")
     run()
     mqtt_client = build_client()
+    print('Built client successful')
     mqtt_client.username_pw_set(MQTT_USER, MQTT_PASSWORD)
     mqtt_client.connect(MQTT_BROKER, MQTT_PORT)
     mqtt_client.loop_forever()

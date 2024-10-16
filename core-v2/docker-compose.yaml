@@ -49,6 +49,54 @@ services:
       - postgres
       - mongodb
       - mosquitto
+  upstage_event_archive:
+    build:
+      context: .
+      dockerfile: Dockerfile.upstage_event_archive
+    container_name: upstage_event_archive_container
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./system/event_archive:/app
+    networks:
+      - upstage-network
+    depends_on:
+      - postgres
+      - mongodb
+      - mosquitto
+  upstage_email:
+    build:
+      context: .
+      dockerfile: Dockerfile.upstage_email
+    container_name: upstage_email_container
+    ports:
+      - "81:80"
+      - "444:443"
+    volumes:
+      - ./system/email:/app
+    networks:
+      - upstage-network
+    depends_on:
+      - postgres
+      - mongodb
+      - mosquitto
+  upstage_stats:
+    build:
+      context: .
+      dockerfile: Dockerfile.upstage_stats
+    container_name: upstage_stats_container
+    ports:
+      - "82:80"
+      - "445:443"
+    volumes:
+      - ./system/stats:/app
+    networks:
+      - upstage-network
+    depends_on:
+      - postgres
+      - mongodb
+      - mosquitto
 
 networks:
   upstage-network:
