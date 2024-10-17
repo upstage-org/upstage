@@ -23,9 +23,7 @@ services:
     networks:
     - upstage-network
   mosquitto:
-    build:
-      context: .
-      dockerfile: ./system/mqtt_server/Dockerfile
+    image: eclipse-mosquitto:2.0.19
     container_name: mosquitto_container
     ports:
       - "1883:1883"
@@ -33,8 +31,16 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
+      - ./system/mqtt_server/mosquitto.conf:/mosquitto/config/mosquitto.conf
+      - ./system/mqtt_server/pw.txt:/etc/mosquitto/pw.txt
     networks:
      - upstage-network
+    command: >
+      /bin/sh -c "chmod 600 /etc/mosquitto/pw.txt &&
+      mosquitto_passwd  -U /etc/mosquitto/pw.txt && 
+      mosquitto -c /mosquitto/config/mosquitto.conf"
+
+
   upstage:
     build:
       context: .

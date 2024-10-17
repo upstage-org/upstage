@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM registry.access.redhat.com/ubi9/python-312:latest
 
 WORKDIR /usr/app
 
@@ -8,6 +8,7 @@ RUN pip install -r requirements.txt
 
 
 ADD . .
+USER root
 RUN chmod +x ./startup.sh
 
 EXPOSE 3000

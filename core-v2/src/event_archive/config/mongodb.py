@@ -11,6 +11,7 @@ import pymongo
 
 
 def build_mongo_client(host=MONGO_HOST, port=MONGO_PORT):
+    print(f"Connecting to MongoDB at {host}:{port}")
     return pymongo.MongoClient(host, port)
 
 

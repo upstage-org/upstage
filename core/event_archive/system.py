@@ -93,7 +93,6 @@ def worker():
 
 
 def run():
-    global event_queue
     processes = [Process(target=worker, args=()) for _ in range(cpu_count())]
     logging.info(f"Spawning {len(processes)} processes...")
     for p in processes:

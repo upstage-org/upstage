@@ -115,6 +115,7 @@ def valid_token(token):
 
 
 async def generate_email_token_clients():
+    print("Generating email tokens")
     while True:
         client = get_mongo_token_collection()
         """

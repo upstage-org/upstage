@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM registry.access.redhat.com/ubi9/python-312:latest
 
 WORKDIR /usr/app
 
@@ -7,6 +7,7 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 ADD . .
+USER root
 RUN chmod +x ./scripts/setup.sh
 
 RUN ./scripts/setup.sh
@@ -15,4 +16,4 @@ EXPOSE 80
 EXPOSE 443
 
 RUN chmod +x ./scripts/run_event_archive.py
-CMD ["sh", "-c", "TIMESTAMP=$(date +\"%d_%m_%Y\") python3 -m scripts.run_event_archive"]
+CMD ["sh", "-c", "TIMESTAMP=$(date +%d_%m_%Y) python3 -m scripts.run_event_archive"]
