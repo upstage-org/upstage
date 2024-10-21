@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  combined-service:
+    build:
+      context: .
+      dockerfile: Dockerfile.svc
+    container_name: combined-services
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_USER: postgres
+      POSTGRES_DB: upstage
+    ports:
+      - "5432:5432"
+      - "27017:27017"
+      - "1883:1883"
+      - "9001:9001"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - mongo_data:/data/db
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+      - ./mongo/mongod.conf:/etc/mongod.conf  # Mount custom config file
+
+volumes:
+  postgres_data:
+  mongo_data:
+  mosquitto_data:
+  mosquitto_log:
