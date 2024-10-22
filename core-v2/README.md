@@ -13,27 +13,26 @@ This guide will help you set up and run the Upstage application using Docker.
 
 Go to the `config_formatted_date.py` file and update your environment variables as needed.
 
-### 2. Run Docker Containers
+### 2. Start the Application
 
-To start the Docker containers, run the following command:
+You can start the Upstage application using either a single container or multiple containers.
+
+#### Single Container
+
+To start the application using a single container, run the following command:
 
 ```sh
+cd single-container
+sh startup.sh
+```
+
+#### Multiple Containers
+
+To start the application using multiple containers, use Docker Compose. First, ensure you have a `docker-compose.yml` file configured. Then, run the following command:
+
+```sh
+cd mutilple-containers
 docker-compose up -d
 ```
 
-This command will build and start the containers in detached mode.
-
-### 3. Run Scripts
-To run scripts within the Upstage backend container, follow these steps:
-
-1. Access the Upstage backend container:
-
-```sh
-docker exec -it upstage /bin/bash
-```
-
-2. Export the TIMESTAMP environment variable:
-
-```sh
-export TIMESTAMP=$(date +"%d_%m_%Y")
-```
+This will start all the services defined in your `docker-compose.yml` file.

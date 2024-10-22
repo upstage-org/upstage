@@ -30,3 +30,17 @@ until nc -zv localhost 1883 &>/dev/null; do
 done
 
 echo "Mosquitto is ready!"
+
+
+until nc -zv localhost 3000 &>/dev/null; do
+    echo "Waiting for port 3000 to be ready..."
+    sleep 2
+done
+
+echo "Application is ready!"
+
+docker exec -d upstage_app /bin/bash -c "TIMESTAMP=$(date +%d_%m_%Y) python3 -m scripts.run_upstage_email > upstage_email.log 2>&1 &"
+docker exec -d upstage_app /bin/bash -c "TIMESTAMP=$(date +%d_%m_%Y) python3 -m scripts.run_event_archive > event_archive.log 2>&1 &"
+docker exec -d upstage_app /bin/bash -c "TIMESTAMP=$(date +%d_%m_%Y) python3 -m scripts.run_upstage_stats > upstage_stats.log 2>&1 &"
+
+echo "Timestamp is ready!"

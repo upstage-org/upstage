@@ -8,9 +8,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_PASSWORD: k8d1XbA4GoMWBd+p
+      POSTGRES_USER: postgres
+      POSTGRES_DB: upstage
     networks:
      - upstage-network
   mongodb:
@@ -31,34 +31,32 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
-      - ./system/mqtt_server/mosquitto.conf:/mosquitto/config/mosquitto.conf
-      - ./system/mqtt_server/pw.txt:/etc/mosquitto/pw.txt
+      - ./../system/mqtt_server/mosquitto.conf:/etc/mosquitto/mosquitto.conf
+      - ./../system/mqtt_server/pw.txt:/etc/mosquitto/pw.txt
     networks:
      - upstage-network
     command: >
-      /bin/sh -c "chmod 600 /etc/mosquitto/pw.txt &&
+      /bin/sh -c "chmod 0700 /etc/mosquitto/pw.txt &&
       mosquitto_passwd  -U /etc/mosquitto/pw.txt && 
-      mosquitto -c /mosquitto/config/mosquitto.conf"
+      mosquitto -c /etc/mosquitto/mosquitto.conf"
 
 
   upstage:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ../
+      dockerfile: ./mutilple-containers/Dockerfile
     ports:
       - "3000:3000"
     volumes:
       - ./system/upstage:/app
+      -  /home/upstage2/uploads:/usr/app/uploads
     networks:
       - upstage-network
-    depends_on:
-      - postgres
-      - mongodb
-      - mosquitto
+
   upstage_event_archive:
     build:
-      context: .
-      dockerfile: Dockerfile.upstage_event_archive
+      context: ../
+      dockerfile: ./mutilple-containers/Dockerfile.upstage_event_archive
     container_name: upstage_event_archive_container
     ports:
       - "80:80"
@@ -67,14 +65,11 @@ services:
       - ./system/event_archive:/app
     networks:
       - upstage-network
-    depends_on:
-      - postgres
-      - mongodb
-      - mosquitto
+
   upstage_email:
     build:
-      context: .
-      dockerfile: Dockerfile.upstage_email
+      context: ../
+      dockerfile: ./mutilple-containers/Dockerfile.upstage_email
     container_name: upstage_email_container
     ports:
       - "81:80"
@@ -83,14 +78,11 @@ services:
       - ./system/email:/app
     networks:
       - upstage-network
-    depends_on:
-      - postgres
-      - mongodb
-      - mosquitto
+
   upstage_stats:
     build:
-      context: .
-      dockerfile: Dockerfile.upstage_stats
+      context: ../
+      dockerfile: ./mutilple-containers/Dockerfile.upstage_stats
     container_name: upstage_stats_container
     ports:
       - "82:80"
@@ -99,10 +91,6 @@ services:
       - ./system/stats:/app
     networks:
       - upstage-network
-    depends_on:
-      - postgres
-      - mongodb
-      - mosquitto
 
 networks:
   upstage-network:
