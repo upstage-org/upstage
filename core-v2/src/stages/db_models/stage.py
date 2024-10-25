@@ -17,7 +17,7 @@ class StageModel(BaseModel):
     id = Column(BigInteger, primary_key=True)
     name = Column(String, nullable=False)
     description = Column(Text, nullable=True)
-    owner_id = Column(Integer, ForeignKey(UserModel.id), nullable=False, default=0)
+    owner_id = Column(Integer, ForeignKey("upstage_user.id"), nullable=False, default=0)
     file_location = Column(Text, nullable=False)
     created_on = Column(DateTime, nullable=False, default=datetime.now)
     last_access = Column(DateTime, nullable=True)

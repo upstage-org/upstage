@@ -88,6 +88,8 @@ else:
     HOSTNAME = socket.gethostname().replace(".", "_").replace("-", "_")
     print("Loading local settings from %s.py" % HOSTNAME)
 
+UPLOAD_USER_CONTENT_FOLDER = "/home/upstage/assets_all_releases"
+
 UPSTAGE_FRONTEND_URL = os.getenv("UPSTAGE_FRONTEND_URL", "http://localhost:3000")
 ENV_TYPE = os.getenv("ENV_TYPE", "development")
 hstr = "from .config_{} import *".format(str(os.getenv("TIMESTAMP", "formatted_date")))
@@ -96,6 +98,3 @@ print(hstr)
 exec(hstr)
 
 DATABASE_URL = f"{DATABASE_CONNECT}://{DATABASE_USER}:{DATABASE_PASSWORD}@{DATABASE_HOST}:{DATABASE_PORT}/{DATABASE_NAME}"
-
-
-UPLOAD_USER_CONTENT_FOLDER = "/home/upstage/assets_all_releases"

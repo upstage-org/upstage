@@ -14,7 +14,6 @@ projdir = os.path.abspath(os.path.join(app_dir, "../"))
 from .env import DATABASE_URL
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy.ext.declarative import declarative_base
-from psycopg2.errors import UniqueViolation
 
 # logging.basicConfig()
 # logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)

@@ -25,3 +25,6 @@ pytest
 faker
 pyotp
 arrow
+terminal_colors
+PIL
+graphql_server
