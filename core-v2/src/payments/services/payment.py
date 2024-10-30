@@ -47,15 +47,15 @@ class PaymentService:
 
         return payment_check
 
-    def create_subscription_process(self, data: CreateSubscriptionInput):
-        if type not in ACCEPT_TYPE:
+    async def create_subscription_process(self, data: CreateSubscriptionInput):
+        if data.type not in ACCEPT_TYPE:
             return {"success": False, "message": "Invalid payment type"}
 
-        if type == "card":
+        if  data.type == "card":
             card_number = data.cardNumber
             card_exp_year = data.expYear
             card_exp_month = data.expMonth
-            card_cvc = data.cardCvc
+            card_cvc = data.cvc
             amount = data.amount
             currency = data.currency
 
@@ -101,21 +101,17 @@ class PaymentService:
         subscription = stripe.Subscription.retrieve(subscription_id)
         return subscription
 
-    def cancel_subscription_process(self, subscription_id: str):
-        self.cancel_subscription(subscription_id)
-        return convert_keys_to_camel_case({"success": True})
-
-    def cancel_subscription(self, subscription_id):
+    async def cancel_subscription(self, subscription_id):
         """Cancel a subcription"""
-        deletedSubscription = stripe.Subscription.delete(subscription_id)
-        return deletedSubscription
+        stripe.Subscription.delete(subscription_id)
+        return {"success": True}
 
     def create_customer(self, email):
         """Create new customer"""
         customer = stripe.Customer.create(email=email)
         return customer
 
-    def update_email_customer(self, customer_id, email):
+    async def update_email_customer(self, customer_id, email):
         """Update customer email"""
         stripe.Customer.modify(customer_id, email=email)
         return {"success": True}
@@ -143,11 +139,11 @@ class PaymentService:
         )
         return price
 
-    def one_time_purchase(self, data: OneTimePurchaseInput):
+    async def one_time_purchase(self, data: OneTimePurchaseInput):
         card_number = data.cardNumber
         card_exp_year = data.expYear
         card_exp_month = data.expMonth
-        card_cvc = data.card_cvc
+        card_cvc = data.cvc
         amount = data.amount
 
         card_token = self.generate_card_token(

@@ -28,6 +28,8 @@ type_defs = gql("""
         cvc: String!
         amount: Float!
         currency: String!
+        email: String!
+        type: String!
     }
                     
     type CommonResponse {

@@ -16,3 +16,5 @@ class CreateSubscriptionInput(BaseModel):
     cvc: str = Field(...)
     amount: float = Field(...)
     currency: str = Field(...)
+    email: str = Field(...)
+    type: str = Field(...)

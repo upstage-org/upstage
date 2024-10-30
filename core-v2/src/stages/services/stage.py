@@ -31,7 +31,7 @@ class StageService:
 
             local_db_session.add(stage)
             local_db_session.commit()
-            
+
             self.update_stage_attribute(
                 stage.id, "cover", input.cover, local_db_session
             )
@@ -239,7 +239,6 @@ class StageService:
                 )
             else:
                 raise GraphQLError("The stage is already sweeped!")
-
 
             return convert_keys_to_camel_case(
                 {"success": True, "performanceId": performance.id}

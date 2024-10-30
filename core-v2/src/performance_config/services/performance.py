@@ -73,7 +73,7 @@ class PerformanceService:
             performance.name = input.name
             performance.description = input.description
             local_db_session.flush()
-        
+
             return {"success": True}
 
     def delete_performance(self, user: UserModel, id: int):
