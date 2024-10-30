@@ -60,7 +60,7 @@ class TestAuthenticationController:
         )
         global_session.add(user)
         global_session.commit()
-        global_session.close()
+        global_session.flush()
         variables = {"payload": {"username": email, "password": "testpassword"}}
         response = client.post(
             "/graphql", json={"query": self.login_query, "variables": variables}

@@ -69,6 +69,5 @@ class SceneService:
                 )
 
             scene.active = False
-            local_db_session.commit()
             local_db_session.flush()
             return {"success": True, "message": "Scene deleted successfully"}

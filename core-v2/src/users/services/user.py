@@ -62,7 +62,6 @@ class UserService:
             user.username = data.get("username", "")
             user.intro = data.get("intro", "")
             local_db_session.add(user)
-            local_db_session.commit()
             local_db_session.flush()
 
         user = (
@@ -129,7 +128,6 @@ class UserService:
 
             local_db_session.flush()
             local_db_session.add(OneTimeTOTPModel(user_id=user.id, code=otp))
-            local_db_session.commit()
             local_db_session.flush()
             await send(
                 [email],
@@ -191,5 +189,4 @@ class UserService:
 
             user.password = encrypt(input["password"])
             local_db_session.delete(otp)
-            local_db_session.commit()
             return {"success": True, "message": "Password reset successfully."}

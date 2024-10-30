@@ -215,7 +215,6 @@ class TestPerformanceController:
                 payload={"key": "value"},
             )
             session.add(event)
-            session.commit()
             session.flush()
 
         response = client.post(

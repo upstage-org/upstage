@@ -35,7 +35,7 @@ def update_terms_of_service(*_, url: str):
 
 @mutation.field("saveConfig")
 @authenticated(allowed_roles=[ADMIN, SUPER_ADMIN])
-def save_config(*_, input: ConfigInput):
+async def save_config(*_, input: ConfigInput):
     return SettingService().save_config(ConfigInput(**input))
 
 

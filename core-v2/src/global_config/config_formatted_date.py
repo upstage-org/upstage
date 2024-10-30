@@ -25,3 +25,8 @@ MQTT_PORT = 1883
 MQTT_TRANSPORT = "tcp"
 MQTT_USER = "admin"
 MQTT_PASSWORD = "908nn4uHZqdJods7"
+
+
+# payment
+STRIPE_KEY = ""
+STRIPE_PRODUCT_ID = ""

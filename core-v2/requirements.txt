@@ -28,3 +28,4 @@ arrow
 terminal_colors
 PIL
 graphql_server
+stripe

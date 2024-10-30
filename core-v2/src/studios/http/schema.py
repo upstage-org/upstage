@@ -79,8 +79,8 @@ def request_permission(_, info, assetId: int, note: str):
 
 @mutation.field("confirmPermission")
 @authenticated()
-def confirm_permission(_, info, id: int, approved: bool):
-    return StudioService().confirm_permission(
+async def confirm_permission(_, info, id: int, approved: bool):
+    return await StudioService().confirm_permission(
         UserModel(**info.context["request"].state.current_user), id, approved
     )
 

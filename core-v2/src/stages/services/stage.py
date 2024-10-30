@@ -31,8 +31,7 @@ class StageService:
 
             local_db_session.add(stage)
             local_db_session.commit()
-
-            local_db_session.refresh(stage)
+            
             self.update_stage_attribute(
                 stage.id, "cover", input.cover, local_db_session
             )
@@ -48,8 +47,6 @@ class StageService:
             self.update_stage_attribute(
                 stage.id, "playerAccess", input.playerAccess, local_db_session
             )
-            local_db_session.commit()
-            local_db_session.flush()
             return convert_keys_to_camel_case(stage.to_dict())
 
     def update_stage(self, user: UserModel, input: StageInput):
@@ -80,7 +77,6 @@ class StageService:
             self.update_stage_attribute(
                 stage.id, "config", input.config, local_db_session
             )
-            local_db_session.commit()
             return convert_keys_to_camel_case(stage.to_dict())
 
     def update_stage_attribute(
@@ -102,7 +98,6 @@ class StageService:
             )
             if stage_attribute:
                 stage_attribute.description = value
-                local_db_session.commit()
                 return
         local_db_session.add(
             StageAttributeModel(stage_id=stage_id, name=name, description=value)
@@ -143,8 +138,6 @@ class StageService:
             )
 
             local_db_session.delete(stage)
-            local_db_session.commit()
-            local_db_session.flush()
             return {"success": True, "message": "Stage deleted"}
 
     def duplicate_stage(self, user: UserModel, input: DuplicateStageInput):
@@ -168,11 +161,9 @@ class StageService:
 
             local_db_session.add(new_stage)
             local_db_session.commit()
-            local_db_session.refresh(new_stage)
 
             self.copy_data(input, local_db_session, new_stage)
 
-            local_db_session.commit()
             local_db_session.flush()
             return convert_keys_to_camel_case(new_stage.to_dict())
 
@@ -249,7 +240,6 @@ class StageService:
             else:
                 raise GraphQLError("The stage is already sweeped!")
 
-            local_db_session.commit()
 
             return convert_keys_to_camel_case(
                 {"success": True, "performanceId": performance.id}
@@ -284,7 +274,6 @@ class StageService:
                     stage_id=id, name="status", description="live"
                 )
             local_db_session.add(attribute)
-            local_db_session.commit()
             return {"result": attribute.description}
 
     def update_visibility(self, user: UserModel, id: int):
@@ -314,7 +303,6 @@ class StageService:
                     stage_id=id, name="visibility", description=True
                 )
             local_db_session.add(attribute)
-            local_db_session.commit()
             return {"result": attribute.description}
 
     def update_last_access(self, user: UserModel, id: int):
@@ -329,7 +317,6 @@ class StageService:
                 raise GraphQLError("You are not authorized to update this stage")
 
             stage.last_access = datetime.now()
-            local_db_session.commit()
             return {"result": stage.last_access}
 
     def get_parent_stage(self):

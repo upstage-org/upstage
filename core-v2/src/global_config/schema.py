@@ -19,6 +19,7 @@ def config_graphql_endpoints(app: FastAPI):
     from licenses.http.schema import license_graphql_app
     from performance_config.http.schema import performance_graphql_app
     from upstage_options.http.schema import config_graphql_app
+    from payments.http.schema import payment_graphql_app
 
     app.add_route("/api/user_graphql", user_graphql_app)
     app.add_websocket_route("/api/user_graphql", user_graphql_app)
@@ -42,6 +43,9 @@ def config_graphql_endpoints(app: FastAPI):
 
     app.add_route("/api/config_graphql", config_graphql_app)
     app.add_websocket_route("/api/config_graphql", config_graphql_app)
+
+    app.add_route("/api/payment_graphql", payment_graphql_app)
+    app.add_websocket_route("/api/payment_graphql", payment_graphql_app)
 
 
 def setup_studio_endpoint(app: FastAPI):

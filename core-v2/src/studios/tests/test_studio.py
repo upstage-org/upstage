@@ -2,6 +2,7 @@ from faker import Faker
 import pytest
 from authentication.tests.auth_test import TestAuthenticationController
 from assets.db_models.asset import AssetModel
+from assets.db_models.asset_usage import AssetUsageModel
 from stages.db_models.stage import StageModel
 from stages.tests.test_stage import TestStageController
 from studios.http.schema import studio_graphql_app
@@ -92,7 +93,6 @@ class TestStudioController:
         with ScopedSession() as session:
             user = session.query(UserModel).filter_by(username="test_user_1").first()
             user.active = False
-            session.commit()
             session.flush()
 
         user = (
@@ -428,7 +428,6 @@ class TestStudioController:
         with ScopedSession() as session:
             asset = session.query(AssetModel).first()
             asset.copyright_level = 2
-            session.commit()
             session.flush()
             variables = {
                 "assetId": asset.id,
@@ -471,7 +470,7 @@ class TestStudioController:
                 }
         """
 
-        asset = DBSession.query(AssetModel).first()
+        asset = DBSession.query(AssetUsageModel).all()[-1]
 
         variables = {
             "id": asset.id,

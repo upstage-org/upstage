@@ -57,7 +57,6 @@ class AuthenticationService:
 
         with ScopedSession() as local_db_session:
             local_db_session.add(user_session)
-            local_db_session.commit()
             local_db_session.flush()
         self.user_service.update(user)
 
@@ -134,7 +133,7 @@ class AuthenticationService:
 
         return "Logged out"
 
-    def refresh_token(self, user: UserModel, request: Request):
+    async def refresh_token(self, user: UserModel, request: Request):
         refresh_token = request.headers.get(JWT_HEADER_NAME)
         if not refresh_token:
             raise GraphQLError("Invalid refresh token")

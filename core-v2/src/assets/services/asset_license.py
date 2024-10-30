@@ -19,6 +19,6 @@ class AssetLicenseService:
         )
         local_db_session.add(asset_license)
         local_db_session.commit()
-        local_db_session.refresh(asset_license)
         local_db_session.flush()
+        local_db_session.refresh(asset_license)
         return asset_license

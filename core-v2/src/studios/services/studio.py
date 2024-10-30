@@ -92,7 +92,6 @@ class StudioService:
                     password=encrypt(user["password"]),
                 )
                 session.add(user)
-            session.commit()
 
         users = (
             DBSession.query(UserModel)
@@ -140,7 +139,6 @@ class StudioService:
                 user = self._get_user(session, input.id)
                 self._check_existing_email(input)
                 await self._update_user_fields(user, input)
-                session.commit()
                 session.flush()
                 user = self._get_user(session, input.id)
                 return convert_keys_to_camel_case(user.to_dict())
@@ -220,7 +218,6 @@ class StudioService:
             )
 
             local_db_session.delete(user)
-            local_db_session.commit()
             return convert_keys_to_camel_case(
                 {"success": True, "message": "User deleted successfully!"}
             )
@@ -239,7 +236,6 @@ class StudioService:
                 raise GraphQLError("Old password is incorrect!")
 
             user.password = encrypt(input.newPassword)
-            local_db_session.commit()
             local_db_session.flush()
             return convert_keys_to_camel_case(
                 {"success": True, "message": "Password changed successfully!"}
@@ -301,7 +297,6 @@ class StudioService:
                     request_permission_acknowledgement(user, asset, note),
                 )
             local_db_session.add(asset_usage)
-            local_db_session.commit()
             local_db_session.flush()
             studio_url = f"{UPSTAGE_FRONTEND_URL}/stages"
             await send(
@@ -353,6 +348,7 @@ class StudioService:
                 .filter(AssetUsageModel.asset_id == asset_usage.asset_id)
                 .all()
             )
+
             return convert_keys_to_camel_case(
                 {
                     "permissions": [permission.to_dict() for permission in permissions],
@@ -381,6 +377,5 @@ class StudioService:
             asset.stages.append(
                 ParentStageModel(stage_id=stage_id, child_asset_id=asset_id)
             )
-            local_db_session.commit()
             local_db_session.flush()
         return {"success": True}

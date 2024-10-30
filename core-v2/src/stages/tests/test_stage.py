@@ -245,7 +245,6 @@ class TestStageController:
                 payload={"key": "value"},
             )
             session.add(event)
-            session.commit()
             session.flush()
         response = await self.sweep_stage(client, stage.id)
         assert response["data"]["sweepStage"]["success"] == True
@@ -325,7 +324,6 @@ class TestStageController:
                 .all()
             )
             session.delete(status[0])
-            session.commit()
             session.flush()
 
         response = client.post(
@@ -411,7 +409,6 @@ class TestStageController:
                 .first()
             )
             session.delete(status)
-            session.commit()
             session.flush()
 
         response = client.post(

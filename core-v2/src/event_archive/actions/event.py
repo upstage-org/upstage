@@ -17,7 +17,6 @@ def record_event(topic, payload, timestamp):
         with ScopedSession() as session:
             event = EventModel(topic=topic, payload=payload, mqtt_timestamp=timestamp)
             session.add(event)
-            session.commit()
             session.flush()
     except Exception as error:
         logging.error(error)

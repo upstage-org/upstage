@@ -12,7 +12,7 @@ mutation = MutationType()
 
 @query.field("mediaList")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def search_assets(_, info, **kwargs):
+async def search_assets(_, info, **kwargs):
     return AssetService().get_all_medias(
         UserModel(**info.context["request"].state.current_user), kwargs
     )
@@ -20,19 +20,19 @@ def search_assets(_, info, **kwargs):
 
 @query.field("media")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def search_assets(_, __, **kwargs):
+async def search_assets(_, __, **kwargs):
     return AssetService().search_assets(MediaTableInput(**kwargs["input"]))
 
 
 @mutation.field("uploadFile")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def upload_file(_, __, base64: str, filename: str):
+async def upload_file(_, __, base64: str, filename: str):
     return AssetService().upload_file(base64, filename)
 
 
 @mutation.field("saveMedia")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def save_media(_, info, input: SaveMediaInput):
+async def save_media(_, info, input: SaveMediaInput):
     return AssetService().save_media(
         UserModel(**info.context["request"].state.current_user),
         SaveMediaInput(**input),
@@ -41,7 +41,7 @@ def save_media(_, info, input: SaveMediaInput):
 
 @mutation.field("deleteMedia")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
-def delete_media(_, info, id: int):
+async def delete_media(_, info, id: int):
     return AssetService().delete_media(
         UserModel(**info.context["request"].state.current_user), id
     )

@@ -181,7 +181,6 @@ class AssetService:
                 asset.tags.append(MediaTagModel(tag_id=tag_model.id))
 
             local_db_session.flush()
-            local_db_session.commit()
             asset = (
                 local_db_session.query(AssetModel)
                 .filter(AssetModel.id == asset.id)
@@ -205,7 +204,6 @@ class AssetService:
             file_location=file_location,
         )
         local_db_session.add(asset)
-        local_db_session.commit()
         local_db_session.flush()
         local_db_session.refresh(asset)
         return asset
@@ -367,7 +365,6 @@ class AssetService:
             self.cleanup_assets(local_db_session, asset)
             local_db_session.delete(asset)
             local_db_session.flush()
-            local_db_session.commit()
 
             return {
                 "success": True,

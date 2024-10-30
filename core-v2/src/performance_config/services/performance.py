@@ -72,7 +72,8 @@ class PerformanceService:
 
             performance.name = input.name
             performance.description = input.description
-            local_db_session.commit()
+            local_db_session.flush()
+        
             return {"success": True}
 
     def delete_performance(self, user: UserModel, id: int):
@@ -93,7 +94,6 @@ class PerformanceService:
                 EventModel.performance_id == id
             ).delete(synchronize_session=False)
             local_db_session.delete(performance)
-            local_db_session.commit()
             return {"success": True}
 
     def save_recording(self, user: UserModel, id: int):
@@ -134,7 +134,6 @@ class PerformanceService:
 
             performance.saved_on = saved_on
             performance.recording = False
-            local_db_session.commit()
             local_db_session.flush()
 
             return (

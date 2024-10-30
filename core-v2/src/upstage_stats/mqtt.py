@@ -48,7 +48,6 @@ def on_message(client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
                         payload=payload,
                     )
                     session.add(connection_stat)
-                    session.commit()
             except Exception as error:
                 logging.error(error)
             finally:
@@ -73,11 +72,10 @@ def on_message(client: mqtt.Client, userdata, msg: mqtt.MQTTMessage):
                             payload=payload,
                         )
                         session.add(receive_stat)
-                        session.commit()
                     else:
                         receive_stat.update(
                             {
-                                ReceiveStatModel.mqtt_timestamp: datetime.utcnow(),
+                                ReceiveStatModel.mqtt_timestamp: datetime.now(),
                                 ReceiveStatModel.payload: payload,
                             },
                             synchronize_session=False,

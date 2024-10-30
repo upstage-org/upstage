@@ -46,7 +46,6 @@ class MediaService:
                 media = ParentStageModel(stage_id=input.id, child_asset_id=media_id)
                 local_db_session.add(media)
 
-            local_db_session.commit()
             local_db_session.flush()
             return convert_keys_to_camel_case(stage.to_dict())
 
@@ -175,7 +174,6 @@ class MediaService:
             self.cleanup_related_entities(id, local_db_session)
             self.remove_asset_from_frames(local_db_session, asset)
             local_db_session.delete(asset)
-            local_db_session.commit()
             return {"success": True, "message": "Media deleted successfully"}
 
     def remove_media_frames_and_get_path(self, local_db_session, asset):
@@ -243,7 +241,6 @@ class MediaService:
                 local_db_session.add(
                     ParentStageModel(stage_id=stage_id, child_asset_id=input.id)
                 )
-            local_db_session.commit()
             local_db_session.flush()
 
             asset = local_db_session.query(AssetModel).filter_by(id=input.id).first()
