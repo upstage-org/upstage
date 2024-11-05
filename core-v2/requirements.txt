@@ -26,6 +26,6 @@ faker
 pyotp
 arrow
 terminal_colors
-PIL
+Pillow
 graphql_server
 stripe

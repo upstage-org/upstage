@@ -50,6 +50,7 @@ services:
     volumes:
       - ./system/upstage:/app
       -  /home/upstage2/uploads:/usr/app/uploads
+      - /root/upstage/dashboard/demo:/usr/app/dashboard/demo
     networks:
       - upstage-network
 
@@ -59,8 +60,8 @@ services:
       dockerfile: ./mutilple-containers/Dockerfile.upstage_event_archive
     container_name: upstage_event_archive_container
     ports:
-      - "80:80"
-      - "443:443"
+      - "83:80"
+      - "446:443"
     volumes:
       - ./system/event_archive:/app
     networks:
