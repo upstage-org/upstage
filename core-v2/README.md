@@ -36,3 +36,16 @@ docker-compose up -d
 ```
 
 This will start all the services defined in your `docker-compose.yml` file.
+
+
+### 3. Application API endpoints
+
+- /api/user_graphql
+- /api/auth_graphql
+- /api/stage_graphql
+- /api/email_graphql
+- /api/license_graphql
+- /api/performance_graphql
+- /api/config_graphql
+- /api/payment_graphql
+- /api/studio_graphql
