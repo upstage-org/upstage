@@ -119,11 +119,42 @@ type_defs = gql("""
         visibility: Boolean
         cover: String
         description: String
-        playerAccess: String            
+        playerAccess: String    
+        permission: String
+        owner: User
+        assets: [Asset]        
     }
 
     type Query {
         hello: String
+        stages(input: SearchStageInput): StagesResponse
+        stage(id: ID!): Stage
+    }
+                
+    type StagesResponse {
+        totalCount: Int
+        edges: [Stage]
+    }
+
+    input SearchStageInput {
+        page: Int
+        limit: Int
+        sort: [StageSortEnum]
+        name: String
+        owners: [String]
+        createdBetween: [Date]
+    }
+
+        
+    enum StageSortEnum {
+        ASSET_TYPE_ID_ASC
+        ASSET_TYPE_ID_DESC
+        OWNER_ID_ASC
+        OWNER_ID_DESC
+        NAME_ASC
+        NAME_DESC
+        CREATED_ON_ASC
+        CREATED_ON_DESC
     }
                 
     type Asset {
@@ -135,6 +166,7 @@ type_defs = gql("""
         size: Int!
         description: String
         assetType: AssetType
+        fileLocation: String
         owner: User
         stages: [Stage]
         tags: [String]

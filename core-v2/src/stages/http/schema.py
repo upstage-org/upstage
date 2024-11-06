@@ -12,6 +12,7 @@ from stages.http.validation import (
     PerformanceInput,
     RecordInput,
     SceneInput,
+    SearchStageInput,
     StageInput,
     UpdateMediaInput,
     UploadMediaInput,
@@ -22,6 +23,23 @@ from users.db_models.user import ADMIN, PLAYER, SUPER_ADMIN, UserModel
 
 query = QueryType()
 mutation = MutationType()
+
+
+@query.field("stages")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def search_stages(_, info, input):
+    return StageService().get_all_stages(
+        UserModel(**info.context["request"].state.current_user),
+        SearchStageInput(**input),
+    )
+
+
+@query.field("stage")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+def get_stage(_, info, id: int):
+    return StageService().get_stage_by_id(
+        UserModel(**info.context["request"].state.current_user), id
+    )
 
 
 @mutation.field("createStage")

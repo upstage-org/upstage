@@ -51,7 +51,7 @@ class PaymentService:
         if data.type not in ACCEPT_TYPE:
             return {"success": False, "message": "Invalid payment type"}
 
-        if  data.type == "card":
+        if data.type == "card":
             card_number = data.cardNumber
             card_exp_year = data.expYear
             card_exp_month = data.expMonth

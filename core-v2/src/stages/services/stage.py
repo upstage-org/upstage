@@ -1,3 +1,4 @@
+import json
 import re
 from datetime import datetime
 from graphql import GraphQLError
@@ -5,7 +6,7 @@ from sqlalchemy import and_
 from global_config import DBSession, ScopedSession, convert_keys_to_camel_case
 
 from users.db_models.user import ADMIN, SUPER_ADMIN
-from stages.http.validation import DuplicateStageInput, StageInput
+from stages.http.validation import DuplicateStageInput, SearchStageInput, StageInput
 
 from event_archive.db_models.event import EventModel
 from performance_config.db_models.performance import PerformanceModel
@@ -14,11 +15,96 @@ from stages.db_models.parent_stage import ParentStageModel
 from stages.db_models.stage import StageModel
 from stages.db_models.stage_attribute import StageAttributeModel
 from users.db_models.user import UserModel
+from assets.db_models.asset import AssetModel
 
 
 class StageService:
     def __init__(self):
         pass
+
+    def get_all_stages(self, user: UserModel, input: SearchStageInput):
+        count = DBSession.query(StageModel).count()
+        query = (
+            DBSession.query(StageModel)
+            .outerjoin(UserModel)
+            .outerjoin(ParentStageModel)
+            .outerjoin(AssetModel)
+        )
+
+        if input.name:
+            query = query.filter(StageModel.name.ilike(f"%{input.name}%"))
+
+        if input.owners:
+            query = query.filter(StageModel.owner_id.in_(input.owners))
+
+        if input.createdBetween:
+            query = query.filter(
+                StageModel.created_on.between(
+                    input.createdBetween[0], input.createdBetween[1]
+                )
+            )
+
+        if input.sort:
+            sort = input.sort
+            for sort_option in sort:
+                field, direction = sort_option.rsplit("_", 1)
+                if field == "OWNER_ID":
+                    sort_field = StageModel.owner_id
+                elif field == "NAME":
+                    sort_field = StageModel.name
+                elif field == "CREATED_ON":
+                    sort_field = StageModel.created_on
+                if direction == "ASC":
+                    query = query.order_by(sort_field.asc())
+                elif direction == "DESC":
+                    query = query.order_by(sort_field.desc())
+
+        limit = input.limit if input.limit else 10
+        page = input.page if input.page else 1
+
+        query = query.limit(limit).offset((page - 1) * limit)
+
+        stages = query.all()
+
+        return {
+            "edges": [
+                convert_keys_to_camel_case(
+                    {
+                        **stage.to_dict(),
+                        "assets": [
+                            asset.child_asset.to_dict() for asset in stage.assets
+                        ],
+                        "permission": self.resolve_permission(user.id, stage),
+                    }
+                )
+                for stage in stages
+            ],
+            "totalCount": count,
+        }
+
+    def get_stage_by_id(self, user: UserModel, id: int):
+    
+        stage = (
+            DBSession.query(StageModel)
+            .outerjoin(UserModel)
+            .outerjoin(ParentStageModel)
+            .outerjoin(AssetModel)
+            .filter(StageModel.id == id)
+            .first()
+        )
+
+        if not stage:
+            raise GraphQLError("Stage not found")
+
+        return convert_keys_to_camel_case(
+            {
+                **stage.to_dict(),
+                "assets": [
+                            asset.child_asset.to_dict() for asset in stage.assets
+                        ],
+                "permission": self.resolve_permission(user.id, stage),
+            }
+        )
 
     def create_stage(self, user: UserModel, input: StageInput):
         with ScopedSession() as local_db_session:
@@ -323,3 +409,21 @@ class StageService:
             convert_keys_to_camel_case(stage.to_dict())
             for stage in DBSession.query(ParentStageModel).all()
         ]
+
+    def resolve_permission(self, user_id: int, stage: StageModel):
+        if not user_id:
+            return "audience"
+        if stage.owner_id == user_id:
+            return "owner"
+        player_access = stage.attributes.filter(
+            StageAttributeModel.name == "playerAccess"
+        ).first()
+
+        if player_access:
+            accesses = json.loads(player_access.description)
+            if len(accesses) == 2:
+                if user_id in accesses[0]:
+                    return "player"
+                elif user_id in accesses[1]:
+                    return "editor"
+                return "audience"

@@ -1,5 +1,6 @@
-from typing import Optional
-from pydantic import BaseModel, Field
+from datetime import date
+from typing import List, Optional
+from pydantic import BaseModel, Field, conint
 
 
 class StageInput(BaseModel):
@@ -70,4 +71,27 @@ class RecordInput(BaseModel):
     name: str = Field(..., description="Name of the performance")
     description: Optional[str] = Field(
         None, description="Description of the performance"
+    )
+
+
+class SearchStageInput(BaseModel):
+    def __init__(self, *args, **kwargs):
+        print(kwargs)
+        print(args)
+        super().__init__(*args, **kwargs)
+
+    page: Optional[conint(ge=1)] = Field(
+        1, description="Page number, must be greater than or equal to 1"
+    )
+    limit: Optional[conint(ge=1)] = Field(
+        10, description="Number of items per page, must be greater than or equal to 1"
+    )
+    sort: Optional[List[str]] = Field(
+        None,
+        description="Sort options, must be one of 'OWNER_ID_ASC', 'OWNER_ID_DESC', 'NAME_ASC', 'NAME_DESC', 'CREATED_ON_ASC', 'CREATED_ON_DESC'",
+    )
+    name: Optional[str] = Field(None, description="Name filter")
+    owners: Optional[List[str]] = Field(None, description="List of owners")
+    createdBetween: Optional[List[date]] = Field(
+        None, description="List of two dates representing the created date range"
     )
