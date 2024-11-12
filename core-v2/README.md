@@ -40,12 +40,1905 @@ This will start all the services defined in your `docker-compose.yml` file.
 
 ### 3. Application API endpoints
 
-- /api/user_graphql
-- /api/auth_graphql
-- /api/stage_graphql
-- /api/email_graphql
-- /api/license_graphql
-- /api/performance_graphql
-- /api/config_graphql
-- /api/payment_graphql
-- /api/studio_graphql
+#### /api/user_graphql
+- 
+**currentUser**
+
+Endpoint: `/api/user_graphql`
+
+Example Query:
+```graphql
+query {
+    currentUser {
+        id
+        name
+        email
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "currentUser": {
+            "id": "1",
+            "name": "John Doe",
+            "email": "john.doe@example.com"
+        }
+    }
+}
+```
+
+**createUser**
+
+Endpoint: `/api/user_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    createUser(input: {
+        name: "Jane Doe",
+        email: "jane.doe@example.com",
+        password: "password123"
+    }) {
+        user {
+            id
+            name
+            email
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "createUser": {
+            "user": {
+                "id": "2",
+                "name": "Jane Doe",
+                "email": "jane.doe@example.com"
+            }
+        }
+    }
+}
+```
+
+**requestPasswordReset**
+
+Endpoint: `/api/user_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    requestPasswordReset(email: "jane.doe@example.com") {
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "requestPasswordReset": {
+            "message": "Password reset link sent to your email."
+        }
+    }
+}
+```
+
+**verifyPasswordReset**
+
+Endpoint: `/api/user_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    verifyPasswordReset(token: "reset-token") {
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "verifyPasswordReset": {
+            "success": true
+        }
+    }
+}
+```
+
+**resetPassword**
+
+Endpoint: `/api/user_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    resetPassword(token: "reset-token", newPassword: "newPassword123") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "resetPassword": {
+            "success": true
+        }
+    }
+}
+```
+
+### /api/auth_graphql
+**login**
+
+Endpoint: `/api/auth_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    login(payload: {
+        username: "user123",
+        password: "password123"
+    }) {
+        user_id
+        access_token
+        refresh_token
+        role
+        first_name
+        groups {
+            id
+            name
+        }
+        username
+        title
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "login": {
+            "user_id": 1,
+            "access_token": "access-token",
+            "refresh_token": "refresh-token",
+            "role": 2,
+            "first_name": "John",
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "Admin"
+                }
+            ],
+            "username": "user123",
+            "title": "Mr."
+        }
+    }
+}
+```
+
+**refreshToken**
+
+Endpoint: `/api/auth_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    refreshToken {
+        access_token
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "refreshToken": {
+            "access_token": "new-access-token"
+        }
+    }
+}
+```
+
+**logout**
+
+Endpoint: `/api/auth_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    logout
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "logout": "Successfully logged out"
+    }
+}
+```
+
+
+#### /api/stage_graphql
+**createStage**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    createStage(input: {
+        name: "New Stage",
+        description: "Stage description",
+        visibility: true
+    }) {
+        id
+        name
+        description
+        visibility
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "createStage": {
+            "id": "1",
+            "name": "New Stage",
+            "description": "Stage description",
+            "visibility": true
+        }
+    }
+}
+```
+
+**updateStage**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateStage(input: {
+        id: "1",
+        name: "Updated Stage",
+        description: "Updated description"
+    }) {
+        id
+        name
+        description
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateStage": {
+            "id": "1",
+            "name": "Updated Stage",
+            "description": "Updated description"
+        }
+    }
+}
+```
+
+**duplicateStage**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    duplicateStage(id: "1", name: "Duplicate Stage") {
+        id
+        name
+        description
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "duplicateStage": {
+            "id": "2",
+            "name": "Duplicate Stage",
+            "description": "Stage description"
+        }
+    }
+}
+```
+
+**deleteStage**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deleteStage(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deleteStage": {
+            "success": true,
+            "message": "Stage deleted successfully"
+        }
+    }
+}
+```
+
+**assignMedia**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    assignMedia(input: {
+        id: "1",
+        mediaIds: ["1", "2"]
+    }) {
+        id
+        name
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "assignMedia": {
+            "id": "1",
+            "name": "Media Name"
+        }
+    }
+}
+```
+
+**uploadMedia**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    uploadMedia(input: {
+        name: "New Media",
+        base64: "base64string",
+        mediaType: "image/png",
+        filename: "media.png"
+    }) {
+        id
+        name
+        src
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "uploadMedia": {
+            "id": "1",
+            "name": "New Media",
+            "src": "media.png"
+        }
+    }
+}
+```
+
+**updateMedia**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateMedia(input: {
+        id: "1",
+        name: "Updated Media",
+        description: "Updated description"
+    }) {
+        id
+        name
+        description
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateMedia": {
+            "id": "1",
+            "name": "Updated Media",
+            "description": "Updated description"
+        }
+    }
+}
+```
+
+**deleteMedia**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deleteMedia(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deleteMedia": {
+            "success": true,
+            "message": "Media deleted successfully"
+        }
+    }
+}
+```
+
+**assignStages**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    assignStages(input: {
+        id: "1",
+        stageIds: ["1", "2"]
+    }) {
+        id
+        name
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "assignStages": {
+            "id": "1",
+            "name": "Stage Name"
+        }
+    }
+}
+```
+
+**sweepStage**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    sweepStage(id: "1") {
+        success
+        performanceId
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "sweepStage": {
+            "success": true,
+            "performanceId": "1"
+        }
+    }
+}
+```
+
+**saveScene**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    saveScene(input: {
+        name: "New Scene",
+        stageId: "1"
+    }) {
+        id
+        name
+        stageId
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "saveScene": {
+            "id": "1",
+            "name": "New Scene",
+            "stageId": "1"
+        }
+    }
+}
+```
+
+**deleteScene**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deleteScene(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deleteScene": {
+            "success": true,
+            "message": "Scene deleted successfully"
+        }
+    }
+}
+```
+
+**updatePerformance**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updatePerformance(input: {
+        id: "1",
+        name: "Updated Performance"
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updatePerformance": {
+            "success": true,
+            "message": "Performance updated successfully"
+        }
+    }
+}
+```
+
+**deletePerformance**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deletePerformance(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deletePerformance": {
+            "success": true,
+            "message": "Performance deleted successfully"
+        }
+    }
+}
+```
+
+**startRecording**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    startRecording(input: {
+        stageId: "1",
+        name: "New Recording"
+    }) {
+        id
+        name
+        stageId
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "startRecording": {
+            "id": "1",
+            "name": "New Recording",
+            "stageId": "1"
+        }
+    }
+}
+```
+
+**saveRecording**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    saveRecording(id: "1") {
+        id
+        name
+        stageId
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "saveRecording": {
+            "id": "1",
+            "name": "Recording Name",
+            "stageId": "1"
+        }
+    }
+}
+```
+
+**updateStatus**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateStatus(id: "1") {
+        result
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateStatus": {
+            "result": "Status updated"
+        }
+    }
+}
+```
+
+**updateVisibility**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateVisibility(id: "1") {
+        result
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateVisibility": {
+            "result": "Visibility updated"
+        }
+    }
+}
+```
+
+**updateLastAccess**
+
+Endpoint: `/api/stage_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateLastAccess(id: "1") {
+        result
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateLastAccess": {
+            "result": "Last access updated"
+        }
+    }
+}
+```
+
+
+#### /api/email_graphql
+**sendEmailExternal**
+
+Endpoint: `/api/email_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    sendEmailExternal(emailInfo: {
+        subject: "Meeting Reminder",
+        body: "Don't forget about the meeting tomorrow at 10 AM.",
+        recipients: ["john.doe@example.com"],
+        cc: ["jane.doe@example.com"],
+        bcc: ["manager@example.com"],
+        filenames: ["agenda.pdf"]
+    }) {
+        success
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "sendEmailExternal": {
+            "success": true
+        }
+    }
+}
+```
+
+
+#### /api/license_graphql
+**access**
+
+Endpoint: `/api/license_graphql`
+
+Example Query:
+```graphql
+query {
+    access(path: "/path/to/asset") {
+        id
+        assetId
+        createdOn
+        level
+        permissions
+        assetPath
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "access": {
+            "id": "1",
+            "assetId": "123",
+            "createdOn": "2023-10-01",
+            "level": 1,
+            "permissions": "read",
+            "assetPath": "/path/to/asset"
+        }
+    }
+}
+```
+
+**createLicense**
+
+Endpoint: `/api/license_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    createLicense(input: {
+        assetId: "123",
+        level: 1,
+        permissions: "read"
+    }) {
+        id
+        assetId
+        createdOn
+        level
+        permissions
+        assetPath
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "createLicense": {
+            "id": "1",
+            "assetId": "123",
+            "createdOn": "2023-10-01",
+            "level": 1,
+            "permissions": "read",
+            "assetPath": "/path/to/asset"
+        }
+    }
+}
+```
+
+**revokeLicense**
+
+Endpoint: `/api/license_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    revokeLicense(id: "1") {
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "revokeLicense": "License revoked successfully"
+    }
+}
+```
+
+#### /api/performance_graphql
+**performanceCommunication**
+
+Endpoint: `/api/performance_graphql`
+
+Example Query:
+```graphql
+query {
+    performanceCommunication {
+        id
+        ownerId
+        ipAddress
+        websocketPort
+        webclientPort
+        topicName
+        username
+        password
+        createdOn
+        expiresOn
+        performanceConfigId
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "performanceCommunication": [
+            {
+                "id": "1",
+                "ownerId": "1",
+                "ipAddress": "192.168.1.1",
+                "websocketPort": 8080,
+                "webclientPort": 3000,
+                "topicName": "performance_topic",
+                "username": "user",
+                "password": "pass",
+                "createdOn": "2023-10-01",
+                "expiresOn": "2023-12-01",
+                "performanceConfigId": 1
+            }
+        ]
+    }
+}
+```
+
+**performanceConfig**
+
+Endpoint: `/api/performance_graphql`
+
+Example Query:
+```graphql
+query {
+    performanceConfig {
+        id
+        name
+        ownerId
+        description
+        splashScreenText
+        splashScreenAnimationUrls
+        createdOn
+        expiresOn
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "performanceConfig": [
+            {
+                "id": "1",
+                "name": "Performance Config",
+                "ownerId": "1",
+                "description": "Description of the performance config",
+                "splashScreenText": "Welcome",
+                "splashScreenAnimationUrls": "http://example.com/animation",
+                "createdOn": "2023-10-01",
+                "expiresOn": "2023-12-01"
+            }
+        ]
+    }
+}
+```
+
+**scene**
+
+Endpoint: `/api/performance_graphql`
+
+Example Query:
+```graphql
+query {
+    scene {
+        id
+        name
+        ownerId
+        description
+        splashScreenText
+        splashScreenAnimationUrls
+        createdOn
+        expiresOn
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "scene": [
+            {
+                "id": "1",
+                "name": "Scene Name",
+                "ownerId": "1",
+                "description": "Description of the scene",
+                "splashScreenText": "Welcome",
+                "splashScreenAnimationUrls": "http://example.com/animation",
+                "createdOn": "2023-10-01",
+                "expiresOn": "2023-12-01"
+            }
+        ]
+    }
+}
+```
+
+**parentStage**
+
+Endpoint: `/api/performance_graphql`
+
+Example Query:
+```graphql
+query {
+    parentStage {
+        id
+        stageId
+        childAssetId
+        stage {
+            id
+            name
+            description
+            createdOn
+            expiresOn
+            assets {
+                id
+                stageId
+                childAssetId
+            }
+        }
+        childAsset {
+            id
+            name
+            type
+            createdOn
+            expiresOn
+            stages {
+                id
+                stageId
+                childAssetId
+            }
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "parentStage": [
+            {
+                "id": "1",
+                "stageId": "1",
+                "childAssetId": "1",
+                "stage": {
+                    "id": "1",
+                    "name": "Stage Name",
+                    "description": "Description of the stage",
+                    "createdOn": "2023-10-01",
+                    "expiresOn": "2023-12-01",
+                    "assets": [
+                        {
+                            "id": "1",
+                            "stageId": "1",
+                            "childAssetId": "1"
+                        }
+                    ]
+                },
+                "childAsset": {
+                    "id": "1",
+                    "name": "Asset Name",
+                    "type": "image",
+                    "createdOn": "2023-10-01",
+                    "expiresOn": "2023-12-01",
+                    "stages": [
+                        {
+                            "id": "1",
+                            "stageId": "1",
+                            "childAssetId": "1"
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}
+```
+#### /api/config_graphql
+**nginx**
+
+Endpoint: `/api/config_graphql`
+
+Example Query:
+```graphql
+query {
+    nginx {
+        limit
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "nginx": {
+            "limit": 100
+        }
+    }
+}
+```
+
+**system**
+
+Endpoint: `/api/config_graphql`
+
+Example Query:
+```graphql
+query {
+    system {
+        termsOfService {
+            id
+            name
+            value
+            createdOn
+        }
+        manual {
+            id
+            name
+            value
+            createdOn
+        }
+        esp {
+            id
+            name
+            value
+            createdOn
+        }
+        enableDonate {
+            id
+            name
+            value
+            createdOn
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "system": {
+            "termsOfService": {
+                "id": 1,
+                "name": "Terms of Service",
+                "value": "http://example.com/tos",
+                "createdOn": "2023-10-01"
+            },
+            "manual": {
+                "id": 2,
+                "name": "User Manual",
+                "value": "http://example.com/manual",
+                "createdOn": "2023-10-01"
+            },
+            "esp": {
+                "id": 3,
+                "name": "ESP Config",
+                "value": "Enabled",
+                "createdOn": "2023-10-01"
+            },
+            "enableDonate": {
+                "id": 4,
+                "name": "Enable Donate",
+                "value": "true",
+                "createdOn": "2023-10-01"
+            }
+        }
+    }
+}
+```
+
+**foyer**
+
+Endpoint: `/api/config_graphql`
+
+Example Query:
+```graphql
+query {
+    foyer {
+        title {
+            id
+            name
+            value
+            createdOn
+        }
+        description {
+            id
+            name
+            value
+            createdOn
+        }
+        menu {
+            id
+            name
+            value
+            createdOn
+        }
+        showRegistration {
+            id
+            name
+            value
+            createdOn
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "foyer": {
+            "title": {
+                "id": 1,
+                "name": "Foyer Title",
+                "value": "Welcome to the Foyer",
+                "createdOn": "2023-10-01"
+            },
+            "description": {
+                "id": 2,
+                "name": "Foyer Description",
+                "value": "This is the foyer description.",
+                "createdOn": "2023-10-01"
+            },
+            "menu": {
+                "id": 3,
+                "name": "Foyer Menu",
+                "value": "Home, About, Contact",
+                "createdOn": "2023-10-01"
+            },
+            "showRegistration": {
+                "id": 4,
+                "name": "Show Registration",
+                "value": "true",
+                "createdOn": "2023-10-01"
+            }
+        }
+    }
+}
+```
+
+**updateTermsOfService**
+
+Endpoint: `/api/config_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateTermsOfService(url: "http://example.com/new-tos") {
+        id
+        name
+        value
+        createdOn
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateTermsOfService": {
+            "id": 1,
+            "name": "Terms of Service",
+            "value": "http://example.com/new-tos",
+            "createdOn": "2023-10-01"
+        }
+    }
+}
+```
+
+**saveConfig**
+
+Endpoint: `/api/config_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    saveConfig(input: {
+        name: "New Config",
+        value: "Config Value"
+    }) {
+        id
+        name
+        value
+        createdOn
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "saveConfig": {
+            "id": 1,
+            "name": "New Config",
+            "value": "Config Value",
+            "createdOn": "2023-10-01"
+        }
+    }
+}
+```
+
+**sendEmail**
+
+Endpoint: `/api/config_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    sendEmail(input: {
+        subject: "Test Email",
+        body: "This is a test email.",
+        recipients: "recipient@example.com",
+        bcc: "bcc@example.com"
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "sendEmail": {
+            "success": true,
+            "message": "Email sent successfully"
+        }
+    }
+}
+```
+#### /api/payment_graphql
+**oneTimePurchase**
+
+Endpoint: `/api/payment_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    oneTimePurchase(input: {
+        cardNumber: "4242424242424242",
+        expYear: "2023",
+        expMonth: "12",
+        cvc: "123",
+        amount: 100.0
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "oneTimePurchase": {
+            "success": true,
+            "message": "Payment successful"
+        }
+    }
+}
+```
+
+**createSubscription**
+
+Endpoint: `/api/payment_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    createSubscription(input: {
+        cardNumber: "4242424242424242",
+        expYear: "2023",
+        expMonth: "12",
+        cvc: "123",
+        amount: 50.0,
+        currency: "USD",
+        email: "user@example.com",
+        type: "monthly"
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "createSubscription": {
+            "success": true,
+            "message": "Subscription created successfully"
+        }
+    }
+}
+```
+
+**cancelSubscription**
+
+Endpoint: `/api/payment_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    cancelSubscription(subscription_id: "sub_12345") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "cancelSubscription": {
+            "success": true,
+            "message": "Subscription cancelled successfully"
+        }
+    }
+}
+```
+
+**updateEmailCustomer**
+
+Endpoint: `/api/payment_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateEmailCustomer(customer_id: "cus_12345", email: "new.email@example.com") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateEmailCustomer": {
+            "success": true,
+            "message": "Customer email updated successfully"
+        }
+    }
+}
+```
+
+#### /api/studio_graphql
+**batchUserCreation**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    batchUserCreation(users: [
+        {
+            username: "user1",
+            password: "password1",
+            email: "user1@example.com"
+        },
+        {
+            username: "user2",
+            password: "password2",
+            email: "user2@example.com"
+        }
+    ]) {
+        users {
+            id
+            username
+            email
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "batchUserCreation": {
+            "users": [
+                {
+                    "id": "1",
+                    "username": "user1",
+                    "email": "user1@example.com"
+                },
+                {
+                    "id": "2",
+                    "username": "user2",
+                    "email": "user2@example.com"
+                }
+            ]
+        }
+    }
+}
+```
+
+**updateUser**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    updateUser(input: {
+        id: "1",
+        username: "updatedUser",
+        email: "updated@example.com"
+    }) {
+        id
+        username
+        email
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "updateUser": {
+            "id": "1",
+            "username": "updatedUser",
+            "email": "updated@example.com"
+        }
+    }
+}
+```
+
+**deleteUser**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deleteUser(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deleteUser": {
+            "success": true,
+            "message": "User deleted successfully"
+        }
+    }
+}
+```
+
+**uploadFile**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    uploadFile(base64: "base64string", filename: "file.png") {
+        url
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "uploadFile": {
+            "url": "http://example.com/file.png"
+        }
+    }
+}
+```
+
+**saveMedia**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    saveMedia(input: {
+        name: "New Media",
+        mediaType: "image/png",
+        copyrightLevel: 1,
+        owner: "ownerId",
+        stageIds: ["stageId1"],
+        tags: ["tag1", "tag2"],
+        w: 1920,
+        h: 1080,
+        urls: ["http://example.com/media.png"]
+    }) {
+        asset {
+            id
+            name
+            src
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "saveMedia": {
+            "asset": {
+                "id": "1",
+                "name": "New Media",
+                "src": "http://example.com/media.png"
+            }
+        }
+    }
+}
+```
+
+**deleteMedia**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    deleteMedia(id: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "deleteMedia": {
+            "success": true,
+            "message": "Media deleted successfully"
+        }
+    }
+}
+```
+
+**sendEmail**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    sendEmail(input: {
+        subject: "Test Email",
+        body: "This is a test email.",
+        recipients: "recipient@example.com"
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "sendEmail": {
+            "success": true,
+            "message": "Email sent successfully"
+        }
+    }
+}
+```
+
+**changePassword**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    changePassword(input: {
+        oldPassword: "oldPassword123",
+        newPassword: "newPassword123",
+        id: "1"
+    }) {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "changePassword": {
+            "success": true,
+            "message": "Password changed successfully"
+        }
+    }
+}
+```
+
+**calcSizes**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    calcSizes {
+        size
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "calcSizes": {
+            "size": 1024
+        }
+    }
+}
+```
+
+**confirmPermission**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    confirmPermission(id: "1", approved: true) {
+        success
+        permissions {
+            id
+            userId
+            assetId
+            approved
+            seen
+            createdOn
+            note
+            user {
+                username
+                displayName
+            }
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "confirmPermission": {
+            "success": true,
+            "permissions": [
+                {
+                    "id": "1",
+                    "userId": 1,
+                    "assetId": 1,
+                    "approved": true,
+                    "seen": false,
+                    "createdOn": "2023-10-01",
+                    "note": "Permission note",
+                    "user": {
+                        "username": "user1",
+                        "displayName": "User One"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+**requestPermission**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    requestPermission(assetId: "1", note: "Requesting permission") {
+        success
+        permissions {
+            id
+            userId
+            assetId
+            approved
+            seen
+            createdOn
+            note
+            user {
+                username
+                displayName
+            }
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "requestPermission": {
+            "success": true,
+            "permissions": [
+                {
+                    "id": "1",
+                    "userId": 1,
+                    "assetId": 1,
+                    "approved": false,
+                    "seen": false,
+                    "createdOn": "2023-10-01",
+                    "note": "Requesting permission",
+                    "user": {
+                        "username": "user1",
+                        "displayName": "User One"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+**quickAssignMutation**
+
+Endpoint: `/api/studio_graphql`
+
+Example Mutation:
+```graphql
+mutation {
+    quickAssignMutation(stageId: "1", assetId: "1") {
+        success
+        message
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "quickAssignMutation": {
+            "success": true,
+            "message": "Asset assigned to stage successfully"
+        }
+    }
+}
+```
