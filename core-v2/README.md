@@ -40,6 +40,62 @@ This will start all the services defined in your `docker-compose.yml` file.
 
 ### 3. Application API endpoints
 
+### Common Error Response Structure
+
+In case of an error, the API will return a response with the following structure:
+
+```json
+{
+    "data": {
+        "operationName": null
+    },
+    "errors": [
+        {
+            "message": "Error message describing the issue.",
+            "locations": [
+                {
+                    "line": lineNumber,
+                    "column": columnNumber
+                }
+            ],
+            "path": [
+                "operationName"
+            ],
+            "extensions": {
+                "exception": null
+            }
+        }
+    ]
+}
+```
+
+Example Error Response:
+
+```json
+{
+    "data": {
+        "login": null
+    },
+    "errors": [
+        {
+            "message": "Signature did not match digest. Please contact admin to make sure that cipher key is correctly set up.",
+            "locations": [
+                {
+                    "line": 2,
+                    "column": 3
+                }
+            ],
+            "path": [
+                "login"
+            ],
+            "extensions": {
+                "exception": null
+            }
+        }
+    ]
+}
+```
+
 #### /api/user_graphql
 - 
 **currentUser**
