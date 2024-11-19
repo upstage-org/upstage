@@ -331,6 +331,105 @@ Example Response:
 
 
 #### /api/stage_graphql
+
+**stages**
+Endpoint: `/api/stage_graphql`
+Example Mutation:
+```graphql
+query {
+    stages(input: SearchStageInput) {
+        totalCount
+        edges {
+             id
+            name
+            fileLocation
+            status
+            visibility
+            cover
+            description
+            playerAccess
+            permission
+            owner
+            assets
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "stages": {
+            "totalCount": 2,
+            "edges": [
+                {
+                    "id": "1",
+                    "name": "Stage One",
+                    "fileLocation": "/path/to/file1",
+                    "status": "active",
+                    "visibility": true,
+                    "cover": "cover1.png",
+                    "description": "Description of Stage One",
+                    "playerAccess": "public",
+                    "permission": "read",
+                    "owner": "owner1",
+                    "assets": ["asset1", "asset2"]
+                },
+                {
+                    "id": "2",
+                    "name": "Stage Two",
+                    "fileLocation": "/path/to/file2",
+                    "status": "inactive",
+                    "visibility": false,
+                    "cover": "cover2.png",
+                    "description": "Description of Stage Two",
+                    "playerAccess": "private",
+                    "permission": "write",
+                    "owner": "owner2",
+                    "assets": ["asset3", "asset4"]
+                }
+            ]
+        }
+    }
+}
+```
+
+**stagebyid**
+
+Endpoint: `/api/stage_graphql`
+
+Example Query:
+```graphql
+query {
+    stageById(id: "1") {
+        id
+        name
+        description
+        visibility
+        createdOn
+        updatedOn
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "stageById": {
+            "id": "1",
+            "name": "Stage One",
+            "description": "Description of Stage One",
+            "visibility": true,
+            "createdOn": "2023-10-01",
+            "updatedOn": "2023-10-02"
+        }
+    }
+}
+```
+
+
 **createStage**
 
 Endpoint: `/api/stage_graphql`
@@ -572,7 +671,6 @@ Example Response:
 ```
 
 **assignStages**
-
 Endpoint: `/api/stage_graphql`
 
 Example Mutation:
