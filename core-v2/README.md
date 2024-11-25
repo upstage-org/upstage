@@ -2096,3 +2096,148 @@ Example Response:
     }
 }
 ```
+
+**whoami**
+
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+query {
+    whoami {
+        id
+        username
+        email
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "whoami": {
+            "id": "1",
+            "username": "user1",
+            "email": "user1@example.com"
+        }
+    }
+}
+```
+
+**adminPlayers**
+
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+query {
+    adminPlayers(first: 10, page: 1, sort: [USERNAME_ASC]) {
+        totalCount
+        edges {
+            id
+            username
+            email
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "adminPlayers": {
+            "totalCount": 2,
+            "edges": [
+                {
+                    "id": "1",
+                    "username": "user1",
+                    "email": "user1@example.com"
+                },
+                {
+                    "id": "2",
+                    "username": "user2",
+                    "email": "user2@example.com"
+                }
+            ]
+        }
+    }
+}
+```
+
+**media**
+
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+query {
+    media(input: { page: 1, limit: 10 }) {
+        totalCount
+        edges {
+            id
+            name
+            src
+        }
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "media": {
+            "totalCount": 2,
+            "edges": [
+                {
+                    "id": "1",
+                    "name": "Media 1",
+                    "src": "http://example.com/media1.png"
+                },
+                {
+                    "id": "2",
+                    "name": "Media 2",
+                    "src": "http://example.com/media2.png"
+                }
+            ]
+        }
+    }
+}
+```
+
+**mediaList**
+
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+query {
+    mediaList(mediaType: "image/png", owner: "owner1") {
+        id
+        name
+        src
+    }
+}
+```
+
+Example Response:
+```json
+{
+    "data": {
+        "mediaList": [
+            {
+                "id": "1",
+                "name": "Media 1",
+                "src": "http://example.com/media1.png"
+            },
+            {
+                "id": "2",
+                "name": "Media 2",
+                "src": "http://example.com/media2.png"
+            }
+        ]
+    }
+}
+```
