@@ -53,6 +53,9 @@ type_defs = gql("""
         ): AdminPlayerConnection      
         media(input: MediaTableInput!): AssetConnection!  
         mediaList(mediaType: String, owner: String): [Asset!]!
+        mediaTypes: [AssetType!]!
+        tags: [Tag!]!
+        users(active: Boolean): [User!]!
     }      
 
     input UpdateUserInput {
@@ -81,6 +84,13 @@ type_defs = gql("""
         stages: [ID]
         tags: [String]
         createdBetween: [Date]
+    }
+                
+    type Tag {
+        id: ID!
+        name: String!
+        color: String
+        createdOn: Date  
     }
                 
     type Asset {

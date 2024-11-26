@@ -469,3 +469,13 @@ class AssetService:
             "sign": sign,
             "permission": permission,
         }
+
+    def get_media_types(self):
+        return convert_keys_to_camel_case(
+            type.to_dict() for type in DBSession.query(AssetTypeModel).all()
+        )
+
+    def get_tags(self):
+        return convert_keys_to_camel_case(
+            tag.to_dict() for tag in DBSession.query(TagModel).all()
+        )

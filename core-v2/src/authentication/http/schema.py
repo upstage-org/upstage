@@ -24,7 +24,6 @@ async def login(
 
 
 @mutation.field("refreshToken")
-@authenticated()
 async def refresh_token(
     _,
     info,

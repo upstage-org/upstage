@@ -83,7 +83,6 @@ class StageService:
         }
 
     def get_stage_by_id(self, user: UserModel, id: int):
-    
         stage = (
             DBSession.query(StageModel)
             .outerjoin(UserModel)
@@ -99,9 +98,7 @@ class StageService:
         return convert_keys_to_camel_case(
             {
                 **stage.to_dict(),
-                "assets": [
-                            asset.child_asset.to_dict() for asset in stage.assets
-                        ],
+                "assets": [asset.child_asset.to_dict() for asset in stage.assets],
                 "permission": self.resolve_permission(user.id, stage),
             }
         )

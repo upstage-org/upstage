@@ -1682,7 +1682,7 @@ Example Response:
 }
 ```
 
-#### /api/studio_graphql
+### /api/studio_graphql
 **batchUserCreation**
 
 Endpoint: `/api/studio_graphql`
@@ -2239,5 +2239,92 @@ Example Response:
             }
         ]
     }
+}
+```
+
+**tags**
+
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+    query {
+        tags {
+            id
+            name
+            color
+            createdOn
+        }
+    }
+```
+
+Example Response:
+```json
+{
+  "data": {
+    "tags": [
+      {
+        "id": "1",
+        "name": "test",
+        "color": null
+      }
+    ]
+  }
+}
+```
+
+**mediaTypes**
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+    query {
+        mediaTypes{
+            id
+            name
+        }
+    }
+```
+
+Example Response:
+```json
+{
+  "data": {
+    "mediaTypes": [
+      {
+        "id": "1",
+        "name": "image"
+      }
+    ]
+  }
+}
+```
+
+**users**
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+    query {
+        users(active: true) {
+            id
+            username
+            displayName
+        }
+    }
+```
+
+Example Response:
+```json
+{
+  "data": {
+    "users": [
+      {
+        "id": "203",
+        "username": "updated_user",
+        "displayName": null
+      }
+    ]
+  }
 }
 ```

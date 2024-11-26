@@ -26,6 +26,12 @@ def admin_players(_, __, **kwargs):
     return StudioService().admin_players(kwargs)
 
 
+@query.field("users")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
+def users(_, __, active: bool = True):
+    return StudioService().get_users(active)
+
+
 @mutation.field("batchUserCreation")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
 def create_users(_, __, users: List[BatchUserInput]):

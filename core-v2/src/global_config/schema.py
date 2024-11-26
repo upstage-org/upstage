@@ -62,7 +62,10 @@ def setup_studio_endpoint(app: FastAPI):
     combined_query.set_field("media", asset_query._resolvers["media"])
     combined_query.set_field("whoami", studio_query._resolvers["whoami"])
     combined_query.set_field("adminPlayers", studio_query._resolvers["adminPlayers"])
+    combined_query.set_field("users", studio_query._resolvers["users"])
     combined_query.set_field("mediaList", asset_query._resolvers["mediaList"])
+    combined_query.set_field("tags", asset_query._resolvers["tags"])
+    combined_query.set_field("mediaTypes", asset_query._resolvers["mediaTypes"])
     combined_mutation.set_field(
         "batchUserCreation", studio_mutation._resolvers["batchUserCreation"]
     )

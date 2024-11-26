@@ -24,6 +24,18 @@ async def search_assets(_, __, **kwargs):
     return AssetService().search_assets(MediaTableInput(**kwargs["input"]))
 
 
+@query.field("mediaTypes")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+async def get_media_types(_, __):
+    return AssetService().get_media_types()
+
+
+@query.field("tags")
+@authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
+async def get_tags(_, __):
+    return AssetService().get_tags()
+
+
 @mutation.field("uploadFile")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN, PLAYER])
 async def upload_file(_, __, base64: str, filename: str):
