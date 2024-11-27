@@ -12,8 +12,5 @@ RUN chmod +x ./scripts/setup.sh
 
 RUN ./scripts/setup.sh
 
-EXPOSE 80
-EXPOSE 443
-
 RUN chmod +x ./scripts/run_upstage_email.py
 CMD ["sh", "-c", "TIMESTAMP=$(date +%d_%m_%Y) python3 -m scripts.run_upstage_email"]
