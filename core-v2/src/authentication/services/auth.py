@@ -15,6 +15,7 @@ from global_config import (
     SECRET_KEY,
     ALGORITHM,
     ScopedSession,
+    DBSession,
 )
 from authentication.db_models.user_session import UserSessionModel
 
@@ -133,18 +134,39 @@ class AuthenticationService:
 
         return "Logged out"
 
-    async def refresh_token(self, user: UserModel, request: Request):
-        refresh_token = request.headers.get(JWT_HEADER_NAME)
-        if not refresh_token:
+    async def refresh_token(self, request: Request):
+        current_refresh_token = request.headers.get(JWT_HEADER_NAME)
+        if not current_refresh_token:
             raise GraphQLError("Invalid refresh token")
 
+        session = (
+            DBSession.query(UserSessionModel)
+            .filter(UserSessionModel.refresh_token == current_refresh_token)
+            .first()
+        )
+
+        if not session:
+            raise GraphQLError("Invalid refresh token")
+
+        user = (
+            DBSession.query(UserModel).filter(UserModel.id == session.user_id).first()
+        )
+
         access_token = self.create_token(
-            {"user_id": user.id}, timedelta(minutes=int(JWT_ACCESS_TOKEN_MINUTES))
+            {"user_id": session.user_id},
+            timedelta(minutes=int(JWT_ACCESS_TOKEN_MINUTES)),
+        )
+
+        refresh_token = self.create_token(
+            {"user_id": user.id, "type": "refresh"},
+            timedelta(
+                days=int(JWT_REFRESH_TOKEN_DAYS) if user.role == SUPER_ADMIN else 1
+            ),
         )
 
         with ScopedSession() as local_db_session:
             local_db_session.query(UserSessionModel).filter(
-                UserSessionModel.refresh_token == refresh_token
+                UserSessionModel.refresh_token == current_refresh_token
             ).delete()
 
             user_session = UserSessionModel(
@@ -162,4 +184,4 @@ class AuthenticationService:
         user.last_login = datetime.now()
         self.user_service.update(user)
 
-        return {"access_token": access_token}
+        return {"access_token": access_token, "refresh_token": refresh_token}

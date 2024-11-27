@@ -294,6 +294,7 @@ Example Mutation:
 mutation {
     refreshToken {
         access_token
+        refresh_token
     }
 }
 ```
@@ -303,7 +304,8 @@ Example Response:
 {
     "data": {
         "refreshToken": {
-            "access_token": "new-access-token"
+            "access_token": "new-access-token",
+            "refresh_token": "new-refresh_token"
         }
     }
 }

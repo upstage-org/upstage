@@ -28,6 +28,7 @@ type_defs = gql("""
                 
     type RefreshTokenResponse {
         access_token: String!
+        refresh_token: String!
     }
 
     type Mutation {
