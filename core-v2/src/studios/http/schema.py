@@ -26,6 +26,12 @@ def admin_players(_, __, **kwargs):
     return StudioService().admin_players(kwargs)
 
 
+@query.field("stages")
+@authenticated()
+def stages(_, __):
+    return StudioService().stages()
+
+
 @query.field("users")
 @authenticated(allowed_roles=[SUPER_ADMIN, ADMIN])
 def users(_, __, active: bool = True):

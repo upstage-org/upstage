@@ -381,7 +381,13 @@ class StudioService:
         return {"success": True}
 
     def get_users(self, active: bool):
-        return convert_keys_to_camel_case(
-            user.to_dict()
+        return [
+            convert_keys_to_camel_case(user.to_dict())
             for user in DBSession.query(UserModel).filter(UserModel.active == active)
-        )
+        ]
+
+    def stages(self):
+        return [
+            convert_keys_to_camel_case(stage.to_dict())
+            for stage in DBSession.query(StageModel).all()
+        ]

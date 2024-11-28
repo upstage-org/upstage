@@ -424,3 +424,11 @@ class StageService:
                 elif user_id in accesses[1]:
                     return "editor"
                 return "audience"
+
+    def get_foyer_stage_list(self):
+        return [
+            convert_keys_to_camel_case(stage.to_dict())
+            for stage in DBSession.query(StageModel)
+            .filter(StageModel.attributes.any(name="visibility", description="true"))
+            .all()
+        ]

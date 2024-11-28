@@ -129,6 +129,7 @@ type_defs = gql("""
         hello: String
         stages(input: SearchStageInput): StagesResponse
         stage(id: ID!): Stage
+        foyerStageList: [Stage!]!
     }
                 
     type StagesResponse {

@@ -2330,3 +2330,76 @@ Example Response:
   }
 }
 ```
+
+**stages**
+Endpoint: `/api/studio_graphql`
+
+Example Query:
+```graphql
+    query {
+        stages {
+            id
+            username
+            displayName
+        }
+    }
+```
+
+Example Response:
+```json
+{
+ "data": {
+    "stages": [
+      {
+        "id": "2",
+        "name": "Stage Name",
+        "owner": {
+          "username": "karen35@example.net",
+          "displayName": ""
+        },
+        "createdOn": "2024-11-26T17:42:04.545183"
+      }
+    ]
+    }
+}
+```
+
+
+**foyerStageList**
+Endpoint: `/api/stage_graphql`
+
+Example Query:
+```graphql
+    query {
+        foyerStageList {
+            id
+            name
+            owner {
+            displayName
+            username
+            }
+            fileLocation
+            cover
+        }
+    }
+```
+
+Example Response:
+```json
+{
+  "data": {
+    "foyerStageList": [
+      {
+        "id": "15",
+        "name": "Duplicate Stage",
+        "owner": {
+          "displayName": "",
+          "username": "brentle@example.net"
+        },
+        "fileLocation": "duplicate-stage1",
+        "cover": null
+      }
+    ]
+  }
+}
+```

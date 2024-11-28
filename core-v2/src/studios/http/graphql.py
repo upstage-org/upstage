@@ -56,6 +56,7 @@ type_defs = gql("""
         mediaTypes: [AssetType!]!
         tags: [Tag!]!
         users(active: Boolean): [User!]!
+        stages: [Stage!]!
     }      
 
     input UpdateUserInput {
@@ -138,9 +139,18 @@ type_defs = gql("""
     }
 
     type Stage {
-        name: String!
-        url: String!
-        id: Int!
+        id: ID!
+        name: String
+        fileLocation: String
+        status: String
+        visibility: Boolean
+        cover: String
+        description: String
+        playerAccess: String    
+        permission: String
+        owner: User
+        assets: [Asset]        
+        createdOn: Date
     }
 
 
