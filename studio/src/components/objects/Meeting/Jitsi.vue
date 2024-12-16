@@ -3,19 +3,11 @@
     <template #render>
       <Loading v-if="!videoTrack && !audioTrack" height="100%" />
       <template v-else>
-        <video
-          autoplay
-          ref="videoEl"
-          :style="{
-            'border-radius': object.shape === 'circle' ? '100%' : '12px',
-          }"
-        ></video>
+        <video autoplay ref="videoEl" :style="{
+          'border-radius': object.shape === 'circle' ? '100%' : '12px',
+        }" @loadedmetadata="logDuration"></video>
         <audio autoplay ref="audioEl" :muted="localMuted"></audio>
-        <button
-          v-if="isPlayer"
-          class="button is-small mute-icon clickable"
-          @mousedown="toggleMuted"
-        >
+        <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
         </button>
@@ -64,27 +56,31 @@ export default {
       ),
     );
     const videoTrack = computed(() =>
-      tracks.value.find((t) => t.type === "video"),
+      tracks.value.find((t) => t.type === "video" && t.stream.active),
     );
     const audioTrack = computed(() =>
-      tracks.value.find((t) => t.type === "audio"),
+      tracks.value.find((t) => t.type === "audio" && t.stream.active),
     );
-
     const loadTrack = () => {
       if (tracks.value.length) {
-        try {
-          if (videoTrack.value) {
-            videoTrack.value.attach(videoEl.value);
+        setTimeout(() => {
+          try {
+            if (videoTrack.value) {
+              videoTrack.value.attach(videoEl.value);
+            }
+            if (audioTrack.value && !audioTrack.value.isLocal()) {
+              audioTrack.value.attach(audioEl.value);
+            }
+          } catch (error) {
+            console.log("Error on attaching track", error);
           }
-          if (audioTrack.value && !audioTrack.value.isLocal()) {
-            audioTrack.value.attach(audioEl.value);
-          }
-        } catch (error) {
-          console.log("Error on attaching track", error);
-        }
+        }, 500)
       }
     };
-
+    watch(tracks, (newValue, oldValue) => {
+      if (oldValue.length <= 0)
+        loadTrack();
+    });
     const joined = inject("joined");
     const jitsi = inject("jitsi");
 
@@ -119,6 +115,9 @@ export default {
     };
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
+    const logDuration = (e) => {
+      console.log('==============duration', videoEl)
+    }
     return {
       videoTrack,
       audioTrack,
@@ -128,6 +127,7 @@ export default {
       localMuted,
       toggleMuted,
       isPlayer,
+      logDuration
     };
   },
 };
