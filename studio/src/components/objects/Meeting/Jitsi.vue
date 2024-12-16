@@ -50,17 +50,22 @@ export default {
     const store = useStore();
     const videoEl = ref();
     const audioEl = ref();
+    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
     const tracks = computed(() =>
       store.getters["stage/jitsiTracks"].filter(
         (t) => t.getParticipantId() === props.object.participantId,
       ),
     );
-    const videoTrack = computed(() =>
-      tracks.value.find((t) => t.type === "video" && t.stream.active),
-    );
-    const audioTrack = computed(() =>
-      tracks.value.find((t) => t.type === "audio" && t.stream.active),
-    );
+    const videoTrack = computed(() => {
+      const vTracks = tracks.value.filter((t) => t.type === "video")
+      if (vTracks.find(t => t.stream.active)) return vTracks.find(t => t.stream.active)
+      return vTracks[0]
+    });
+    const audioTrack = computed(() => {
+      const aTracks = tracks.value.filter((t) => t.type === "audio")
+      if (aTracks.find(t => t.stream.active)) return aTracks.find(t => t.stream.active)
+      return aTracks[0]
+    });
     const loadTrack = () => {
       if (tracks.value.length) {
         setTimeout(() => {
@@ -77,9 +82,8 @@ export default {
         }, 500)
       }
     };
-    watch(tracks, (newValue, oldValue) => {
-      if (oldValue.length <= 0)
-        loadTrack();
+    watch(loggedIn, (newValue, oldValue) => {
+      loadTrack();
     });
     const joined = inject("joined");
     const jitsi = inject("jitsi");
