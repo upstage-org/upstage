@@ -5,7 +5,7 @@
       <template v-else>
         <video autoplay ref="videoEl" :style="{
           'border-radius': object.shape === 'circle' ? '100%' : '12px',
-        }" @timeupdate="timeupdate" poster="assets/loading.svg">
+        }" @timeupdate="timeupdate">
           Please click on Reload Stream button.
         </video>
         <audio autoplay ref="audioEl" :muted="localMuted"></audio>
