@@ -5,8 +5,13 @@
       <template v-else>
         <video autoplay ref="videoEl" :style="{
           'border-radius': object.shape === 'circle' ? '100%' : '12px',
-        }" @loadedmetadata="logDuration"></video>
+        }" @timeupdate="timeupdate"></video>
         <audio autoplay ref="audioEl" :muted="localMuted"></audio>
+        <a-tooltip title="Reload">
+          <button class="button is-small refresh-icon clickable" @mousedown="loadTrack">
+            <i class="fas fa-sync"></i>
+          </button>
+        </a-tooltip>
         <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
@@ -50,7 +55,7 @@ export default {
     const store = useStore();
     const videoEl = ref();
     const audioEl = ref();
-    const loggedIn = computed(() => store.getters["auth/loggedIn"]);
+
     const tracks = computed(() =>
       store.getters["stage/jitsiTracks"].filter(
         (t) => t.getParticipantId() === props.object.participantId,
@@ -68,23 +73,21 @@ export default {
     });
     const loadTrack = () => {
       if (tracks.value.length) {
-        setTimeout(() => {
-          try {
-            if (videoTrack.value) {
-              videoTrack.value.attach(videoEl.value);
-            }
-            if (audioTrack.value && !audioTrack.value.isLocal()) {
-              audioTrack.value.attach(audioEl.value);
-            }
-          } catch (error) {
-            console.log("Error on attaching track", error);
+        console.log("~~~~~~~~~~~~~~~~~~~~~~~~~")
+        try {
+          if (videoTrack.value) {
+            videoTrack.value.attach(videoEl.value);
           }
-        }, 500)
+          if (audioTrack.value && !audioTrack.value.isLocal()) {
+            audioTrack.value.attach(audioEl.value);
+          }
+        } catch (error) {
+          console.log("Error on attaching track", error);
+        }
       }
     };
-    watch(loggedIn, (newValue, oldValue) => {
-      loadTrack();
-    });
+
+    const interval = setInterval(loadTrack, 3000);
     const joined = inject("joined");
     const jitsi = inject("jitsi");
 
@@ -104,7 +107,7 @@ export default {
       { immediate: true },
     );
 
-    onMounted(loadTrack);
+    onMounted(() => loadTrack);
 
     const clip = (shape) => {
       store.dispatch("stage/shapeObject", {
@@ -119,8 +122,8 @@ export default {
     };
     const isPlayer = computed(() => store.getters["stage/canPlay"]);
 
-    const logDuration = (e) => {
-      console.log('==============duration', videoEl)
+    const timeupdate = (e) => {
+      interval && clearInterval(interval);
     }
     return {
       videoTrack,
@@ -131,7 +134,9 @@ export default {
       localMuted,
       toggleMuted,
       isPlayer,
-      logDuration
+
+      timeupdate,
+      loadTrack
     };
   },
 };
@@ -144,6 +149,19 @@ video {
 </style>
 
 <style lang="scss" scoped>
+.refresh-icon {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 8px;
+  right: 8px;
+  padding: 0px;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+}
+
 .mute-icon {
   position: absolute;
   width: 24px;
