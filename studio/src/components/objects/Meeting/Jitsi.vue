@@ -5,13 +5,10 @@
       <template v-else>
         <video autoplay ref="videoEl" :style="{
           'border-radius': object.shape === 'circle' ? '100%' : '12px',
-        }" @timeupdate="timeupdate"></video>
+        }" @timeupdate="timeupdate" poster="assets/loading.svg">
+          Please click on Reload Stream button.
+        </video>
         <audio autoplay ref="audioEl" :muted="localMuted"></audio>
-        <a-tooltip title="Reload">
-          <button class="button is-small refresh-icon clickable" @mousedown="loadTrack">
-            <i class="fas fa-sync"></i>
-          </button>
-        </a-tooltip>
         <button v-if="isPlayer" class="button is-small mute-icon clickable" @mousedown="toggleMuted">
           <i v-if="localMuted" class="fas fa-volume-mute has-text-danger"></i>
           <i v-else class="fas fa-volume-up has-text-primary"></i>
@@ -61,6 +58,7 @@ export default {
         (t) => t.getParticipantId() === props.object.participantId,
       ),
     );
+    const reloadStreams = computed(() => store.getters["stage/reloadStreams"]);
     const videoTrack = computed(() => {
       const vTracks = tracks.value.filter((t) => t.type === "video")
       if (vTracks.find(t => t.stream.active)) return vTracks.find(t => t.stream.active)
@@ -102,6 +100,16 @@ export default {
           if (!participants.some((p) => p === props.object.participantId)) {
             store.dispatch("stage/deleteObject", props.object);
           }
+        }
+      },
+      { immediate: true },
+    );
+
+    watch(
+      reloadStreams,
+      (val) => {
+        if (val) {
+          loadTrack();
         }
       },
       { immediate: true },
